@@ -1,4 +1,4 @@
-# PerformanceBench
+# Benchify
 
 ## What This Is
 
@@ -33,7 +33,7 @@ Reliable, zero-cost performance profiling for any mobile or desktop app — no c
 
 ## Context
 
-PerformanceBench replaces GameBench ($400+/yr license) for mobile game and app developers who need production-grade performance profiling. Two comprehensive spec documents define the entire product: `UNIFIED-SPEC.md` (~309KB, full behavioral contracts, schemas, parsers, UI specs) and `implementation_plan.md` (12-week v1.0 sprint breakdown + phase-level goals for v1.5 through v3.5).
+Benchify replaces GameBench ($400+/yr license) for mobile game and app developers who need production-grade performance profiling. Two comprehensive spec documents define the entire product: `UNIFIED-SPEC.md` (~309KB, full behavioral contracts, schemas, parsers, UI specs) and `implementation_plan.md` (12-week v1.0 sprint breakdown + phase-level goals for v1.5 through v3.5). Internal codename: PerformanceBench (binaries, package names, CLI identifiers). GitHub: https://github.com/sundarlohar007/Benchify
 
 The UNIFIED-SPEC.md is the single source of truth — it defines WHAT to build with exact behavioral contracts. All hard contracts (schema §8, Appendix C DDL, Appendix D ADB commands, §5 metric parsers) must match exactly.
 

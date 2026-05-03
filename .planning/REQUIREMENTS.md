@@ -1,4 +1,4 @@
-# Requirements: PerformanceBench
+# Requirements: Benchify
 
 **Defined:** 2026-05-04
 **Core Value:** Reliable, zero-cost performance profiling for any mobile or desktop app — no cloud dependency, no paid license, no data ever leaving the host machine.

@@ -1,6 +1,6 @@
-# PerformanceBench
+# Benchify
 
-Free, open-source mobile + desktop performance profiler — GameBench alternative at $0. Local-only data, MIT license.
+Free, open-source mobile + desktop performance profiler — GameBench alternative at $0. Local-only data, MIT license. Internal codename: PerformanceBench (binaries, package names). GitHub: https://github.com/sundarlohar007/Benchify
 
 ## Workflow
 - GSD workflow active. Follow `.planning/PROJECT.md` + `.planning/ROADMAP.md`

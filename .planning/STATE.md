@@ -1,4 +1,4 @@
-# Project State: PerformanceBench
+# Project State: Benchify
 
 **Last updated:** 2026-05-04
 
