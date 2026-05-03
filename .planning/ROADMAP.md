@@ -61,6 +61,17 @@ Wave 7:
 - Auto-update strategy (MVP-25)
 - Tests + README + privacy verification + license headers (MVP-26, MVP-27, MVP-28, MVP-29)
 
+**Plans:** 7 plans across 7 waves (planned 2026-05-04)
+
+Plans:
+- [ ] 01-PLAN.md — App scaffold, database schema, ADB service, navigation shell, theme system, CI skeleton (MVP-01, MVP-02, MVP-03, MVP-04, MVP-12)
+- [ ] 02-PLAN.md — All 7 metric parsers (FPS/CPU/Memory/Battery/Network/Thermal/GPU) with TDD + MetricCollector 1Hz engine (MVP-05, MVP-06, MVP-07, MVP-08, MVP-09, MVP-10, MVP-11)
+- [ ] 03-PLAN.md — Real-time charts with fl_chart, 300-sample ring buffer, SQLite batch writer (5s flush), 5-size screenshot pipeline (MVP-13, MVP-14, MVP-15)
+- [ ] 04-PLAN.md — Post-session analytics engine (FPS/power/memory/network stats) + iOS pyidevice support with collector.py (MVP-16, MVP-17)
+- [ ] 05-PLAN.md — Session history with filters, session detail with 5 tabs, session comparison with delta table, JSON/CSV export (MVP-18, MVP-19, MVP-20)
+- [ ] 06-PLAN.md — Settings panel (6 categories), error handling (Debug/Release dual mode), edge case hardening, onboarding wizard + demo session (MVP-21, MVP-23, MVP-24)
+- [ ] 07-PLAN.md — Windows NSIS installer, macOS DMG, Linux AppImage, CI matrix, full test suite, auto-update, privacy verification, MIT license headers, README (MVP-22, MVP-25, MVP-26, MVP-27, MVP-28, MVP-29)
+
 **UI hint:** yes — full Flutter desktop UI with 9+ screens
 
 **Success criteria:**
@@ -305,3 +316,4 @@ Phase 1 (v1.0 MVP) ──────┐
 
 ---
 *Roadmap created: 2026-05-04*
+*Phase 1 plans created: 2026-05-04*
