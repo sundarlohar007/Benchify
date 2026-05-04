@@ -14,13 +14,13 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 - [ ] **MVP-02**: SQLite schema (Appendix C) with migration tracking
 - [ ] **MVP-03**: Navigation structure (DeviceList → AppPicker → ActiveSession → History)
 - [ ] **MVP-04**: ADB subprocess wrapper (AdbService) with device discovery polling
-- [ ] **MVP-05**: MetricCollector — 1Hz loop emitting Stream<MetricSample>
-- [ ] **MVP-06**: FPS parser (SurfaceFlinger) with 4-tier jank classification
-- [ ] **MVP-07**: CPU parser — app/system/normalized, core states, core frequencies
-- [ ] **MVP-08**: Memory parser — PSS total + subsections (Java, Native, Graphics, Stack, Code, System)
-- [ ] **MVP-09**: Battery parser — %, mA, mV, temp, charging state
-- [ ] **MVP-10**: Network parser — per-interface TX/RX bytes, WiFi/Cellular split
-- [ ] **MVP-11**: Thermal parser + GPU parser (Adreno/Mali)
+- [x] **MVP-05**: MetricCollector — 1Hz loop emitting Stream<MetricSample>
+- [x] **MVP-06**: FPS parser (SurfaceFlinger) with 3-tier jank classification
+- [x] **MVP-07**: CPU parser — app/system/normalized, core states, core frequencies
+- [x] **MVP-08**: Memory parser — PSS total + subsections (Java, Native, Graphics, Stack, Code, System)
+- [x] **MVP-09**: Battery parser — %, mA, mV, temp, charging state
+- [x] **MVP-10**: Network parser — per-interface TX/RX bytes, WiFi/Cellular split
+- [x] **MVP-11**: Thermal parser + GPU parser (Adreno/Mali)
 - [ ] **MVP-12**: Static device + app data collection at session start (Appendix E)
 - [ ] **MVP-13**: Real-time fl_chart integration fed from 300-sample ring buffer
 - [ ] **MVP-14**: SQLite batch writer (flush every 5s)

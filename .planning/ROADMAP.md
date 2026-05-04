@@ -65,7 +65,7 @@ Wave 7:
 
 Plans:
 - [ ] 01-PLAN.md — App scaffold, database schema, ADB service, navigation shell, theme system, CI skeleton (MVP-01, MVP-02, MVP-03, MVP-04, MVP-12)
-- [ ] 02-PLAN.md — All 7 metric parsers (FPS/CPU/Memory/Battery/Network/Thermal/GPU) with TDD + MetricCollector 1Hz engine (MVP-05, MVP-06, MVP-07, MVP-08, MVP-09, MVP-10, MVP-11)
+- [x] 02-PLAN.md — All 7 metric parsers (FPS/CPU/Memory/Battery/Network/Thermal/GPU) with TDD + MetricCollector 1Hz engine (MVP-05, MVP-06, MVP-07, MVP-08, MVP-09, MVP-10, MVP-11)
 - [ ] 03-PLAN.md — Real-time charts with fl_chart, 300-sample ring buffer, SQLite batch writer (5s flush), 5-size screenshot pipeline (MVP-13, MVP-14, MVP-15)
 - [ ] 04-PLAN.md — Post-session analytics engine (FPS/power/memory/network stats) + iOS pyidevice support with collector.py (MVP-16, MVP-17)
 - [ ] 05-PLAN.md — Session history with filters, session detail with 5 tabs, session comparison with delta table, JSON/CSV export (MVP-18, MVP-19, MVP-20)
