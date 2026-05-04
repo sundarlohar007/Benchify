@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// MarkerStats model — matches `marker_stats` table in Appendix C exactly.
 /// Per-marker analytics computed post-session.
 class MarkerStats {

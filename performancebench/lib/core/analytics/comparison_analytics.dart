@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 import '../models/session_stats.dart';
 
 /// A single metric delta between two sessions.

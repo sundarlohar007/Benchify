@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Result from thermal status parsing — all fields nullable per §5.6.
 class ThermalResult {
   /// Thermal status (0=normal, 1=fair, 2=serious, 3=critical). null on failure.

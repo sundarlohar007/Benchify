@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Session model — matches `sessions` table in Appendix C exactly.
 /// All columns: id, device_id, platform, target_kind, app_package, app_name,
 /// app_version, app_version_code, started_at, ended_at, duration_ms, title,

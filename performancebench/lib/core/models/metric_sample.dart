@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// MetricSample model — matches `metric_samples` table in Appendix C exactly.
 /// All 48 columns: id, session_id, timestamp, fps/jank columns, cpu columns,
 /// memory PSS columns, battery columns, network columns, thermal/gpu/disk columns,

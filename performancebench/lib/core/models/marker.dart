@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Marker model — matches `markers` table in Appendix C exactly.
 /// Columns: id, session_id, group_id, label, started_at, ended_at,
 /// auto_screenshot, notes.

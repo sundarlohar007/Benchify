@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Result from /proc/net/dev parsing — all fields nullable per §5.5.
 class NetworkResult {
   /// Total received bytes (all interfaces except loopback).

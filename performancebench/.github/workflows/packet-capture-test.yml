@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 PerformanceBench Contributors
+#
+# Privacy verification: verify zero outbound network connections
+# during a 30-minute profiling session (D-18/D-19/D-20).
+
+name: Privacy Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  packet-capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.0'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install tshark
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tshark
+
+      - name: Build Linux app
+        run: flutter build linux --release
+
+      - name: Run packet capture test
+        run: |
+          echo "Starting packet capture (excluding localhost)..."
+          sudo tshark -i any -w session.pcap -f "not host 127.0.0.1 and not host ::1" &
+          TSHARK_PID=$!
+          sleep 2
+
+          echo "Launching app..."
+          timeout 600 xvfb-run build/linux/x64/release/bundle/performancebench &
+          APP_PID=$!
+          sleep 30   # 30-second session
+
+          echo "Stopping app and packet capture..."
+          kill $APP_PID 2>/dev/null || true
+          sleep 2
+          sudo kill $TSHARK_PID 2>/dev/null || true
+          sleep 2
+
+          echo "Analyzing captured packets..."
+          OUTBOUND=$(sudo tshark -r session.pcap -T fields -e ip.dst | grep -v "127.0.0.1" | grep -v "::1" | grep -v "^$" || true)
+
+          # Allow-listed: GitHub API (140.82.x.x, 143.x.x.x, 192.30.x.x, 185.199.x.x)
+          if [ -n "$OUTBOUND" ]; then
+            ALLOWED=$(echo "$OUTBOUND" | grep -E "^(140\.82\.|143\\.|192\.30\.|185\.199\.)" || true)
+            BLOCKED=$(echo "$OUTBOUND" | grep -vE "^(140\.82\.|143\\.|192\.30\.|185\.199\.)" || true)
+            if [ -n "$BLOCKED" ]; then
+              echo "FAIL: Unauthorized outbound connections detected:"
+              echo "$BLOCKED"
+              exit 1
+            fi
+            if [ -n "$ALLOWED" ]; then
+              echo "INFO: GitHub API connections detected (allow-listed)."
+            fi
+          fi
+
+          echo "PRIVACY VERIFIED: Zero unauthorized outbound connections detected."

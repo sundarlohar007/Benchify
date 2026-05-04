@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 import 'package:flutter/material.dart';
 
 import '../../core/services/adb_service.dart';

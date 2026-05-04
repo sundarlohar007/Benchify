@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Centralized error handler with Debug/Release dual mode (D-16).
 ///
 /// Debug mode: full stack traces printed to console and stored.

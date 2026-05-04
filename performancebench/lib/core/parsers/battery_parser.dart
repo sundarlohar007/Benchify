@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Unified result from battery parsing — all fields nullable per §5.4.
 class BatteryResult {
   /// Battery percentage (0-100).

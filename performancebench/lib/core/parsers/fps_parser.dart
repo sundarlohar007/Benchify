@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 import 'dart:convert';
 
 /// Result from FPS parsing — all fields nullable per §5.1 null contract.

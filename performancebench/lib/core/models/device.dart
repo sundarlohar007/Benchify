@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Device model — matches `devices` table in Appendix C exactly.
 /// 22 columns: id, name, manufacturer, model, os_version, os_api_level,
 /// kernel_version, chipset, chipset_vendor, gpu_vendor, gpu_model,

@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 PerformanceBench Contributors
+#
+# iOS integration tests on macOS runner with iOS simulator (D-05/D-06).
+
+name: iOS Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ios-test:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        ios-version: ['16.4', '17.2']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.0'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install pyidevice
+        run: pip3 install py-ios-device
+
+      - name: Boot iOS simulator
+        run: |
+          UDID=$(xcrun simctl create "Test-${{ matrix.ios-version }}" "iPhone 15" "com.apple.CoreSimulator.SimRuntime.iOS-${{ matrix.ios-version }}")
+          xcrun simctl boot $UDID
+          echo "SIM_UDID=$UDID" >> $GITHUB_ENV
+
+      - name: Run iOS integration tests
+        run: |
+          flutter test test/integration/ios_integration_test.dart --dart-define=IOS_UDID=${{ env.SIM_UDID }}
+
+      - name: Shutdown simulator
+        if: always()
+        run: |
+          xcrun simctl shutdown ${{ env.SIM_UDID }} || true
+          xcrun simctl delete ${{ env.SIM_UDID }} || true

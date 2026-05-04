@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Result from GPU utilization parsing — all fields nullable per §5.7.
 class GpuResult {
   /// GPU utilization percentage (0-100). null on failure.

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Result from dumpsys meminfo parsing — all fields nullable per §5.3.
 class MemoryResult {
   /// Total PSS in KB (primary metric).

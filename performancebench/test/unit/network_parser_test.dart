@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:performancebench/core/parsers/network_parser.dart';
 

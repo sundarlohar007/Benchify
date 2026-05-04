@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// Result from CPU parsing — all fields nullable.
 class CpuResult {
   /// App CPU percentage (0-100). null on first sample or parse failure.

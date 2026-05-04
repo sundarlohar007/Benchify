@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/metric_sample.dart';

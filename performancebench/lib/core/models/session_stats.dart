@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 /// SessionStats model — matches `session_stats` table in Appendix C exactly.
 /// Per-session analytics summary computed post-session. 56 fields.
 class SessionStats {

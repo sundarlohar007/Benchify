@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2024 PerformanceBench Contributors
+
 import 'dart:convert';
 
 /// Data class for computed FPS statistics per UNIFIED-SPEC §6.1.
