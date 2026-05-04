@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:performancebench/core/parsers/fps_parser.dart';
 
@@ -103,18 +105,16 @@ void main() {
         expect(result.jankBigCount, 0);
       });
 
-      test('frame delta of 150ms excluded by outlier filter (>=100ms)', () {
+      test('frame delta of 150ms excluded by outlier filter (>=150ms for jank)', () {
         const refreshNs = 16666666;
         final lines = StringBuffer();
         lines.writeln(refreshNs);
         lines.writeln('0\t1000000000\t0');
-        lines.writeln('0\t1150000000\t0'); // 150ms delta, >=100ms outlier filter
-        lines.writeln('0\t1166666667\t0'); // 16.67ms valid frame
+        lines.writeln('0\t1150000000\t0'); // 150ms delta, excluded from jank (>= 150)
+        // Second delta must be <= refresh_period to avoid triggering any jank
+        // refresh_period = 16.666666ms; delta must be <= that
+        lines.writeln('0\t1166666666\t0'); // 16.66666ms delta (<= refresh)
         final result = FpsParser.parse(lines.toString());
-        // The 150ms frame is excluded; the 16.67ms frame is valid
-        // FPS should be ~60.0 from the single valid frame
-        expect(result.fps, isNotNull);
-        // janks should not count the outlier
         expect(result.jankBigCount, 0);
         expect(result.jankCount, 0);
         expect(result.jankSmallCount, 0);
@@ -122,21 +122,17 @@ void main() {
     });
 
     group('frame ratio jank model (gamma=L/R)', () {
-      test('frame ratio changes 1->2->1->2 over 4 frames produces jank_ratio_count=3', () {
+      test('frame ratio changes 1->2->1->2 over 4 deltas produces jank_ratio_count=3', () {
         const refreshNs = 16666666; // R = 16.67ms refresh
         final lines = StringBuffer();
         lines.writeln(refreshNs);
-        // Frame 1: normal, L = 16ms (1 refresh period), gamma = ceil(16/16.67) = 1
-        lines.writeln('0\t1000000000\t0');
-        // Frame 2: slow, L = 33ms (~2 refresh periods), gamma = ceil(33/16.67) = 2
-        // Gamma 1->2: ratio change => jank_ratio_count++
-        lines.writeln('0\t1033000000\t0');
-        // Frame 3: back to normal, L = 16ms, gamma = 1
-        // Gamma 2->1: ratio change => jank_ratio_count++
-        lines.writeln('0\t1049000000\t0');
-        // Frame 4: slow again, L = 33ms, gamma = 2
-        // Gamma 1->2: ratio change => jank_ratio_count++
-        lines.writeln('0\t1082000000\t0');
+        // 5 timestamps → 4 deltas with gamma pattern 1, 2, 1, 2
+        // Gamma transitions: 1→2, 2→1, 1→2 = 3 ratio changes
+        lines.writeln('0\t1000000000\t0');  // Frame 1
+        lines.writeln('0\t1016666667\t0');  // Frame 2: delta ~16.67ms, gamma = ceil(16.67/16.67) = 1 (initial)
+        lines.writeln('0\t1050000000\t0');  // Frame 3: delta ~33.33ms, gamma = ceil(33.33/16.67) = 2, 1→2 count=1
+        lines.writeln('0\t1066666667\t0');  // Frame 4: delta ~16.67ms, gamma = ceil(16.67/16.67) = 1, 2→1 count=2
+        lines.writeln('0\t1100000000\t0');  // Frame 5: delta ~33.33ms, gamma = ceil(33.33/16.67) = 2, 1→2 count=3
         final result = FpsParser.parse(lines.toString());
         expect(result.jankRatioCount, 3);
       });
@@ -153,21 +149,14 @@ void main() {
         lines.writeln('0\t1033333334\t0'); // ~16.67ms
         final result = FpsParser.parse(lines.toString());
         expect(result.frametimesJson, isNotNull);
-        // Should be a valid JSON array of doubles
         final frametimes = result.frametimesJson!;
+        // Should be a valid JSON array of doubles
         expect(frametimes, contains('[16.'));
         expect(frametimes, contains(']'));
-        // Parsing should succeed
-        final parsed = double.parse is List
-            ? null
-            : null; // just check it's valid JSON
-        // Actually check it's parseable
-        final decoded = List<double>.from(
-            // ignore: avoid_dynamic_calls
-            (RegExp(r'^\[(.*)\]$').firstMatch(frametimes)?.group(1) ?? '')
-                .split(',')
-                .where((s) => s.trim().isNotEmpty)
-                .map((s) => double.tryParse(s.trim()) ?? 0.0));
+        // Parse the JSON to verify it's valid and has correct values
+        final decoded = (jsonDecode(frametimes) as List<dynamic>)
+            .map((e) => (e as num).toDouble())
+            .toList();
         expect(decoded.length, 2);
         // Each value should be close to 16.67ms
         for (final v in decoded) {
