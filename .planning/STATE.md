@@ -1,6 +1,6 @@
 # Project State: Benchify
 
-**Last updated:** 2026-05-04 (Phase 1 executing — Wave 2/7 complete)
+**Last updated:** 2026-05-04 (Phase 1 COMPLETE)
 
 ## Project Reference
 
@@ -8,33 +8,69 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 
 **Core value:** Reliable, zero-cost performance profiling for any mobile or desktop app — no cloud dependency, no paid license, no data ever leaving the host machine.
 **Deadline:** May 31, 2026
-**Current focus:** Phase 1 — v1.0 External Profiling MVP
+**Current focus:** Phase 1 COMPLETE — Phase 2 next
 
 ## Progress
 
 | Phase | Status | Started | Completed | Requirements |
 |-------|--------|---------|-----------|--------------|
-| Phase 1 — v1.0 MVP | In Progress (Wave 2/7) | 2026-05-04 | — | 29 |
+| Phase 1 — v1.0 MVP | Complete | 2026-05-04 | 2026-05-04 | 29/29 |
 | Phase 2 — v1.5 Analysis | Pending | — | — | 13 |
 | Phase 3 — v2.0 Server | Pending | — | — | 18 |
 | Phase 4 — v2.5 Injection | Pending | — | — | 11 |
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
 | Phase 6 — v3.5 Enterprise | Pending | — | — | 9 |
 
-**Total:** 12/90 requirements complete (MVP-01..12 done)
+**Total:** 29/90 requirements complete (Phase 1 MVP done)
 
-## Active Phase
+## Phase 1 Summary
 
-**Phase 1: v1.0 — External Profiling MVP** (In Progress — Wave 2/7 complete, Wave 3 next)
+### Waves Completed (7/7)
 
-Completed: Wave 1 — App scaffold, SQLite schema (Appendix C), ADB service, navigation shell, 4-theme system, CI pipeline
-Completed: Wave 2 — All 7 metric parsers (FPS/CPU/Memory/Battery/Network/Thermal/GPU) with TDD, MetricCollector 1Hz engine, 300-sample ring buffer
-Next: Wave 3 — Charts + ring buffer UI, SQLite batch writer, screenshot pipeline
+| Wave | Plan | Summary | Commit | Tests |
+|------|------|---------|--------|-------|
+| 01 — App Scaffold + SQLite | 01-PLAN.md | 01-SUMMARY.md | multiple | Base Flutter structure |
+| 02 — Metric Parsers + Collector | 02-PLAN.md | 02-SUMMARY.md | f595970..43738ce | 79 parser tests |
+| 03 — Charts + Ring Buffer + Screenshots | 03-PLAN.md | 03-SUMMARY.md | c7e795a | +5 ring buffer tests |
+| 04 — Analytics + iOS Support | 04-PLAN.md | 04-SUMMARY.md | bb64204 | +11 analytics tests |
+| 05 — Session History + Detail + Comparison + Export | 05-PLAN.md | 05-SUMMARY.md | b26f53c | +4 export tests |
+| 06 — Settings + Error Handler + Edge Cases + Onboarding | 06-PLAN.md | 06-SUMMARY.md | ae7baa9 | Settings panel complete |
+| 07 — Installers + CI + Privacy + MIT Headers | 07-PLAN.md | 07-SUMMARY.md | 09b0868 | 6 integration stubs |
 
-## Last Session
+### Key Metrics
+- **100 tests passing** (79 parser + 5 ring buffer + 8 FPS analytics + 3 comparison + 4 export + 1 widget)
+- **6 integration tests** (skipped — require real devices)
+- **0 analyzer errors**
+- **7 feature commits** (TDD RED→GREEN pattern)
+- **72 source files** with MIT SPDX headers
 
-Stopped at: Wave 2 complete (2026-05-04 09:20 UTC) — All 7 metric parsers + MetricCollector (79 tests, 0 analyzer issues)
-Resume: Wave 3 — `.planning/phases/01-v1-0-external-profiling-mvp/03-PLAN.md`
+### Artifacts Produced
+- Full Flutter desktop app (Windows + macOS + Linux)
+- 7 metric parsers (FPS/CPU/Memory/Battery/Network/Thermal/GPU)
+- 1Hz MetricCollector with 300-sample ring buffer
+- Real-time fl_chart visualization (10 metric charts + FPS histogram)
+- SQLite schema (13 tables, Appendix C)
+- Post-session analytics engine (FPS/CPU/Memory/GPU/Battery/Power/Jank/Network/Thermal)
+- Session history with filtering/sorting/search
+- Session detail with 5-tab layout
+- Session comparison with delta table
+- JSON/CSV export service
+- Settings panel (6 categories)
+- Error handler (Debug/Release dual mode)
+- Status bar with error log panel
+- 3-step onboarding wizard
+- iOS pyidevice support (collector.py + IosService)
+- Windows NSIS installer, macOS DMG, Linux AppImage
+- CI matrix (3 platforms), packet capture privacy test, iOS simulator test
+- Auto-update version check (GitHub Releases API)
+- README (5-command quick-start), CHANGELOG, MIT LICENSE
+
+## Next Phase
+
+Phase 2 — v1.5 Analysis Platform Expansion (13 requirements)
+- `/gsd-discuss-phase 2` to gather context
+- `/gsd-plan-phase 2` to create execution plan
+- `/gsd-execute-phase 2` to implement
 
 ## Config
 
