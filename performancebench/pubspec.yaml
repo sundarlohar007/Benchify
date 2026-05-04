@@ -1,0 +1,45 @@
+name: performancebench
+description: "Free, open-source mobile + desktop performance profiler — GameBench alternative at $0."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # Core dependencies per UNIFIED-SPEC §13.6
+  sqflite_common_ffi: ^2.3.0    # SQLite desktop
+  fl_chart: ^0.67.0              # Charts
+  flutter_riverpod: ^2.5.0        # State management (Flutter bindings)
+  go_router: ^13.0.0             # Navigation
+  uuid: ^4.0.0                   # Session UUIDs
+  path_provider: ^2.1.0          # Platform data dirs
+  path: ^1.9.0
+  csv: ^6.0.0                    # CSV export
+  file_picker: ^8.0.0            # Export file chooser
+  window_manager: ^0.3.8         # Desktop window control
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+
+  fonts:
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700
