@@ -1,0 +1,28 @@
+# Privacy Verification — Packet Capture
+#
+# Verifies zero outbound network connections during a 30-min profiling session
+# using tshark (Linux/macOS) or pktmon (Windows). This test enforces the D-18
+# privacy guarantee: no data ever leaves the host machine.
+#
+# To be completed in Wave 7 per D-20:
+#   1. Start performancebench in headless recording mode (--headless --duration 1800)
+#   2. Capture all outbound network traffic with tshark/pktmon
+#   3. Assert zero packets to non-localhost destinations
+#   4. Assert zero DNS queries for non-local hosts
+#
+# Current status: Placeholder — documented interface contract only.
+
+name: Privacy Verification — Packet Capture
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'  # Run weekly on Monday at 06:00 UTC
+
+jobs:
+  packet-capture:
+    name: Zero-Network Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Packet capture test to be implemented in Wave 7 (D-20)."
