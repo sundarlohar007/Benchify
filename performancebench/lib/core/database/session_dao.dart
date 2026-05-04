@@ -24,6 +24,16 @@ class SessionDao {
     );
   }
 
+  /// Update ended_at and duration_ms for a completed session.
+  Future<int> updateEndedAt(String id, int endedAt, int durationMs) async {
+    return _db.update(
+      'sessions',
+      {'ended_at': endedAt, 'duration_ms': durationMs},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   /// Query a session by its UUID id.
   Future<Session?> getById(String id) async {
     final rows = await _db.query(
