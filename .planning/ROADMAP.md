@@ -113,6 +113,15 @@ Wave 5 (parallel):
 - Android video recording — screenrecord synced (V15-11)
 - Video player UI with chart scrub sync (V15-12)
 
+**Plans:** 5 plans across 5 waves (planned 2026-05-04)
+
+Plans:
+- [ ] 01-PLAN.md — Schema migration v2 (collections, detected_issues, videos), drag-region selection + per-region stats, disk I/O parser activation (V15-01, V15-02, V15-13)
+- [ ] 02-PLAN.md — Auto-detected issues engine (12 rules per §6.9), session collections with flat tags + project_id, session search + multi-filter (V15-03, V15-04, V15-05)
+- [ ] 03-PLAN.md — Metric threshold alerts with status bar badge + auto-markers, auto session start via ADB logcat polling (V15-06, V15-07)
+- [ ] 04-PLAN.md — tidevice on Windows for iOS (~8 metrics), Mac proxy daemon (HTTP REST + WebSocket), Linux first-class smoke test (V15-08, V15-09, V15-10)
+- [ ] 05-PLAN.md — Android video recording via screenrecord (5-min chunks), video player UI with bidirectional chart scrub sync (V15-11, V15-12)
+
 **UI hint:** yes — new analysis panels, video player, alert configuration
 
 **Success criteria:**
@@ -317,3 +326,4 @@ Phase 1 (v1.0 MVP) ──────┐
 ---
 *Roadmap created: 2026-05-04*
 *Phase 1 plans created: 2026-05-04*
+*Phase 2 plans created: 2026-05-04*
