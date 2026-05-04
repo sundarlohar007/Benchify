@@ -160,6 +160,28 @@ class AdbService {
   }
 
   // ===========================================================================
+  // Public ADB Shell Command (for MetricCollector and other services)
+  // ===========================================================================
+
+  /// Run an ADB shell command on a device and return the stdout string.
+  ///
+  /// Returns null on timeout, non-zero exit, or any error.
+  /// Uses 3-second timeout per §F.
+  Future<String?> runShellCommand(
+    String serial,
+    String command, {
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    if (!_isValidSerial(serial)) return null;
+    final result = await _runAdb(
+      ['-s', serial, 'shell', command],
+      timeout: timeout,
+    );
+    if (result == null) return null;
+    return (result.stdout as String).trim();
+  }
+
+  // ===========================================================================
   // Device Discovery
   // ===========================================================================
 

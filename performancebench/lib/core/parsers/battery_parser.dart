@@ -170,7 +170,7 @@ class BatteryParser {
   }
 
   /// Extract an integer field value from dumpsys output.
-  /// Looks for pattern: "fieldName: <value>" with word boundary to avoid
+  /// Looks for pattern: "fieldName: value" with word boundary to avoid
   /// partial matches (e.g., "Max charging voltage:" vs "voltage:").
   static int? _extractInt(String output, String fieldName) {
     // Anchor at line start to avoid partial matches like "Max charging voltage:"

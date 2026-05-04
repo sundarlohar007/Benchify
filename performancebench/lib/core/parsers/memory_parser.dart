@@ -50,22 +50,6 @@ class MemoryParser {
     '.art mmap',
   };
 
-  /// Labels that map to the graphics subsection (summed).
-  static const _graphicsLabels = {
-    'EGL mtrack',
-    'GL mtrack',
-  };
-
-  /// Labels that are classified as "system/other".
-  static const _systemLabels = {
-    'Dalvik Other',
-    'Ashmem',
-    'Other dev',
-    '.ttf mmap',
-    'Other mmap',
-    'Unknown',
-  };
-
   /// Parse dumpsys meminfo output into structured memory data.
   ///
   /// Returns [MemoryResult] with all fields null on failure/empty input.
@@ -75,24 +59,7 @@ class MemoryParser {
     }
 
     try {
-      // Find the header row with Pss and Private columns
       final lines = meminfoOutput.split('\n');
-
-      // Locate the data section: skip past header + ascii art separator
-      int dataStart = -1;
-      int totalLineIdx = -1;
-      for (var i = 0; i < lines.length; i++) {
-        final line = lines[i];
-        if (line.contains('------') && dataStart == -1) {
-          dataStart = i + 1; // data starts after the dashes line
-        }
-        if (line.trim().startsWith('TOTAL') || line.trim().startsWith('------') && i > dataStart) {
-          // The TOTAL line is after all data; it also has dashes above it
-          // We look for the TOTAL line specifically
-        }
-      }
-
-      // If we can't find the structure, try simpler approach: scan all lines
       final parsed = <String, int>{};
 
       for (var i = 0; i < lines.length; i++) {
