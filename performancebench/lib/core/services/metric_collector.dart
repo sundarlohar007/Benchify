@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../database/metric_dao.dart';
 import '../models/metric_sample.dart';
 import '../parsers/battery_parser.dart';
 import '../parsers/cpu_parser.dart';
@@ -15,61 +16,56 @@ import 'adb_service.dart';
 /// Wires all 7 metric parsers (FPS, CPU, Memory, Battery, Network, Thermal, GPU)
 /// into a single [Stream<MetricSample>] driven by a periodic timer.
 /// Maintains a 300-sample ring buffer (60 seconds at 1Hz).
-///
-/// Threat mitigations (T-01-07, T-01-08):
-/// - 3-second timeout on every ADB call.
-/// - Hard cap at 300 entries in ring buffer (evict oldest).
-/// - After 5 consecutive total failures, stops collection and emits error.
+/// Batch-writes accumulated samples to SQLite every 5 seconds.
 class MetricCollector {
   final AdbService _adbService;
   final String _deviceSerial;
   final String _packageName;
   final String _sessionId;
+  final MetricDao _metricDao;
 
-  /// Cached PID of the target app process.
   int? _pid;
-
-  /// Discovered SurfaceFlinger layer name for the target app.
   String? _surfaceFlingerLayer;
-
-  /// CPU parser with internal state for delta computation.
   final CpuParser _cpuParser = CpuParser();
 
-  /// Ring buffer — max 300 entries.
   final List<MetricSample> _buffer = [];
   static const int _maxBufferSize = 300;
 
-  /// Consecutive total failure counter.
   int _consecutiveFailures = 0;
 
   Timer? _timer;
   StreamController<MetricSample>? _controller;
+  StreamController<String>? _statusController;
 
-  /// Creates a collector for the given device and target app.
+  // ---- Batch writer state ----
+  final List<MetricSample> _pendingBatch = [];
+  Timer? _batchTimer;
+  bool _lastBatchOk = true;
+
   MetricCollector({
     required AdbService adbService,
     required String deviceSerial,
     required String packageName,
     required String sessionId,
+    required MetricDao metricDao,
   })  : _adbService = adbService,
         _deviceSerial = deviceSerial,
         _packageName = packageName,
-        _sessionId = sessionId;
+        _sessionId = sessionId,
+        _metricDao = metricDao;
 
-  /// The in-memory ring buffer (newest at end).
   List<MetricSample> get buffer => List.unmodifiable(_buffer);
 
   /// Start collecting metrics at 1Hz.
   ///
   /// Returns a broadcast [Stream<MetricSample>] that emits one sample per second.
-  /// First CPU sample returns null for cpu_app_pct/cpu_system_pct (no delta yet).
-  /// Call [stop] to end collection.
   Stream<MetricSample> start() {
     _controller = StreamController<MetricSample>.broadcast();
+    _statusController = StreamController<String>.broadcast();
 
-    // Discover PID and SurfaceFlinger layer before starting the loop
+    _startBatchTimer();
+
     _initSession().then((_) {
-      // Initial discovery may have failed; loop will retry once per tick
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         _tick();
       });
@@ -78,32 +74,66 @@ class MetricCollector {
     return _controller!.stream;
   }
 
-  /// Stop metric collection and clean up.
-  ///
-  /// Returns the list of all collected samples.
-  List<MetricSample> stop() {
+  /// Status stream for SQLite write indicator.
+  Stream<String> get statusStream => _statusController!.stream;
+
+  /// Stop metric collection, flush remaining batch, and clean up.
+  Future<List<MetricSample>> stop() async {
     _timer?.cancel();
     _timer = null;
+    _batchTimer?.cancel();
+    _batchTimer = null;
+
+    // Final flush
+    await _flushBatch();
+
     _controller?.close();
     _controller = null;
+    _statusController?.close();
+    _statusController = null;
     return List.unmodifiable(_buffer);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Batch Writer
+  // ---------------------------------------------------------------------------
+
+  void _startBatchTimer() {
+    _batchTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _flushBatch();
+    });
+  }
+
+  Future<void> _flushBatch() async {
+    if (_pendingBatch.isEmpty) return;
+    final batch = List<MetricSample>.from(_pendingBatch);
+    _pendingBatch.clear();
+    try {
+      await _metricDao.batchInsert(batch);
+      _lastBatchOk = true;
+    } catch (_) {
+      // Retain samples in memory on failure — prepend to next batch
+      _pendingBatch.insertAll(0, batch);
+      _lastBatchOk = false;
+    }
+    _emitStatus();
+  }
+
+  void _emitStatus() {
+    _statusController?.add(_lastBatchOk ? 'SQLite ✓' : 'SQLite ⚠');
   }
 
   // ---------------------------------------------------------------------------
   // Session Initialization
   // ---------------------------------------------------------------------------
 
-  /// Discover the target app PID and SurfaceFlinger layer name.
   Future<void> _initSession() async {
     await _discoverPid();
     await _discoverSurfaceFlingerLayer();
+    _emitStatus();
   }
 
-  /// Discover the PID of the target package.
-  ///
-  /// Tries `pidof <package>` first, then falls back to `ps -A | grep <package>`.
   Future<void> _discoverPid() async {
-    // Try pidof first (faster, exact match)
     String? output = await _adbService.runShellCommand(
       _deviceSerial,
       'pidof $_packageName',
@@ -116,13 +146,11 @@ class MetricCollector {
       }
     }
 
-    // Fallback: ps -A | grep
     output = await _adbService.runShellCommand(
       _deviceSerial,
       'ps -A | grep $_packageName',
     );
     if (output != null && output.trim().isNotEmpty) {
-      // ps output: USER PID PPID VSZ RSS WCHAN ADDR S NAME
       final lines = output.trim().split('\n');
       for (final line in lines) {
         final parts = line.trim().split(RegExp(r'\s+'));
@@ -137,14 +165,8 @@ class MetricCollector {
     }
   }
 
-  /// Discover the SurfaceFlinger layer name for FPS profiling.
-  ///
-  /// Strategy: try package name directly, then scan SurfaceFlinger output.
   Future<void> _discoverSurfaceFlingerLayer() async {
-    // Strategy 1: Use package name directly
     _surfaceFlingerLayer = _packageName;
-
-    // Strategy 2: Scan full SurfaceFlinger output for matching layer
     final output = await _adbService.runShellCommand(
       _deviceSerial,
       'dumpsys SurfaceFlinger --list',
@@ -157,13 +179,12 @@ class MetricCollector {
           return;
         }
       }
-      // Strategy 3: Topmost visible layer (fallback)
       final lines = output.split('\n');
       for (final line in lines) {
         final trimmed = line.trim();
         if (trimmed.isNotEmpty &&
-            trimmed.startsWith('SurfaceView') ||
-            trimmed.contains('Window')) {
+            (trimmed.startsWith('SurfaceView') ||
+                trimmed.contains('Window'))) {
           _surfaceFlingerLayer = trimmed;
           return;
         }
@@ -171,7 +192,6 @@ class MetricCollector {
     }
   }
 
-  /// Attempt to rediscover PID if the target process died.
   Future<void> _rediscoverPid() async {
     _pid = null;
     await _discoverPid();
@@ -181,12 +201,10 @@ class MetricCollector {
   // Per-Tick Collection
   // ---------------------------------------------------------------------------
 
-  /// Run one collection cycle — all 7 parsers, emit one MetricSample.
   Future<void> _tick() async {
     try {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
 
-      // Run all metric commands in parallel where possible
       final results = await Future.wait([
         _collectFps(),
         _collectCpu(),
@@ -205,7 +223,6 @@ class MetricCollector {
       final thermalResult = results[5] as ThermalResult?;
       final gpuResult = results[6] as GpuResult?;
 
-      // Check for total failure (all null)
       final anyNonNull = fpsResult != null ||
           cpuResult != null ||
           memResult != null ||
@@ -226,25 +243,21 @@ class MetricCollector {
       }
       _consecutiveFailures = 0;
 
-      // Build MetricSample from all parsed results
       final sample = MetricSample(
         sessionId: _sessionId,
         timestamp: timestamp,
-        // FPS
         fps: fpsResult?.fps,
         jankCount: fpsResult?.jankCount,
         jankSmallCount: fpsResult?.jankSmallCount,
         jankBigCount: fpsResult?.jankBigCount,
         jankRatioCount: fpsResult?.jankRatioCount,
         frametimesJson: fpsResult?.frametimesJson,
-        // CPU
         cpuAppPct: cpuResult?.cpuAppPct,
         cpuSystemPct: cpuResult?.cpuSystemPct,
         cpuAppPctFreqNorm: cpuResult?.cpuAppPctFreqNorm,
         cpuCores: cpuResult?.cpuCores,
         cpuCoreStatesJson: cpuResult?.cpuCoreStatesJson,
         cpuCoreFreqsJson: cpuResult?.cpuCoreFreqsJson,
-        // Memory
         memoryPssKb: memResult?.memoryPssKb,
         memoryJavaKb: memResult?.memoryJavaKb,
         memoryNativeKb: memResult?.memoryNativeKb,
@@ -252,7 +265,6 @@ class MetricCollector {
         memoryStackKb: memResult?.memoryStackKb,
         memoryCodeKb: memResult?.memoryCodeKb,
         memorySystemKb: memResult?.memorySystemKb,
-        // Battery
         batteryPct: batResult?.batteryPct,
         batteryMa: batResult?.batteryMa,
         batteryMv: batResult?.batteryMv,
@@ -262,7 +274,6 @@ class MetricCollector {
         wifiActive: batResult?.wifiActive == true
             ? 1
             : (batResult?.wifiActive == false ? 0 : null),
-        // Network
         netTxBytes: netResult?.netTxBytes,
         netRxBytes: netResult?.netRxBytes,
         netWifiTxBytes: netResult?.netWifiTxBytes,
@@ -271,20 +282,18 @@ class MetricCollector {
         netCellularRxBytes: netResult?.netCellularRxBytes,
         netOtherTxBytes: netResult?.netOtherTxBytes,
         netOtherRxBytes: netResult?.netOtherRxBytes,
-        // Thermal / GPU
         thermalStatus: thermalResult?.thermalStatus,
         gpuPct: gpuResult?.gpuPct,
       );
 
-      // Add to ring buffer (evict oldest if full)
       _buffer.add(sample);
       while (_buffer.length > _maxBufferSize) {
         _buffer.removeAt(0);
       }
 
+      _pendingBatch.add(sample);
       _controller?.add(sample);
     } catch (_) {
-      // Individual tick failure — don't crash, just try again next tick
       _consecutiveFailures++;
     }
   }
@@ -293,7 +302,6 @@ class MetricCollector {
   // Individual Metric Collectors
   // ---------------------------------------------------------------------------
 
-  /// Collect FPS data via SurfaceFlinger.
   Future<FpsResult?> _collectFps() async {
     if (_surfaceFlingerLayer == null) return null;
     final output = await _adbService.runShellCommand(
@@ -303,22 +311,16 @@ class MetricCollector {
     return FpsParser.parse(output);
   }
 
-  /// Collect CPU data via /proc/pid/stat and /proc/stat.
   Future<CpuResult?> _collectCpu() async {
-    // Rediscover PID if lost
-    if (_pid == null) {
-      await _rediscoverPid();
-    }
+    if (_pid == null) await _rediscoverPid();
     if (_pid == null) return null;
 
-    // Combined command: cat /proc/<pid>/stat && echo --- && cat /proc/stat
     final combinedOutput = await _adbService.runShellCommand(
       _deviceSerial,
       'cat /proc/$_pid/stat && echo --- && cat /proc/stat',
     );
     if (combinedOutput == null) return null;
 
-    // Split on --- separator
     final parts = combinedOutput.split('---');
     if (parts.length < 2) return null;
 
@@ -327,7 +329,6 @@ class MetricCollector {
 
     var cpuResult = _cpuParser.parse(pidStat, procStat);
 
-    // Collect core frequency data for normalization
     final sysfsOutput = await _adbService.runShellCommand(
       _deviceSerial,
       'for c in /sys/devices/system/cpu/cpu[0-9]*; do echo \$c; '
@@ -357,7 +358,6 @@ class MetricCollector {
     return cpuResult;
   }
 
-  /// Collect memory data via dumpsys meminfo.
   Future<MemoryResult?> _collectMemory() async {
     if (_pid == null) return null;
     final output = await _adbService.runShellCommand(
@@ -367,37 +367,31 @@ class MetricCollector {
     return MemoryParser.parse(output);
   }
 
-  /// Collect battery data via dumpsys + sysfs.
   Future<BatteryResult?> _collectBattery() async {
-    // dumpsys battery (level, temp, voltage, charging)
     final dumpsysOutput = await _adbService.runShellCommand(
       _deviceSerial,
       'dumpsys battery',
     );
     final dumpsysResult = BatteryParser.parseDumpsysBattery(dumpsysOutput);
 
-    // sysfs current_now (more precise current)
     final currentOutput = await _adbService.runShellCommand(
       _deviceSerial,
       'cat /sys/class/power_supply/battery/current_now',
     );
     final currentResult = BatteryParser.parseCurrentNow(currentOutput);
 
-    // sysfs voltage_now (more precise voltage, preferred)
     final voltageOutput = await _adbService.runShellCommand(
       _deviceSerial,
       'cat /sys/class/power_supply/battery/voltage_now',
     );
     final voltageResult = BatteryParser.parseVoltageNow(voltageOutput);
 
-    // WiFi state
     final wifiOutput = await _adbService.runShellCommand(
       _deviceSerial,
       'dumpsys connectivity | grep -A2 "Active default network"',
     );
     final wifiResult = BatteryParser.parseWifiState(wifiOutput);
 
-    // Merge results: sysfs values take priority over dumpsys
     return BatteryResult(
       batteryPct: dumpsysResult.batteryPct,
       batteryTempC: dumpsysResult.batteryTempC,
@@ -409,7 +403,6 @@ class MetricCollector {
     );
   }
 
-  /// Collect network data via /proc/net/dev.
   Future<NetworkResult?> _collectNetwork() async {
     final output = await _adbService.runShellCommand(
       _deviceSerial,
@@ -418,9 +411,7 @@ class MetricCollector {
     return NetworkParser.parse(output);
   }
 
-  /// Collect thermal data via dumpsys thermalservice or getprop fallback.
   Future<ThermalResult?> _collectThermal() async {
-    // Primary: dumpsys thermalservice
     var output = await _adbService.runShellCommand(
       _deviceSerial,
       'dumpsys thermalservice',
@@ -430,7 +421,6 @@ class MetricCollector {
       if (result.thermalStatus != null) return result;
     }
 
-    // Fallback: getprop sys.thermal.state
     output = await _adbService.runShellCommand(
       _deviceSerial,
       'getprop sys.thermal.state',
@@ -442,9 +432,7 @@ class MetricCollector {
     return null;
   }
 
-  /// Collect GPU data via Adreno or Mali sysfs paths.
   Future<GpuResult?> _collectGpu() async {
-    // Try Adreno path
     var output = await _adbService.runShellCommand(
       _deviceSerial,
       'cat /sys/class/kgsl/kgsl-3d0/gpubusy',
@@ -454,7 +442,6 @@ class MetricCollector {
       if (result.gpuPct != null) return result;
     }
 
-    // Try Mali (Samsung) path
     output = await _adbService.runShellCommand(
       _deviceSerial,
       'cat /sys/class/misc/mali0/device/utilization',
@@ -464,7 +451,6 @@ class MetricCollector {
       if (result.gpuPct != null) return result;
     }
 
-    // Never fabricate GPU values
     return null;
   }
 }

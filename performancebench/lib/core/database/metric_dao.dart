@@ -9,15 +9,21 @@ class MetricDao {
 
   MetricDao(this._db);
 
-  /// Batch insert a list of MetricSamples. Uses a single transaction
-  /// for performance — hundreds of samples per second during recording.
-  Future<void> insertBatch(List<MetricSample> samples) async {
+  /// Batch insert a list of MetricSamples in a single transaction.
+  /// Uses INSERT OR IGNORE — first write wins on session_id+timestamp collision.
+  Future<void> batchInsert(List<MetricSample> samples) async {
     if (samples.isEmpty) return;
-    final batch = _db.batch();
-    for (final sample in samples) {
-      batch.insert('metric_samples', sample.toMap());
-    }
-    await batch.commit(noResult: true);
+    await _db.transaction((txn) async {
+      final batch = txn.batch();
+      for (final sample in samples) {
+        batch.insert(
+          'metric_samples',
+          sample.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+      }
+      await batch.commit(noResult: true);
+    });
   }
 
   /// Query all samples for a session, ordered by timestamp ASC.

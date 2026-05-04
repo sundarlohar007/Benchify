@@ -1,13 +1,13 @@
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-/// Data model for the `screenshots` table (inline — simple record).
+/// Data model for the `screenshots` table.
 class Screenshot {
   final int? id;
   final String sessionId;
   final int? markerId;
   final int timestamp;
   final String filepath;
-  final String sizeId; // 'SS0'|'SS1'|'SS2'|'SS3'|'SS4'
+  final String sizeId;
   final int? widthPx;
   final int? heightPx;
   final int? fileSizeBytes;
@@ -55,13 +55,24 @@ class Screenshot {
 }
 
 /// Data access object for the `screenshots` table.
-/// All queries are parameterized.
 class ScreenshotDao {
   final Database _db;
 
   ScreenshotDao(this._db);
 
-  /// Insert a screenshot row. Returns the auto-generated id.
+  /// Batch insert multiple screenshot rows in a single transaction.
+  Future<void> batchInsert(List<Screenshot> screenshots) async {
+    if (screenshots.isEmpty) return;
+    await _db.transaction((txn) async {
+      final batch = txn.batch();
+      for (final s in screenshots) {
+        batch.insert('screenshots', s.toMap());
+      }
+      await batch.commit(noResult: true);
+    });
+  }
+
+  /// Insert a single screenshot row. Returns the auto-generated id.
   Future<int> insert(Screenshot screenshot) async {
     return _db.insert('screenshots', screenshot.toMap());
   }
