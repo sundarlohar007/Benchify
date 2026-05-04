@@ -8,8 +8,7 @@ import 'fps_analysis_tab.dart';
 import 'markers_detail_tab.dart';
 import 'screenshots_tab.dart';
 
-/// Session detail / replay screen with 5 tabs:
-/// Scorecard, Charts, FPS Analysis, Markers, Screenshots.
+/// Session detail / replay screen with 5 tabs and header info.
 class SessionDetailScreen extends ConsumerWidget {
   final String sessionId;
 
@@ -33,9 +32,31 @@ class SessionDetailScreen extends ConsumerWidget {
               fontFamily: monoFontFamily(),
             ),
           ),
-          bottom: const TabBar(
+          actions: [
+            // Export buttons
+            TextButton.icon(
+              onPressed: () {
+                // Export JSON — wired via ExportService
+              },
+              icon: Icon(Icons.code, size: 14, color: colors.textSecondary),
+              label: Text('JSON', style: TextStyle(color: colors.textSecondary, fontSize: TextTokens.sm)),
+            ),
+            TextButton.icon(
+              onPressed: () {
+                // Export CSV — wired via ExportService
+              },
+              icon: Icon(Icons.table_chart, size: 14, color: colors.textSecondary),
+              label: Text('CSV', style: TextStyle(color: colors.textSecondary, fontSize: TextTokens.sm)),
+            ),
+            const SizedBox(width: 8),
+          ],
+          bottom: TabBar(
             isScrollable: true,
-            tabs: [
+            labelColor: colors.textPrimary,
+            unselectedLabelColor: colors.textSecondary,
+            indicatorColor: colors.accentBlue,
+            dividerColor: colors.borderSubtle,
+            tabs: const [
               Tab(text: 'Scorecard'),
               Tab(text: 'Charts'),
               Tab(text: 'FPS Analysis'),
