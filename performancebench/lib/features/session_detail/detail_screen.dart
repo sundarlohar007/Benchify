@@ -8,6 +8,12 @@ import '../../shared/theme.dart';
 import '../../core/database/database.dart';
 import '../../core/database/session_dao.dart';
 import '../../core/database/collection_dao.dart';
+import '../../core/database/metric_dao.dart';
+import '../../core/database/session_stats_dao.dart';
+import '../../core/database/marker_dao.dart';
+import '../../core/database/marker_stats_dao.dart';
+import '../../core/database/region_stats_dao.dart';
+import '../../core/analytics/analytics_service.dart';
 import '../../core/models/collection.dart';
 import '../../core/models/session.dart';
 import 'scorecard_tab.dart';
@@ -41,6 +47,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
   bool _showEditor = false;
   bool _loading = true;
   bool _saving = false;
+  final _regionTabKey = GlobalKey<RegionTabState>();
 
   @override
   void initState() {
@@ -201,10 +208,34 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
               child: TabBarView(
                 children: [
                   ScorecardTab(sessionId: widget.sessionId),
-                  ReplayChartsTab(sessionId: widget.sessionId),
+                  ReplayChartsTab(
+                    sessionId: widget.sessionId,
+                    onRegionSelected: (startMs, endMs) async {
+                      final db = await initDatabase();
+                      final metricDao = MetricDao(db);
+                      final sessionStatsDao = SessionStatsDao(db);
+                      final markerDao = MarkerDao(db);
+                      final markerStatsDao = MarkerStatsDao(db);
+                      final regionStatsDao = RegionStatsDao(db);
+                      final analyticsService = AnalyticsService(
+                        metricDao: metricDao,
+                        sessionStatsDao: sessionStatsDao,
+                        markerDao: markerDao,
+                        markerStatsDao: markerStatsDao,
+                        regionStatsDao: regionStatsDao,
+                      );
+                      await analyticsService.computeRegionStats(
+                        widget.sessionId,
+                        startMs,
+                        endMs,
+                        label: 'Region ${DateTime.now().millisecondsSinceEpoch}',
+                      );
+                      _regionTabKey.currentState?.refresh();
+                    },
+                  ),
                   FpsAnalysisTab(sessionId: widget.sessionId),
                   MarkersDetailTab(sessionId: widget.sessionId),
-                  RegionTab(sessionId: widget.sessionId),
+                  RegionTab(key: _regionTabKey, sessionId: widget.sessionId),
                   ScreenshotsTab(sessionId: widget.sessionId),
                   IssuesTab(sessionId: widget.sessionId),
                   VideoTab(sessionId: widget.sessionId),

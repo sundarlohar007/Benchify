@@ -3,6 +3,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../core/database/database.dart';
+import '../../core/database/region_stats_dao.dart';
 import '../../core/models/region_stats.dart';
 import '../../shared/theme.dart';
 
@@ -12,20 +14,36 @@ import '../../shared/theme.dart';
 /// Battery Drain | Jank/min.
 class RegionTab extends StatefulWidget {
   final String sessionId;
-  /// Pre-loaded region stats to display (loaded by parent).
-  final List<RegionStats>? regions;
 
-  const RegionTab({super.key, required this.sessionId, this.regions});
+  const RegionTab({super.key, required this.sessionId});
 
   @override
-  State<RegionTab> createState() => _RegionTabState();
+  State<RegionTab> createState() => RegionTabState();
 }
 
-class _RegionTabState extends State<RegionTab> {
+class RegionTabState extends State<RegionTab> {
+  List<RegionStats>? _regions;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRegions();
+  }
+
+  Future<void> _loadRegions() async {
+    final db = await initDatabase();
+    final dao = RegionStatsDao(db);
+    final regions = await dao.getBySessionId(widget.sessionId);
+    if (mounted) setState(() => _regions = regions);
+  }
+
+  /// Public refresh — called when new region stats are computed.
+  Future<void> refresh() => _loadRegions();
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
-    final regions = widget.regions;
+    final regions = _regions;
 
     if (regions == null || regions.isEmpty) {
       return Center(
