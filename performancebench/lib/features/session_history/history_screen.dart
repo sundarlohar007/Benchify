@@ -341,7 +341,7 @@ class _CompactDropdown extends StatelessWidget {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: (value != null && value.isNotEmpty) ? value : null,
+          value: (value?.isNotEmpty == true) ? value : null,
           hint: Text(label, style: TextStyle(fontSize: TextTokens.xs, color: colors.textDisabled)),
           style: TextStyle(color: colors.textPrimary, fontSize: TextTokens.xs),
           dropdownColor: colors.bgElevated,
