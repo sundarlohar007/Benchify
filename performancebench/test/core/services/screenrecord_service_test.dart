@@ -14,7 +14,7 @@ import 'package:performancebench/core/services/screenrecord_service.dart';
 /// Allows tests to control command outcomes and inspect what was called.
 class _FakeAdbShell extends AdbShell {
   final List<_AdbCall> calls = [];
-  final _Map<String, dynamic> _responses = <String, dynamic>{};
+  final Map<String, dynamic> _responses = <String, dynamic>{};
   bool allCommandsSucceed = true;
 
   /// Register a canned response for a command substring match.
