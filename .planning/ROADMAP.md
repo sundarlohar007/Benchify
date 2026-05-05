@@ -172,6 +172,16 @@ Wave 6 (parallel):
 
 **UI hint:** yes — React web dashboard, mobile app UI
 
+**Plans:** 6 plans across 6 waves (planned 2026-05-05)
+
+Plans:
+- [ ] 03-01-PLAN.md — Cargo workspace scaffold, PostgreSQL schema + Diesel migrations, auth system (JWT + bcrypt + API tokens) (V20-01, V20-02, V20-05)
+- [ ] 03-02-PLAN.md — Full REST API endpoints, session upload pipeline (server + desktop), TLS via rustls (V20-15, V20-04, V20-06)
+- [ ] 03-03-PLAN.md — React/Vite web dashboard scaffold, sessions list with multi-filter, session detail with 5-tab layout (V20-03, V20-07, V20-08)
+- [ ] 03-04-PLAN.md — Trends Explorer, Lenses (saved filters/views), Detected Issues tile, Analysis Reports (V20-09, V20-10, V20-11, V20-12)
+- [ ] 03-05-PLAN.md — Notifications (Email/Slack/Webhook), threshold alert rules + alert_events, webhook callbacks (V20-13, V20-14, V20-16)
+- [ ] 03-06-PLAN.md — WebSocket live overlay (server + desktop + web), mobile profiler Flutter app (V20-17, V20-18)
+
 **Success criteria:**
 1. Desktop app uploads session to team server; web dashboard shows session list, detail, and trends from any browser on local network
 2. CI script can start/stop profiling via REST API with API token auth and receive webhook on session complete
@@ -327,3 +337,4 @@ Phase 1 (v1.0 MVP) ──────┐
 *Roadmap created: 2026-05-04*
 *Phase 1 plans created: 2026-05-04*
 *Phase 2 plans created: 2026-05-04*
+*Phase 3 plans created: 2026-05-05*
