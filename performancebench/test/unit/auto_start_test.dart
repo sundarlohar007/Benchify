@@ -9,24 +9,17 @@ import 'package:performancebench/core/services/adb_service.dart';
 ///
 /// Tests the _parseActivityStart parser with realistic logcat lines
 /// and edge cases. Does not require a real device.
-void main() {
-  // ---------------------------------------------------------------------------
-  // Helper: invoke the private _parseActivityStart via a public test wrapper.
-  // We test via instantiating AdbService and calling the public API, but the
-  // parser is private. For unit testing, we create a minimal test subclass
-  // that exposes the parser.
-  // ---------------------------------------------------------------------------
+/// Test-only wrapper that exposes the private logcat parser.
+class _TestAdbService extends AdbService {
+  _TestAdbService() : super.test();
 
-  /// Test-only wrapper that exposes the private logcat parser.
-  class _TestAdbService extends AdbService {
-    _TestAdbService() : super.test();
-
-    /// Expose private parser for unit testing.
-    LogcatStartEvent? parseLine(String line, String serial) {
-      return parseActivityStart(line, serial);
-    }
+  /// Expose private parser for unit testing.
+  LogcatStartEvent? parseLine(String line, String serial) {
+    return parseActivityStart(line, serial);
   }
+}
 
+void main() {
   late _TestAdbService _adbService;
 
   setUp(() {

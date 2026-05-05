@@ -44,7 +44,7 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           _SectionHeader('Profiling', colors),
           const SizedBox(height: 8),
-          _buildProfilingSection(colors, ref),
+          _buildProfilingSection(context, colors, ref),
           const SizedBox(height: 24),
           _SectionHeader('Paths', colors),
           const SizedBox(height: 8),
@@ -70,7 +70,7 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfilingSection(AppColors colors, WidgetRef ref) {
+  Widget _buildProfilingSection(BuildContext context, AppColors colors, WidgetRef ref) {
     final fpsEnabled = ref.watch(fpsAlertEnabledProvider);
     final fpsMin = ref.watch(fpsMinThresholdProvider);
     final cpuEnabled = ref.watch(cpuAlertEnabledProvider);
