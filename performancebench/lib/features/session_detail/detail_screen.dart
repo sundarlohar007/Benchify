@@ -9,6 +9,7 @@ import 'scorecard_tab.dart';
 import 'replay_charts_tab.dart';
 import 'fps_analysis_tab.dart';
 import 'markers_detail_tab.dart';
+import 'region_tab.dart';
 import 'screenshots_tab.dart';
 
 /// Session detail / replay screen with 5 tabs and header info.
@@ -22,7 +23,7 @@ class SessionDetailScreen extends ConsumerWidget {
     final colors = AppColors.of(context);
 
     return DefaultTabController(
-      length: 5,
+      length: 6,
       child: Scaffold(
         backgroundColor: colors.bgBase,
         appBar: AppBar(
@@ -64,6 +65,7 @@ class SessionDetailScreen extends ConsumerWidget {
               Tab(text: 'Charts'),
               Tab(text: 'FPS Analysis'),
               Tab(text: 'Markers'),
+              Tab(text: 'Regions'),
               Tab(text: 'Screenshots'),
             ],
           ),
@@ -74,6 +76,7 @@ class SessionDetailScreen extends ConsumerWidget {
             ReplayChartsTab(sessionId: sessionId),
             FpsAnalysisTab(sessionId: sessionId),
             MarkersDetailTab(sessionId: sessionId),
+            RegionTab(sessionId: sessionId),
             ScreenshotsTab(sessionId: sessionId),
           ],
         ),

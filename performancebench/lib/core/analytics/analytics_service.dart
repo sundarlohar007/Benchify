@@ -6,9 +6,11 @@ import 'dart:math' as math;
 import '../database/marker_dao.dart';
 import '../database/marker_stats_dao.dart';
 import '../database/metric_dao.dart';
+import '../database/region_stats_dao.dart';
 import '../database/session_stats_dao.dart';
 import '../models/marker_stats.dart';
 import '../models/metric_sample.dart';
+import '../models/region_stats.dart';
 import '../models/session_stats.dart';
 import 'fps_analytics.dart';
 
@@ -21,16 +23,19 @@ class AnalyticsService {
   final SessionStatsDao _sessionStatsDao;
   final MarkerDao _markerDao;
   final MarkerStatsDao _markerStatsDao;
+  final RegionStatsDao _regionStatsDao;
 
   AnalyticsService({
     required MetricDao metricDao,
     required SessionStatsDao sessionStatsDao,
     required MarkerDao markerDao,
     required MarkerStatsDao markerStatsDao,
+    required RegionStatsDao regionStatsDao,
   })  : _metricDao = metricDao,
         _sessionStatsDao = sessionStatsDao,
         _markerDao = markerDao,
-        _markerStatsDao = markerStatsDao;
+        _markerStatsDao = markerStatsDao,
+        _regionStatsDao = regionStatsDao;
 
   /// Compute and upsert session-level statistics.
   Future<SessionStats> computeSessionStats(String sessionId) async {
@@ -342,6 +347,117 @@ class AnalyticsService {
 
       await _markerStatsDao.insert(stats);
     }
+  }
+
+  /// Compute statistics for an arbitrary time region (drag-selected area).
+  /// Uses the same computation as computeMarkerStats for consistency.
+  /// Returns a RegionStats model with all computed fields.
+  Future<RegionStats> computeRegionStats(
+    String sessionId,
+    int startMs,
+    int endMs, {
+    String? label,
+    String? color,
+  }) async {
+    final samples = await _metricDao.getBySessionIdAndTimestampRange(
+      sessionId,
+      startMs: startMs,
+      endMs: endMs,
+    );
+
+    if (samples.isEmpty) {
+      final empty = RegionStats(
+        sessionId: sessionId,
+        label: label ?? '',
+        startMs: startMs,
+        endMs: endMs,
+        durationMs: 0,
+      );
+      return empty;
+    }
+
+    final firstTs = samples.first.timestamp;
+    final lastTs = samples.last.timestamp;
+    final durationMs = lastTs - firstTs;
+
+    // FPS — same computation as computeMarkerStats
+    final fpsValues = samples.map((s) => s.fps).whereType<double>().toList();
+    final fpsStats = FpsAnalytics.compute(fpsValues);
+
+    // CPU — mean of cpuAppPct
+    final cpuValues = samples.map((s) => s.cpuAppPct).whereType<double>().toList();
+    final cpuAvg = cpuValues.isEmpty ? null : cpuValues.reduce((a, b) => a + b) / cpuValues.length;
+    final cpuFreqValues = samples.map((s) => s.cpuAppPctFreqNorm).whereType<double>().toList();
+    final cpuAvgFreqNorm = cpuFreqValues.isEmpty ? null : cpuFreqValues.reduce((a, b) => a + b) / cpuFreqValues.length;
+
+    // Memory — peak of memoryPssKb
+    final memValues = samples.map((s) => s.memoryPssKb).whereType<int>().toList();
+    final memPeak = memValues.isEmpty ? null : memValues.reduce((a, b) => a > b ? a : b);
+    final gfxPeakValues = samples.map((s) => s.memoryGraphicsKb).whereType<int>().toList();
+    final gfxPeak = gfxPeakValues.isEmpty ? null : gfxPeakValues.reduce((a, b) => a > b ? a : b);
+
+    // GPU — mean of gpuPct
+    final gpuValues = samples.map((s) => s.gpuPct).whereType<double>().toList();
+    final gpuAvg = gpuValues.isEmpty ? null : gpuValues.reduce((a, b) => a + b) / gpuValues.length;
+
+    // Battery drain over region
+    final batPctValues = samples.map((s) => s.batteryPct).whereType<int>().toList();
+    final batDrain = batPctValues.length >= 2
+        ? (batPctValues.first - batPctValues.last).toDouble().clamp(0, 100).toDouble()
+        : null;
+
+    // mAh over region (trapezoidal integration)
+    double? regionMah;
+    final nonCharging = samples.where((s) => s.charging != 1).toList();
+    if (nonCharging.length >= 2) {
+      double mahSum = 0;
+      for (var i = 1; i < nonCharging.length; i++) {
+        final dt = (nonCharging[i].timestamp - nonCharging[i - 1].timestamp) / 1000.0;
+        final mA1 = (nonCharging[i - 1].batteryMa ?? 0).abs();
+        final mA2 = (nonCharging[i].batteryMa ?? 0).abs();
+        mahSum += (mA1 + mA2) / 2 * dt / 3600.0;
+      }
+      regionMah = mahSum;
+    }
+
+    // Jank
+    final jankTotal = _sumIntField(samples, (s) => s.jankCount);
+    final jankSmallTotal = _sumIntField(samples, (s) => s.jankSmallCount);
+    final jankBigTotal = _sumIntField(samples, (s) => s.jankBigCount);
+    final jankRatioTotal = _sumIntField(samples, (s) => s.jankRatioCount);
+    final durMin = durationMs / (1000.0 * 60.0);
+    final jankPerMin = durMin > 0 ? (jankTotal ?? 0) / durMin : null;
+
+    final stats = RegionStats(
+      sessionId: sessionId,
+      label: label ?? 'Region',
+      startMs: startMs,
+      endMs: endMs,
+      color: color,
+      durationMs: durationMs,
+      fpsMedian: fpsStats.median,
+      fpsMin: fpsStats.min,
+      fpsMax: fpsStats.max,
+      fps1pctLow: fpsStats.onePercentLow,
+      fpsStability: fpsStats.stabilityPct,
+      frameTimeP95: fpsStats.p95FrameTimeMs,
+      variabilityIndex: fpsStats.variabilityIndex,
+      cpuAvgPct: cpuAvg,
+      cpuAvgPctFreqNorm: cpuAvgFreqNorm,
+      memoryPeakKb: memPeak,
+      memGraphicsPeakKb: gfxPeak,
+      gpuAvgPct: gpuAvg,
+      batteryDrainPct: batDrain,
+      mahConsumed: regionMah,
+      jankTotal: jankTotal,
+      jankSmallTotal: jankSmallTotal,
+      jankBigTotal: jankBigTotal,
+      jankRatioTotal: jankRatioTotal,
+      jankPerMin: jankPerMin,
+    );
+
+    await _regionStatsDao.insert(stats);
+    return stats;
   }
 
   /// Sum a nullable int field across all samples.

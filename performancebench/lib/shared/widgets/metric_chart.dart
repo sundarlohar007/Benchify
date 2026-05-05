@@ -69,6 +69,16 @@ class MetricChart extends StatefulWidget {
   /// Label for the second line in tooltips.
   final String? secondLineLabel;
 
+  /// Called when user completes a drag-region selection on the chart.
+  /// Returns (startIndex, endIndex) relative to spot array indices.
+  final void Function(int startIndex, int endIndex)? onDragSelection;
+
+  /// Whether drag-selection is active (replay mode only — live charts don't support it).
+  final bool enableDragSelection;
+
+  /// Currently selected region start/end indices (null = no selection active).
+  final (int, int)? selectedRegion;
+
   const MetricChart({
     super.key,
     required this.label,
@@ -84,6 +94,9 @@ class MetricChart extends StatefulWidget {
     this.extractSecondValue,
     this.secondValueFormatter,
     this.secondLineLabel,
+    this.onDragSelection,
+    this.enableDragSelection = false,
+    this.selectedRegion,
   });
 
   @override
@@ -108,6 +121,11 @@ class _MetricChartState extends State<MetricChart> {
 
   /// Pending setState flag (batched via post-frame callback).
   bool _pendingUpdate = false;
+
+  // Drag-selection state
+  int? _dragStartIndex;
+  int? _dragEndIndex;
+  bool _isDraggingRegion = false;
 
   StreamSubscription<MetricSample>? _subscription;
 
@@ -205,6 +223,9 @@ class _MetricChartState extends State<MetricChart> {
 
     return GestureDetector(
       onDoubleTap: () => _showFullScreen(context, colors),
+      onHorizontalDragStart: widget.enableDragSelection ? _onDragStart : null,
+      onHorizontalDragUpdate: widget.enableDragSelection ? _onDragUpdate : null,
+      onHorizontalDragEnd: widget.enableDragSelection ? _onDragEnd : null,
       child: Container(
         decoration: BoxDecoration(
           color: colors.bgSidebar,
@@ -218,8 +239,8 @@ class _MetricChartState extends State<MetricChart> {
             // Header: label + current value
             _buildHeader(colors),
             const SizedBox(height: 4),
-            // Chart area
-            Expanded(child: _buildChart(colors)),
+            // Chart area with optional blue drag overlay
+            Expanded(child: _buildChartWithOverlay(colors)),
             const SizedBox(height: 4),
             // Stat pills row
             _buildStatPills(colors),
@@ -597,6 +618,123 @@ class _MetricChartState extends State<MetricChart> {
     );
   }
 
+  /// Wraps the chart in a Stack to render the blue drag-selection overlay.
+  Widget _buildChartWithOverlay(AppColors colors) {
+    final chart = _buildChart(colors);
+
+    // No drag active — just return the chart
+    if (!widget.enableDragSelection ||
+        _dragStartIndex == null ||
+        _dragEndIndex == null) {
+      return chart;
+    }
+
+    // Calculate the overlay position based on spot indices
+    final minIndex = _dragStartIndex! < _dragEndIndex!
+        ? _dragStartIndex!
+        : _dragEndIndex!;
+    final maxIndex = _dragStartIndex! > _dragEndIndex!
+        ? _dragStartIndex!
+        : _dragEndIndex!;
+
+    if (_spots.isEmpty || minIndex >= _spots.length || maxIndex >= _spots.length) {
+      return chart;
+    }
+
+    // Get x-coordinates from spot data
+    final minX = _spots[minIndex].x;
+    final maxX = _spots[maxIndex].x;
+
+    return Stack(
+      children: [
+        chart,
+        Positioned.fill(
+          child: ClipRect(
+            child: CustomPaint(
+              painter: _DragOverlayPainter(
+                minX: minX,
+                maxX: maxX,
+                spots: _spots,
+                color: colors.accentBlue.withOpacity(0.15),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Convert a local x-position on the chart to the nearest spot index.
+  int _xToIndex(double localX, double chartWidth) {
+    if (_spots.isEmpty || chartWidth <= 0) return 0;
+    // Map pixel position to data space
+    final minSpotX = _spots.first.x;
+    final maxSpotX = _spots.last.x;
+    final dataRange = maxSpotX - minSpotX;
+    if (dataRange <= 0) return _spots.length - 1;
+
+    final ratio = (localX / chartWidth).clamp(0.0, 1.0);
+    final targetX = minSpotX + ratio * dataRange;
+
+    // Find nearest spot
+    int nearest = 0;
+    double nearestDist = double.infinity;
+    for (var i = 0; i < _spots.length; i++) {
+      final dist = (_spots[i].x - targetX).abs();
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearest = i;
+      }
+    }
+    return nearest;
+  }
+
+  void _onDragStart(DragStartDetails details) {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final localX = renderBox.globalToLocal(details.globalPosition).dx;
+    // Subtract padding (10px on each side) and header height
+    final chartWidth = renderBox.size.width - 20;
+    final index = _xToIndex(localX - 10, chartWidth);
+    setState(() {
+      _dragStartIndex = index.clamp(0, _spots.length - 1);
+      _dragEndIndex = _dragStartIndex;
+      _isDraggingRegion = true;
+    });
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    if (!_isDraggingRegion) return;
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final localX = renderBox.globalToLocal(details.globalPosition).dx;
+    final chartWidth = renderBox.size.width - 20;
+    final index = _xToIndex(localX - 10, chartWidth);
+    setState(() {
+      _dragEndIndex = index.clamp(0, _spots.length - 1);
+    });
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    if (!_isDraggingRegion) return;
+    final startIdx = _dragStartIndex;
+    final endIdx = _dragEndIndex;
+    setState(() {
+      _isDraggingRegion = false;
+      _dragStartIndex = null;
+      _dragEndIndex = null;
+    });
+    if (startIdx != null && endIdx != null && startIdx != endIdx) {
+      // Convert spot indices to ordered range
+      final minIdx = startIdx < endIdx ? startIdx : endIdx;
+      final maxIdx = startIdx > endIdx ? startIdx : endIdx;
+      // Ensure at least 2 samples span
+      if (maxIdx - minIdx >= 1) {
+        widget.onDragSelection?.call(minIdx, maxIdx);
+      }
+    }
+  }
+
   /// Double-click: expand to full-screen overlay.
   void _showFullScreen(BuildContext context, AppColors colors) {
     Navigator.of(context).push(
@@ -636,6 +774,54 @@ class _MetricChartState extends State<MetricChart> {
         ),
       ),
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Drag Overlay Painter
+// ---------------------------------------------------------------------------
+
+/// Paints a semi-transparent blue rectangle over the drag-selected region
+/// of the chart. The rectangle spans from minX to maxX in data coordinates,
+/// mapped to the available chart area.
+class _DragOverlayPainter extends CustomPainter {
+  final double minX;
+  final double maxX;
+  final List<FlSpot> spots;
+  final Color color;
+
+  _DragOverlayPainter({
+    required this.minX,
+    required this.maxX,
+    required this.spots,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (spots.isEmpty) return;
+
+    final minSpotX = spots.first.x;
+    final maxSpotX = spots.last.x;
+    final dataRange = maxSpotX - minSpotX;
+    if (dataRange <= 0) return;
+
+    // Map data coordinates to pixel coordinates
+    final leftRatio = (minX - minSpotX) / dataRange;
+    final rightRatio = (maxX - minSpotX) / dataRange;
+
+    final left = leftRatio.clamp(0.0, 1.0) * size.width;
+    final right = rightRatio.clamp(0.0, 1.0) * size.width;
+
+    final rect = Rect.fromLTRB(left, 0, right, size.height);
+    canvas.drawRect(rect, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(covariant _DragOverlayPainter oldDelegate) {
+    return oldDelegate.minX != minX ||
+        oldDelegate.maxX != maxX ||
+        oldDelegate.color != color;
   }
 }
 
