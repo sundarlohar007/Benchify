@@ -8,18 +8,26 @@ import '../models/session.dart';
 import 'error_handler.dart';
 import 'metric_collector.dart';
 import '../../core/analytics/analytics_service.dart';
+import '../../core/analytics/detected_issues_service.dart';
+import '../../core/sdk/sdk_state.dart';
 
 /// Manages session lifecycle: start, stop, edge case recovery.
 class SessionService {
   final SessionDao _sessionDao;
   final AnalyticsService _analyticsService;
+  final DetectedIssuesService? _detectedIssuesService;
+  final SdkState? _sdkState;
   MetricCollector? _activeCollector;
 
   SessionService({
     required SessionDao sessionDao,
     required AnalyticsService analyticsService,
+    DetectedIssuesService? detectedIssuesService,
+    SdkState? sdkState,
   })  : _sessionDao = sessionDao,
-        _analyticsService = analyticsService;
+        _analyticsService = analyticsService,
+        _detectedIssuesService = detectedIssuesService,
+        _sdkState = sdkState;
 
   MetricCollector? get activeCollector => _activeCollector;
 
@@ -38,6 +46,16 @@ class SessionService {
 
       // Compute per-marker stats
       await _analyticsService.computeMarkerStats(session.id);
+
+      // Run auto-detected issues engine (feature-flagged, default-off per D-03)
+      if (_detectedIssuesService != null) {
+        await _detectedIssuesService!.runAllRules(
+          sessionId: session.id,
+          appPackage: session.appPackage,
+          deviceId: session.deviceId,
+          featureFlagEnabled: _sdkState?.detectedIssuesEnabled,
+        );
+      }
 
       // Update session end time and duration
       final endedAt = DateTime.now().millisecondsSinceEpoch;

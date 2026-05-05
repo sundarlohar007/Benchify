@@ -10,5 +10,9 @@ class SdkState {
   /// Default on for Android in v1.5. Controlled via per-session config.
   bool diskIoSdkEnabled;
 
-  SdkState({this.diskIoSdkEnabled = true});
+  /// Whether auto-detected issues engine is enabled.
+  /// Default-off per D-03: user opts in for post-session issue scanning.
+  bool detectedIssuesEnabled;
+
+  SdkState({this.diskIoSdkEnabled = true, this.detectedIssuesEnabled = false});
 }
