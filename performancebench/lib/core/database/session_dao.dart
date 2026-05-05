@@ -169,6 +169,12 @@ class SessionDao {
     return rows.map(Session.fromMap).toList();
   }
 
+  /// Mark session as having a video recording.
+  Future<int> setHasVideo(String sessionId, bool hasVideo) async {
+    return _db.update('sessions', {'has_video': hasVideo ? 1 : 0},
+        where: 'id = ?', whereArgs: [sessionId]);
+  }
+
   /// Assign session to a collection (post-hoc per D-13).
   Future<int> setCollection(String sessionId, String collectionId) async {
     return _db.update('sessions', {'collection_id': collectionId},

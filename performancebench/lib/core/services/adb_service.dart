@@ -2,11 +2,26 @@
 // Copyright (c) 2024 PerformanceBench Contributors
 
 import 'dart:async';
-import 'dart:io' show Platform, Process, ProcessResult;
+import 'dart:io' show File, Platform, Process, ProcessResult;
 
 import 'package:meta/meta.dart';
 
 import '../models/device.dart';
+
+/// Abstract interface for ADB shell commands and file operations.
+///
+/// Enables testability — [ScreenrecordService] depends on this interface
+/// rather than the concrete [AdbService], so tests can provide a fake.
+abstract class AdbShell {
+  /// Run an ADB shell command on a device and return the stdout string.
+  Future<String?> runShellCommand(String serial, String command,
+      {Duration timeout = const Duration(seconds: 3)});
+
+  /// Pull a file from device to host using `adb pull`.
+  /// Returns true if the file was pulled successfully.
+  Future<bool> pullFile(String serial, String remotePath, String localPath,
+      {Duration timeout = const Duration(seconds: 30)});
+}
 
 /// Parsed app info from device.
 class AppInfo {
@@ -118,7 +133,7 @@ class LogcatStartEvent {
 /// - 3-second timeout on all subprocess calls.
 /// - ADB serial validated against alphanumeric+dot+dash+colon pattern.
 /// - Package names validated against Android package name regex.
-class AdbService {
+class AdbService implements AdbShell {
   final String _adbPath;
 
   /// Creates an AdbService. Finds `adb` on PATH via platform command.
@@ -204,6 +219,39 @@ class AdbService {
     );
     if (result == null) return null;
     return (result.stdout as String).trim();
+  }
+
+  /// Pull a file from device to host via `adb pull`.
+  ///
+  /// Returns true if the file was pulled successfully (exit code 0).
+  /// Uses 30-second timeout to accommodate larger video files.
+  /// Threat mitigation T-02-20: file path must be within /sdcard/ or /data/local/tmp/.
+  @override
+  Future<bool> pullFile(
+    String serial,
+    String remotePath,
+    String localPath, {
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    if (!_isValidSerial(serial)) return false;
+
+    // Validate remote path — must be on device storage
+    if (!remotePath.startsWith('/sdcard/') &&
+        !remotePath.startsWith('/data/local/tmp/')) {
+      return false;
+    }
+
+    try {
+      final result = await Process.run(
+        _adbPath,
+        ['-s', serial, 'pull', remotePath, localPath],
+      ).timeout(timeout);
+      return result.exitCode == 0;
+    } on TimeoutException {
+      return false;
+    } catch (_) {
+      return false;
+    }
   }
 
   // ===========================================================================

@@ -49,11 +49,11 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 - [x] **V15-05**: Session search + filter by tag / device / app / chipset
 - [x] **V15-06**: Metric threshold alerts (local notification when FPS < X for Y seconds)
 - [x] **V15-07**: Auto session start when target app launches
-- [ ] **V15-08**: tidevice on Windows for iOS (~8 metrics, documented gaps)
-- [ ] **V15-09**: Mac proxy daemon (Windows → Mac → iPhone, all metrics)
-- [ ] **V15-10**: Linux first-class support smoke test
-- [ ] **V15-11**: Android video recording — synced screenrecord, H.264 MP4, auto-chunked
-- [ ] **V15-12**: Video player UI — scrub video ↔ scrub charts sync
+- [x] **V15-08**: tidevice on Windows for iOS (~8 metrics, documented gaps)
+- [x] **V15-09**: Mac proxy daemon (Windows → Mac → iPhone, all metrics)
+- [x] **V15-10**: Linux first-class support smoke test
+- [x] **V15-11**: Android video recording — synced screenrecord, H.264 MP4, auto-chunked
+- [x] **V15-12**: Video player UI — scrub video ↔ scrub charts sync
 - [ ] **V15-13**: Schema migration v2 — detected_issues, collections, videos tables
 
 ### Phase 3: v2.0 — Team Server + Web Dashboard + CI/CD
@@ -179,11 +179,11 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V15-05 | Phase 2 | Pending |
 | V15-06 | Phase 2 | Complete |
 | V15-07 | Phase 2 | Complete |
-| V15-08 | Phase 2 | Pending |
-| V15-09 | Phase 2 | Pending |
-| V15-10 | Phase 2 | Pending |
-| V15-11 | Phase 2 | Pending |
-| V15-12 | Phase 2 | Pending |
+| V15-08 | Phase 2 | Complete |
+| V15-09 | Phase 2 | Complete |
+| V15-10 | Phase 2 | Complete |
+| V15-11 | Phase 2 | Complete |
+| V15-12 | Phase 2 | Complete |
 | V15-13 | Phase 2 | Pending |
 | V20-01 | Phase 3 | Pending |
 | V20-02 | Phase 3 | Pending |

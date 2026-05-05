@@ -26,6 +26,7 @@ class Session {
   final int productionMode;
   final int strictMode;
   final int injected;
+  final int hasVideo;
   final String? collectionId;
   final String? projectId;
   final String? userId;
@@ -50,6 +51,7 @@ class Session {
     this.productionMode = 0,
     this.strictMode = 0,
     this.injected = 0,
+    this.hasVideo = 0,
     this.collectionId,
     this.projectId,
     this.userId,
@@ -76,6 +78,7 @@ class Session {
       productionMode: (map['production_mode'] as int?) ?? 0,
       strictMode: (map['strict_mode'] as int?) ?? 0,
       injected: (map['injected'] as int?) ?? 0,
+      hasVideo: (map['has_video'] as int?) ?? 0,
       collectionId: map['collection_id'] as String?,
       projectId: map['project_id'] as String?,
       userId: map['user_id'] as String?,
@@ -103,6 +106,7 @@ class Session {
       'production_mode': productionMode,
       'strict_mode': strictMode,
       'injected': injected,
+      'has_video': hasVideo,
       'collection_id': collectionId,
       'project_id': projectId,
       'user_id': userId,

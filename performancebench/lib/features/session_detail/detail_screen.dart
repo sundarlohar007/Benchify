@@ -16,6 +16,7 @@ import 'fps_analysis_tab.dart';
 import 'markers_detail_tab.dart';
 import 'region_tab.dart';
 import 'screenshots_tab.dart';
+import 'video_tab.dart';
 import 'issues_tab.dart';
 
 /// Session detail / replay screen with 7 tabs, post-hoc editing (v1.5 D-13),
@@ -122,7 +123,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
     final colors = AppColors.of(context);
 
     return DefaultTabController(
-      length: 7,
+      length: 8,
       child: Scaffold(
         backgroundColor: colors.bgBase,
         appBar: AppBar(
@@ -176,6 +177,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
               Tab(text: 'Regions'),
               Tab(text: 'Screenshots'),
               Tab(text: 'Issues'),
+              Tab(text: 'Video'),
             ],
           ),
         ),
@@ -205,6 +207,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
                   RegionTab(sessionId: widget.sessionId),
                   ScreenshotsTab(sessionId: widget.sessionId),
                   IssuesTab(sessionId: widget.sessionId),
+                  VideoTab(sessionId: widget.sessionId),
                 ],
               ),
             ),

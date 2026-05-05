@@ -4,16 +4,19 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/database/database.dart' as db;
 import '../../core/database/metric_dao.dart';
 import '../../core/models/metric_sample.dart';
+import '../../shared/providers/playhead_provider.dart';
 import '../../shared/theme.dart';
 import '../../shared/widgets/metric_chart.dart';
 
 /// Replay charts tab — displays full-session charts from saved metric_samples.
-/// Supports drag-selection to create region stats (v1.5).
-class ReplayChartsTab extends StatefulWidget {
+/// Supports drag-selection to create region stats (v1.5) and playhead sync
+/// with Video tab (v1.5 D-06 — bidirectional video-chart scrub sync).
+class ReplayChartsTab extends ConsumerStatefulWidget {
   final String sessionId;
   /// Callback when a region is drag-selected on any chart.
   /// Emits the timestamp range in ms.
@@ -26,10 +29,10 @@ class ReplayChartsTab extends StatefulWidget {
   });
 
   @override
-  State<ReplayChartsTab> createState() => _ReplayChartsTabState();
+  ConsumerState<ReplayChartsTab> createState() => _ReplayChartsTabState();
 }
 
-class _ReplayChartsTabState extends State<ReplayChartsTab> {
+class _ReplayChartsTabState extends ConsumerState<ReplayChartsTab> {
   List<MetricSample>? _samples;
   bool _loading = true;
   String? _error;
@@ -117,6 +120,10 @@ class _ReplayChartsTabState extends State<ReplayChartsTab> {
         final startMs = samples[startIndex].timestamp;
         final endMs = samples[endIndex].timestamp;
         widget.onRegionSelected?.call(startMs, endMs);
+
+        // Sync playhead to region end for video-chart bidirectional sync (D-06)
+        ref.read(playheadProvider.notifier).state = endMs;
+        ref.read(playheadSourceProvider.notifier).state = 'chart';
       }
     }
 

@@ -25,6 +25,9 @@ dependencies:
   file_picker: ^8.0.0            # Export file chooser
   window_manager: ^0.3.8         # Desktop window control
   http: ^1.2.0                    # HTTP client for Mac proxy daemon
+  media_kit: ^1.1.11              # Video playback (libmpv, MIT)
+  media_kit_video: ^1.2.5         # Video rendering widget
+  media_kit_libs_video: ^1.0.5    # Platform video libraries
 
 dev_dependencies:
   flutter_test:
