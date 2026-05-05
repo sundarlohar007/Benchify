@@ -23,7 +23,7 @@ Future<Database> initDatabase() async {
   final db = await databaseFactory.openDatabase(
     dbPath,
     options: OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await runMigrations(db, fromVersion: 0, toVersion: version);
       },
@@ -50,6 +50,8 @@ Future<void> runMigrations(
     switch (v) {
       case 1:
         await _migrateV1(db);
+      case 2:
+        await _migrateV2(db);
     }
   }
 }
@@ -380,6 +382,110 @@ Future<void> _migrateV1(Database db) async {
   final nowMs = DateTime.now().millisecondsSinceEpoch;
   await db.insert('schema_version', {
     'version': 1,
+    'applied_at': nowMs,
+  });
+}
+
+/// v2 migration — add collections, detected_issues, videos, and region_stats
+/// tables per Appendix C DDL verbatim. Also adds `has_video` column to sessions.
+Future<void> _migrateV2(Database db) async {
+  // 1. collections table (v1.5)
+  await db.execute('''
+    CREATE TABLE IF NOT EXISTS collections (
+        id          TEXT    PRIMARY KEY,
+        name        TEXT    NOT NULL,
+        description TEXT,
+        color       TEXT,
+        created_at  INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+    )
+  ''');
+
+  // 2. detected_issues table (6.9)
+  await db.execute('''
+    CREATE TABLE IF NOT EXISTS detected_issues (
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id      TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+        rule_id         TEXT NOT NULL,
+        severity        TEXT NOT NULL,
+        metric          TEXT,
+        observed_value  REAL,
+        threshold_value REAL,
+        message         TEXT NOT NULL,
+        created_at      INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+    )
+  ''');
+  await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_issues_session  ON detected_issues(session_id)');
+  await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_issues_severity ON detected_issues(severity)');
+
+  // 3. videos table (32.8)
+  await db.execute('''
+    CREATE TABLE IF NOT EXISTS videos (
+        session_id          TEXT    PRIMARY KEY REFERENCES sessions(id) ON DELETE CASCADE,
+        filepath            TEXT    NOT NULL,
+        codec               TEXT    NOT NULL DEFAULT 'h264',
+        container           TEXT    NOT NULL DEFAULT 'mp4',
+        width_px            INTEGER NOT NULL,
+        height_px           INTEGER NOT NULL,
+        target_fps          INTEGER,
+        actual_avg_fps      REAL,
+        bitrate_kbps        INTEGER,
+        duration_ms         INTEGER NOT NULL,
+        file_size_bytes     INTEGER NOT NULL,
+        chunks_json         TEXT,
+        gaps_json           TEXT,
+        has_audio           INTEGER DEFAULT 0,
+        recording_overhead_estimate_pct REAL,
+        started_at          INTEGER NOT NULL,
+        ended_at            INTEGER NOT NULL,
+        created_at          INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000)
+    )
+  ''');
+  await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_videos_session ON videos(session_id)');
+
+  // 4. sessions table addition
+  await db.execute('ALTER TABLE sessions ADD COLUMN has_video INTEGER DEFAULT 0');
+
+  // 5. region_stats table for per-region computed analytics
+  await db.execute('''
+    CREATE TABLE IF NOT EXISTS region_stats (
+        id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id               TEXT    NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+        label                    TEXT    NOT NULL,
+        start_ms                 INTEGER NOT NULL,
+        end_ms                   INTEGER NOT NULL,
+        color                    TEXT,
+        duration_ms              INTEGER,
+        fps_median               REAL,
+        fps_min                  REAL,
+        fps_max                  REAL,
+        fps_1pct_low             REAL,
+        fps_stability            REAL,
+        frame_time_p95           REAL,
+        variability_index        REAL,
+        cpu_avg_pct              REAL,
+        cpu_avg_pct_freq_norm    REAL,
+        memory_peak_kb           INTEGER,
+        mem_graphics_peak_kb     INTEGER,
+        gpu_avg_pct              REAL,
+        battery_drain_pct        REAL,
+        mah_consumed             REAL,
+        jank_total               INTEGER,
+        jank_small_total         INTEGER,
+        jank_big_total           INTEGER,
+        jank_ratio_total         INTEGER,
+        jank_per_min             REAL
+    )
+  ''');
+  await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_region_stats_session ON region_stats(session_id)');
+
+  // Record schema version
+  final nowMs = DateTime.now().millisecondsSinceEpoch;
+  await db.insert('schema_version', {
+    'version': 2,
     'applied_at': nowMs,
   });
 }
