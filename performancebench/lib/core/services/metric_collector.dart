@@ -7,11 +7,13 @@ import '../database/metric_dao.dart';
 import '../models/metric_sample.dart';
 import '../parsers/battery_parser.dart';
 import '../parsers/cpu_parser.dart';
+import '../parsers/disk_io_parser.dart';
 import '../parsers/fps_parser.dart';
 import '../parsers/gpu_parser.dart';
 import '../parsers/memory_parser.dart';
 import '../parsers/network_parser.dart';
 import '../parsers/thermal_parser.dart';
+import '../sdk/sdk_state.dart';
 import 'adb_service.dart';
 
 /// Collects performance metrics from an Android device at 1Hz.
@@ -30,6 +32,8 @@ class MetricCollector {
   int? _pid;
   String? _surfaceFlingerLayer;
   final CpuParser _cpuParser = CpuParser();
+  final DiskIoParser _diskIoParser = DiskIoParser();
+  final SdkState _sdkState;
 
   final List<MetricSample> _buffer = [];
   static const int _maxBufferSize = 300;
@@ -51,11 +55,13 @@ class MetricCollector {
     required String packageName,
     required String sessionId,
     required MetricDao metricDao,
+    SdkState? sdkState,
   })  : _adbService = adbService,
         _deviceSerial = deviceSerial,
         _packageName = packageName,
         _sessionId = sessionId,
-        _metricDao = metricDao;
+        _metricDao = metricDao,
+        _sdkState = sdkState ?? SdkState();
 
   List<MetricSample> get buffer => List.unmodifiable(_buffer);
 
@@ -86,6 +92,9 @@ class MetricCollector {
     _timer = null;
     _batchTimer?.cancel();
     _batchTimer = null;
+
+    // Reset disk I/O parser state
+    _diskIoParser.reset();
 
     // Final flush
     await _flushBatch();
@@ -216,6 +225,7 @@ class MetricCollector {
         _collectNetwork(),
         _collectThermal(),
         _collectGpu(),
+        _collectDiskIo(),
       ]);
 
       final fpsResult = results[0] as FpsResult?;
@@ -225,6 +235,7 @@ class MetricCollector {
       final netResult = results[4] as NetworkResult?;
       final thermalResult = results[5] as ThermalResult?;
       final gpuResult = results[6] as GpuResult?;
+      final diskResult = results[7] as DiskIoResult?;
 
       final anyNonNull = fpsResult != null ||
           cpuResult != null ||
@@ -232,7 +243,8 @@ class MetricCollector {
           batResult != null ||
           netResult != null ||
           thermalResult != null ||
-          gpuResult != null;
+          gpuResult != null ||
+          diskResult != null;
 
       if (!anyNonNull) {
         _consecutiveFailures++;
@@ -287,6 +299,8 @@ class MetricCollector {
         netOtherRxBytes: netResult?.netOtherRxBytes,
         thermalStatus: thermalResult?.thermalStatus,
         gpuPct: gpuResult?.gpuPct,
+        diskReadKb: diskResult?.readKbPerSec,
+        diskWriteKb: diskResult?.writeKbPerSec,
       );
 
       _buffer.add(sample);
@@ -455,5 +469,22 @@ class MetricCollector {
     }
 
     return null;
+  }
+
+  /// Collect Disk I/O stats from /proc/diskstats per UNIFIED-SPEC §5.8.
+  /// Controlled by SdkState.diskIoSdkEnabled feature flag.
+  Future<DiskIoResult?> _collectDiskIo() async {
+    if (!_sdkState.diskIoSdkEnabled) return null;
+
+    final output = await _adbService.runShellCommand(
+      _deviceSerial,
+      'cat /proc/diskstats',
+    );
+    if (output == null || output.trim().isEmpty) return null;
+
+    final result = _diskIoParser.parse(output,
+        timestampMs: DateTime.now().millisecondsSinceEpoch);
+    if (result.isFirstSample) return null;
+    return result;
   }
 }
