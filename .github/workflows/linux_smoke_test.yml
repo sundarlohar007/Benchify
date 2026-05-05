@@ -1,0 +1,41 @@
+name: Linux Smoke Test (Phase 2 v1.5)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'test/platform/linux_smoke_test.dart'
+      - 'performancebench/**'
+  workflow_dispatch:  # Manual trigger for smoke testing
+
+jobs:
+  linux-smoke:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Start Android Emulator (headless)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          emulator-options: -no-window -no-audio -gpu swiftshader_indirect
+
+      - name: Wait for emulator
+        run: adb wait-for-device
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+        working-directory: performancebench
+
+      - name: Run Linux smoke test
+        run: |
+          flutter test test/platform/linux_smoke_test.dart --platform=linux
+          echo "Linux smoke test passed — app launches, ADB discovery works, emulator detected"
+        working-directory: performancebench

@@ -1,0 +1,3 @@
+aiohttp>=3.9.0
+zeroconf>=0.130.0
+py-ios-device>=2.0.0

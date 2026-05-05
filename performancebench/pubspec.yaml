@@ -24,6 +24,7 @@ dependencies:
   csv: ^6.0.0                    # CSV export
   file_picker: ^8.0.0            # Export file chooser
   window_manager: ^0.3.8         # Desktop window control
+  http: ^1.2.0                    # HTTP client for Mac proxy daemon
 
 dev_dependencies:
   flutter_test:
