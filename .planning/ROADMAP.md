@@ -113,7 +113,7 @@ Wave 5 (parallel):
 - Android video recording — screenrecord synced (V15-11)
 - Video player UI with chart scrub sync (V15-12)
 
-**Plans:** 5 plans across 5 waves (planned 2026-05-04)
+**Plans:** 5 plans across 5 waves (completed 2026-05-05)
 
 Plans:
 - [x] 01-PLAN.md — Schema migration v2 (collections, detected_issues, videos), drag-region selection + per-region stats, disk I/O parser activation (V15-01, V15-02, V15-13)
