@@ -44,9 +44,9 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 
 - [ ] **V15-01**: Drag-region selection on timeline with per-region stats
 - [ ] **V15-02**: Disk I/O activated (schema columns from v1.0)
-- [ ] **V15-03**: Auto-detected issues (Section 6.9) — feature flag default-off
-- [ ] **V15-04**: Session collections (group by project)
-- [ ] **V15-05**: Session search + filter by tag / device / app / chipset
+- [x] **V15-03**: Auto-detected issues (Section 6.9) — feature flag default-off
+- [x] **V15-04**: Session collections (group by project)
+- [x] **V15-05**: Session search + filter by tag / device / app / chipset
 - [ ] **V15-06**: Metric threshold alerts (local notification when FPS < X for Y seconds)
 - [ ] **V15-07**: Auto session start when target app launches
 - [ ] **V15-08**: tidevice on Windows for iOS (~8 metrics, documented gaps)
