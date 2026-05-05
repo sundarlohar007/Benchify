@@ -4,6 +4,7 @@
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/collection.dart';
+import '../models/session.dart';
 
 /// Data access object for the `collections` table.
 /// All queries are parameterized.
@@ -52,5 +53,16 @@ class CollectionDao {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  /// Query sessions assigned to a specific collection.
+  Future<List<Session>> getSessionsByCollection(String collectionId) async {
+    final rows = await _db.query(
+      'sessions',
+      where: 'collection_id = ?',
+      whereArgs: [collectionId],
+      orderBy: 'started_at DESC',
+    );
+    return rows.map(Session.fromMap).toList();
   }
 }
