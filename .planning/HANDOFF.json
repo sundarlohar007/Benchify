@@ -1,26 +1,38 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-04T10:00:00Z",
-  "phase": "1",
-  "phase_name": "v1.0 External Profiling MVP",
-  "phase_dir": ".planning/phases/01-v1-0-external-profiling-mvp/",
-  "plan": "04",
-  "wave": 4,
-  "total_waves": 7,
-  "status": "in_progress",
-  "completed_plans": [
-    {"wave": 1, "plan": "01", "summary": "01-SUMMARY.md", "status": "done"},
-    {"wave": 2, "plan": "02", "summary": "02-SUMMARY.md", "status": "done"},
-    {"wave": 3, "plan": "03", "summary": "03-SUMMARY.md", "status": "done"}
+  "timestamp": "2026-05-05T16:45:00Z",
+  "phase": "3",
+  "phase_name": "v2.0 Team Server + Web Dashboard + CI/CD",
+  "phase_dir": ".planning/phases/03-v2-0-team-server-web-dashboard",
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "paused",
+  "completed_phases": [
+    {"id": 1, "name": "v1.0 External Profiling MVP", "status": "complete", "requirements": "29/29"},
+    {"id": 2, "name": "v1.5 Analysis + Platform Expansion", "status": "complete", "requirements": "13/13"}
   ],
-  "remaining_plans": [
-    {"wave": 4, "plan": "04", "name": "Post-Session Analytics + iOS Support", "status": "in_progress"},
-    {"wave": 5, "plan": "05", "name": "Session History + Comparison + Export", "status": "not_started"},
-    {"wave": 6, "plan": "06", "name": "Settings + Edge Cases + Onboarding", "status": "not_started"},
-    {"wave": 7, "plan": "07", "name": "Installers + CI + Tests + Privacy + License", "status": "not_started"}
-  ],
+  "active_phase": {
+    "id": 3,
+    "name": "v2.0 Team Server + Web Dashboard + CI/CD",
+    "status": "context_gathered",
+    "requirements": 18,
+    "context_decisions": 51,
+    "canonical_artifact": ".planning/phases/03-v2-0-team-server-web-dashboard/03-CONTEXT.md"
+  },
   "blockers": [],
-  "human_actions_pending": [],
-  "next_action": "Execute Wave 4: Post-Session Analytics (TDD) + iOS pyidevice support",
-  "context_notes": "Wave 3 complete (commit c7e795a). 85 tests pass, 0 analyzer errors. Wave 4: analytics engine with TDD (fps_analytics + comparison_analytics) then iOS collector.py + IosService."
+  "human_actions_pending": [
+    {"action": "Run flutter pub get in performancebench/ to install media_kit packages", "context": "Video player needs media_kit for full playback", "blocking": false},
+    {"action": "6 human verification items from Phase 2 02-VERIFICATION.md", "context": "Multi-device testing, visual sync, auto-start, tidevice, Mac proxy, threshold alerts", "blocking": false}
+  ],
+  "decisions": [
+    {"decision": "Phase 3 server in monorepo sibling dir performancebench-server/", "rationale": "Shared .planning/, single PR workflow", "phase": "3"},
+    {"decision": "Rust/Axum with Diesel ORM, deadpool, Docker deployment", "rationale": "Type-safe, compile-time checked queries", "phase": "3"},
+    {"decision": "React dashboard with shadcn/ui, TanStack Query, Chart.js", "rationale": "VS Code Dark+ via CSS custom properties", "phase": "3"},
+    {"decision": "JWT+refresh auth, API token scopes (read/write/admin)", "rationale": "Standard SPA pattern, CI/CD-friendly", "phase": "3"},
+    {"decision": "Streaming JSON upload with gzip, auto-retry, sequential queue", "rationale": "No hard size limit, reliable", "phase": "3"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "/gsd-plan-phase 3 — Phase 3 CONTEXT.md ready with 51 decisions across 4 areas",
+  "context_notes": "Phase 2 fully executed (5 waves, 13/13 requirements, verified). Phase 3 discuss completed (4 areas discussed: server arch, upload protocol, auth, dashboard UI). 51 decisions captured. Ready for /gsd-plan-phase 3. No active plan execution."
 }
