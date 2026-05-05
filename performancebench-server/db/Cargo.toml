@@ -8,4 +8,5 @@ models = { path = "../models" }
 diesel.workspace = true
 diesel-async.workspace = true
 deadpool-postgres.workspace = true
+diesel_migrations.workspace = true
 tracing.workspace = true

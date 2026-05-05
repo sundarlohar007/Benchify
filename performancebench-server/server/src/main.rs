@@ -24,13 +24,13 @@ async fn main() {
         "Configuration loaded"
     );
 
+    // Run migrations (sync, before pool creation)
+    migrations::run_migrations(&config.database_url).expect("Failed to run migrations");
+    tracing::info!("Database migrations complete");
+
     // Build database connection pool
     let pool = connection::create_pool(&config.database_url);
     tracing::info!("Database connection pool created");
-
-    // Run migrations
-    migrations::run_migrations(&pool).await.expect("Failed to run migrations");
-    tracing::info!("Database migrations complete");
 
     // Build application state
     let state = AppState::new(pool, config.clone());
