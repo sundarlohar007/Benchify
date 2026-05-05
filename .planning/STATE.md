@@ -1,20 +1,20 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: — External Profiling MVP
+milestone: v2.0
+milestone_name: "Team Server + Web Dashboard + CI/CD"
 status: active
-last_updated: "2026-05-05T12:00:00.000Z"
+last_updated: "2026-05-05T20:10:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 12
-  completed_plans: 12
-  percent: 100
+  total_plans: 18
+  completed_plans: 13
+  percent: 72
 ---
 
 # Project State: Benchify
 
-**Last updated:** 2026-05-05 (Phase 2 complete, Phase 3 context gathered — 51 decisions)
+**Last updated:** 2026-05-05 (Phase 3 Plan 01 complete — server foundation with auth)
 
 ## Project Reference
 
@@ -30,12 +30,12 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 |-------|--------|---------|-----------|--------------|
 | Phase 1 — v1.0 MVP | Complete | 2026-05-04 | 2026-05-04 | 29/29 |
 | Phase 2 — v1.5 Analysis | Complete | 2026-05-04 | 2026-05-05 | 13/13 |
-| Phase 3 — v2.0 Server | Pending | — | — | 18 |
+| Phase 3 — v2.0 Server | Active | 2026-05-05 | — | 3/18 |
 | Phase 4 — v2.5 Injection | Pending | — | — | 11 |
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
 | Phase 6 — v3.5 Enterprise | Pending | — | — | 9 |
 
-**Total:** 42/90 requirements complete (Phases 1-2 done)
+**Total:** 45/90 requirements complete (Phases 1-2 done + Phase 3 Wave 1 done)
 
 ## Phase 1 Summary
 
@@ -99,12 +99,27 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 - 16 new source files, 6 modified
 - 0 analyzer errors (verified via dart analyze)
 
-## Next Phase
+## Phase 3 Progress
 
-Phase 3 — v2.0 Team Server + Web Dashboard + CI/CD (18 requirements)
+### Waves Completed (1/6)
 
-- `/gsd-plan-phase 3` to create execution plan (CONTEXT.md ready)
-- `/gsd-execute-phase 3` to implement
+| Wave | Plan | Summary | Commits | Key Deliverables |
+|------|------|---------|---------|-----------------|
+| 01 — Server Foundation + Auth | 03-01-PLAN.md | 03-01-SUMMARY.md | 85030d5, b96870e, cb93440 | Cargo workspace, PostgreSQL schema (13 tables), 17 data models, full auth (JWT + bcrypt + API tokens), Docker + CI |
+
+### Key Metrics (Wave 1)
+
+- **38 source files** created in performancebench-server/
+- **3 crate workspace** (models, db, server) compiling cleanly
+- **13 database tables** with GIN indexes, JSONB columns, UUID PKs
+- **6 auth endpoints** (login, register, refresh, logout, me, health)
+
+## Next Steps
+
+Phase 3 Wave 2 — Session CRUD + Upload (V20-04, V20-06, V20-15)
+
+- `/gsd-plan-phase 3 wave 2` or `/gsd-execute-phase 3` to continue
+- Server foundation is ready for endpoint development
 
 ## Config
 

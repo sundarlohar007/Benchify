@@ -58,11 +58,11 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 
 ### Phase 3: v2.0 — Team Server + Web Dashboard + CI/CD
 
-- [ ] **V20-01**: Separate repo `performancebench-server` — Rust + Axum REST API
-- [ ] **V20-02**: PostgreSQL schema + migrations
+- [x] **V20-01**: Separate repo `performancebench-server` — Rust + Axum REST API
+- [x] **V20-02**: PostgreSQL schema + migrations
 - [ ] **V20-03**: React + Vite web dashboard (VS-Code-style design)
 - [ ] **V20-04**: Session upload from desktop app (opt-in, manual trigger)
-- [ ] **V20-05**: Auth — email + bcrypt, JWT (HS256, 1h expiry), API tokens
+- [x] **V20-05**: Auth — email + bcrypt, JWT (HS256, 1h expiry), API tokens
 - [ ] **V20-06**: TLS via user-provided cert (local network default)
 - [ ] **V20-07**: Sessions list with multi-filter on web dashboard
 - [ ] **V20-08**: Session detail view mirroring desktop
@@ -185,11 +185,11 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V15-11 | Phase 2 | Complete |
 | V15-12 | Phase 2 | Complete |
 | V15-13 | Phase 2 | Pending |
-| V20-01 | Phase 3 | Pending |
-| V20-02 | Phase 3 | Pending |
+| V20-01 | Phase 3 | Complete |
+| V20-02 | Phase 3 | Complete |
 | V20-03 | Phase 3 | Pending |
 | V20-04 | Phase 3 | Pending |
-| V20-05 | Phase 3 | Pending |
+| V20-05 | Phase 3 | Complete |
 | V20-06 | Phase 3 | Pending |
 | V20-07 | Phase 3 | Pending |
 | V20-08 | Phase 3 | Pending |

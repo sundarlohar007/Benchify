@@ -175,7 +175,7 @@ Wave 6 (parallel):
 **Plans:** 6 plans across 6 waves (planned 2026-05-05)
 
 Plans:
-- [ ] 03-01-PLAN.md — Cargo workspace scaffold, PostgreSQL schema + Diesel migrations, auth system (JWT + bcrypt + API tokens) (V20-01, V20-02, V20-05)
+- [x] 03-01-PLAN.md — Cargo workspace scaffold, PostgreSQL schema + Diesel migrations, auth system (JWT + bcrypt + API tokens) (V20-01, V20-02, V20-05)
 - [ ] 03-02-PLAN.md — Full REST API endpoints, session upload pipeline (server + desktop), TLS via rustls (V20-15, V20-04, V20-06)
 - [ ] 03-03-PLAN.md — React/Vite web dashboard scaffold, sessions list with multi-filter, session detail with 5-tab layout (V20-03, V20-07, V20-08)
 - [ ] 03-04-PLAN.md — Trends Explorer, Lenses (saved filters/views), Detected Issues tile, Analysis Reports (V20-09, V20-10, V20-11, V20-12)
