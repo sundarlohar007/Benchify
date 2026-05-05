@@ -1,0 +1,11 @@
+[package]
+name = "db"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+models = { path = "../models" }
+diesel.workspace = true
+diesel-async.workspace = true
+deadpool-postgres.workspace = true
+tracing.workspace = true
