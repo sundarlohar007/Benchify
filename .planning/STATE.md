@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: — External Profiling MVP
 status: active
-last_updated: "2026-05-05T06:30:00.000Z"
+last_updated: "2026-05-05T08:00:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 12
-  completed_plans: 7
-  percent: 58
+  completed_plans: 8
+  percent: 67
 ---
 
 # Project State: Benchify
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase | Status | Started | Completed | Requirements |
 |-------|--------|---------|-----------|--------------|
 | Phase 1 — v1.0 MVP | Complete | 2026-05-04 | 2026-05-04 | 29/29 |
-| Phase 2 — v1.5 Analysis | In Progress | 2026-05-04 | — | 6/13 |
+| Phase 2 — v1.5 Analysis | In Progress | 2026-05-04 | — | 8/13 |
 | Phase 3 — v2.0 Server | Pending | — | — | 18 |
 | Phase 4 — v2.5 Injection | Pending | — | — | 11 |
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
@@ -83,17 +83,18 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 
 ## Phase 2 Summary
 
-### Waves Completed (2/5)
+### Waves Completed (3/5)
 
 | Wave | Plan | Summary | Commit | Key Deliverables |
 |------|------|---------|--------|-----------------|
 | 01 — Schema v2 + Regions + Disk I/O | 01-PLAN.md | 01-SUMMARY.md | multiple | detected_issues/collections/videos tables, region_stats, disk I/O parser |
 | 02 — Issues Engine + Collections + Search | 02-PLAN.md | 02-02-SUMMARY.md | pending | DetectedIssuesService (12 rules), session search/filter, collections CRUD |
+| 03 — Threshold Alerts + Auto Start | 03-PLAN.md | 02-03-SUMMARY.md | pending | AlertService (FPS/CPU/Memory), status bar badge, auto-markers, logcat monitor, watch-list UI |
 
 ### Key Metrics
 
-- 29 new tests (20 detected issues + 9 search/filter)
-- 4 new source files, 7 modified
+- 50 total tests (29 existing + 21 new: 11 alert service + 10 auto-start)
+- 3 new source files, 6 modified
 - 0 analyzer errors (expected)
 
 ## Next Phase

@@ -47,8 +47,8 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 - [x] **V15-03**: Auto-detected issues (Section 6.9) — feature flag default-off
 - [x] **V15-04**: Session collections (group by project)
 - [x] **V15-05**: Session search + filter by tag / device / app / chipset
-- [ ] **V15-06**: Metric threshold alerts (local notification when FPS < X for Y seconds)
-- [ ] **V15-07**: Auto session start when target app launches
+- [x] **V15-06**: Metric threshold alerts (local notification when FPS < X for Y seconds)
+- [x] **V15-07**: Auto session start when target app launches
 - [ ] **V15-08**: tidevice on Windows for iOS (~8 metrics, documented gaps)
 - [ ] **V15-09**: Mac proxy daemon (Windows → Mac → iPhone, all metrics)
 - [ ] **V15-10**: Linux first-class support smoke test
@@ -177,8 +177,8 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V15-03 | Phase 2 | Pending |
 | V15-04 | Phase 2 | Pending |
 | V15-05 | Phase 2 | Pending |
-| V15-06 | Phase 2 | Pending |
-| V15-07 | Phase 2 | Pending |
+| V15-06 | Phase 2 | Complete |
+| V15-07 | Phase 2 | Complete |
 | V15-08 | Phase 2 | Pending |
 | V15-09 | Phase 2 | Pending |
 | V15-10 | Phase 2 | Pending |
