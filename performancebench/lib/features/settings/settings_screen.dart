@@ -7,6 +7,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/theme.dart';
 import '../../app.dart';
 
+// =============================================================================
+// Threshold Alert Providers
+// =============================================================================
+
+final fpsAlertEnabledProvider = StateProvider<bool>((ref) => false);
+final fpsMinThresholdProvider = StateProvider<double>((ref) => 30.0);
+
+final cpuAlertEnabledProvider = StateProvider<bool>((ref) => false);
+final cpuMaxThresholdProvider = StateProvider<double>((ref) => 85.0);
+
+final memoryAlertEnabledProvider = StateProvider<bool>((ref) => false);
+final memoryGrowthMbProvider = StateProvider<double>((ref) => 100.0);
+
+final autoStartEnabledProvider = StateProvider<bool>((ref) => false);
+final watchPackagesProvider = StateProvider<List<String>>((ref) => []);
+
 /// Full settings screen with 6 categories: Profiling, Paths, Appearance,
 /// Charts, Keyboard Shortcuts, About.
 class SettingsScreen extends ConsumerWidget {
@@ -28,7 +44,7 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           _SectionHeader('Profiling', colors),
           const SizedBox(height: 8),
-          _buildProfilingSection(colors),
+          _buildProfilingSection(colors, ref),
           const SizedBox(height: 24),
           _SectionHeader('Paths', colors),
           const SizedBox(height: 8),
@@ -54,13 +70,156 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfilingSection(AppColors colors) {
-    return _SettingsGroup(children: [
-      _DropdownRow('Sample rate', '1s (default)', ['500ms', '1s', '2s'], colors),
-      _DropdownRow('Screenshot interval', '10s', ['5s', '10s', '30s', 'Off'], colors),
-      _DropdownRow('Chart time window', '60s', ['30s', '60s', '120s'], colors),
-      _ToggleRow('Auto-detect layer name', true, colors),
-    ]);
+  Widget _buildProfilingSection(AppColors colors, WidgetRef ref) {
+    final fpsEnabled = ref.watch(fpsAlertEnabledProvider);
+    final fpsMin = ref.watch(fpsMinThresholdProvider);
+    final cpuEnabled = ref.watch(cpuAlertEnabledProvider);
+    final cpuMax = ref.watch(cpuMaxThresholdProvider);
+    final memEnabled = ref.watch(memoryAlertEnabledProvider);
+    final memGrowth = ref.watch(memoryGrowthMbProvider);
+    final autoStartEnabled = ref.watch(autoStartEnabledProvider);
+    final watchPackages = ref.watch(watchPackagesProvider);
+
+    return Column(
+      children: [
+        _SettingsGroup(children: [
+          _DropdownRow('Sample rate', '1s (default)', ['500ms', '1s', '2s'], colors),
+          _DropdownRow('Screenshot interval', '10s', ['5s', '10s', '30s', 'Off'], colors),
+          _DropdownRow('Chart time window', '60s', ['30s', '60s', '120s'], colors),
+          _ToggleRow('Auto-detect layer name', true, colors),
+        ]),
+        const SizedBox(height: 20),
+        _SectionHeader('Threshold Alerts', colors),
+        const SizedBox(height: 8),
+        _SettingsGroup(children: [
+          // FPS Alert — default off (D-05)
+          _ToggleRow(
+            'FPS Alert (< 30 for 10s)',
+            fpsEnabled,
+            colors,
+            onChanged: (v) => ref.read(fpsAlertEnabledProvider.notifier).state = v,
+          ),
+          if (fpsEnabled)
+            _SliderRow(
+              label: 'FPS Minimum',
+              value: fpsMin,
+              min: 10,
+              max: 55,
+              divisions: 45,
+              displayValue: '${fpsMin.toInt()}',
+              onChanged: (v) =>
+                  ref.read(fpsMinThresholdProvider.notifier).state = v,
+              colors: colors,
+            ),
+          const _SettingsDivider(),
+          // CPU Alert — default off (D-05)
+          _ToggleRow(
+            'CPU Alert (> 85% for 5s)',
+            cpuEnabled,
+            colors,
+            onChanged: (v) => ref.read(cpuAlertEnabledProvider.notifier).state = v,
+          ),
+          if (cpuEnabled)
+            _SliderRow(
+              label: 'CPU Maximum %',
+              value: cpuMax,
+              min: 50,
+              max: 100,
+              divisions: 50,
+              displayValue: '${cpuMax.toInt()}%',
+              onChanged: (v) =>
+                  ref.read(cpuMaxThresholdProvider.notifier).state = v,
+              colors: colors,
+            ),
+          const _SettingsDivider(),
+          // Memory Alert — default off (D-05)
+          _ToggleRow(
+            'Memory Alert (> +100MB in 30s)',
+            memEnabled,
+            colors,
+            onChanged: (v) =>
+                ref.read(memoryAlertEnabledProvider.notifier).state = v,
+          ),
+          if (memEnabled)
+            _SliderRow(
+              label: 'Memory Growth (MB)',
+              value: memGrowth,
+              min: 50,
+              max: 500,
+              divisions: 45,
+              displayValue: '${memGrowth.toInt()} MB',
+              onChanged: (v) =>
+                  ref.read(memoryGrowthMbProvider.notifier).state = v,
+              colors: colors,
+            ),
+        ]),
+        const SizedBox(height: 20),
+        _SectionHeader('Auto Session Start', colors),
+        const SizedBox(height: 8),
+        _SettingsGroup(children: [
+          _ToggleRow(
+            'Watch for app launches',
+            autoStartEnabled,
+            colors,
+            onChanged: (v) =>
+                ref.read(autoStartEnabledProvider.notifier).state = v,
+          ),
+          if (autoStartEnabled) ...[
+            _WatchPackageList(
+              packages: watchPackages,
+              onRemove: (pkg) {
+                final updated = List<String>.from(watchPackages)..remove(pkg);
+                ref.read(watchPackagesProvider.notifier).state = updated;
+              },
+              onAdd: () => _showAddPackageDialog(
+                  context, ref, watchPackages, colors),
+              colors: colors,
+            ),
+          ],
+        ]),
+      ],
+    );
+  }
+
+  void _showAddPackageDialog(BuildContext context, WidgetRef ref,
+      List<String> currentPackages, AppColors colors) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colors.bgSidebar,
+        title: Text('Add Watch Package',
+            style: TextStyle(color: colors.textPrimary)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: TextStyle(color: colors.textPrimary, fontSize: TextTokens.sm),
+          decoration: InputDecoration(
+            hintText: 'com.example.app',
+            hintStyle: TextStyle(color: colors.textDisabled, fontSize: TextTokens.sm),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel',
+                style: TextStyle(color: colors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () {
+              final pkg = controller.text.trim();
+              if (pkg.isNotEmpty) {
+                final updated = List<String>.from(currentPackages)..add(pkg);
+                ref.read(watchPackagesProvider.notifier).state = updated;
+              }
+              Navigator.pop(ctx);
+            },
+            child: Text('Add',
+                style: TextStyle(color: colors.accentBlue)),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildPathsSection(AppColors colors) {
@@ -196,7 +355,8 @@ class _ToggleRow extends StatelessWidget {
   final String label;
   final bool value;
   final AppColors colors;
-  const _ToggleRow(this.label, this.value, this.colors);
+  final ValueChanged<bool>? onChanged;
+  const _ToggleRow(this.label, this.value, this.colors, {this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +366,148 @@ class _ToggleRow extends StatelessWidget {
       trailing: Switch(
         value: value,
         activeColor: colors.accentBlue,
-        onChanged: (_) {},
+        onChanged: onChanged ?? (_) {},
+      ),
+    );
+  }
+}
+
+class _SliderRow extends StatelessWidget {
+  final String label;
+  final double value;
+  final double min;
+  final double max;
+  final int divisions;
+  final String displayValue;
+  final ValueChanged<double> onChanged;
+  final AppColors colors;
+  const _SliderRow({
+    required this.label,
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.divisions,
+    required this.displayValue,
+    required this.onChanged,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: colors.borderSubtle.withValues(alpha: 0.3), width: 0.5)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: TextStyle(color: colors.textSecondary, fontSize: TextTokens.sm)),
+                const SizedBox(height: 2),
+                Text(displayValue, style: TextStyle(color: colors.textPrimary, fontSize: TextTokens.xs, fontFamily: monoFontFamily())),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: 140,
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: divisions,
+              activeColor: colors.accentBlue,
+              inactiveColor: colors.bgInput,
+              onChanged: onChanged,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsDivider extends StatelessWidget {
+  const _SettingsDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    return Divider(height: 1, color: colors.borderSubtle);
+  }
+}
+
+class _WatchPackageList extends StatelessWidget {
+  final List<String> packages;
+  final ValueChanged<String> onRemove;
+  final VoidCallback onAdd;
+  final AppColors colors;
+  const _WatchPackageList({
+    required this.packages,
+    required this.onRemove,
+    required this.onAdd,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: colors.borderSubtle.withValues(alpha: 0.3),
+            width: 0.5,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Watched Packages',
+              style: TextStyle(
+                  color: colors.textSecondary, fontSize: TextTokens.xs)),
+          const SizedBox(height: 4),
+          if (packages.isEmpty)
+            Text('No packages added',
+                style: TextStyle(
+                    color: colors.textDisabled,
+                    fontSize: TextTokens.xs,
+                    fontStyle: FontStyle.italic))
+          else
+            Wrap(
+              spacing: 4,
+              runSpacing: 4,
+              children: packages.map((pkg) {
+                return Chip(
+                  label: Text(pkg,
+                      style: TextStyle(
+                          fontSize: 10, fontFamily: monoFontFamily())),
+                  backgroundColor: colors.bgInput,
+                  labelStyle: TextStyle(color: colors.textPrimary),
+                  deleteIcon: Icon(Icons.close, size: 12, color: colors.textSecondary),
+                  onDeleted: () => onRemove(pkg),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                );
+              }).toList(),
+            ),
+          const SizedBox(height: 4),
+          TextButton.icon(
+            icon: Icon(Icons.add, size: 14, color: colors.accentBlue),
+            label: Text('Add Package',
+                style: TextStyle(
+                    color: colors.accentBlue, fontSize: TextTokens.xs)),
+            onPressed: onAdd,
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ],
       ),
     );
   }

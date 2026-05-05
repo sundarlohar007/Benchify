@@ -10,12 +10,14 @@ import '../theme.dart';
 ///
 /// Left: recording state or "Ready"
 /// Center: device name + sample rate
-/// Right: error count badge (clickable) + SQLite write status
+/// Right: alert badge (threshold breaches) + error count badge (clickable) + SQLite write status
 class StatusBar extends StatelessWidget {
   final bool isRecording;
   final String elapsed;
   final String deviceInfo;
   final String sqliteStatus;
+  final int alertCount;
+  final VoidCallback? onAlertTap;
 
   const StatusBar({
     super.key,
@@ -23,6 +25,8 @@ class StatusBar extends StatelessWidget {
     this.elapsed = '00:00:00',
     this.deviceInfo = '',
     this.sqliteStatus = 'SQLite ✓',
+    this.alertCount = 0,
+    this.onAlertTap,
   });
 
   @override
@@ -59,7 +63,23 @@ class StatusBar extends StatelessWidget {
               fontSize: 10, fontFamily: monoFontFamily(),
             )),
           const Spacer(),
-          // Right: error count + SQLite status
+          // Right: alert badge (threshold breaches) + error count + SQLite status
+          if (alertCount > 0)
+            GestureDetector(
+              onTap: onAlertTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: colors.accentWarning,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '$alertCount alert',
+                  style: const TextStyle(color: Colors.white, fontSize: 9),
+                ),
+              ),
+            ),
           if (errors > 0)
             GestureDetector(
               onTap: () => _showErrorLog(context),

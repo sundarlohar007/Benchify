@@ -15,6 +15,7 @@ import '../parsers/network_parser.dart';
 import '../parsers/thermal_parser.dart';
 import '../sdk/sdk_state.dart';
 import 'adb_service.dart';
+import 'alert_service.dart';
 
 /// Collects performance metrics from an Android device at 1Hz.
 ///
@@ -28,6 +29,7 @@ class MetricCollector {
   final String _packageName;
   final String _sessionId;
   final MetricDao _metricDao;
+  final AlertService _alertService;
 
   int? _pid;
   String? _surfaceFlingerLayer;
@@ -55,12 +57,16 @@ class MetricCollector {
     required String packageName,
     required String sessionId,
     required MetricDao metricDao,
+    AlertService? alertService,
     SdkState? sdkState,
   })  : _adbService = adbService,
         _deviceSerial = deviceSerial,
         _packageName = packageName,
         _sessionId = sessionId,
         _metricDao = metricDao,
+        _alertService = alertService ?? AlertService(
+          onMarkerInsert: (_) async => -1,
+        ),
         _sdkState = sdkState ?? SdkState();
 
   List<MetricSample> get buffer => List.unmodifiable(_buffer);
@@ -302,6 +308,9 @@ class MetricCollector {
         diskReadKb: diskResult?.readKbPerSec,
         diskWriteKb: diskResult?.writeKbPerSec,
       );
+
+      // Threshold alert check per D-03: integrated into tick loop
+      _alertService.checkThresholds(sample, sessionId: _sessionId);
 
       _buffer.add(sample);
       while (_buffer.length > _maxBufferSize) {
