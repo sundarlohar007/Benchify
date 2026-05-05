@@ -7,17 +7,21 @@ import '../../core/services/adb_service.dart';
 import '../../shared/theme.dart';
 
 /// App list item widget — shows app label, package name, and version
-/// in the app picker screen.
+/// in the app picker screen. v1.5: adds watch-list toggle for auto-start.
 class AppListItem extends StatelessWidget {
   final AppInfo app;
   final AppColors colors;
   final VoidCallback onTap;
+  final bool isWatched;
+  final VoidCallback? onWatchToggle;
 
   const AppListItem({
     super.key,
     required this.app,
     required this.colors,
     required this.onTap,
+    this.isWatched = false,
+    this.onWatchToggle,
   });
 
   @override
@@ -68,6 +72,25 @@ class AppListItem extends StatelessWidget {
                 ],
               ),
             ),
+            // Watch-list toggle (v1.5 — D-10, D-11)
+            if (onWatchToggle != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: IconButton(
+                  icon: Icon(
+                    isWatched ? Icons.visibility : Icons.visibility_off,
+                    size: 16,
+                    color: isWatched ? colors.accentBlue : colors.textDisabled,
+                  ),
+                  tooltip: isWatched
+                      ? 'Watching for auto-start'
+                      : 'Add to watch list',
+                  onPressed: onWatchToggle,
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+                ),
+              ),
             // Build number badge
             if (app.buildNumber != null)
               Container(

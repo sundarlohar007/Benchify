@@ -9,6 +9,7 @@ import '../../core/services/adb_service.dart';
 import '../../core/database/database.dart';
 import '../../core/database/collection_dao.dart';
 import '../../core/models/collection.dart';
+import '../settings/settings_screen.dart';
 import 'app_list_item.dart';
 
 /// Provider for app list on selected device.
@@ -103,11 +104,23 @@ class _AppPickerScreenState extends ConsumerState<AppPickerScreen> {
             itemCount: apps.length,
             itemBuilder: (context, index) {
               final app = apps[index];
+              final watchPackages = ref.watch(watchPackagesProvider);
+              final isWatched = watchPackages.contains(app.package);
               return AppListItem(
                 app: app,
                 colors: colors,
                 onTap: () {
                   // Navigate to active session — will be wired in Wave 2
+                },
+                isWatched: isWatched,
+                onWatchToggle: () {
+                  final updated = List<String>.from(watchPackages);
+                  if (isWatched) {
+                    updated.remove(app.package);
+                  } else {
+                    updated.add(app.package);
+                  }
+                  ref.read(watchPackagesProvider.notifier).state = updated;
                 },
               );
             },

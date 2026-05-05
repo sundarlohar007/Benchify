@@ -4,6 +4,8 @@
 import 'dart:async';
 import 'dart:io' show Platform, Process, ProcessResult;
 
+import 'package:meta/meta.dart';
+
 import '../models/device.dart';
 
 /// Parsed app info from device.
@@ -91,6 +93,21 @@ class StaticAppData {
   });
 }
 
+/// Result of parsing a logcat ActivityManager START line.
+class LogcatStartEvent {
+  final String serial;
+  final String timestamp;
+  final String packageName;
+  final String intent;
+
+  const LogcatStartEvent({
+    required this.serial,
+    required this.timestamp,
+    required this.packageName,
+    required this.intent,
+  });
+}
+
 /// Wrapper around ADB subprocess calls for Android device interaction.
 /// All ADB calls use 3-second timeout and async/await — no blocking on UI thread.
 ///
@@ -107,6 +124,11 @@ class AdbService {
   /// Creates an AdbService. Finds `adb` on PATH via platform command.
   /// Throws [StateError] if ADB is not found.
   AdbService._(this._adbPath);
+
+  /// Test-only constructor — skips ADB PATH validation.
+  /// Only the [parseActivityStart] parser is usable; ADB commands will fail.
+  @visibleForTesting
+  AdbService.test() : _adbPath = 'adb';
 
   static Future<AdbService> create() async {
     final adbPath = await _findAdb();
@@ -664,5 +686,104 @@ class AdbService {
       abiList: abis.isNotEmpty ? abis.join(',') : null,
       apkSizeBytes: apkSizeBytes,
     );
+  }
+
+  // ===========================================================================
+  // Logcat Monitoring — Auto Session Start (per D-10, D-11)
+  // ===========================================================================
+
+  /// Parse a single logcat line for ActivityManager START intent.
+  ///
+  /// Matches pattern: `START u0 {act=... cmp=com.example.app/.Activity}`
+  /// Returns null if line does not contain a recognizable app launch.
+  ///
+  /// Threat mitigation (T-02-10): Regex extraction with package name
+  /// validation against Android package name regex; malformed lines return null.
+  LogcatStartEvent? parseActivityStart(String line, String serial) {
+    // Match pattern: "START u0 {act=... cmp=com.example.app/.MainActivity}"
+    final startMatch = RegExp(
+      r'START u\d+\s+\{.*?cmp=([a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)+)/\.',
+    ).firstMatch(line);
+
+    if (startMatch == null) return null;
+
+    final packageName = startMatch.group(1);
+    if (packageName == null || packageName.isEmpty) return null;
+
+    // Validate package name format (T-02-10)
+    if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$')
+        .hasMatch(packageName)) {
+      return null;
+    }
+
+    // Extract timestamp if present (logcat format: MM-DD HH:MM:SS.mmm)
+    String? timestamp;
+    final tsMatch =
+        RegExp(r'^(\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3})')
+            .firstMatch(line);
+    if (tsMatch != null) timestamp = tsMatch.group(1);
+
+    return LogcatStartEvent(
+      serial: serial,
+      timestamp: timestamp ?? DateTime.now().toIso8601String(),
+      packageName: packageName,
+      intent: line.trim(),
+    );
+  }
+
+  /// Start monitoring ADB logcat for ActivityManager START events.
+  ///
+  /// Polls `adb -s <serial> logcat -d -s ActivityManager:I` every 2 seconds
+  /// (per D-10). Parses lines matching ActivityManager START intents.
+  /// Clears logcat buffer after each read to prevent duplicate detection.
+  ///
+  /// Returns a broadcast stream of [LogcatStartEvent] for each detected
+  /// app launch. Call [stopLogcatMonitor] or cancel the stream subscription
+  /// to stop polling.
+  ///
+  /// Threat mitigation (T-02-11): 2-second polling interval with logcat -c
+  /// clear prevents buffer accumulation; stream cancellation guard prevents
+  /// runaway polling.
+  Stream<LogcatStartEvent> startLogcatMonitor(String serial) {
+    final controller = StreamController<LogcatStartEvent>.broadcast();
+    bool stopped = false;
+
+    Future<void> poll() async {
+      if (stopped) return;
+      try {
+        final output = await runShellCommand(serial, 'logcat -d -s ActivityManager:I');
+        if (output != null) {
+          for (final line in output.split('\n')) {
+            final event = parseActivityStart(line, serial);
+            if (event != null) controller.add(event);
+          }
+          // Clear logcat buffer after reading (T-02-11)
+          await runShellCommand(serial, 'logcat -c');
+        }
+      } catch (_) {
+        // Logcat errors are non-fatal — retry next poll
+      }
+
+      if (!stopped) {
+        await Future.delayed(const Duration(seconds: 2));
+        // ignore: unawaited_futures
+        poll();
+      }
+    }
+
+    poll();
+    controller.onCancel = () {
+      stopped = true;
+    };
+    return controller.stream;
+  }
+
+  /// Stop logcat monitoring (handled by stream cancellation).
+  /// Callers should cancel the stream subscription returned by
+  /// [startLogcatMonitor] instead of calling this directly.
+  void stopLogcatMonitor() {
+    // Stream subscription cancellation handles cleanup.
+    // This method exists as a documented API entry point for
+    // services that manage the lifecycle.
   }
 }
