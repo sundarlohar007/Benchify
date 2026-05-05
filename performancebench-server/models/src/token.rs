@@ -1,35 +1,35 @@
+use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Selectable)]
+#[diesel(table_name = crate::schema::api_tokens)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 #[serde(rename_all = "camelCase")]
 pub struct ApiToken {
     pub id: Uuid,
     pub user_id: Uuid,
     pub name: String,
     pub token_prefix: String,
+    pub token_hash: String,
     pub scopes: Vec<String>,
-    #[serde(default)]
+    pub last_used_at: Option<chrono::NaiveDateTime>,
+    pub expires_at: Option<chrono::NaiveDateTime>,
     pub is_revoked: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub last_used_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expires_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
+    pub created_at: chrono::NaiveDateTime,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Selectable)]
+#[diesel(table_name = crate::schema::refresh_tokens)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 #[serde(rename_all = "camelCase")]
 pub struct RefreshToken {
     pub id: Uuid,
     pub user_id: Uuid,
     pub token_hash: String,
-    pub expires_at: String,
-    #[serde(default)]
+    pub expires_at: chrono::NaiveDateTime,
     pub is_revoked: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
+    pub created_at: chrono::NaiveDateTime,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -41,7 +41,6 @@ pub struct CreateApiToken {
     pub token_hash: String,
     #[serde(default = "default_scopes")]
     pub scopes: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<String>,
 }
 

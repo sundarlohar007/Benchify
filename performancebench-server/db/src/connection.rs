@@ -1,9 +1,13 @@
-use deadpool_postgres::{Config, Pool, Runtime};
-use deadpool_postgres::tokio_postgres::NoTls;
+use diesel_async::pooled_connection::deadpool::Pool;
+use diesel_async::pooled_connection::AsyncDieselConnectionManager;
+use diesel_async::AsyncPgConnection;
 
-pub fn create_pool(database_url: &str) -> Pool {
-    let mut cfg = Config::new();
-    cfg.url = Some(database_url.to_string());
-    cfg.create_pool(Some(Runtime::Tokio1), NoTls)
+pub type DbPool = Pool<AsyncPgConnection>;
+
+/// Create a database connection pool using diesel-async's deadpool integration.
+pub fn create_pool(database_url: &str) -> DbPool {
+    let manager = AsyncDieselConnectionManager::<AsyncPgConnection>::new(database_url);
+    Pool::builder(manager)
+        .build()
         .expect("Failed to create database pool")
 }

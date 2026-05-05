@@ -1,13 +1,15 @@
+use db::connection::DbPool;
+
 use crate::config::AppConfig;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub pool: deadpool_postgres::Pool,
+    pub pool: DbPool,
     pub config: AppConfig,
 }
 
 impl AppState {
-    pub fn new(pool: deadpool_postgres::Pool, config: AppConfig) -> Self {
+    pub fn new(pool: DbPool, config: AppConfig) -> Self {
         Self { pool, config }
     }
 }

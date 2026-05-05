@@ -2,9 +2,11 @@ use std::net::SocketAddr;
 
 use db::connection;
 use db::migrations;
+use db::user_queries;
 use server::config::AppConfig;
 use server::routes::create_router;
 use server::state::AppState;
+use server::utils::password;
 
 #[tokio::main]
 async fn main() {
@@ -32,6 +34,23 @@ async fn main() {
     let pool = connection::create_pool(&config.database_url);
     tracing::info!("Database connection pool created");
 
+    // First-user auto-admin: if no users exist, create default admin
+    let user_count = user_queries::count_users(&pool).await.unwrap_or(0);
+    if user_count == 0 {
+        let admin_password = generate_random_password();
+        let password_hash = password::hash_password(&admin_password)
+            .expect("Failed to hash admin password");
+        user_queries::create_user(&pool, "admin@localhost", &password_hash, Some("Admin"), "admin")
+            .await
+            .expect("Failed to create default admin user");
+        tracing::warn!(
+            event_type = "auto_admin_created",
+            email = "admin@localhost",
+            password = %admin_password,
+            "No users found — created default admin user. CHANGE THIS PASSWORD IMMEDIATELY."
+        );
+    }
+
     // Build application state
     let state = AppState::new(pool, config.clone());
 
@@ -49,4 +68,17 @@ async fn main() {
     axum::serve(listener, router.into_make_service())
         .await
         .unwrap();
+}
+
+/// Generate a cryptographically random 16-character alphanumeric password.
+fn generate_random_password() -> String {
+    use rand::Rng;
+    const CHARSET: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let mut rng = rand::thread_rng();
+    (0..16)
+        .map(|_| {
+            let idx = rng.gen_range(0..CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect()
 }
