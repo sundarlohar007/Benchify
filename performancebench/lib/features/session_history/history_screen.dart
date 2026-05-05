@@ -11,6 +11,8 @@ import '../../shared/theme.dart';
 import '../../core/database/session_dao.dart';
 import '../../core/models/session.dart';
 import '../../core/database/database.dart';
+import '../../core/services/api_service.dart';
+import '../../core/services/upload_service.dart';
 
 /// Extended filter state for session history (v1.5 enhanced).
 class HistoryFilters {
@@ -109,11 +111,63 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   bool _loading = true;
   Timer? _debounce;
   final _searchController = TextEditingController();
+  bool _multiSelectMode = false;
+  final Set<String> _selectedIds = {};
+  bool _hasServerConfig = false;
+  UploadService? _uploadService;
 
   @override
   void initState() {
     super.initState();
     _loadSessions();
+    _checkServerConfig();
+  }
+
+  Future<void> _checkServerConfig() async {
+    final api = await ApiService.fromPreferences();
+    if (mounted) {
+      setState(() {
+        _hasServerConfig = api != null;
+        if (_hasServerConfig) {
+          _uploadService = UploadService(api: api!);
+        }
+      });
+    }
+  }
+
+  void _toggleMultiSelect() {
+    setState(() {
+      _multiSelectMode = !_multiSelectMode;
+      if (!_multiSelectMode) _selectedIds.clear();
+    });
+  }
+
+  void _toggleSelection(String id) {
+    setState(() {
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
+      } else {
+        _selectedIds.add(id);
+      }
+    });
+  }
+
+  void _uploadSelected() async {
+    if (_uploadService == null || _selectedIds.isEmpty) return;
+    final selectedSessions = _sessions.where((s) => _selectedIds.contains(s.id)).toList();
+    _uploadService!.addToQueue(selectedSessions);
+    setState(() {
+      _multiSelectMode = false;
+      _selectedIds.clear();
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${selectedSessions.length} session(s) added to upload queue'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
@@ -178,9 +232,28 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       appBar: AppBar(
         backgroundColor: colors.bgSidebar,
         title: Text(
-          'Session History',
+          _multiSelectMode
+              ? '${_selectedIds.length} selected'
+              : 'Session History',
           style: TextStyle(color: colors.textPrimary, fontSize: TextTokens.md),
         ),
+        actions: [
+          if (_hasServerConfig)
+            _multiSelectMode
+                ? TextButton.icon(
+                    onPressed: _selectedIds.isEmpty ? null : _uploadSelected,
+                    icon: Icon(Icons.cloud_upload, size: 16, color: colors.accentBlue),
+                    label: Text(
+                      'Upload Selected (${_selectedIds.length})',
+                      style: TextStyle(color: colors.accentBlue, fontSize: TextTokens.sm),
+                    ),
+                  )
+                : IconButton(
+                    icon: Icon(Icons.cloud_upload_outlined, color: colors.textSecondary),
+                    tooltip: 'Upload to Server',
+                    onPressed: _toggleMultiSelect,
+                  ),
+        ],
       ),
       body: Column(
         children: [
@@ -214,7 +287,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 ? Center(child: CircularProgressIndicator(color: colors.accentBlue))
                 : _sessions.isEmpty
                     ? _EmptyState(colors: colors)
-                    : _SessionListView(colors: colors, sessions: _sessions),
+                    : _SessionListView(
+                        colors: colors,
+                        sessions: _sessions,
+                        multiSelectMode: _multiSelectMode,
+                        selectedIds: _selectedIds,
+                        onToggleSelection: _toggleSelection,
+                      ),
           ),
         ],
       ),
@@ -500,8 +579,17 @@ class _HeaderCell extends StatelessWidget {
 class _SessionListView extends StatelessWidget {
   final AppColors colors;
   final List<Session> sessions;
+  final bool multiSelectMode;
+  final Set<String> selectedIds;
+  final void Function(String id) onToggleSelection;
 
-  const _SessionListView({required this.colors, required this.sessions});
+  const _SessionListView({
+    required this.colors,
+    required this.sessions,
+    this.multiSelectMode = false,
+    this.selectedIds = const {},
+    required this.onToggleSelection,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -515,13 +603,27 @@ class _SessionListView extends StatelessWidget {
           color: isEven ? colors.bgBase : colors.bgHover.withAlpha(80),
           child: InkWell(
             onTap: () {
-              context.push('/session/${session.id}');
+              if (multiSelectMode) {
+                onToggleSelection(session.id);
+              } else {
+                context.push('/session/${session.id}');
+              }
             },
             onHover: (hovering) {},
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
                 children: [
+                  // Multi-select checkbox
+                  if (multiSelectMode)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Checkbox(
+                        value: selectedIds.contains(session.id),
+                        activeColor: colors.accentBlue,
+                        onChanged: (_) => onToggleSelection(session.id),
+                      ),
+                    ),
                   // Date
                   Expanded(
                     flex: 2,

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/theme.dart';
 import '../../app.dart';
+import 'server_settings.dart';
 
 // =============================================================================
 // Threshold Alert Providers
@@ -61,6 +62,10 @@ class SettingsScreen extends ConsumerWidget {
           _SectionHeader('Keyboard Shortcuts', colors),
           const SizedBox(height: 8),
           _buildKeyboardShortcuts(colors),
+          const SizedBox(height: 24),
+          _SectionHeader('Server', colors),
+          const SizedBox(height: 8),
+          ServerSettingsWidget(colors: colors),
           const SizedBox(height: 24),
           _SectionHeader('About', colors),
           const SizedBox(height: 8),

@@ -1,67 +1,50 @@
+use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::marker::Marker;
-use crate::detected_issue::DetectedIssue;
-use crate::metric_sample::MetricSample;
-use crate::video::VideoMetadata;
-
 /// Session represents a profiling session stored in the sessions table.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// For Diesel queries, JSONB columns are stored as serde_json::Value strings.
+/// Timestamps use chrono::NaiveDateTime (serde serializes as ISO 8601 strings).
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Selectable)]
+#[diesel(table_name = crate::schema::sessions)]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 #[serde(rename_all = "camelCase")]
 pub struct Session {
     pub id: Uuid,
     pub user_id: Uuid,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub device_id: Option<Uuid>,
     pub app_name: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub app_package: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub app_version: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub device_model: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub device_os_version: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub chipset: Option<String>,
     #[serde(default)]
     pub tags: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub project_id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub collection_id: Option<Uuid>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<String>,
-    pub started_at: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ended_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    pub started_at: chrono::NaiveDateTime,
+    pub ended_at: Option<chrono::NaiveDateTime>,
     pub duration_seconds: Option<i32>,
     #[serde(default)]
     pub session_stats: serde_json::Value,
     #[serde(default)]
-    pub metric_samples: Vec<MetricSample>,
+    pub metric_samples: serde_json::Value,
     #[serde(default)]
-    pub markers: Vec<Marker>,
+    pub markers: serde_json::Value,
     #[serde(default)]
-    pub detected_issues: Vec<DetectedIssue>,
+    pub detected_issues: serde_json::Value,
     #[serde(default)]
     pub screenshots: Vec<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub video_metadata: Option<VideoMetadata>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    pub video_metadata: Option<serde_json::Value>,
     pub thumbnail_path: Option<String>,
     #[serde(default = "default_true")]
     pub is_uploaded: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub uploaded_by: Option<Uuid>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub uploaded_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
+    pub uploaded_at: Option<chrono::NaiveDateTime>,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
 }
 
 fn default_true() -> bool {

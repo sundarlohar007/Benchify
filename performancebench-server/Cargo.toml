@@ -16,11 +16,16 @@ thiserror = "2.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
 config = "0.15"
-axum = "0.8"
+axum = { version = "0.8", features = ["multipart"] }
 tokio = { version = "1.52", features = ["full"] }
-tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip", "decompression-gzip"] }
 chrono = { version = "0.4", features = ["serde"] }
 axum-extra = { version = "0.10", features = ["cookie"] }
 sha2 = "0.10"
 rand = "0.8"
 time = "0.3"
+utoipa = { version = "5.5", features = ["axum_extras"] }
+rustls = "0.23"
+rustls-pemfile = "2.2"
+tokio-rustls = "0.26"
+axum-server = { version = "0.7", features = ["tls-rustls"] }

@@ -7,17 +7,25 @@ import '../../shared/theme.dart';
 import '../../core/models/session.dart';
 
 /// Session list item widget for the history screen.
-/// Shows app name, device, duration, FPS, relative timestamp.
+/// Shows app name, device, duration, FPS, relative timestamp, and upload status (D-26).
 class SessionListItem extends StatelessWidget {
   final Session session;
   final AppColors colors;
   final VoidCallback onTap;
+  final bool isUploaded;
+  final double uploadProgress;
+  final int? queuePosition;
+  final int? queueTotal;
 
   const SessionListItem({
     super.key,
     required this.session,
     required this.colors,
     required this.onTap,
+    this.isUploaded = false,
+    this.uploadProgress = 0.0,
+    this.queuePosition,
+    this.queueTotal,
   });
 
   @override
@@ -28,6 +36,27 @@ class SessionListItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
+            // Upload status indicators (D-26)
+            if (isUploaded)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Icon(Icons.check_circle, size: 14, color: colors.accentSuccess),
+              ),
+            if (queuePosition != null && queueTotal != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: colors.bgInput,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: Text(
+                    '$queuePosition of $queueTotal',
+                    style: TextStyle(color: colors.textSecondary, fontSize: 8),
+                  ),
+                ),
+              ),
             Expanded(
               flex: 2,
               child: Text(

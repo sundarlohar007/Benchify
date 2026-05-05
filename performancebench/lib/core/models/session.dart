@@ -30,6 +30,7 @@ class Session {
   final String? collectionId;
   final String? projectId;
   final String? userId;
+  final bool isUploaded;
 
   const Session({
     required this.id,
@@ -55,6 +56,7 @@ class Session {
     this.collectionId,
     this.projectId,
     this.userId,
+    this.isUploaded = false,
   });
 
   factory Session.fromMap(Map<String, dynamic> map) {
@@ -82,6 +84,7 @@ class Session {
       collectionId: map['collection_id'] as String?,
       projectId: map['project_id'] as String?,
       userId: map['user_id'] as String?,
+      isUploaded: (map['is_uploaded'] as int?) == 1,
     );
   }
 
@@ -110,6 +113,7 @@ class Session {
       'collection_id': collectionId,
       'project_id': projectId,
       'user_id': userId,
+      'is_uploaded': isUploaded ? 1 : 0,
     };
   }
 }
