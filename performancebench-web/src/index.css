@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg-base: var(--color-bg-base-raw);
+  --color-bg-sidebar: var(--color-bg-sidebar-raw);
+  --color-bg-elevated: var(--color-bg-elevated-raw);
+  --color-bg-hover: var(--color-bg-hover-raw);
+  --color-bg-selected: var(--color-bg-selected-raw);
+  --color-bg-input: var(--color-bg-input-raw);
+  --color-text-primary: var(--color-text-primary-raw);
+  --color-text-secondary: var(--color-text-secondary-raw);
+  --color-text-disabled: var(--color-text-disabled-raw);
+  --color-text-accent: var(--color-text-accent-raw);
+  --color-border-subtle: var(--color-border-subtle-raw);
+  --color-border-focus: var(--color-border-focus-raw);
+  --color-accent-blue: var(--color-accent-blue-raw);
+  --color-accent-recording: var(--color-accent-recording-raw);
+  --color-accent-success: var(--color-accent-success-raw);
+  --color-accent-warning: var(--color-accent-warning-raw);
+  --color-accent-danger: var(--color-accent-danger-raw);
+  --color-accent-gold: var(--color-accent-gold-raw);
+  --color-chart-fps: var(--color-chart-fps-raw);
+  --color-chart-cpu: var(--color-chart-cpu-raw);
+  --color-chart-memory: var(--color-chart-memory-raw);
+  --color-chart-battery: var(--color-chart-battery-raw);
+  --color-chart-network: var(--color-chart-network-raw);
+  --color-chart-gpu: var(--color-chart-gpu-raw);
+}
+
+:root {
+  /* VS Code Dark+ tokens from AppColors.dart dark */
+  --color-bg-base-raw: #1E1E1E;
+  --color-bg-sidebar-raw: #252526;
+  --color-bg-elevated-raw: #2D2D30;
+  --color-bg-hover-raw: #2A2D2E;
+  --color-bg-selected-raw: #094771;
+  --color-bg-input-raw: #3C3C3C;
+  --color-text-primary-raw: #D4D4D4;
+  --color-text-secondary-raw: #858585;
+  --color-text-disabled-raw: #5A5A5A;
+  --color-text-accent-raw: #4FC3F7;
+  --color-border-subtle-raw: #3C3C3C;
+  --color-border-focus-raw: #007ACC;
+  --color-accent-blue-raw: #007ACC;
+  --color-accent-recording-raw: #F44747;
+  --color-accent-success-raw: #4EC9B0;
+  --color-accent-warning-raw: #CE9178;
+  --color-accent-danger-raw: #F44747;
+  --color-accent-gold-raw: #DCDCAA;
+  /* Chart colors from ChartColors.dart */
+  --color-chart-fps-raw: #569CD6;
+  --color-chart-cpu-raw: #4EC9B0;
+  --color-chart-memory-raw: #CE9178;
+  --color-chart-battery-raw: #DCDCAA;
+  --color-chart-network-raw: #4FC1FF;
+  --color-chart-gpu-raw: #C586C0;
+  /* Typography */
+  --font-mono: 'Cascadia Code', 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+body {
+  background-color: var(--color-bg-base-raw);
+  color: var(--color-text-primary-raw);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Monospace for data/metric values */
+.font-mono-data {
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
