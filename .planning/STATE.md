@@ -1,6 +1,20 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: — External Profiling MVP
+status: active
+last_updated: "2026-05-05T05:45:00.000Z"
+progress:
+  total_phases: 6
+  completed_phases: 1
+  total_plans: 12
+  completed_plans: 6
+  percent: 50
+---
+
 # Project State: Benchify
 
-**Last updated:** 2026-05-04 (Phase 2 planned — 5 plans)
+**Last updated:** 2026-05-05 (Phase 2 executing — Wave 1/5 complete)
 
 ## Project Reference
 
@@ -8,14 +22,14 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 
 **Core value:** Reliable, zero-cost performance profiling for any mobile or desktop app — no cloud dependency, no paid license, no data ever leaving the host machine.
 **Deadline:** May 31, 2026
-**Current focus:** Phase 1 COMPLETE — Phase 2 ready to execute (5 plans)
+**Current focus:** Phase 2 — v1.5 Analysis + Platform Expansion
 
 ## Progress
 
 | Phase | Status | Started | Completed | Requirements |
 |-------|--------|---------|-----------|--------------|
 | Phase 1 — v1.0 MVP | Complete | 2026-05-04 | 2026-05-04 | 29/29 |
-| Phase 2 — v1.5 Analysis | Ready to Execute | 2026-05-04 | — | 13 |
+| Phase 2 — v1.5 Analysis | In Progress | 2026-05-04 | — | 3/13 |
 | Phase 3 — v2.0 Server | Pending | — | — | 18 |
 | Phase 4 — v2.5 Injection | Pending | — | — | 11 |
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
@@ -38,6 +52,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | 07 — Installers + CI + Privacy + MIT Headers | 07-PLAN.md | 07-SUMMARY.md | 09b0868 | 6 integration stubs |
 
 ### Key Metrics
+
 - **100 tests passing** (79 parser + 5 ring buffer + 8 FPS analytics + 3 comparison + 4 export + 1 widget)
 - **6 integration tests** (skipped — require real devices)
 - **0 analyzer errors**
@@ -45,6 +60,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 - **72 source files** with MIT SPDX headers
 
 ### Artifacts Produced
+
 - Full Flutter desktop app (Windows + macOS + Linux)
 - 7 metric parsers (FPS/CPU/Memory/Battery/Network/Thermal/GPU)
 - 1Hz MetricCollector with 300-sample ring buffer
@@ -68,6 +84,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 ## Next Phase
 
 Phase 2 — v1.5 Analysis Platform Expansion (13 requirements)
+
 - `/gsd-discuss-phase 2` to gather context
 - `/gsd-plan-phase 2` to create execution plan
 - `/gsd-execute-phase 2` to implement
