@@ -304,7 +304,7 @@ Wave 3 (parallel — polish):
 
 Plans:
 - [x] 06-01-PLAN.md — Schema migration v3 (5 roles, SSO fields, sso_configs), OIDC+SAML+LDAP auth flows, JIT provisioning, RBAC middleware, admin user management API (V35-01, V35-02, V35-03, V35-05) → SUMMARY: 06-01-SUMMARY.md
-- [ ] 06-02-PLAN.md — Audit logging (audit_events table + API + CSV/JSON export), team orgs/projects/membership, on-prem bare metal install script, production Docker Compose with nginx, air-gapped deployment checklist (V35-06, V35-07, V35-09)
+- [x] 06-02-PLAN.md — Audit logging (audit_events table + API + CSV/JSON export), team orgs/projects/membership, on-prem bare metal install script, production Docker Compose with nginx, air-gapped deployment checklist (V35-06, V35-07, V35-09) → SUMMARY: 06-02-SUMMARY.md
 - [ ] 06-03-PLAN.md — Enterprise dashboard UI (SSO config, user management, audit log viewer), Jira integration, thread-level CPU breakdown, Helm chart, enterprise deployment README (V35-04, V35-08)
 
 **Success criteria:**

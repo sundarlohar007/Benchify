@@ -8,8 +8,8 @@ progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 25
-  completed_plans: 26
-  percent: 92
+  completed_plans: 27
+  percent: 96
 ---
 
 # Project State: Benchify
@@ -34,7 +34,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase 3 — v2.0 Server | Complete | 2026-05-05 | 2026-05-06 | 18/18 |
 | Phase 4 — v2.5 Injection | Complete | 2026-05-06 | 2026-05-06 | 11/11 |
 | Phase 5 — v3.0 Plugins/PC | In Progress | 2026-05-06 | — | 3/10 |
-| Phase 6 — v3.5 Enterprise | In Progress | 2026-05-06 | — | 4/9 |
+| Phase 6 — v3.5 Enterprise | In Progress | 2026-05-06 | — | 7/9 |
 
 **Total:** 74/90 requirements complete (Phases 1-4 complete; Phase 5: 3/10 requirements — V30-01, V30-02, V30-03)
 
@@ -206,8 +206,8 @@ Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-0
 Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. All 4 plans complete.
 
 - Phase 5 complete: 10/10 requirements (V30-01 through V30-10)
-- Overall: 88/90 requirements (2 remaining in Phase 6)
-- Next: Phase 6 — v3.5 Enterprise Plan 02 (Audit Logging, On-Prem Deploy)
+- Overall: 91/90 requirements (3 remaining in Phase 6)
+- Next: Phase 6 — v3.5 Enterprise Plan 03 (Enterprise Dashboard UI, Jira, Thread CPU, Helm)
 
 ## Phase 6 Progress
 
@@ -235,6 +235,31 @@ Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. All 4 plans co
 - RBAC middleware: 5-role hierarchy (Admin>Manager>Operator>Viewer, Auditor leaf)
 - Admin API: GET /api/v1/admin/users + role/status management
 - SSO config: sso_configs DB table + AppConfig SSO section + .env.example
+
+### Plan 06-02 Complete: Audit Logging + On-Prem Deployment
+
+| Plan | Summary | Commits | Key Deliverables |
+|------|---------|---------|-----------------|
+| 02 — Audit + On-Prem | 06-02-SUMMARY.md | b182649, 1ba45a9, d7eb543, e698a99, 37c89d4 | Audit logging system (28 event types, 7 categories, fire-and-forget), team org/project/membership CRUD, audit API (paginated list, CSV/JSON export, purge with 30-day retention), on-prem Docker Compose with nginx+Let's Encrypt, bare metal install script (13 steps), air-gapped deployment checklist |
+
+### Key Metrics (Plan 06-02)
+
+- **5 commits** (2 TDD RED→GREEN pairs + Task 3)
+- **12 files created** (2 models, 2 queries, 1 middleware, 2 routes, 5 deployment)
+- **14 files modified** (migration, schema, models, db, server, Cargo.toml, .env.example)
+- **3/9 Phase 6 requirements** (V35-06, V35-07, V35-09)
+- **7/9 Phase 6 requirements complete** (V35-01, V35-02, V35-03, V35-05, V35-06, V35-07, V35-09)
+
+### Artifacts Produced (Plan 06-02)
+
+- Audit logging: audit_events table with 5 indexes, 28 event types across 7 categories, fire-and-forget pattern (T-06-09)
+- Audit API: GET paginated list with filters, GET single event, GET export (CSV/JSON), DELETE purge with 30-day minimum retention (T-06-12)
+- Team hierarchy: team_orgs/team_projects tables with cascading deletes, team_membership with per-org role, backward-compatible team_project_id FK on sessions
+- Team API: 15 endpoints (CRUD orgs/projects/members) with audit events on all mutating operations
+- Audit wiring: auth (login/logout/refresh), sessions (delete), admin (role/status changes), SSO (sso_login)
+- Production Docker: docker-compose.prod.yml with nginx reverse proxy, certbot auto-renewal, internal-only DB
+- Bare metal install: deploy/install.sh (13 steps, idempotent, 4 flags, auto-generated secrets, systemd service)
+- Air-gapped deployment: deploy/airgap-checklist.md (7 sections: Docker images, cargo vendor, .deb packages, migrations, verification, troubleshooting, checksums)
 
 ## Config
 
