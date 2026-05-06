@@ -44,3 +44,4 @@ url = "2.5"
 x509-parser = "0.17"
 rsa = { version = "0.9", features = ["sha2"] }
 pem = "3"
+csv = "1.3"

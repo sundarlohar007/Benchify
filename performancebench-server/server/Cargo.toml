@@ -44,3 +44,4 @@ url.workspace = true
 x509-parser.workspace = true
 rsa.workspace = true
 pem.workspace = true
+csv.workspace = true

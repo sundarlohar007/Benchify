@@ -12,6 +12,7 @@ use crate::state::AppState;
 
 pub mod admin;
 pub mod alerts;
+pub mod audit;
 pub mod auth;
 pub mod devices;
 pub mod health;
@@ -19,6 +20,7 @@ pub mod lenses;
 pub mod openapi;
 pub mod sessions;
 pub mod sso;
+pub mod teams;
 pub mod tokens;
 pub mod trends;
 pub mod upload;
@@ -90,6 +92,16 @@ pub fn create_router(state: AppState) -> Router {
         .nest("/webhooks", v1_webhooks)
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
+    // ── Audit routes (JWT + RBAC Auditor role required — Admin satisfies Auditor) ──
+    let audit_routes = audit::audit_router()
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
+        .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Auditor)));
+
+    // ── Team routes (JWT + RBAC Viewer+ role required) ──
+    let team_routes = teams::teams_router()
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
+        .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Viewer)));
+
     // ── Admin routes (JWT + RBAC Admin role required) ──
     let admin_routes = admin::admin_router()
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
@@ -103,6 +115,8 @@ pub fn create_router(state: AppState) -> Router {
         .merge(openapi_routes)
         .nest("/ws", ws_routes)
         .nest("/api/v1", api_routes)
+        .nest("/api/v1/audit", audit_routes)
+        .nest("/api/v1/teams", team_routes)
         .nest("/api/v1/admin", admin_routes)
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new().gzip(true))
