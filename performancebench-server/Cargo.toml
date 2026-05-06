@@ -16,7 +16,7 @@ thiserror = "2.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
 config = "0.15"
-axum = { version = "0.8", features = ["multipart"] }
+axum = { version = "0.8", features = ["multipart", "ws"] }
 tokio = { version = "1.52", features = ["full"] }
 tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip", "decompression-gzip"] }
 chrono = { version = "0.4", features = ["serde"] }
@@ -33,3 +33,5 @@ reqwest = { version = "0.12", features = ["json"] }
 lettre = { version = "0.11", features = ["tokio1-rustls-tls", "builder"] }
 hmac = "0.12"
 hex = "0.4"
+tokio-tungstenite = "0.29"
+futures-util = "0.3"

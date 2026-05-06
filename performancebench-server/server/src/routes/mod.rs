@@ -20,6 +20,7 @@ pub mod tokens;
 pub mod trends;
 pub mod upload;
 pub mod webhooks;
+pub mod ws;
 
 pub fn create_router(state: AppState) -> Router {
     // ── Public routes (no auth required) ──
@@ -40,6 +41,11 @@ pub fn create_router(state: AppState) -> Router {
     let health_routes = Router::new()
         .route("/health", get(health::health_check));
 
+    // WebSocket live overlay (D-47, V20-17)
+    // No auth middleware — auth checked implicitly by session UUID (unguessable)
+    let ws_routes = Router::new()
+        .route("/live/{session_id}", get(ws::ws_handler));
+
     // OpenAPI docs (no auth required)
     let openapi_routes = Router::new()
         .route("/api/v1/openapi.json", get(openapi::openapi_json));
@@ -48,7 +54,11 @@ pub fn create_router(state: AppState) -> Router {
     // The upload endpoint uses API token Bearer auth with "write" scope (D-32).
     // It must be OUTSIDE the JWT cookie middleware.
     let upload_routes = Router::new()
-        .route("/sessions", post(upload::upload_session))
+        .route("/sessions", post(upload::upload_session));
+
+    // Live push batch endpoint (API token auth, desktop -> server push)
+    let live_push_routes = Router::new()
+        .route("/sessions/{session_id}/live/batch", post(ws::push_live_batch))
         .route_layer(from_fn_with_state(state.clone(), api_token_mw::api_token_middleware));
 
     // ── API v1 (JWT cookie auth required) ──
@@ -60,9 +70,10 @@ pub fn create_router(state: AppState) -> Router {
     let v1_tokens = tokens::router();
     let v1_webhooks = webhooks::router();
 
-    // Merge upload routes into sessions scope
+    // Merge upload + live push routes into sessions scope
     let v1_sessions_with_upload = Router::new()
         .merge(upload_routes)
+        .merge(live_push_routes)
         .merge(v1_sessions);
 
     let api_routes = Router::new()
@@ -81,6 +92,7 @@ pub fn create_router(state: AppState) -> Router {
         .merge(public_auth)
         .merge(protected_auth)
         .merge(openapi_routes)
+        .nest("/ws", ws_routes)
         .nest("/api/v1", api_routes)
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new().gzip(true))

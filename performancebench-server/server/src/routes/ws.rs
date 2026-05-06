@@ -1,0 +1,112 @@
+use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
+use axum::extract::{Json, Path, State};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use futures_util::{SinkExt, StreamExt};
+use serde::Deserialize;
+use uuid::Uuid;
+
+use models::metric_sample::MetricSample;
+use crate::error::AppError;
+use crate::state::AppState;
+
+/// WebSocket upgrade handler for /ws/live/:session_id (D-47, V20-17).
+/// Browser clients connect to receive real-time metric samples.
+pub async fn ws_handler(
+    ws: WebSocketUpgrade,
+    State(state): State<AppState>,
+    Path(session_id): Path<Uuid>,
+) -> impl IntoResponse {
+    ws.on_upgrade(move |socket| handle_socket(socket, state, session_id))
+}
+
+/// Handle WebSocket connection lifecycle.
+async fn handle_socket(socket: WebSocket, state: AppState, session_id: Uuid) {
+    let (mut sender, mut receiver) = socket.split();
+
+    // Get or create broadcast channel for this session
+    let rx = {
+        let mut sessions = state.live_sessions.lock().unwrap();
+        let tx = sessions.entry(session_id).or_insert_with(|| {
+            let (tx, _) = tokio::sync::broadcast::channel(1024);
+            tx
+        });
+        tx.subscribe()
+    };
+
+    // Forward broadcast messages to WebSocket client
+    let mut send_task = tokio::spawn(async move {
+        let mut rx = rx;
+        while let Ok(sample) = rx.recv().await {
+            let json = serde_json::to_string(&sample).unwrap_or_default();
+            if sender
+                .send(Message::Text(json.into()))
+                .await
+                .is_err()
+            {
+                break; // client disconnected
+            }
+        }
+    });
+
+    // Handle incoming messages (close, ping)
+    let recv_task = tokio::spawn(async move {
+        while let Some(Ok(msg)) = receiver.next().await {
+            match msg {
+                Message::Close(_) => break,
+                Message::Ping(_) => { /* axum handles pong automatically */ }
+                _ => {}
+            }
+        }
+    });
+
+    // Wait for either task to finish
+    tokio::select! {
+        _ = (&mut send_task) => recv_task.abort(),
+        _ = (&mut recv_task) => send_task.abort(),
+    };
+
+    tracing::info!(session_id = %session_id, "WebSocket client disconnected");
+}
+
+/// Batch push endpoint: desktop sends multiple MetricSamples every ~5 seconds.
+/// POST /api/v1/sessions/:session_id/live/batch (API token auth)
+/// Body: {"samples": [MetricSample, ...]}
+#[derive(Debug, Deserialize)]
+pub struct LiveBatchBody {
+    pub samples: Vec<MetricSample>,
+}
+
+pub async fn push_live_batch(
+    State(state): State<AppState>,
+    Path(session_id): Path<Uuid>,
+    Json(body): Json<LiveBatchBody>,
+) -> Result<impl IntoResponse, AppError> {
+    // Get or create broadcast channel
+    let tx = {
+        let mut sessions = state.live_sessions.lock().unwrap();
+        sessions
+            .entry(session_id)
+            .or_insert_with(|| {
+                let (tx, _) = tokio::sync::broadcast::channel(1024);
+                tx
+            })
+            .clone()
+    };
+
+    let mut sent = 0u64;
+    for sample in body.samples {
+        if tx.send(sample).is_ok() {
+            sent += 1;
+        }
+    }
+
+    tracing::debug!(
+        session_id = %session_id,
+        batch_size = body.samples.len(),
+        sent = sent,
+        "Live batch pushed"
+    );
+
+    Ok((StatusCode::OK, Json(serde_json::json!({ "sent": sent }))))
+}
