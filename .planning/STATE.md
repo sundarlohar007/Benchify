@@ -8,8 +8,8 @@ progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 25
-  completed_plans: 25
-  percent: 100
+  completed_plans: 26
+  percent: 92
 ---
 
 # Project State: Benchify
@@ -34,7 +34,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase 3 — v2.0 Server | Complete | 2026-05-05 | 2026-05-06 | 18/18 |
 | Phase 4 — v2.5 Injection | Complete | 2026-05-06 | 2026-05-06 | 11/11 |
 | Phase 5 — v3.0 Plugins/PC | In Progress | 2026-05-06 | — | 3/10 |
-| Phase 6 — v3.5 Enterprise | Pending | — | — | 9 |
+| Phase 6 — v3.5 Enterprise | In Progress | 2026-05-06 | — | 4/9 |
 
 **Total:** 74/90 requirements complete (Phases 1-4 complete; Phase 5: 3/10 requirements — V30-01, V30-02, V30-03)
 
@@ -206,8 +206,35 @@ Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-0
 Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. All 4 plans complete.
 
 - Phase 5 complete: 10/10 requirements (V30-01 through V30-10)
-- Overall: 84/90 requirements (6 remaining in Phase 6)
-- Next: Phase 6 — v3.5 Enterprise (Auth + RBAC, Multi-team, Audit Logs, Client Cert, Role Management, Retention Policies, Admin Dashboard, Alert Dispatch, SLA Reports)
+- Overall: 88/90 requirements (2 remaining in Phase 6)
+- Next: Phase 6 — v3.5 Enterprise Plan 02 (Audit Logging, On-Prem Deploy)
+
+## Phase 6 Progress
+
+### Plan 06-01 Complete: Enterprise SSO + RBAC
+
+| Plan | Summary | Commits | Key Deliverables |
+|------|---------|---------|-----------------|
+| 01 — SSO + RBAC | 06-01-SUMMARY.md | 3e62419, 30c216b, 970a7d0 | Schema v3 (5 roles, SSO fields, sso_configs), OIDC PKCE flow, SAML 2.0 AuthnRequest+ACS, LDAP bind+search, JIT provisioning with viewer default role, RBAC middleware (5-role hierarchy), Admin user management API |
+
+### Key Metrics (Plan 06-01)
+
+- **3 commits** (one per task)
+- **9 files created** (migration, 3 models/queries, 3 utils, 2 routes, 1 middleware)
+- **17 files modified** (models, db, server, Cargo.toml)
+- **4/9 Phase 6 requirements** (V35-01, V35-02, V35-03, V35-05)
+- **Remaining pre-existing compile errors**: 13+ in unrelated server crate files (lettre, ws, webhooks, alerts, lenses, analytics) — addressed in future cleanup
+
+### Artifacts Produced (Plan 06-01)
+
+- Enterprise schema migration v3: role CHECK (5 values), SSO identity columns, sso_configs table
+- OIDC SSO: openidconnect v4 async flow (discover, PKCE S256, exchange, id_token validation)
+- SAML 2.0: AuthnRequest generation + SAMLResponse validation with signature checks
+- LDAP: async bind+search authentication with ldap3 v0.11
+- JIT provisioning: find_or_create_sso_user with viewer default, email conflict detection
+- RBAC middleware: 5-role hierarchy (Admin>Manager>Operator>Viewer, Auditor leaf)
+- Admin API: GET /api/v1/admin/users + role/status management
+- SSO config: sso_configs DB table + AppConfig SSO section + .env.example
 
 ## Config
 

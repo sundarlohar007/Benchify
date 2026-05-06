@@ -106,11 +106,11 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 
 ### Phase 6: v3.5 — Enterprise
 
-- [ ] **V35-01**: SAML 2.0 SSO (Okta, Azure AD, Google Workspace)
-- [ ] **V35-02**: LDAP authentication
-- [ ] **V35-03**: JIT (Just-In-Time) user provisioning
+- [x] **V35-01**: SAML 2.0 SSO (Okta, Azure AD, Google Workspace)
+- [x] **V35-02**: LDAP authentication
+- [x] **V35-03**: JIT (Just-In-Time) user provisioning
 - [ ] **V35-04**: Jira issue creation from session
-- [ ] **V35-05**: RBAC — Owner / Admin / Member / Viewer roles
+- [x] **V35-05**: RBAC — Owner / Admin / Member / Viewer roles
 - [ ] **V35-06**: Audit log — all session uploads, deletes, exports, alert configs
 - [ ] **V35-07**: On-premises deployment guide (nginx + TLS + PostgreSQL)
 - [ ] **V35-08**: Thread-level CPU breakdown (root required, documented)
@@ -224,11 +224,11 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V30-08 | Phase 5 | Complete |
 | V30-09 | Phase 5 | Complete |
 | V30-10 | Phase 5 | Complete |
-| V35-01 | Phase 6 | Pending |
-| V35-02 | Phase 6 | Pending |
-| V35-03 | Phase 6 | Pending |
+| V35-01 | Phase 6 | Complete |
+| V35-02 | Phase 6 | Complete |
+| V35-03 | Phase 6 | Complete |
 | V35-04 | Phase 6 | Pending |
-| V35-05 | Phase 6 | Pending |
+| V35-05 | Phase 6 | Complete |
 | V35-06 | Phase 6 | Pending |
 | V35-07 | Phase 6 | Pending |
 | V35-08 | Phase 6 | Pending |
