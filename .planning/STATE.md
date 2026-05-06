@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: "Game Engine Plugins + iOS Injection + tvOS + PC"
 status: in-progress
-last_updated: "2026-05-06T13:56:00.000Z"
+last_updated: "2026-05-06T18:00:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 25
-  completed_plans: 23
-  percent: 92
+  completed_plans: 24
+  percent: 96
 ---
 
 # Project State: Benchify
@@ -148,11 +148,18 @@ Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-0
 |------|---------|---------|-----------------|
 | 01 — Game Engine Plugins + Installer | 05-01-SUMMARY.md | 3bd55db, e34f21f, 5b9f0eb | Shared Rust engine_core (ScopedMarker + auto-marker + metric structs), Unity UPM plugin (C# P/Invoke + EditorWindow), Unreal C++ plugin (Blueprint BeginMarker + Slate editor), Godot GDScript plugin (Autoload + with pattern + RenderingServer dock), Desktop unified installer (EngineDetector + one-click install to Unity/Unreal/Godot projects) |
 
-### Plan 05-02 In Progress: iOS IPA Injection UI
+### Plan 05-02 Complete: iOS IPA Injection + tvOS pyidevice
 
 | Plan | Summary | Commits | Key Deliverables |
 |------|---------|---------|-----------------|
-| 02 — iOS IPA Injection | 05-02-SUMMARY.md (pending) | f1c4d70, 4393194 | Flutter desktop iOS IPA injection screen with drag-drop, auto-detect signing (free Apple ID / paid / custom cert), dylib injection pipeline |
+| 02 — iOS IPA Injection + tvOS | 05-02-SUMMARY.md | f124ab9, 29fccb6, f1c4d70, 4393194, 4bdd4d3 | Python IPA injection engine (ipa_injector + apple_signing + ipa_verifier), Flutter desktop iOS tab (drag-drop, signing config, verification stepper), tvOS pyidevice collector, Flutter tvOS support (TargetKind, metric masking, Power: Mains card) |
+
+### Key Metrics (Plan 05-02)
+
+- **68 tests passing** (51 IPA injection + 17 tvOS collector)
+- **0 dart analyze errors** (all new Flutter files clean)
+- **18 files** (13 created: 3 Python injection, 3 Python tests, 5 Flutter, 1 tvOS collector, 1 tvOS test; 1 modified: injector_cli.py; 4 modified: ios_service.dart, device_card.dart, charts_tab.dart)
+- **5 commits** (2 TDD RED→GREEN pairs + Flutter UI commit)
 
 ### Plan 05-03 Complete: PC Profiling Metric Modules
 
@@ -176,11 +183,10 @@ Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-0
 
 ## Next Steps
 
-Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. Plans 05-01 and 05-03 complete.
+Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. Plans 05-01, 05-02, and 05-03 complete.
 
-- Plan 05-02 (iOS IPA Injection UI) — in progress (2 commits, pending summary)
-- Plan 05-04 (tvOS + PC pb-pcprobe binary assembly) remaining
-- Overall: 80/90 requirements (6 of 10 Phase 5 requirements addressed: V30-01/02/03 via Plan 01, V30-06/07/08 via Plan 03)
+- Plan 05-04 (PC pb-pcprobe binary assembly + video recording) remaining
+- Overall: 82/90 requirements (8 of 10 Phase 5 requirements addressed: V30-01/02/03 via Plan 01, V30-04/05 via Plan 02, V30-06/07/08 via Plan 03)
 
 ## Config
 
