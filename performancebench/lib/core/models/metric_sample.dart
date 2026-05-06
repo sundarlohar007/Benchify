@@ -70,6 +70,32 @@ class MetricSample {
   final int? screenBrightness;
   final int? volumePct;
 
+  // -----------------------------------------------------------------------
+  // PC-specific fields (v3.0, §19.6) — all nullable for mobile compatibility
+  // -----------------------------------------------------------------------
+
+  /// Handle count (Windows only)
+  final int? pcHandleCount;
+
+  /// Thread count (Windows only)
+  final int? pcThreadCount;
+
+  /// Page faults per second (Windows only)
+  final double? pcPageFaultsPerS;
+
+  /// GPU dedicated memory in KB (Windows only)
+  final int? pcGpuDedicatedMemKb;
+
+  /// GPU shared memory in KB (Windows only)
+  final int? pcGpuSharedMemKb;
+
+  /// JSON array of per-core CPU % (Windows only)
+  final String? pcPerCoreCpuJson;
+
+  /// JSON array of per-thread CPU data (Windows only):
+  /// [{"tid": 123, "name": "UnityMain", "cpu_pct": 18.2}, ...]
+  final String? pcThreadCpuJson;
+
   const MetricSample({
     this.id,
     required this.sessionId,
@@ -118,6 +144,13 @@ class MetricSample {
     this.diskWriteKb,
     this.screenBrightness,
     this.volumePct,
+    this.pcHandleCount,
+    this.pcThreadCount,
+    this.pcPageFaultsPerS,
+    this.pcGpuDedicatedMemKb,
+    this.pcGpuSharedMemKb,
+    this.pcPerCoreCpuJson,
+    this.pcThreadCpuJson,
   });
 
   factory MetricSample.fromMap(Map<String, dynamic> map) {
@@ -169,6 +202,13 @@ class MetricSample {
       diskWriteKb: (map['disk_write_kb'] as num?)?.toDouble(),
       screenBrightness: map['screen_brightness'] as int?,
       volumePct: map['volume_pct'] as int?,
+      pcHandleCount: map['pc_handle_count'] as int?,
+      pcThreadCount: map['pc_thread_count'] as int?,
+      pcPageFaultsPerS: (map['pc_page_faults_per_s'] as num?)?.toDouble(),
+      pcGpuDedicatedMemKb: map['pc_gpu_dedicated_mem_kb'] as int?,
+      pcGpuSharedMemKb: map['pc_gpu_shared_mem_kb'] as int?,
+      pcPerCoreCpuJson: map['pc_per_core_cpu_json'] as String?,
+      pcThreadCpuJson: map['pc_thread_cpu_json'] as String?,
     );
   }
 
@@ -220,6 +260,13 @@ class MetricSample {
       'disk_write_kb': diskWriteKb,
       'screen_brightness': screenBrightness,
       'volume_pct': volumePct,
+      'pc_handle_count': pcHandleCount,
+      'pc_thread_count': pcThreadCount,
+      'pc_page_faults_per_s': pcPageFaultsPerS,
+      'pc_gpu_dedicated_mem_kb': pcGpuDedicatedMemKb,
+      'pc_gpu_shared_mem_kb': pcGpuSharedMemKb,
+      'pc_per_core_cpu_json': pcPerCoreCpuJson,
+      'pc_thread_cpu_json': pcThreadCpuJson,
     };
     if (id != null) map['id'] = id;
     return map;
