@@ -43,6 +43,7 @@ pub struct Session {
     pub is_uploaded: bool,
     pub uploaded_by: Option<Uuid>,
     pub uploaded_at: Option<chrono::NaiveDateTime>,
+    pub team_project_id: Option<Uuid>,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
 }

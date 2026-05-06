@@ -34,3 +34,72 @@ CREATE TABLE sso_configs (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- ============================================================
+-- 8. Audit Events (V35-06)
+-- ============================================================
+CREATE TABLE audit_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_type VARCHAR(50) NOT NULL,
+    event_category VARCHAR(30) NOT NULL CHECK (event_category IN ('auth', 'session', 'user', 'config', 'team', 'export', 'system')),
+    actor_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    actor_email VARCHAR(255),
+    target_type VARCHAR(50),
+    target_id UUID,
+    details JSONB NOT NULL DEFAULT '{}',
+    ip_address INET,
+    user_agent TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_audit_events_event_type ON audit_events(event_type);
+CREATE INDEX idx_audit_events_event_category ON audit_events(event_category);
+CREATE INDEX idx_audit_events_actor_id ON audit_events(actor_id);
+CREATE INDEX idx_audit_events_created_at ON audit_events(created_at DESC);
+CREATE INDEX idx_audit_events_target ON audit_events(target_type, target_id);
+
+-- ============================================================
+-- 9. Team Organizations (V35-09)
+-- ============================================================
+CREATE TABLE team_orgs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    settings JSONB NOT NULL DEFAULT '{}',
+    created_by UUID NOT NULL REFERENCES users(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_team_orgs_slug ON team_orgs(slug);
+
+-- Team Projects (V35-09)
+CREATE TABLE team_projects (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    org_id UUID NOT NULL REFERENCES team_orgs(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_by UUID NOT NULL REFERENCES users(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(org_id, slug)
+);
+CREATE INDEX idx_team_projects_org_id ON team_projects(org_id);
+
+-- Team Membership (V35-09)
+CREATE TABLE team_membership (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    org_id UUID NOT NULL REFERENCES team_orgs(id) ON DELETE CASCADE,
+    role VARCHAR(20) NOT NULL DEFAULT 'viewer' CHECK (role IN ('admin', 'manager', 'operator', 'viewer', 'auditor')),
+    joined_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, org_id)
+);
+CREATE INDEX idx_team_membership_user_id ON team_membership(user_id);
+CREATE INDEX idx_team_membership_org_id ON team_membership(org_id);
+
+-- Add team_project_id FK to sessions (backward compatible — nullable, existing sessions get NULL)
+ALTER TABLE sessions ADD COLUMN IF NOT EXISTS team_project_id UUID REFERENCES team_projects(id);
+CREATE INDEX IF NOT EXISTS idx_sessions_team_project_id ON sessions(team_project_id);

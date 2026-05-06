@@ -1,4 +1,5 @@
 pub mod alert;
+pub mod audit;
 pub mod collection;
 pub mod detected_issue;
 pub mod device;
@@ -9,6 +10,7 @@ pub mod region_stats;
 pub mod schema;
 pub mod session;
 pub mod sso;
+pub mod team;
 pub mod token;
 pub mod user;
 pub mod video;

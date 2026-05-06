@@ -84,6 +84,7 @@ diesel::table! {
         is_uploaded -> Bool,
         uploaded_by -> Nullable<Uuid>,
         uploaded_at -> Nullable<Timestamptz>,
+        team_project_id -> Nullable<Uuid>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -213,6 +214,60 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    audit_events (id) {
+        id -> Uuid,
+        event_type -> Varchar,
+        event_category -> Varchar,
+        actor_id -> Nullable<Uuid>,
+        actor_email -> Nullable<Varchar>,
+        target_type -> Nullable<Varchar>,
+        target_id -> Nullable<Uuid>,
+        details -> Jsonb,
+        ip_address -> Nullable<Inet>,
+        user_agent -> Nullable<Text>,
+        created_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    team_orgs (id) {
+        id -> Uuid,
+        name -> Varchar,
+        slug -> Varchar,
+        description -> Nullable<Text>,
+        is_active -> Bool,
+        settings -> Jsonb,
+        created_by -> Uuid,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    team_projects (id) {
+        id -> Uuid,
+        org_id -> Uuid,
+        name -> Varchar,
+        slug -> Varchar,
+        description -> Nullable<Text>,
+        is_active -> Bool,
+        created_by -> Uuid,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    team_membership (id) {
+        id -> Uuid,
+        user_id -> Uuid,
+        org_id -> Uuid,
+        role -> Varchar,
+        joined_at -> Timestamptz,
+    }
+}
+
 diesel::joinable!(api_tokens -> users (user_id));
 diesel::joinable!(refresh_tokens -> users (user_id));
 diesel::joinable!(sessions -> users (user_id));
@@ -225,6 +280,10 @@ diesel::joinable!(alert_rules -> users (user_id));
 diesel::joinable!(alert_events -> alert_rules (rule_id));
 diesel::joinable!(videos -> sessions (session_id));
 diesel::joinable!(webhook_configs -> users (user_id));
+diesel::joinable!(audit_events -> users (actor_id));
+diesel::joinable!(team_projects -> team_orgs (org_id));
+diesel::joinable!(team_membership -> users (user_id));
+diesel::joinable!(team_membership -> team_orgs (org_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     users,
@@ -241,4 +300,8 @@ diesel::allow_tables_to_appear_in_same_query!(
     alert_events,
     videos,
     webhook_configs,
+    audit_events,
+    team_orgs,
+    team_projects,
+    team_membership,
 );
