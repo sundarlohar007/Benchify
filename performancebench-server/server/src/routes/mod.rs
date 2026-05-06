@@ -7,8 +7,10 @@ use tower_http::trace::TraceLayer;
 
 use crate::middleware::auth as auth_mw;
 use crate::middleware::api_token as api_token_mw;
+use crate::middleware::rbac;
 use crate::state::AppState;
 
+pub mod admin;
 pub mod alerts;
 pub mod auth;
 pub mod devices;
@@ -88,6 +90,11 @@ pub fn create_router(state: AppState) -> Router {
         .nest("/webhooks", v1_webhooks)
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
+    // ── Admin routes (JWT + RBAC Admin role required) ──
+    let admin_routes = admin::admin_router()
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
+        .route_layer(from_fn_with_state(state.clone(), rbac::require_admin()));
+
     // ── Compose final router ──
     Router::new()
         .merge(health_routes)
@@ -96,6 +103,7 @@ pub fn create_router(state: AppState) -> Router {
         .merge(openapi_routes)
         .nest("/ws", ws_routes)
         .nest("/api/v1", api_routes)
+        .nest("/api/v1/admin", admin_routes)
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new().gzip(true))
         .layer(CorsLayer::permissive())
