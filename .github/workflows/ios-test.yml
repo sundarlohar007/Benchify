@@ -14,6 +14,9 @@ on:
 jobs:
   ios-test:
     runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: performancebench
     strategy:
       matrix:
         ios-version: ['16.4', '17.2']
