@@ -5,3 +5,4 @@ pub mod metrics;
 pub mod automation;
 pub mod engine_core;
 pub mod pc_metrics;
+pub mod pc_video;
