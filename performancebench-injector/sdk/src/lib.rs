@@ -3,3 +3,5 @@ pub mod transport;
 pub mod jni_bridge;
 pub mod metrics;
 pub mod automation;
+pub mod engine_core;
+pub mod pc_metrics;
