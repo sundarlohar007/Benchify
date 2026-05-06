@@ -29,3 +29,7 @@ rustls-pemfile.workspace = true
 tokio-rustls.workspace = true
 axum-server.workspace = true
 utoipa.workspace = true
+reqwest.workspace = true
+lettre.workspace = true
+hmac.workspace = true
+hex.workspace = true

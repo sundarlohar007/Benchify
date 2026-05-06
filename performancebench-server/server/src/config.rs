@@ -10,6 +10,12 @@ pub struct AppConfig {
     pub tls_key_path: Option<String>,
     pub cors_allowed_origins: Vec<String>,
     pub upload_dir: String,
+    pub smtp_host: Option<String>,
+    pub smtp_port: Option<u16>,
+    pub smtp_username: Option<String>,
+    pub smtp_password: Option<String>,
+    pub smtp_from_email: Option<String>,
+    pub slack_webhook_url: Option<String>,
 }
 
 impl AppConfig {

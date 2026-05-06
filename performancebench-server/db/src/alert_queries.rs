@@ -143,6 +143,17 @@ pub async fn delete_alert_rule(pool: &DbPool, rule_id: Uuid, user_id: Uuid) -> D
 
 // ── Alert Events ──
 
+/// List all active alert rules across all users (for evaluation engine).
+/// No user_id filter — used internally by alert evaluation triggered after session upload.
+pub async fn list_active_alert_rules(pool: &DbPool) -> DbResult<Vec<AlertRule>> {
+    let mut client = pool.get().await?;
+    let result = alert_rules::table
+        .filter(alert_rules::is_active.eq(true))
+        .load::<AlertRule>(&mut *client)
+        .await?;
+    Ok(result)
+}
+
 /// Create a new alert event (fired when a metric exceeds threshold).
 pub async fn create_alert_event(
     pool: &DbPool,

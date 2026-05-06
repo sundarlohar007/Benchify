@@ -5,7 +5,7 @@ use axum::{Extension, Json};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use db::{device_queries, session_queries};
+use db::{alert_queries, device_queries, session_queries};
 use db::session_queries::NewSession;
 use models::detected_issue::DetectedIssue;
 use models::marker::Marker;
@@ -14,6 +14,9 @@ use models::session::Session;
 use models::video::VideoMetadata;
 use crate::error::AppError;
 use crate::services::analytics;
+use crate::services::notifications::{
+    dispatch_notification, NotificationChannel, NotificationPayload,
+};
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
 
@@ -264,6 +267,7 @@ pub async fn upload_session(
 
     // ── Background recomputation of session_stats (D-10, D-18) ──
     let pool_clone = state.pool.clone();
+    let config_clone = state.config.clone();
     let sid = session_id;
     let uploaded_samples = payload.samples.clone();
     let uploaded_markers = payload.markers.clone();
@@ -293,6 +297,77 @@ pub async fn upload_session(
                 error = %e,
                 "Failed to update session stats after recomputation"
             );
+        }
+
+        // ── Alert evaluation (D-14): Evaluate active alert rules against session_stats ──
+        match alert_queries::list_active_alert_rules(&pool_clone).await {
+            Ok(rules) => {
+                for rule in rules {
+                    let metric_value = extract_metric_value(&stats, &rule.metric_name);
+                    if let Some(value) = metric_value {
+                        let triggered = match rule.condition.as_str() {
+                            "lt" => value < rule.threshold,
+                            "gt" => value > rule.threshold,
+                            "lte" => value <= rule.threshold,
+                            "gte" => value >= rule.threshold,
+                            _ => false,
+                        };
+                        if triggered {
+                            // Create alert event
+                            if let Ok(event) = alert_queries::create_alert_event(
+                                &pool_clone,
+                                rule.id,
+                                Some(sid),
+                                value,
+                                rule.threshold,
+                            )
+                            .await
+                            {
+                                tracing::info!(
+                                    rule_id = %rule.id,
+                                    alert_event_id = %event.id,
+                                    session_id = %sid,
+                                    metric = %rule.metric_name,
+                                    value = value,
+                                    threshold = rule.threshold,
+                                    "Alert rule triggered"
+                                );
+
+                                // Dispatch notifications via configured channels
+                                let payload = NotificationPayload {
+                                    event_type: "alert_fired".to_string(),
+                                    title: format!(
+                                        "{} {} {} {}",
+                                        rule.metric_name, rule.condition, rule.threshold, "triggered"
+                                    ),
+                                    message: format!(
+                                        "Alert '{}' triggered: {} ({}) {} {} (actual: {:.2})",
+                                        rule.name, rule.metric_name, sid,
+                                        rule.condition, rule.threshold, value
+                                    ),
+                                    session_id: Some(sid),
+                                    alert_rule_id: Some(rule.id),
+                                    metric_value: Some(value),
+                                    threshold: Some(rule.threshold),
+                                    timestamp: chrono::Utc::now(),
+                                };
+
+                                if let Ok(channels) = serde_json::from_value::<Vec<NotificationChannel>>(rule.channels.clone()) {
+                                    if !channels.is_empty() {
+                                        let cfg = config_clone.clone();
+                                        tokio::spawn(async move {
+                                            dispatch_notification(&cfg, &channels, &payload).await;
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                tracing::error!(?e, session_id = %sid, "Failed to evaluate alert rules");
+            }
         }
     });
 
@@ -346,4 +421,27 @@ fn parse_timestamp(s: &str) -> Option<chrono::NaiveDateTime> {
 
     tracing::warn!(timestamp = %s, "Could not parse timestamp");
     None
+}
+
+/// Extract a metric value from computed SessionStats by name.
+/// Maps alert rule metric_name strings to SessionStats fields.
+fn extract_metric_value(
+    stats: &models::session::SessionStats,
+    metric_name: &str,
+) -> Option<f64> {
+    match metric_name {
+        "fps_median" => stats.fps_median,
+        "fps_stability" => stats.fps_stability,
+        "fps_min" => stats.fps_min,
+        "cpu_avg_pct" => stats.cpu_avg_pct,
+        "cpu_peak_pct" => stats.cpu_peak_pct,
+        "memory_avg_kb" => stats.memory_avg_kb.map(|v| v as f64),
+        "memory_peak_kb" => stats.memory_peak_kb.map(|v| v as f64),
+        "gpu_avg_pct" => stats.gpu_avg_pct,
+        "battery_drain_pct" => stats.battery_drain_pct,
+        "battery_temp_max_c" => stats.battery_temp_max_c,
+        "jank_per_min" => stats.jank_per_min,
+        "thermal_peak" => stats.thermal_peak.map(|v| v as f64),
+        _ => None,
+    }
 }
