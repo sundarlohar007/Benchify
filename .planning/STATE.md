@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: "Team Server + Web Dashboard + CI/CD"
-status: complete
-last_updated: "2026-05-06T07:00:00.000Z"
+milestone: v2.5
+milestone_name: "Android SDK Injection"
+status: in-progress
+last_updated: "2026-05-06T09:00:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 18
-  completed_plans: 18
+  total_plans: 19
+  completed_plans: 19
   percent: 100
 ---
 
@@ -31,11 +31,11 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase 1 — v1.0 MVP | Complete | 2026-05-04 | 2026-05-04 | 29/29 |
 | Phase 2 — v1.5 Analysis | Complete | 2026-05-04 | 2026-05-05 | 13/13 |
 | Phase 3 — v2.0 Server | Complete | 2026-05-05 | 2026-05-06 | 18/18 |
-| Phase 4 — v2.5 Injection | Pending | — | — | 11 |
+| Phase 4 — v2.5 Injection | In Progress | 2026-05-06 | — | 3/11 |
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
 | Phase 6 — v3.5 Enterprise | Pending | — | — | 9 |
 
-**Total:** 60/90 requirements complete (Phases 1-3 done)
+**Total:** 63/90 requirements complete (Phases 1-3 done, Phase 4 wave 1 done)
 
 ## Phase 1 Summary
 
@@ -121,13 +121,21 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 - **1 Flutter mobile app** with 4 screens (settings, session list, session detail, trends)
 - **18/18 V20 requirements addressed**
 
+## Phase 4 Progress
+
+### Waves Completed (1/4)
+
+| Wave | Plan | Summary | Commit | Key Deliverables |
+|------|------|---------|--------|-----------------|
+| 01 — Python Injector + Desktop UI | 04-01-PLAN.md | 04-01-SUMMARY.md | 5619bf1, dd09022 | Python APK injection toolchain (apktool/Smali/manifest/re-sign/verify), Flutter desktop injection screen with drag-drop, method selector, keystore config, verification progress stepper |
+
 ## Next Steps
 
-Phase 4 — v2.5 Injection Engine (V25-01 through V25-11)
+Phase 4 — v2.5 Injection Engine (8 remaining: V25-03, V25-05 through V25-11)
 
-- `/gsd-plan-phase 4` or `/gsd-execute-phase 4` to continue
-
-- Execute Plan 03-04: Trends Explorer KPI charts, Lenses saved views, Detected Issues tile, Analysis Reports
+- Execute Plan 04-02: Rust SDK native .so + FPS overlay widget
+- Execute Plan 04-03: Frida gadget injection + WebView/JS + per-process network
+- Execute Plan 04-04: ADB broadcast automation + iOS video recording via DVT
 
 ## Config
 

@@ -79,10 +79,10 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 
 ### Phase 4: v2.5 — Android SDK Injection
 
-- [ ] **V25-01**: Separate repo `performancebench-injector`
-- [ ] **V25-02**: APK injection via apktool + Smali patching
+- [x] **V25-01**: Separate repo `performancebench-injector`
+- [x] **V25-02**: APK injection via apktool + Smali patching
 - [ ] **V25-03**: SDK native library compiled to .so in Rust
-- [ ] **V25-04**: Re-signing with user-provided keystore
+- [x] **V25-04**: Re-signing with user-provided keystore
 - [ ] **V25-05**: In-app FPS overlay (floating widget on device screen)
 - [ ] **V25-06**: SDK → desktop via local ADB socket on port 8080
 - [ ] **V25-07**: Frida gadget injection as alternative (no re-signing needed)
@@ -203,10 +203,10 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V20-16 | Phase 3 | Pending |
 | V20-17 | Phase 3 | Pending |
 | V20-18 | Phase 3 | Pending |
-| V25-01 | Phase 4 | Pending |
-| V25-02 | Phase 4 | Pending |
+| V25-01 | Phase 4 | Complete |
+| V25-02 | Phase 4 | Complete |
 | V25-03 | Phase 4 | Pending |
-| V25-04 | Phase 4 | Pending |
+| V25-04 | Phase 4 | Complete |
 | V25-05 | Phase 4 | Pending |
 | V25-06 | Phase 4 | Pending |
 | V25-07 | Phase 4 | Pending |
