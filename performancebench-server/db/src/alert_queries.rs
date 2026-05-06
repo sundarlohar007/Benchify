@@ -99,32 +99,21 @@ pub async fn update_alert_rule(
         .filter(alert_rules::user_id.eq(user_id));
 
     let now = chrono::Utc::now().naive_utc();
-    let mut update = diesel::update(target).into_boxed();
 
-    if let Some(n) = name {
-        update = update.set(alert_rules::name.eq(n));
-    }
-    if let Some(m) = metric_name {
-        update = update.set(alert_rules::metric_name.eq(m));
-    }
-    if let Some(c) = condition {
-        update = update.set(alert_rules::condition.eq(c));
-    }
-    if let Some(t) = threshold {
-        update = update.set(alert_rules::threshold.eq(t));
-    }
-    if let Some(d) = duration_seconds {
-        update = update.set(alert_rules::duration_seconds.eq(d));
-    }
-    if let Some(ch) = channels {
-        update = update.set(alert_rules::channels.eq(ch));
-    }
-    if let Some(a) = is_active {
-        update = update.set(alert_rules::is_active.eq(a));
-    }
-    update = update.set(alert_rules::updated_at.eq(now));
+    let result = diesel::update(target)
+        .set((
+            name.map(|n| alert_rules::name.eq(n)),
+            metric_name.map(|m| alert_rules::metric_name.eq(m)),
+            condition.map(|c| alert_rules::condition.eq(c)),
+            threshold.map(|t| alert_rules::threshold.eq(t)),
+            duration_seconds.map(|d| alert_rules::duration_seconds.eq(d)),
+            channels.map(|ch| alert_rules::channels.eq(ch)),
+            is_active.map(|a| alert_rules::is_active.eq(a)),
+            alert_rules::updated_at.eq(now),
+        ))
+        .get_result::<AlertRule>(&mut *client)
+        .await?;
 
-    let result = update.get_result::<AlertRule>(&mut *client).await?;
     Ok(Some(result))
 }
 

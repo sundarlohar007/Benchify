@@ -24,26 +24,21 @@ pub async fn list_sessions(
 ) -> DbResult<(Vec<Session>, i64)> {
     let mut client = pool.get().await?;
 
-    let base_query = sessions::table.filter(sessions::user_id.eq(user_id));
+    let mut filtered = sessions::table
+        .filter(sessions::user_id.eq(user_id))
+        .into_boxed();
 
-    let filtered = match app_name {
-        Some(name) => base_query.filter(sessions::app_name.eq(name.to_string())),
-        None => base_query,
-    };
-
-    let filtered = match device_model {
-        Some(model) => filtered.filter(sessions::device_model.eq(Some(model.to_string()))),
-        None => filtered,
-    };
-
-    let filtered = match project_id {
-        Some(pid) => filtered.filter(sessions::project_id.eq(Some(pid.to_string()))),
-        None => filtered,
-    };
+    if let Some(name) = app_name {
+        filtered = filtered.filter(sessions::app_name.eq(name.to_string()));
+    }
+    if let Some(model) = device_model {
+        filtered = filtered.filter(sessions::device_model.eq(Some(model.to_string())));
+    }
+    if let Some(pid) = project_id {
+        filtered = filtered.filter(sessions::project_id.eq(Some(pid.to_string())));
+    }
 
     // Tag filtering: if tags provided, filter sessions whose tags array overlaps.
-    // This is best-effort: PostgreSQL array overlap operator (&&).
-    // For Diesel compatibility we use a raw SQL filter when tags are present.
     let sessions_data: Vec<Session>;
     let total: i64;
 
@@ -58,14 +53,13 @@ pub async fn list_sessions(
                     .join(", ")
             );
 
-            use diesel::sql_types::BigInt;
             let count_query = diesel::sql_query(format!(
                 "SELECT COUNT(*) as count FROM sessions WHERE user_id = $1 AND {}",
                 tag_filter
             ))
             .bind::<diesel::sql_types::Uuid, _>(user_id);
             let count_rows = count_query.load::<diesel_deser::CountRow>(&mut *client).await?;
-            total = count_rows.first().map(|r| r.count).unwrap_or(0);
+            total = if count_rows.is_empty() { 0 } else { count_rows[0].count };
 
             let data_query = diesel::sql_query(format!(
                 r#"SELECT id, user_id, device_id, app_name, app_package, app_version,
@@ -83,13 +77,13 @@ pub async fn list_sessions(
             .bind::<diesel::sql_types::BigInt, _>(limit);
             sessions_data = data_query.load::<Session>(&mut *client).await?;
         } else {
-            let count = filtered
+            total = sessions::table
+                .filter(sessions::user_id.eq(user_id))
                 .count()
                 .get_result::<i64>(&mut *client)
                 .await?;
-            total = count;
-
-            sessions_data = filtered
+            sessions_data = sessions::table
+                .filter(sessions::user_id.eq(user_id))
                 .order(sessions::started_at.desc())
                 .offset(offset)
                 .limit(limit)
@@ -98,13 +92,13 @@ pub async fn list_sessions(
                 .await?;
         }
     } else {
-        let count = filtered
+        total = sessions::table
+            .filter(sessions::user_id.eq(user_id))
             .count()
             .get_result::<i64>(&mut *client)
             .await?;
-        total = count;
-
-        sessions_data = filtered
+        sessions_data = sessions::table
+            .filter(sessions::user_id.eq(user_id))
             .order(sessions::started_at.desc())
             .offset(offset)
             .limit(limit)
@@ -171,12 +165,12 @@ pub async fn insert_session(
             sessions::started_at.eq(session.started_at),
             sessions::ended_at.eq(session.ended_at),
             sessions::duration_seconds.eq(session.duration_seconds),
-            sessions::session_stats.eq(&session.session_stats_str),
-            sessions::metric_samples.eq(&session.metric_samples_str),
-            sessions::markers.eq(&session.markers_str),
-            sessions::detected_issues.eq(&session.detected_issues_str),
+            sessions::session_stats.eq(parse_jsonb_val(&session.session_stats_str)),
+            sessions::metric_samples.eq(parse_jsonb_val(&session.metric_samples_str)),
+            sessions::markers.eq(parse_jsonb_val(&session.markers_str)),
+            sessions::detected_issues.eq(parse_jsonb_val(&session.detected_issues_str)),
             sessions::screenshots.eq(&session.screenshots),
-            sessions::video_metadata.eq(&session.video_metadata_str),
+            sessions::video_metadata.eq(session.video_metadata_str.as_ref().map(|s| parse_jsonb_val(s))),
             sessions::thumbnail_path.eq(&session.thumbnail_path),
             sessions::is_uploaded.eq(session.is_uploaded),
             sessions::uploaded_by.eq(session.uploaded_by),
@@ -217,7 +211,7 @@ pub async fn update_session_stats(
     let now = chrono::Utc::now().naive_utc();
     diesel::update(sessions::table.find(session_id))
         .set((
-            sessions::session_stats.eq(serde_json::to_string(&stats_json).unwrap_or_else(|_| "{}".to_string())),
+            sessions::session_stats.eq(&stats_json),
             sessions::updated_at.eq(now),
         ))
         .execute(&mut *client)
@@ -268,10 +262,16 @@ pub struct NewSession {
     pub uploaded_at: Option<chrono::NaiveDateTime>,
 }
 
+/// Parse a JSON string into serde_json::Value for JSONB column insertion.
+fn parse_jsonb_val(s: &str) -> serde_json::Value {
+    serde_json::from_str(s).unwrap_or(serde_json::Value::Null)
+}
+
 /// Helper for raw SQL count queries (used with tag filtering).
 mod diesel_deser {
     use diesel::deserialize::{self, FromSql};
     use diesel::pg::Pg;
+    use diesel::prelude::*;
     use diesel::sql_types::BigInt;
 
     #[derive(QueryableByName, Debug)]

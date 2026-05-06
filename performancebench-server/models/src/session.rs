@@ -5,7 +5,7 @@ use uuid::Uuid;
 /// Session represents a profiling session stored in the sessions table.
 /// For Diesel queries, JSONB columns are stored as serde_json::Value strings.
 /// Timestamps use chrono::NaiveDateTime (serde serializes as ISO 8601 strings).
-#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Selectable)]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Selectable, QueryableByName)]
 #[diesel(table_name = crate::schema::sessions)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 #[serde(rename_all = "camelCase")]

@@ -101,26 +101,18 @@ pub async fn update_lens(
         None => return Ok(None),
     };
 
-    let mut update = diesel::update(target).into_boxed();
+    let result = diesel::update(target)
+        .set((
+            name.map(|n| lenses::name.eq(n)),
+            description.map(|d| lenses::description.eq(d)),
+            filters.map(|f| lenses::filters.eq(f)),
+            chart_config.map(|c| lenses::chart_config.eq(c)),
+            is_public.map(|p| lenses::is_public.eq(p)),
+            lenses::updated_at.eq(now),
+        ))
+        .get_result::<Lens>(&mut *client)
+        .await?;
 
-    if let Some(n) = name {
-        update = update.set(lenses::name.eq(n));
-    }
-    if let Some(d) = description {
-        update = update.set(lenses::description.eq(d));
-    }
-    if let Some(f) = filters {
-        update = update.set(lenses::filters.eq(f));
-    }
-    if let Some(c) = chart_config {
-        update = update.set(lenses::chart_config.eq(c));
-    }
-    if let Some(p) = is_public {
-        update = update.set(lenses::is_public.eq(p));
-    }
-    update = update.set(lenses::updated_at.eq(now));
-
-    let result = update.get_result::<Lens>(&mut *client).await?;
     Ok(Some(result))
 }
 

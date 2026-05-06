@@ -16,6 +16,7 @@ pub mod health;
 pub mod lenses;
 pub mod openapi;
 pub mod sessions;
+pub mod sso;
 pub mod tokens;
 pub mod trends;
 pub mod upload;
@@ -30,7 +31,8 @@ pub fn create_router(state: AppState) -> Router {
         .route("/auth/login", post(auth::login))
         .route("/auth/register", post(auth::register))
         .route("/auth/refresh", post(auth::refresh))
-        .route("/auth/logout", post(auth::logout));
+        .route("/auth/logout", post(auth::logout))
+        .merge(sso::sso_router());
 
     // Protected auth routes (require JWT)
     let protected_auth = Router::new()

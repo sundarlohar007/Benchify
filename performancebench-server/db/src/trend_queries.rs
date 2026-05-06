@@ -32,32 +32,6 @@ pub async fn get_fps_trends(
 
     let mut client = pool.get().await?;
 
-    let base_sql = match app_name {
-        Some(_) => {
-            r#"
-            SELECT started_at::text as ts, id as sid, app_name,
-                   (session_stats->>'fpsMedian')::double precision as val
-            FROM sessions
-            WHERE user_id = $1
-              AND started_at >= $2::timestamptz
-              AND started_at <= $3::timestamptz
-              AND app_name = $4
-            ORDER BY started_at ASC
-            "#
-        }
-        None => {
-            r#"
-            SELECT started_at::text as ts, id as sid, app_name,
-                   (session_stats->>'fpsMedian')::double precision as val
-            FROM sessions
-            WHERE user_id = $1
-              AND started_at >= $2::timestamptz
-              AND started_at <= $3::timestamptz
-            ORDER BY started_at ASC
-            "#
-        }
-    };
-
     #[derive(QueryableByName, Debug)]
     #[diesel(table_name = trend_query)]
     struct TrendRow {
@@ -71,20 +45,43 @@ pub async fn get_fps_trends(
         val: Option<f64>,
     }
 
-    let query = if let Some(app) = app_name {
-        diesel::sql_query(base_sql)
-            .bind::<SqlUuid, _>(user_id)
-            .bind::<Text, _>(start_date.to_string())
-            .bind::<Text, _>(end_date.to_string())
-            .bind::<Text, _>(app.to_string())
+    let rows = if let Some(app) = app_name {
+        diesel::sql_query(
+            r#"
+            SELECT started_at::text as ts, id as sid, app_name,
+                   (session_stats->>'fpsMedian')::double precision as val
+            FROM sessions
+            WHERE user_id = $1
+              AND started_at >= $2::timestamptz
+              AND started_at <= $3::timestamptz
+              AND app_name = $4
+            ORDER BY started_at ASC
+            "#,
+        )
+        .bind::<SqlUuid, _>(user_id)
+        .bind::<Text, _>(start_date.to_string())
+        .bind::<Text, _>(end_date.to_string())
+        .bind::<Text, _>(app.to_string())
+        .load::<TrendRow>(&mut *client)
+        .await?
     } else {
-        diesel::sql_query(base_sql)
-            .bind::<SqlUuid, _>(user_id)
-            .bind::<Text, _>(start_date.to_string())
-            .bind::<Text, _>(end_date.to_string())
+        diesel::sql_query(
+            r#"
+            SELECT started_at::text as ts, id as sid, app_name,
+                   (session_stats->>'fpsMedian')::double precision as val
+            FROM sessions
+            WHERE user_id = $1
+              AND started_at >= $2::timestamptz
+              AND started_at <= $3::timestamptz
+            ORDER BY started_at ASC
+            "#,
+        )
+        .bind::<SqlUuid, _>(user_id)
+        .bind::<Text, _>(start_date.to_string())
+        .bind::<Text, _>(end_date.to_string())
+        .load::<TrendRow>(&mut *client)
+        .await?
     };
-
-    let rows = query.load::<TrendRow>(&mut *client).await?;
 
     Ok(rows
         .into_iter()
@@ -112,20 +109,6 @@ pub async fn get_metric_trends(
 
     let mut client = pool.get().await?;
 
-    let sql = format!(
-        r#"
-        SELECT started_at::text as ts, id as sid, app_name,
-               (session_stats->>'{}')::double precision as val
-        FROM sessions
-        WHERE user_id = $1
-          AND started_at >= $2::timestamptz
-          AND started_at <= $3::timestamptz
-          {}"
-        "#,
-        jsonb_key,
-        if app_name.is_some() { "AND app_name = $4" } else { "" }
-    );
-
     #[derive(QueryableByName, Debug)]
     #[diesel(table_name = trend_query2)]
     struct TrendRow {
@@ -139,20 +122,47 @@ pub async fn get_metric_trends(
         val: Option<f64>,
     }
 
-    let query = if let Some(app) = app_name {
+    let rows = if let Some(app) = app_name {
+        let sql = format!(
+            r#"
+            SELECT started_at::text as ts, id as sid, app_name,
+                   (session_stats->>'{}')::double precision as val
+            FROM sessions
+            WHERE user_id = $1
+              AND started_at >= $2::timestamptz
+              AND started_at <= $3::timestamptz
+              AND app_name = $4
+            ORDER BY started_at ASC
+            "#,
+            jsonb_key,
+        );
         diesel::sql_query(sql)
             .bind::<SqlUuid, _>(user_id)
             .bind::<Text, _>(start_date.to_string())
             .bind::<Text, _>(end_date.to_string())
             .bind::<Text, _>(app.to_string())
+            .load::<TrendRow>(&mut *client)
+            .await?
     } else {
+        let sql = format!(
+            r#"
+            SELECT started_at::text as ts, id as sid, app_name,
+                   (session_stats->>'{}')::double precision as val
+            FROM sessions
+            WHERE user_id = $1
+              AND started_at >= $2::timestamptz
+              AND started_at <= $3::timestamptz
+            ORDER BY started_at ASC
+            "#,
+            jsonb_key,
+        );
         diesel::sql_query(sql)
             .bind::<SqlUuid, _>(user_id)
             .bind::<Text, _>(start_date.to_string())
             .bind::<Text, _>(end_date.to_string())
+            .load::<TrendRow>(&mut *client)
+            .await?
     };
-
-    let rows = query.load::<TrendRow>(&mut *client).await?;
 
     Ok(rows
         .into_iter()

@@ -209,13 +209,18 @@ pub async fn list_users_filtered(
 ) -> DbResult<(Vec<User>, i64)> {
     let mut client = pool.get().await?;
 
-    let mut query = users::table.into_boxed();
+    // Build total count query separately (avoids Clone requirement on boxed query)
+    let mut count_query = users::table.into_boxed();
+    if let Some(role) = role_filter {
+        count_query = count_query.filter(users::role.eq(role));
+    }
+    let total: i64 = count_query.count().get_result(&mut *client).await?;
 
+    // Build paginated data query
+    let mut query = users::table.into_boxed();
     if let Some(role) = role_filter {
         query = query.filter(users::role.eq(role));
     }
-
-    let total: i64 = query.clone().count().get_result(&mut *client).await?;
 
     let results = query
         .order(users::created_at.desc())
