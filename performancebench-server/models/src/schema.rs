@@ -4,10 +4,13 @@ diesel::table! {
     users (id) {
         id -> Uuid,
         email -> Varchar,
-        password_hash -> Varchar,
+        password_hash -> Nullable<Varchar>,
         display_name -> Nullable<Varchar>,
         role -> Varchar,
         is_active -> Bool,
+        sso_provider -> Nullable<Varchar>,
+        sso_subject -> Nullable<Varchar>,
+        auth_source -> Varchar,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
     }
@@ -185,6 +188,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    sso_configs (id) {
+        id -> Uuid,
+        provider_type -> Varchar,
+        name -> Varchar,
+        config -> Jsonb,
+        is_active -> Bool,
+        created_at -> Timestamptz,
+        updated_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
     webhook_configs (id) {
         id -> Uuid,
         user_id -> Uuid,
@@ -213,6 +228,7 @@ diesel::joinable!(webhook_configs -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     users,
+    sso_configs,
     api_tokens,
     refresh_tokens,
     devices,

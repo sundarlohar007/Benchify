@@ -8,6 +8,7 @@ pub mod metric_sample;
 pub mod region_stats;
 pub mod schema;
 pub mod session;
+pub mod sso;
 pub mod token;
 pub mod user;
 pub mod video;

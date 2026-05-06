@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -19,10 +20,10 @@ pub struct AlertRule {
     pub channels: serde_json::Value,
     #[serde(default = "default_true")]
     pub is_active: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable, Selectable)]
@@ -36,10 +37,10 @@ pub struct AlertEvent {
     pub session_id: Option<Uuid>,
     pub metric_value: f64,
     pub threshold: f64,
+    #[serde(skip_serializing)]
+    pub fired_at: NaiveDateTime,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub fired_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub acknowledged_at: Option<String>,
+    pub acknowledged_at: Option<NaiveDateTime>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub acknowledged_by: Option<Uuid>,
 }
@@ -60,10 +61,10 @@ pub struct Lens {
     pub chart_config: serde_json::Value,
     #[serde(default)]
     pub is_public: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable, Selectable)]
@@ -81,10 +82,10 @@ pub struct WebhookConfig {
     pub events: Vec<String>,
     #[serde(default = "default_true")]
     pub is_active: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
+    #[serde(skip_serializing)]
+    pub created_at: NaiveDateTime,
+    #[serde(skip_serializing)]
+    pub updated_at: NaiveDateTime,
 }
 
 fn default_duration() -> i32 {

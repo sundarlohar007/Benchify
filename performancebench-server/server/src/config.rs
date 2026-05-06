@@ -16,6 +16,57 @@ pub struct AppConfig {
     pub smtp_password: Option<String>,
     pub smtp_from_email: Option<String>,
     pub slack_webhook_url: Option<String>,
+
+    // ── SSO Configuration ──
+    /// Master switch: enable SSO endpoints. Default: false (backward compatible).
+    #[serde(default = "default_false")]
+    pub sso_enabled: bool,
+
+    /// Base URL used for OIDC/SAML redirect URIs (e.g., "https://myhost.com").
+    #[serde(default = "default_sso_redirect_base_url")]
+    pub sso_redirect_base_url: String,
+
+    /// OIDC providers defined in config file (optional — DB configs take precedence).
+    /// Each entry provides client_id, client_secret, issuer_url, scopes, attribute_mapping.
+    #[serde(default)]
+    pub oidc_providers: Option<Vec<OidcProviderConfigEntry>>,
+}
+
+fn default_false() -> bool {
+    false
+}
+
+fn default_sso_redirect_base_url() -> String {
+    "http://localhost:3000".to_string()
+}
+
+/// OIDC provider entry from config file (used when no DB config exists).
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OidcProviderConfigEntry {
+    pub name: String,
+    pub client_id: String,
+    pub client_secret: String,
+    pub issuer_url: String,
+    #[serde(default = "default_oidc_scopes")]
+    pub scopes: Vec<String>,
+    #[serde(default)]
+    pub attribute_mapping: Option<AttributeMappingConfig>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AttributeMappingConfig {
+    pub email: Option<String>,
+    pub display_name: Option<String>,
+}
+
+fn default_oidc_scopes() -> Vec<String> {
+    vec![
+        "openid".to_string(),
+        "profile".to_string(),
+        "email".to_string(),
+    ]
 }
 
 impl AppConfig {
@@ -36,6 +87,8 @@ impl AppConfig {
                 "http://localhost:3000".to_string(),
             ])?
             .set_default("upload_dir", "./uploads")?
+            .set_default("sso_enabled", false)?
+            .set_default("sso_redirect_base_url", "http://localhost:3000")?
             .build()?;
 
         let mut config: AppConfig = cfg.try_deserialize()?;
