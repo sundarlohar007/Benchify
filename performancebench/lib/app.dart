@@ -21,6 +21,7 @@ import 'features/session_history/history_screen.dart';
 import 'features/session_detail/detail_screen.dart';
 import 'features/comparison/comparison_screen.dart';
 import 'features/settings/settings_screen.dart';
+import 'features/injection/injection_screen.dart';
 
 // =============================================================================
 // Theme Mode Provider
@@ -82,6 +83,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/injection',
+        name: 'injection',
+        builder: (context, state) => const InjectionScreen(),
       ),
     ],
   );
