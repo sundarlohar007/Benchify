@@ -233,7 +233,7 @@ Plans:
 
 ## Phase 5: v3.0 — Game Engine Plugins + iOS Injection + tvOS + PC
 
-**Goal:** Unity/Unreal/Godot plugins with auto-markers. iOS IPA injection. tvOS support. Windows PC target profiling with PDH/DXGI/ETW.
+**Goal:** Unity/Unreal/Godot plugins with shared Rust core + engine-native wrappers. iOS IPA dylib injection with auto-detect signing. tvOS pyidevice profiling. Windows PC profiling with PDH/DXGI/ETW + cross-platform video recording via pb-pcprobe binary.
 
 **Duration:** 4 days (May 25–28)
 **Requirements:** V30-01 through V30-10
@@ -241,24 +241,28 @@ Plans:
 **Build order (wave-based parallel):**
 
 Wave 1 (parallel):
-- Unity Plugin — UPM package (V30-01)
-- Unreal Engine Plugin — C++ + Blueprint (V30-02)
+- Game engine plugins: Unity UPM + Unreal C++/Blueprint + Godot GDScript (V30-01, V30-02, V30-03)
+- Shared Rust engine core library (reuses Phase 4 SDK)
 
 Wave 2 (parallel):
-- Godot Plugin — GDScript (V30-03)
-- iOS IPA Injection — dylib injection (V30-04)
+- iOS IPA dylib injection + auto-detect free/paid/cert signing (V30-04)
+- tvOS pyidevice support with metric masking (V30-05)
 
 Wave 3 (parallel):
-- tvOS Support — pyidevice tvOS (V30-05)
-- `pb-pcprobe` binary scaffold (V30-10)
+- PC metric modules: PDH counters, DXGI Present hook, ETW frame timing, memory, CPU (V30-06, V30-07, V30-08)
 
-Wave 4 (parallel):
-- Windows PC Profiling — PDH/DXGI/ETW (V30-06, V30-07, V30-08)
+Wave 4:
+- PC video recording per-OS + pb-pcprobe binary assembly + desktop integration (V30-09, V30-10)
 
-Wave 5:
-- PC video recording — Windows/Linux/macOS (V30-09)
+**UI hint:** yes — game engine Editor windows, pcprobe UI, iOS injection tab, PC profiling screen
 
-**UI hint:** yes — game engine Editor windows, pcprobe UI
+**Plans:** 4 plans across 4 waves (planned 2026-05-06)
+
+Plans:
+- [ ] 05-01-PLAN.md — Shared Rust engine core + Unity UPM (C# P/Invoke), Unreal (C++ FFI+Blueprint), Godot (GDScript Autoload) plugins + Desktop unified installer (V30-01, V30-02, V30-03)
+- [ ] 05-02-PLAN.md — iOS IPA dylib injection engine (Python) + Flutter desktop injection UI (iOS tab) + tvOS pyidevice collector (V30-04, V30-05)
+- [ ] 05-03-PLAN.md — PC metric modules: PDH counter framework, DXGI Present hook (Detours + PresentMon), ETW frame timing, memory/CPU/GPU metrics, MetricSample PC field extension (V30-06, V30-07, V30-08)
+- [ ] 05-04-PLAN.md — pb-pcprobe Rust binary (CLI, IPC, mDNS) + PC video recording (Windows.Graphics.Capture, AVScreenCaptureKit, ffmpeg x11grab) + Desktop Flutter PC profiling screen (V30-09, V30-10)
 
 **Success criteria:**
 1. Unity developer can install UPM package, add auto-markers on scene load, and see draw calls + memory in PerformanceBench during editor play mode
@@ -342,3 +346,4 @@ Phase 1 (v1.0 MVP) ──────┐
 *Phase 2 plans created: 2026-05-04*
 *Phase 3 plans created: 2026-05-05*
 *Phase 4 plans created: 2026-05-06*
+*Phase 5 plans created: 2026-05-06*
