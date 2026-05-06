@@ -19,6 +19,7 @@ enum InjectionStep {
   rebuild,
   resign,
   verify,
+  frida,
   done,
   error;
 
@@ -37,6 +38,8 @@ enum InjectionStep {
         return InjectionStep.resign;
       case 'verify':
         return InjectionStep.verify;
+      case 'frida':
+        return InjectionStep.frida;
       case 'done':
         return InjectionStep.done;
       case 'error':
@@ -104,6 +107,8 @@ class InjectionService {
     String sdkSoDir = '',
     String outputPath = 'injected.apk',
     String proguardMapping = '',
+    String gadgetSoPath = '',
+    String gadgetConfigPath = '',
     bool isAab = false,
   }) {
     final args = <String>[
@@ -114,24 +119,35 @@ class InjectionService {
       '--method', method,
     ];
 
-    if (keystore.keystorePath.isNotEmpty) {
-      args.addAll([
-        '--keystore', keystore.keystorePath,
-        '--keystore-password', keystore.keystorePassword,
-        '--key-alias', keystore.keyAlias,
-        '--key-password', keystore.keyPassword,
-      ]);
-    }
+    // Frida-specific args (no keystore required)
+    if (method == 'frida') {
+      if (gadgetSoPath.isNotEmpty) {
+        args.addAll(['--gadget-so', gadgetSoPath]);
+      }
+      if (gadgetConfigPath.isNotEmpty) {
+        args.addAll(['--gadget-config', gadgetConfigPath]);
+      }
+    } else {
+      // Smali-specific: keystore args
+      if (keystore.keystorePath.isNotEmpty) {
+        args.addAll([
+          '--keystore', keystore.keystorePath,
+          '--keystore-password', keystore.keystorePassword,
+          '--key-alias', keystore.keyAlias,
+          '--key-password', keystore.keyPassword,
+        ]);
+      }
 
-    if (sdkSoDir.isNotEmpty) {
-      args.addAll(['--sdk-so-dir', sdkSoDir]);
+      if (sdkSoDir.isNotEmpty) {
+        args.addAll(['--sdk-so-dir', sdkSoDir]);
+      }
+
+      if (proguardMapping.isNotEmpty) {
+        args.addAll(['--proguard-mapping', proguardMapping]);
+      }
     }
 
     args.addAll(['--output', outputPath]);
-
-    if (proguardMapping.isNotEmpty) {
-      args.addAll(['--proguard-mapping', proguardMapping]);
-    }
 
     if (isAab) {
       args.add('--aab');
@@ -151,6 +167,8 @@ class InjectionService {
     String sdkSoDir = '',
     String outputPath = 'injected.apk',
     String proguardMapping = '',
+    String gadgetSoPath = '',
+    String gadgetConfigPath = '',
     bool isAab = false,
   }) {
     _controller = StreamController<StepEvent>.broadcast();
@@ -163,6 +181,8 @@ class InjectionService {
       sdkSoDir: sdkSoDir,
       outputPath: outputPath,
       proguardMapping: proguardMapping,
+      gadgetSoPath: gadgetSoPath,
+      gadgetConfigPath: gadgetConfigPath,
       isAab: isAab,
     );
 

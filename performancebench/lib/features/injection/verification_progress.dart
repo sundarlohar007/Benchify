@@ -36,6 +36,8 @@ class VerificationProgress extends StatelessWidget {
     switch (step) {
       case InjectionStep.decompile:
         return 0;
+      case InjectionStep.frida:
+        return 0;
       case InjectionStep.smali:
       case InjectionStep.manifest:
         return 1;

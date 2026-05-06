@@ -125,6 +125,7 @@ class _InjectionScreenState extends ConsumerState<InjectionScreen> {
       method: method,
       keystore: keystore,
       outputPath: '${apkPath}_injected.apk',
+      gadgetSoPath: method == 'frida' ? 'frida-gadget-arm64.so' : '',
     );
 
     await for (final event in stream) {
@@ -205,12 +206,43 @@ class _InjectionScreenState extends ConsumerState<InjectionScreen> {
                     onTap: () => ref
                         .read(selectedMethodProvider.notifier)
                         .state = 'frida',
-                    isDisabled: true,
+                    isDisabled: false,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
+            if (selectedMethod == 'frida') ...[
+              // Frida-specific info: no keystore needed
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: colors.accentSuccess.withValues(alpha: 0.08),
+                  border: Border.all(
+                    color: colors.accentSuccess.withValues(alpha: 0.2),
+                  ),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        color: colors.accentSuccess, size: 18),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Frida gadget injection does not require APK re-signing. '
+                        'Ensure frida-server is running on the target device '
+                        'before installing the injected APK.',
+                        style: TextStyle(
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             if (selectedMethod == 'smali') ...[
               InkWell(
                 onTap: () =>
@@ -297,6 +329,17 @@ class _InjectionScreenState extends ConsumerState<InjectionScreen> {
             VerificationProgress(
               stepStates: stepStates,
               isRunning: isInjecting,
+              stepLabels: selectedMethod == 'frida'
+                  ? const [
+                      'Inject frida-gadget.so',
+                      'Verify APK installs',
+                    ]
+                  : const [
+                      'Decompile APK',
+                      'Patch Smali + Manifest',
+                      'Rebuild + Re-sign',
+                      'Verify',
+                    ],
             ),
           ],
         ),
