@@ -98,6 +98,7 @@ pub extern "system" fn Java_dev_benchify_SdkLoader_nativeGetStats(
 /// Handle automation broadcast command from BenchifyBroadcastReceiver.
 /// Called from Java: `nativeHandleCommand(String action, String payloadJson)`.
 /// Returns JSON response string via JNI.
+#[cfg(target_os = "android")]
 #[no_mangle]
 pub extern "system" fn Java_dev_benchify_BenchifyBroadcastReceiver_nativeHandleCommand(
     mut env: JNIEnv,

@@ -142,8 +142,9 @@ fn collect_metrics() -> MetricSample {
         // FPS from Choreographer frame deltas
         if !state.frame_deltas.is_empty() {
             sample.fps = Some(fps::compute_fps(&state.frame_deltas));
-            if state.frame_deltas.len() > 60 {
-                state.frame_deltas.drain(0..state.frame_deltas.len() - 60);
+            let n = state.frame_deltas.len();
+            if n > 60 {
+                state.frame_deltas.drain(0..n - 60);
             }
         }
 
@@ -152,9 +153,12 @@ fn collect_metrics() -> MetricSample {
             let (utime, stime) = cpu::parse_proc_self_stat(&stat);
             let ud = utime.saturating_sub(state.last_cpu_utime);
             let sd = stime.saturating_sub(state.last_cpu_stime);
-            let ticks = unsafe { libc::sysconf(libc::_SC_CLK_TCK) } as f64;
-            if ticks > 0.0 {
-                sample.cpu_app_pct = cpu::compute_app_cpu_pct((ud + sd) as f64 / ticks);
+            #[cfg(not(target_os = "windows"))]
+            {
+                let ticks = unsafe { libc::sysconf(libc::_SC_CLK_TCK) } as f64;
+                if ticks > 0.0 {
+                    sample.cpu_app_pct = cpu::compute_app_cpu_pct((ud + sd) as f64 / ticks);
+                }
             }
             state.last_cpu_utime = utime;
             state.last_cpu_stime = stime;

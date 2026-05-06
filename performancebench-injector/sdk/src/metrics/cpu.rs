@@ -56,6 +56,7 @@ pub fn compute_app_cpu_pct(cpu_time_delta_secs: f64) -> Option<f64> {
 
 /// Compute system-wide CPU percentage from a total CPU time delta in jiffies.
 /// Normalizes using _SC_CLK_TCK.
+#[cfg(not(target_os = "windows"))]
 pub fn compute_system_cpu_pct(total_delta: u64) -> Option<f64> {
     let clock_ticks = unsafe { libc::sysconf(libc::_SC_CLK_TCK) } as f64;
     if clock_ticks <= 0.0 {
@@ -63,6 +64,11 @@ pub fn compute_system_cpu_pct(total_delta: u64) -> Option<f64> {
     }
     let delta_secs = total_delta as f64 / clock_ticks;
     Some((delta_secs / 1.0).clamp(0.0, 100.0))
+}
+
+#[cfg(target_os = "windows")]
+pub fn compute_system_cpu_pct(_total_delta: u64) -> Option<f64> {
+    None // Not available on Windows via /proc
 }
 
 #[cfg(test)]

@@ -382,7 +382,8 @@ mod tests {
         for action in SUPPORTED_ACTIONS {
             let response = handle_command(action, "{}");
             let json = parse_response(&response);
-            assert_eq!(json["action"], action);
+            let action_str: &str = action;
+            assert_eq!(json["action"].as_str().unwrap_or(""), action_str);
             assert!(json["status"].as_str().map_or(false, |s| s == "ok" || s == "error"),
                 "Action {} returned status: {:?}", action, json["status"]);
         }

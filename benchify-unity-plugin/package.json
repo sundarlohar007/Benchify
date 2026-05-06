@@ -1,0 +1,23 @@
+{
+  "name": "dev.benchify.unity-plugin",
+  "version": "3.0.0",
+  "displayName": "Benchify Profiler",
+  "description": "Free, open-source performance profiler for Unity games. Auto-markers, draw calls, memory, FPS overlay during Play mode.",
+  "unity": "2022.3",
+  "license": "MIT",
+  "author": {
+    "name": "Benchify",
+    "url": "https://github.com/sundarlohar007/Benchify"
+  },
+  "keywords": [
+    "profiler",
+    "performance",
+    "benchmark",
+    "fps",
+    "memory",
+    "draw calls",
+    "game-engine"
+  ],
+  "category": "Tools",
+  "dependencies": {}
+}
