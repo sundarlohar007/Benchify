@@ -1,0 +1,8 @@
+[configuration]
+entry_symbol = "benchify_engine_init"
+compatibility_minimum = "4.2"
+
+[libraries]
+windows.x86_64 = "res://addons/benchify/bin/libbenchify_engine.dll"
+linux.x86_64 = "res://addons/benchify/bin/libbenchify_engine.so"
+macos.universal = "res://addons/benchify/bin/libbenchify_engine.dylib"

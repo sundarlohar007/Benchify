@@ -1,0 +1,29 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "3.0.0",
+  "FriendlyName": "Benchify Profiler",
+  "Description": "Free, open-source performance profiler for Unreal Engine games. Auto-markers, RHI stats, GPU frame time, FPS overlay during PIE.",
+  "Category": "Performance",
+  "CreatedBy": "Benchify",
+  "CreatedByURL": "https://github.com/sundarlohar007/Benchify",
+  "DocsURL": "https://github.com/sundarlohar007/Benchify/blob/main/benchify-unreal-plugin/README.md",
+  "MarketplaceURL": "",
+  "SupportURL": "https://github.com/sundarlohar007/Benchify/issues",
+  "CanContainContent": false,
+  "IsBetaVersion": false,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "Benchify",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "BenchifyEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit"
+    }
+  ]
+}
