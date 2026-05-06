@@ -1,0 +1,19 @@
+# Rust
+/target/
+
+# Flutter
+/build/
+.dart_tool/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.idea/
+.vscode/
