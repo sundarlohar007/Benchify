@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BarChart3, AlertTriangle, Calendar } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { SessionFilters } from '@/components/sessions/SessionFilters';
 import { SessionTable } from '@/components/sessions/SessionTable';
@@ -45,6 +45,25 @@ function SessionsPage() {
   );
 
   const total = data?.total ?? 0;
+
+  // Dashboard summary stats
+  const dashboardStats = useMemo(() => {
+    const allSessions = data?.data ?? [];
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const thisMonth = allSessions.filter(
+      (s) => new Date(s.started_at) >= monthStart,
+    ).length;
+    const fpsValues = allSessions
+      .map((s) => s.target_fps)
+      .filter((v): v is number => v != null && v > 0);
+    const avgFps =
+      fpsValues.length > 0
+        ? fpsValues.reduce((a, b) => a + b, 0) / fpsValues.length
+        : null;
+    return { thisMonth, avgFps };
+  }, [data]);
+
   const currentStart = offset + 1;
   const currentEnd = Math.min(offset + limit, total);
   const hasPrev = offset > 0;
@@ -58,6 +77,22 @@ function SessionsPage() {
     <ProtectedRoute>
       <div className="p-6 space-y-4">
         <h1 className="text-xl font-semibold text-text-primary">Sessions</h1>
+
+        {/* Dashboard Summary Tiles */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <DashboardTile icon={<BarChart3 className="h-4 w-4 text-chart-fps" />} label="Total Sessions" value={String(total)} />
+          <DashboardTile icon={<Calendar className="h-4 w-4 text-chart-cpu" />} label="This Month" value={String(dashboardStats.thisMonth)} />
+          <DashboardTile
+            icon={<AlertTriangle className="h-4 w-4 text-accent-warning" />}
+            label="Critical Issues"
+            value="—"
+          />
+          <DashboardTile
+            icon={<BarChart3 className="h-4 w-4 text-accent-success" />}
+            label="Avg FPS"
+            value={dashboardStats.avgFps?.toFixed(1) ?? '—'}
+          />
+        </div>
 
         <SessionFilters filters={filters} onApply={handleApplyFilters} />
 
@@ -102,5 +137,31 @@ function SessionsPage() {
         )}
       </div>
     </ProtectedRoute>
+  );
+}
+
+// ─── Dashboard tile sub-component ───────────────────────────────────────────
+
+function DashboardTile({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-border-subtle bg-bg-elevated p-3">
+      <div className="flex h-8 w-8 items-center justify-center rounded bg-bg-base">
+        {icon}
+      </div>
+      <div>
+        <p className="text-[10px] uppercase text-text-disabled">{label}</p>
+        <p className="font-mono-data text-lg font-semibold text-text-primary">
+          {value}
+        </p>
+      </div>
+    </div>
   );
 }

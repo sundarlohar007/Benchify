@@ -335,15 +335,68 @@ export function SessionDetailTabs({ session }: Props) {
             />
           </div>
 
-          {/* Quick issues summary */}
-          {issues.length > 0 && (
-            <div className="rounded border border-accent-warning/30 bg-accent-warning/5 p-3">
-              <p className="text-sm text-text-primary">
-                <AlertTriangle className="mr-1 inline h-3.5 w-3.5 text-accent-warning" />
-                {issues.length} issue{issues.length !== 1 ? 's' : ''} detected
-              </p>
-            </div>
-          )}
+          {/* Detected Issues card with severity breakdown */}
+          <div className="rounded-lg border border-border-subtle bg-bg-elevated p-4">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
+              Detected Issues
+            </h3>
+            {issues.length === 0 ? (
+              <div className="flex items-center gap-2 text-sm text-accent-success">
+                <AlertTriangle className="h-4 w-4" />
+                No issues detected. This session looks clean.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-3">
+                  {(() => {
+                    const criticalCount = issues.filter(
+                      (i) => i.severity === 'critical' || i.severity === 'high',
+                    ).length;
+                    const warningCount = issues.filter(
+                      (i) => i.severity === 'warning' || i.severity === 'medium',
+                    ).length;
+                    const infoCount = issues.filter(
+                      (i) => i.severity === 'info' || i.severity === 'informational',
+                    ).length;
+                    return (
+                      <>
+                        {criticalCount > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded bg-accent-danger/15 px-3 py-1.5">
+                            <span className="h-2 w-2 rounded-full bg-accent-danger" />
+                            <span className="text-xs font-semibold text-accent-danger">
+                              Critical: {criticalCount}
+                            </span>
+                          </span>
+                        )}
+                        {warningCount > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded bg-accent-warning/15 px-3 py-1.5">
+                            <span className="h-2 w-2 rounded-full bg-accent-warning" />
+                            <span className="text-xs font-semibold text-accent-warning">
+                              Warning: {warningCount}
+                            </span>
+                          </span>
+                        )}
+                        {infoCount > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded bg-accent-blue/15 px-3 py-1.5">
+                            <span className="h-2 w-2 rounded-full bg-accent-blue" />
+                            <span className="text-xs font-semibold text-accent-blue">
+                              Info: {infoCount}
+                            </span>
+                          </span>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+                <button
+                  onClick={() => setActiveTab('issues')}
+                  className="text-xs text-text-accent hover:underline"
+                >
+                  View All Issues <span className="text-text-disabled">({issues.length})</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
