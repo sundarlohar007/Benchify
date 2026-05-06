@@ -109,11 +109,11 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 - [x] **V35-01**: SAML 2.0 SSO (Okta, Azure AD, Google Workspace)
 - [x] **V35-02**: LDAP authentication
 - [x] **V35-03**: JIT (Just-In-Time) user provisioning
-- [ ] **V35-04**: Jira issue creation from session
+- [x] **V35-04**: Jira issue creation from session
 - [x] **V35-05**: RBAC — Owner / Admin / Member / Viewer roles
 - [x] **V35-06**: Audit log — all session uploads, deletes, exports, alert configs
 - [x] **V35-07**: On-premises deployment guide (nginx + TLS + PostgreSQL)
-- [ ] **V35-08**: Thread-level CPU breakdown (root required, documented)
+- [x] **V35-08**: Thread-level CPU breakdown (root required, documented)
 - [x] **V35-09**: Multi-org / multi-project hierarchy (team_orgs / team_projects tables)
 
 ## v2 Requirements
@@ -227,11 +227,11 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V35-01 | Phase 6 | Complete |
 | V35-02 | Phase 6 | Complete |
 | V35-03 | Phase 6 | Complete |
-| V35-04 | Phase 6 | Pending |
+| V35-04 | Phase 6 | Complete (Plan 03) |
 | V35-05 | Phase 6 | Complete |
 | V35-06 | Phase 6 | Complete (Plan 02) |
 | V35-07 | Phase 6 | Complete (Plan 02) |
-| V35-08 | Phase 6 | Pending (Plan 03) |
+| V35-08 | Phase 6 | Complete (Plan 03) |
 | V35-09 | Phase 6 | Complete (Plan 02) |
 
 **Coverage:**

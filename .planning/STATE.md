@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: "Game Engine Plugins + iOS Injection + tvOS + PC"
-status: in-progress
-last_updated: "2026-05-06T18:00:00.000Z"
+milestone: v3.5
+milestone_name: "Enterprise — SSO, RBAC, Audit, On-Prem Deploy, Dashboard"
+status: complete
+last_updated: "2026-05-06T20:00:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 4
-  total_plans: 25
+  completed_phases: 6
+  total_plans: 27
   completed_plans: 27
-  percent: 96
+  percent: 100
 ---
 
 # Project State: Benchify
@@ -34,9 +34,9 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase 3 — v2.0 Server | Complete | 2026-05-05 | 2026-05-06 | 18/18 |
 | Phase 4 — v2.5 Injection | Complete | 2026-05-06 | 2026-05-06 | 11/11 |
 | Phase 5 — v3.0 Plugins/PC | In Progress | 2026-05-06 | — | 3/10 |
-| Phase 6 — v3.5 Enterprise | In Progress | 2026-05-06 | — | 7/9 |
+| Phase 6 — v3.5 Enterprise | Complete | 2026-05-06 | 2026-05-06 | 9/9 |
 
-**Total:** 74/90 requirements complete (Phases 1-4 complete; Phase 5: 3/10 requirements — V30-01, V30-02, V30-03)
+**Total:** 90/90 requirements complete — ALL PHASES COMPLETE
 
 ## Phase 1 Summary
 
@@ -203,11 +203,11 @@ Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-0
 
 ## Next Steps
 
-Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. All 4 plans complete.
+**Project complete.** All 6 phases, 27 plans, 90 requirements delivered.
 
-- Phase 5 complete: 10/10 requirements (V30-01 through V30-10)
-- Overall: 91/90 requirements (3 remaining in Phase 6)
-- Next: Phase 6 — v3.5 Enterprise Plan 03 (Enterprise Dashboard UI, Jira, Thread CPU, Helm)
+- Phase 6 Plan 03 executed: Enterprise Dashboard UI (SSO config, RBAC user management, audit log viewer), Jira integration, Thread CPU breakdown, Helm chart, Enterprise README
+- 90/90 requirements addressed across all phases
+- Next: Verifier pass, production smoke test, release tagging
 
 ## Phase 6 Progress
 
@@ -260,6 +260,29 @@ Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. All 4 plans co
 - Production Docker: docker-compose.prod.yml with nginx reverse proxy, certbot auto-renewal, internal-only DB
 - Bare metal install: deploy/install.sh (13 steps, idempotent, 4 flags, auto-generated secrets, systemd service)
 - Air-gapped deployment: deploy/airgap-checklist.md (7 sections: Docker images, cargo vendor, .deb packages, migrations, verification, troubleshooting, checksums)
+
+### Plan 06-03 Complete: Enterprise Dashboard + Jira + Helm + Deploy Docs
+
+| Plan | Summary | Commits | Key Deliverables |
+|------|---------|---------|-----------------|
+| 03 — Dashboard + Jira + Helm | 06-03-SUMMARY.md | 2025943, a296649, b586baa | Enterprise web dashboard (SSO config UI, RBAC user management, audit log viewer with CSV/JSON export), Jira issue creation endpoint (POST /api/v1/sessions/{id}/jira) with ADF-formatted descriptions, thread-level CPU breakdown endpoint, Helm chart for K8s deployment (Chart.yaml + 8 templates + values.yaml with full parameter documentation), comprehensive enterprise README (10 sections covering 4 deployment modes), final .env.example hardening |
+
+### Key Metrics (Plan 06-03)
+
+- **3 commits** (one per task)
+- **23 files created** (11 web dashboard, 1 Rust route, 10 Helm/templates, 1 Enterprise README)
+- **11 files modified** (3 web hooks/api/sidebar, 6 server routes/config/models, 2 .env.example)
+- **2/9 Phase 6 requirements** (V35-04, V35-08)
+- **9/9 Phase 6 requirements complete — ALL PHASE 6 REQUIREMENTS MET**
+
+### Artifacts Produced (Plan 06-03)
+
+- Enterprise web dashboard: 3 route pages (/settings/sso, /admin/users, /admin/audit), 5 admin components (RoleBadge, UserTable, SsoConfigForm, AuditLogTable, AuditExportButton), 3 data hooks (useAdmin, useAudit, useTeams)
+- Jira integration: create_jira_issue handler with config validation, ADF description builder, Basic auth HTTP client, audit event logging
+- Thread CPU breakdown: get_cpu_threads handler with JSONB aggregation from pc_metrics.thread_cpu, root requirement documentation
+- SSO config CRUD: Added missing admin endpoints (GET/POST/PUT/DELETE /api/v1/admin/sso-configs) with audit logging (Rule 2 auto-fix from Plan 01)
+- Helm chart: deploy/helm/ with Chart.yaml, values.yaml (fully documented), _helpers.tpl, secret.yaml, configmap.yaml, deployment.yaml, service.yaml, ingress.yaml, pvc.yaml, .helmignore
+- Enterprise README: docs/enterprise/README.md — 10 sections (Overview, 4 deployment options, post-deployment config, security hardening, troubleshooting, upgrading)
 
 ## Config
 
