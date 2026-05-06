@@ -199,27 +199,30 @@ Plans:
 **Build order (wave-based parallel):**
 
 Wave 1 (parallel):
-- `performancebench-injector` repo setup (V25-01)
-- APK injection via apktool + Smali (V25-02)
-- SDK native .so in Rust (V25-03)
+- `performancebench-injector` repo setup + Python injection toolchain (V25-01, V25-02)
+- APK re-signing with keystore + Desktop Flutter injection UI (V25-04)
 
 Wave 2 (parallel):
-- Re-signing with keystore (V25-04)
-- Frida gadget alternative (V25-07)
+- Rust SDK native .so via cargo-ndk (V25-03)
+- In-app FPS overlay pill widget + JSON over TCP port 8080 (V25-05, V25-06)
 
 Wave 3 (parallel):
-- In-app FPS overlay widget (V25-05)
-- SDK → desktop ADB socket port 8080 (V25-06)
+- Frida gadget injection alternative (V25-07)
+- WebView/JS memory collection + Per-process network stats (V25-08, V25-09)
 
 Wave 4 (parallel):
-- WebView/JS memory collection (V25-08)
-- Per-connection network stats (V25-09)
-- ADB broadcast actions (V25-10)
-
-Wave 5:
-- iOS video recording — pymobiledevice3 DVT (V25-11)
+- ADB broadcast automation — 7 commands (V25-10)
+- iOS video recording — pymobiledevice3 DVT screen-mirror (V25-11)
 
 **UI hint:** yes — injector GUI (Flutter), in-app overlay widget
+
+**Plans:** 4 plans across 4 waves (planned 2026-05-06)
+
+Plans:
+- [ ] 04-01-PLAN.md — Injector monorepo + Python APK injection engine (apktool/Smali) + re-signing + Flutter desktop injection screen (V25-01, V25-02, V25-04)
+- [ ] 04-02-PLAN.md — Rust SDK native .so (cargo-ndk, all ABIs) + FPS overlay pill widget + JSON over TCP 8080 + desktop stream adapter (V25-03, V25-05, V25-06)
+- [ ] 04-03-PLAN.md — Frida gadget injection alternative + WebView JS memory collection + per-process network stats (V25-07, V25-08, V25-09)
+- [ ] 04-04-PLAN.md — ADB broadcast automation (7 commands) + iOS video recording via pymobiledevice3 DVT (V25-10, V25-11)
 
 **Success criteria:**
 1. User can inject SDK into any APK, re-sign, install, and see FPS overlay on device during profiling session
@@ -338,3 +341,4 @@ Phase 1 (v1.0 MVP) ──────┐
 *Phase 1 plans created: 2026-05-04*
 *Phase 2 plans created: 2026-05-04*
 *Phase 3 plans created: 2026-05-05*
+*Phase 4 plans created: 2026-05-06*
