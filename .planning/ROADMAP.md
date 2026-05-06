@@ -259,7 +259,7 @@ Wave 4:
 **Plans:** 4 plans across 4 waves (planned 2026-05-06)
 
 Plans:
-- [ ] 05-01-PLAN.md — Shared Rust engine core + Unity UPM (C# P/Invoke), Unreal (C++ FFI+Blueprint), Godot (GDScript Autoload) plugins + Desktop unified installer (V30-01, V30-02, V30-03)
+- [x] 05-01-PLAN.md — Shared Rust engine core + Unity UPM (C# P/Invoke), Unreal (C++ FFI+Blueprint), Godot (GDScript Autoload) plugins + Desktop unified installer (V30-01, V30-02, V30-03)
 - [ ] 05-02-PLAN.md — iOS IPA dylib injection engine (Python) + Flutter desktop injection UI (iOS tab) + tvOS pyidevice collector (V30-04, V30-05)
 - [ ] 05-03-PLAN.md — PC metric modules: PDH counter framework, DXGI Present hook (Detours + PresentMon), ETW frame timing, memory/CPU/GPU metrics, MetricSample PC field extension (V30-06, V30-07, V30-08)
 - [ ] 05-04-PLAN.md — pb-pcprobe Rust binary (CLI, IPC, mDNS) + PC video recording (Windows.Graphics.Capture, AVScreenCaptureKit, ffmpeg x11grab) + Desktop Flutter PC profiling screen (V30-09, V30-10)

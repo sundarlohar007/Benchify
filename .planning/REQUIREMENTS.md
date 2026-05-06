@@ -93,9 +93,9 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 
 ### Phase 5: v3.0 — Game Engine Plugins + iOS Injection + tvOS + PC
 
-- [ ] **V30-01**: Unity Plugin (UPM package) — auto-markers, draw calls, memory, BeginMarker API, Editor window
-- [ ] **V30-02**: Unreal Engine Plugin (C++ + Blueprint) — auto-markers, BeginMarker node, RHI frame time, GPU stats
-- [ ] **V30-03**: Godot Plugin (GDScript) — auto-markers, RenderingServer draw calls, Autoload singleton
+- [x] **V30-01**: Unity Plugin (UPM package) — auto-markers, draw calls, memory, BeginMarker API, Editor window
+- [x] **V30-02**: Unreal Engine Plugin (C++ + Blueprint) — auto-markers, BeginMarker node, RHI frame time, GPU stats
+- [x] **V30-03**: Godot Plugin (GDScript) — auto-markers, RenderingServer draw calls, Autoload singleton
 - [ ] **V30-04**: iOS IPA Injection — unencrypted IPA only, free Apple ID signing, dylib injection
 - [ ] **V30-05**: tvOS Support — pyidevice tvOS connection, same metrics as iOS where exposed
 - [ ] **V30-06**: Windows PC Profiling — PDH API, DXGI presentation hooking, ETW frame timing
@@ -214,9 +214,9 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V25-09 | Phase 4 | Complete |
 | V25-10 | Phase 4 | Pending |
 | V25-11 | Phase 4 | Pending |
-| V30-01 | Phase 5 | Pending |
-| V30-02 | Phase 5 | Pending |
-| V30-03 | Phase 5 | Pending |
+| V30-01 | Phase 5 | Complete |
+| V30-02 | Phase 5 | Complete |
+| V30-03 | Phase 5 | Complete |
 | V30-04 | Phase 5 | Pending |
 | V30-05 | Phase 5 | Pending |
 | V30-06 | Phase 5 | Pending |
