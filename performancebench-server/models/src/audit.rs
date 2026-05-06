@@ -107,6 +107,7 @@ pub enum AuditEventType {
     SessionUploaded,
     SessionDeleted,
     SessionExported,
+    JiraIssueCreated,
     // User events
     UserCreated,
     UserRoleChanged,
@@ -156,7 +157,7 @@ impl AuditEventType {
             | AuditEventType::TokenRefresh | AuditEventType::TokenRevoked
             | AuditEventType::PasswordChanged => AuditEventCategory::Auth,
             AuditEventType::SessionUploaded | AuditEventType::SessionDeleted
-            | AuditEventType::SessionExported => AuditEventCategory::Session,
+            | AuditEventType::SessionExported | AuditEventType::JiraIssueCreated => AuditEventCategory::Session,
             AuditEventType::UserCreated | AuditEventType::UserRoleChanged
             | AuditEventType::UserDeactivated | AuditEventType::UserActivated => AuditEventCategory::User,
             AuditEventType::SsoConfigCreated | AuditEventType::SsoConfigUpdated
@@ -242,6 +243,7 @@ mod tests {
         assert_eq!(AuditEventType::SessionUploaded.category(), AuditEventCategory::Session);
         assert_eq!(AuditEventType::SessionDeleted.category(), AuditEventCategory::Session);
         assert_eq!(AuditEventType::SessionExported.category(), AuditEventCategory::Session);
+        assert_eq!(AuditEventType::JiraIssueCreated.category(), AuditEventCategory::Session);
 
         assert_eq!(AuditEventType::UserCreated.category(), AuditEventCategory::User);
         assert_eq!(AuditEventType::UserRoleChanged.category(), AuditEventCategory::User);

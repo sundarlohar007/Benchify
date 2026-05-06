@@ -30,6 +30,20 @@ pub struct AppConfig {
     /// Each entry provides client_id, client_secret, issuer_url, scopes, attribute_mapping.
     #[serde(default)]
     pub oidc_providers: Option<Vec<OidcProviderConfigEntry>>,
+
+    // ── Jira Integration ──
+    /// Master switch: enable Jira issue creation from sessions. Default: false.
+    #[serde(default = "default_false")]
+    pub jira_enabled: bool,
+
+    /// Jira Cloud base URL (e.g., "https://your-domain.atlassian.net").
+    pub jira_base_url: Option<String>,
+
+    /// Jira account email for Basic auth.
+    pub jira_email: Option<String>,
+
+    /// Jira API token (not account password). Generate at https://id.atlassian.com/manage/api-tokens.
+    pub jira_api_token: Option<String>,
 }
 
 fn default_false() -> bool {
@@ -89,6 +103,7 @@ impl AppConfig {
             .set_default("upload_dir", "./uploads")?
             .set_default("sso_enabled", false)?
             .set_default("sso_redirect_base_url", "http://localhost:3000")?
+            .set_default("jira_enabled", false)?
             .build()?;
 
         let mut config: AppConfig = cfg.try_deserialize()?;

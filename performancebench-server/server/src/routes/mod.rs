@@ -16,6 +16,7 @@ pub mod audit;
 pub mod auth;
 pub mod devices;
 pub mod health;
+pub mod jira;
 pub mod lenses;
 pub mod openapi;
 pub mod sessions;

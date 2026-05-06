@@ -128,8 +128,112 @@ pub async fn delete_session(
     Ok((StatusCode::OK, Json(serde_json::json!({"status": "deleted"}))))
 }
 
+/// GET /api/v1/sessions/{id}/cpu-threads — per-thread CPU breakdown.
+///
+/// Extracts thread-level CPU data from session_stats JSONB (populated by PC profiling agent).
+/// Returns `available: false` if the session doesn't have thread CPU data (e.g., Android/iOS targets).
+/// Documents the root/administrator requirement for thread-level CPU profiling.
+pub async fn get_cpu_threads(
+    State(state): State<AppState>,
+    Path(session_id): Path<Uuid>,
+    Extension(auth_user): Extension<AuthUser>,
+) -> Result<impl IntoResponse, AppError> {
+    let session = session_queries::get_session_by_id_and_user(
+        &state.pool,
+        session_id,
+        auth_user.user_id,
+    )
+    .await
+    .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
+    .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
+
+    // Check if the session has PC thread CPU data in session_stats JSONB
+    let thread_cpu_data = session
+        .session_stats
+        .get("pc_metrics")
+        .and_then(|pm| pm.get("thread_cpu"))
+        .and_then(|tc| tc.as_array());
+
+    match thread_cpu_data {
+        Some(raw_threads) if !raw_threads.is_empty() => {
+            // Aggregate: group by (tid, thread_name), compute avg/peak, sum times, count samples
+            let mut threads_map: std::collections::HashMap<
+                (i64, String),
+                (f64, f64, i64, i64, usize),
+            > = std::collections::HashMap::new();
+
+            for sample in raw_threads {
+                let tid = sample.get("tid").and_then(|v| v.as_i64()).unwrap_or(0);
+                let thread_name = sample
+                    .get("thread_name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("unknown")
+                    .to_string();
+                let cpu_pct = sample.get("cpu_percent").and_then(|v| v.as_f64()).unwrap_or(0.0);
+                let user_time = sample.get("user_time_ms").and_then(|v| v.as_i64()).unwrap_or(0);
+                let kernel_time = sample
+                    .get("kernel_time_ms")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(0);
+
+                let entry = threads_map
+                    .entry((tid, thread_name.clone()))
+                    .or_insert((0.0, 0.0, 0, 0, 0));
+                entry.0 += cpu_pct; // sum for avg
+                entry.1 = entry.1.max(cpu_pct); // peak
+                entry.2 += user_time;
+                entry.3 += kernel_time;
+                entry.4 += 1; // sample count
+            }
+
+            let threads: Vec<serde_json::Value> = threads_map
+                .into_iter()
+                .map(|((tid, thread_name), (cpu_sum, cpu_peak, user_time, kernel_time, count))| {
+                    serde_json::json!({
+                        "thread_name": thread_name,
+                        "tid": tid,
+                        "cpu_percent_avg": format!("{:.1}", cpu_sum / count as f64).parse::<f64>().unwrap_or(0.0),
+                        "cpu_percent_peak": cpu_peak,
+                        "user_time_ms": user_time,
+                        "kernel_time_ms": kernel_time,
+                        "sample_count": count,
+                    })
+                })
+                .collect();
+
+            let total_threads = threads.len();
+
+            let response = serde_json::json!({
+                "available": true,
+                "requires_root": true,
+                "note": "Thread-level CPU breakdown requires root/administrator access on the target device",
+                "threads": threads,
+                "total_threads": total_threads,
+                "collection_duration_ms": 60000,
+            });
+
+            Ok((StatusCode::OK, Json(response)))
+        }
+        _ => {
+            // No thread CPU data available (Android/iOS, or PC session without root)
+            let response = serde_json::json!({
+                "available": false,
+                "requires_root": true,
+                "note": "Thread-level CPU breakdown requires root/administrator access on the target device. This session does not have thread CPU data (only available from PC profiling agent with root access).",
+                "threads": [],
+                "total_threads": 0,
+                "collection_duration_ms": 0,
+            });
+
+            Ok((StatusCode::OK, Json(response)))
+        }
+    }
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_sessions))
         .route("/{id}", get(get_session).delete(delete_session))
+        .route("/{id}/cpu-threads", get(get_cpu_threads))
+        .route("/{id}/jira", axum::routing::post(crate::routes::jira::create_jira_issue))
 }
