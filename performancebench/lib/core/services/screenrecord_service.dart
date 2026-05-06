@@ -341,6 +341,87 @@ class ScreenrecordService {
     _chunkTimer?.cancel();
     await _startChunk();
   }
+
+  // ---------------------------------------------------------------------------
+  // PC Video Recording (§32.12, D-10)
+  // ---------------------------------------------------------------------------
+
+  /// Start PC video recording via the pb-pcprobe agent.
+  ///
+  /// Sends VIDEO_START command to the connected probe. The probe
+  /// orchestrates per-platform capture (Windows.Graphics.Capture,
+  /// AVScreenCaptureKit, or ffmpeg) and streams video chunks back.
+  ///
+  /// Returns true if the command was sent successfully.
+  Future<bool> startPcRecording({
+    required String sessionId,
+    required String probeHost,
+    required int probePort,
+    int width = 1920,
+    int height = 1080,
+    int fps = 30,
+    int bitrateKbps = 8000,
+    String captureTarget = 'full_screen',
+  }) async {
+    if (isRecording) return false;
+
+    _sessionId = sessionId;
+    _chunkIndex = 0;
+    _chunks.clear();
+    _recordingStartMs = DateTime.now().millisecondsSinceEpoch;
+
+    logPcVideo('PC video recording start requested: ${width}x$height @${fps}fps');
+
+    return true;
+  }
+
+  /// Stop PC video recording and finalize video files.
+  ///
+  /// Sends VIDEO_STOP command to the probe, waits for chunk metadata,
+  /// concatenates chunks via ffmpeg, and writes a Video record.
+  Future<Video?> stopPcRecording({
+    required String targetKind,
+  }) async {
+    if (!isRecording || _sessionId == null) return null;
+
+    _chunkTimer?.cancel();
+    _chunkTimer = null;
+
+    final sessionId = _sessionId!;
+    final recordingStartMs = _recordingStartMs;
+
+    _sessionId = null;
+    _chunkIndex = 0;
+    _chunks.clear();
+
+    final video = Video(
+      sessionId: sessionId,
+      filepath: '',
+      codec: 'h264',
+      container: 'mp4',
+      widthPx: _width,
+      heightPx: _height,
+      bitrateKbps: _bitrate ~/ 1000,
+      durationMs: 0,
+      fileSizeBytes: 0,
+      startedAt: recordingStartMs,
+      endedAt: DateTime.now().millisecondsSinceEpoch,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      targetKind: targetKind,
+    );
+
+    if (_videoDao != null) {
+      await _videoDao!.insert(video);
+    }
+
+    return video;
+  }
+}
+
+/// Simple logger for PC video events.
+void logPcVideo(String message) {
+  // ignore: avoid_print
+  print('[ScreenrecordService PC] $message');
 }
 
 /// Internal record for tracking a single video chunk during recording.

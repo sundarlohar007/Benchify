@@ -22,6 +22,7 @@ import 'features/session_detail/detail_screen.dart';
 import 'features/comparison/comparison_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/injection/injection_screen.dart';
+import 'features/pc_profiling/pc_probe_screen.dart';
 
 // =============================================================================
 // Theme Mode Provider
@@ -88,6 +89,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/injection',
         name: 'injection',
         builder: (context, state) => const InjectionScreen(),
+      ),
+      GoRoute(
+        path: '/pc-profiling',
+        name: 'pcProfiling',
+        builder: (context, state) => const PcProbeScreen(),
       ),
     ],
   );

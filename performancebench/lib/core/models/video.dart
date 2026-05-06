@@ -18,6 +18,7 @@ class Video {
   final String? chunksJson;
   final String? gapsJson;
   final int hasAudio;
+  final String targetKind; // 'android', 'ios', 'tvos', 'windows_pc', 'macos_pc', 'linux_pc'
   final double? recordingOverheadEstimatePct;
   final int startedAt;
   final int endedAt;
@@ -38,6 +39,7 @@ class Video {
     this.chunksJson,
     this.gapsJson,
     this.hasAudio = 0,
+    this.targetKind = 'android',
     this.recordingOverheadEstimatePct,
     required this.startedAt,
     required this.endedAt,
@@ -60,6 +62,7 @@ class Video {
       chunksJson: map['chunks_json'] as String?,
       gapsJson: map['gaps_json'] as String?,
       hasAudio: (map['has_audio'] as int?) ?? 0,
+      targetKind: (map['target_kind'] as String?) ?? 'android',
       recordingOverheadEstimatePct:
           (map['recording_overhead_estimate_pct'] as num?)?.toDouble(),
       startedAt: map['started_at'] as int,
@@ -84,6 +87,7 @@ class Video {
       'chunks_json': chunksJson,
       'gaps_json': gapsJson,
       'has_audio': hasAudio,
+      'target_kind': targetKind,
       'recording_overhead_estimate_pct': recordingOverheadEstimatePct,
       'started_at': startedAt,
       'ended_at': endedAt,
