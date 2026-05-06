@@ -22,7 +22,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 
 **Core value:** Reliable, zero-cost performance profiling for any mobile or desktop app — no cloud dependency, no paid license, no data ever leaving the host machine.
 **Deadline:** May 31, 2026
-**Current focus:** Phase 3 — v2.0 Team Server + Web Dashboard
+**Current focus:** Phase 4 — v2.5 Android SDK Injection
 
 ## Progress
 
@@ -35,7 +35,7 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
 | Phase 6 — v3.5 Enterprise | Pending | — | — | 9 |
 
-**Total:** 45/90 requirements complete (Phases 1-2 done + Phase 3 Wave 1 done)
+**Total:** 60/90 requirements complete (Phases 1-3 done)
 
 ## Phase 1 Summary
 
