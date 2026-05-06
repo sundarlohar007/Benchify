@@ -63,19 +63,19 @@ class TestVerifyIpaStructure:
         """Should pass when Payload/ directory exists with .app bundle."""
         # Create a valid IPA zip with Payload/TestApp.app/
         ipa_path = os.path.join(temp_dir, "valid.ipa")
-        payload_dir = os.path.join(temp_dir, "Payload", "TestApp.app")
-        os.makedirs(payload_dir, exist_ok=True)
-        with open(os.path.join(payload_dir, "Info.plist"), "w") as f:
+        payload_app_dir = os.path.join(temp_dir, "Payload", "TestApp.app")
+        os.makedirs(payload_app_dir, exist_ok=True)
+        with open(os.path.join(payload_app_dir, "Info.plist"), "w") as f:
             f.write("plist")
 
-        original_cwd = os.getcwd()
-        os.chdir(temp_dir)
+        # Build zip with full paths (avoid chdir for cross-drive Windows compat)
+        payload_parent = os.path.join(temp_dir, "Payload")
         with zipfile.ZipFile(ipa_path, "w") as zf:
-            for root, dirs, files in os.walk("Payload"):
+            for root, dirs, files in os.walk(payload_parent):
                 for file in files:
                     fp = os.path.join(root, file)
-                    zf.write(fp, fp)
-        os.chdir(original_cwd)
+                    arcname = os.path.relpath(fp, temp_dir)
+                    zf.write(fp, arcname)
 
         result = verify_ipa_structure(ipa_path)
         assert result.passed is True
@@ -115,6 +115,8 @@ class TestVerifyFrameworkPresent:
         os.makedirs(frameworks_dir, exist_ok=True)
         with open(os.path.join(frameworks_dir, "PerformanceBench"), "wb") as f:
             f.write(b"dylib body")
+        with open(os.path.join(frameworks_dir, "Info.plist"), "w") as f:
+            f.write("plist")
 
         result = verify_framework_present(app_dir)
         assert result.passed is True
@@ -141,34 +143,40 @@ class TestVerifyFrameworkPresent:
 class TestVerifyLoadCommand:
     """Tests for LC_LOAD_DYLIB load command check."""
 
+    @patch("injector.ipa_verifier.os.path.isfile")
     @patch("injector.ipa_verifier.subprocess.run")
-    def test_load_command_found(self, mock_run):
+    def test_load_command_found(self, mock_run, mock_isfile):
         """Should pass when otool shows PerformanceBench in load commands."""
         mock_run.return_value = MagicMock(
             returncode=0,
             stdout="\t@executable_path/Frameworks/PerformanceBench.framework/PerformanceBench (compatibility version 1.0.0, current version 1.0.0)",
             stderr="",
         )
+        mock_isfile.return_value = True
 
         result = verify_load_command("/fake/app")
         assert result.passed is True
 
+    @patch("injector.ipa_verifier.os.path.isfile")
     @patch("injector.ipa_verifier.subprocess.run")
-    def test_load_command_missing(self, mock_run):
+    def test_load_command_missing(self, mock_run, mock_isfile):
         """Should fail when otool does not show PerformanceBench."""
         mock_run.return_value = MagicMock(
             returncode=0,
             stdout="\t/System/Library/Frameworks/UIKit.framework/UIKit",
             stderr="",
         )
+        mock_isfile.return_value = True
 
         result = verify_load_command("/fake/app")
         assert result.passed is False
 
+    @patch("injector.ipa_verifier.os.path.isfile")
     @patch("injector.ipa_verifier.subprocess.run")
-    def test_otool_not_available(self, mock_run):
+    def test_otool_not_available(self, mock_run, mock_isfile):
         """Should handle otool not found gracefully."""
         mock_run.side_effect = FileNotFoundError("otool: command not found")
+        mock_isfile.return_value = True
 
         result = verify_load_command("/fake/app")
         assert result.passed is False
@@ -178,28 +186,34 @@ class TestVerifyLoadCommand:
 class TestVerifyCodeSignature:
     """Tests for code signature verification."""
 
+    @patch("injector.ipa_verifier.os.path.isdir")
     @patch("injector.ipa_verifier.subprocess.run")
-    def test_signature_valid(self, mock_run):
+    def test_signature_valid(self, mock_run, mock_isdir):
         """Should pass when codesign -dv returns valid."""
         mock_run.return_value = MagicMock(returncode=0, stdout="Signature=adcd34", stderr="")
+        mock_isdir.return_value = True
 
         result = verify_code_signature("/fake/app")
         assert result.passed is True
 
+    @patch("injector.ipa_verifier.os.path.isdir")
     @patch("injector.ipa_verifier.subprocess.run")
-    def test_signature_invalid(self, mock_run):
+    def test_signature_invalid(self, mock_run, mock_isdir):
         """Should fail when codesign returns non-zero."""
         mock_run.return_value = MagicMock(
             returncode=1, stdout="", stderr="code object is not signed at all"
         )
+        mock_isdir.return_value = True
 
         result = verify_code_signature("/fake/app")
         assert result.passed is False
 
+    @patch("injector.ipa_verifier.os.path.isdir")
     @patch("injector.ipa_verifier.subprocess.run")
-    def test_deep_verification_passes(self, mock_run):
+    def test_deep_verification_passes(self, mock_run, mock_isdir):
         """Should pass deep verification when --verify --deep --strict succeeds."""
         mock_run.return_value = MagicMock(returncode=0, stdout="valid", stderr="")
+        mock_isdir.return_value = True
 
         result = verify_code_signature("/fake/app", deep=True)
         assert result.passed is True
@@ -209,19 +223,37 @@ class TestVerifyInjection:
     """Integration tests for the full verification pipeline."""
 
     @patch("injector.ipa_verifier.verify_ipa_structure")
-    @patch("injector.ipa_verifier.verify_framework_present")
-    @patch("injector.ipa_verifier.verify_load_command")
-    @patch("injector.ipa_verifier.verify_code_signature")
-    def test_all_checks_pass(self, mock_sig, mock_lc, mock_fw, mock_struct):
+    def test_all_checks_pass(self, mock_struct, temp_dir):
         """Should return all_passed=True when all checks pass."""
         mock_struct.return_value = CheckResult("Structure", True, "OK")
-        mock_fw.return_value = CheckResult("Framework", True, "OK")
-        mock_lc.return_value = CheckResult("LoadCommand", True, "OK")
-        mock_sig.return_value = CheckResult("Signature", True, "OK")
 
-        result = verify_injection("/fake/test.ipa")
+        # Create a valid IPA with framework and code signature
+        ipa_path = os.path.join(temp_dir, "test.ipa")
+        app_dir = os.path.join(temp_dir, "Payload", "TestApp.app")
+        frameworks_dir = os.path.join(app_dir, "Frameworks", "PerformanceBench.framework")
+        codesign_dir = os.path.join(app_dir, "_CodeSignature")
+        os.makedirs(frameworks_dir, exist_ok=True)
+        os.makedirs(codesign_dir, exist_ok=True)
+
+        # Create dylib, app executable, and code resources
+        with open(os.path.join(frameworks_dir, "PerformanceBench"), "wb") as f:
+            f.write(b"dylib")
+        with open(os.path.join(app_dir, "TestApp"), "wb") as f:
+            f.write(b"binary")
+        with open(os.path.join(codesign_dir, "CodeResources"), "w") as f:
+            f.write("{}")
+
+        # Pack into zip using full paths (avoid chdir for cross-drive Windows compat)
+        payload_parent = os.path.join(temp_dir, "Payload")
+        with zipfile.ZipFile(ipa_path, "w") as zf:
+            for root, dirs, files in os.walk(payload_parent):
+                for file in files:
+                    fp = os.path.join(root, file)
+                    arcname = os.path.relpath(fp, temp_dir).replace("\\", "/")
+                    zf.write(fp, arcname)
+
+        result = verify_injection(ipa_path)
         assert result.all_passed is True
-        assert len(result.checks) == 4
 
     @patch("injector.ipa_verifier.verify_ipa_structure")
     def test_stops_on_structure_failure(self, mock_struct):

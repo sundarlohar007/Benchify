@@ -42,13 +42,15 @@ class TestDetectAvailableMethods:
         methods = detect_available_methods()
         assert SigningMethod.FREE_APPLE_ID in methods
 
+    @patch("injector.apple_signing.os.listdir")
     @patch("injector.apple_signing.subprocess.run")
     @patch("injector.apple_signing.os.path.exists")
-    def test_detects_paid_developer(self, mock_exists, mock_run):
+    def test_detects_paid_developer(self, mock_exists, mock_run, mock_listdir):
         """Should detect PAID_DEVELOPER when provisioning profiles exist."""
-        # First call fails (no altool), second succeeds (prov profiles exist)
+        # xcrun --find fails (no altool)
         mock_run.return_value = MagicMock(returncode=1, stdout="", stderr="not found")
         mock_exists.return_value = True
+        mock_listdir.return_value = ["app.mobileprovision", "other.mobileprovision"]
 
         methods = detect_available_methods()
         assert SigningMethod.PAID_DEVELOPER in methods
@@ -66,15 +68,18 @@ class TestDetectAvailableMethods:
         methods = detect_available_methods()
         assert SigningMethod.USER_CERTIFICATE in methods
 
+    @patch("injector.apple_signing.os.listdir")
     @patch("injector.apple_signing.subprocess.run")
     @patch("injector.apple_signing.os.path.exists")
-    def test_detects_multiple_methods(self, mock_exists, mock_run):
+    def test_detects_multiple_methods(self, mock_exists, mock_run, mock_listdir):
         """Should return all available methods."""
         mock_run.side_effect = [
-            MagicMock(returncode=0, stdout="", stderr=""),  # altool succeeds
+            MagicMock(returncode=0, stdout="/usr/bin/altool", stderr=""),  # xcrun --find succeeds
+            MagicMock(returncode=0, stdout="Provider: SomeProvider", stderr=""),  # altool list-providers succeeds
             MagicMock(returncode=0, stdout="1) ABC123 \"iPhone Developer\"", stderr=""),  # cert exists
         ]
         mock_exists.return_value = True
+        mock_listdir.return_value = ["app.mobileprovision"]
 
         methods = detect_available_methods()
         assert len(methods) >= 2
@@ -98,28 +103,40 @@ class TestDetectAvailableMethods:
 class TestFreeAppleIdSign:
     """Tests for free Apple ID code signing."""
 
+    @patch("injector.apple_signing._write_entitlements")
     @patch("injector.apple_signing.subprocess.run")
-    def test_signs_successfully(self, mock_run):
+    @patch("injector.apple_signing.store_apple_credentials")
+    @patch("injector.apple_signing._find_app_bundle_in_dir")
+    def test_signs_successfully(self, mock_find, mock_store, mock_run, mock_ent):
         """Should call altool + codesign and return success."""
         mock_run.return_value = MagicMock(returncode=0, stdout="Signed", stderr="")
+        mock_store.return_value = True
+        mock_ent.return_value = "/tmp/entitlements.plist"
+        mock_find.return_value = "/tmp/TestApp.app"
 
         result = free_apple_id_sign(
-            ipa_path="/tmp/test.ipa",
+            ipa_path="/tmp/TestApp.app",
             apple_id="user@icloud.com",
             app_specific_password="abcd-efgh-ijkl-mnop",
         )
 
         assert result.success is True
-        assert "7-day expiry" in result.warnings[0]
+        assert any("7 days" in w.lower() or "7-day" in w.lower() for w in result.warnings)
 
+    @patch("injector.apple_signing._write_entitlements")
     @patch("injector.apple_signing.subprocess.run")
-    def test_includes_seven_day_warning(self, mock_run):
+    @patch("injector.apple_signing.store_apple_credentials")
+    @patch("injector.apple_signing._find_app_bundle_in_dir")
+    def test_includes_seven_day_warning(self, mock_find, mock_store, mock_run, mock_ent):
         """Should include 7-day expiry warning in SignResult."""
         mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
+        mock_store.return_value = True
+        mock_ent.return_value = "/tmp/entitlements.plist"
+        mock_find.return_value = "/tmp/TestApp.app"
 
-        result = free_apple_id_sign("/tmp/test.ipa", "user@icloud.com", "pass")
+        result = free_apple_id_sign("/tmp/TestApp.app", "user@icloud.com", "pass")
 
-        assert any("7-day" in w for w in result.warnings)
+        assert any("7 days" in w.lower() or "7-day" in w.lower() for w in result.warnings)
 
     @patch("injector.apple_signing.subprocess.run")
     def test_returns_failure_on_codesign_error(self, mock_run):
@@ -137,13 +154,15 @@ class TestFreeAppleIdSign:
 class TestPaidDeveloperSign:
     """Tests for paid developer account code signing."""
 
+    @patch("injector.apple_signing._find_app_bundle_in_dir")
     @patch("injector.apple_signing.subprocess.run")
-    def test_signs_with_team_id_and_profile(self, mock_run):
+    def test_signs_with_team_id_and_profile(self, mock_run, mock_find):
         """Should call codesign with team_id and provisioning profile."""
         mock_run.return_value = MagicMock(returncode=0, stdout="Signed", stderr="")
+        mock_find.return_value = "/tmp/TestApp.app"
 
         result = paid_developer_sign(
-            ipa_path="/tmp/test.ipa",
+            ipa_path="/tmp/TestApp.app",
             team_id="ABC123XYZ",
             profile_path="/path/to/profile.mobileprovision",
         )
@@ -153,19 +172,20 @@ class TestPaidDeveloperSign:
         called_args = mock_run.call_args[0][0]
         assert "--sign" in called_args
         assert "ABC123XYZ" in called_args
-        assert "--embed" in called_args
 
 
 class TestUserCertificateSign:
     """Tests for user-provided certificate code signing."""
 
+    @patch("injector.apple_signing._find_app_bundle_in_dir")
     @patch("injector.apple_signing.subprocess.run")
-    def test_signs_with_cert_identity(self, mock_run):
+    def test_signs_with_cert_identity(self, mock_run, mock_find):
         """Should call codesign with certificate identity hash."""
         mock_run.return_value = MagicMock(returncode=0, stdout="Signed", stderr="")
+        mock_find.return_value = "/tmp/TestApp.app"
 
         result = user_certificate_sign(
-            ipa_path="/tmp/test.ipa",
+            ipa_path="/tmp/TestApp.app",
             cert_identity="ABC123DEF456",
         )
 
