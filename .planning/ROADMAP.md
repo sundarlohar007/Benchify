@@ -220,7 +220,7 @@ Wave 4 (parallel):
 
 Plans:
 - [x] 04-01-PLAN.md — Injector monorepo + Python APK injection engine (apktool/Smali) + re-signing + Flutter desktop injection screen (V25-01, V25-02, V25-04)
-- [ ] 04-02-PLAN.md — Rust SDK native .so (cargo-ndk, all ABIs) + FPS overlay pill widget + JSON over TCP 8080 + desktop stream adapter (V25-03, V25-05, V25-06)
+- [x] 04-02-PLAN.md — Rust SDK native .so (cargo-ndk, all ABIs) + FPS overlay pill widget + JSON over TCP 8080 + desktop stream adapter (V25-03, V25-05, V25-06)
 - [ ] 04-03-PLAN.md — Frida gadget injection alternative + WebView JS memory collection + per-process network stats (V25-07, V25-08, V25-09)
 - [ ] 04-04-PLAN.md — ADB broadcast automation (7 commands) + iOS video recording via pymobiledevice3 DVT (V25-10, V25-11)
 

@@ -7,8 +7,8 @@ last_updated: "2026-05-06T09:00:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 19
-  completed_plans: 19
+  total_plans: 20
+  completed_plans: 20
   percent: 100
 ---
 
@@ -31,11 +31,11 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase 1 — v1.0 MVP | Complete | 2026-05-04 | 2026-05-04 | 29/29 |
 | Phase 2 — v1.5 Analysis | Complete | 2026-05-04 | 2026-05-05 | 13/13 |
 | Phase 3 — v2.0 Server | Complete | 2026-05-05 | 2026-05-06 | 18/18 |
-| Phase 4 — v2.5 Injection | In Progress | 2026-05-06 | — | 3/11 |
+| Phase 4 — v2.5 Injection | In Progress | 2026-05-06 | — | 6/11 |
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
 | Phase 6 — v3.5 Enterprise | Pending | — | — | 9 |
 
-**Total:** 63/90 requirements complete (Phases 1-3 done, Phase 4 wave 1 done)
+**Total:** 66/90 requirements complete (Phases 1-3 done, Phase 4 waves 1-2 done)
 
 ## Phase 1 Summary
 
@@ -123,17 +123,17 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 
 ## Phase 4 Progress
 
-### Waves Completed (1/4)
+### Waves Completed (2/4)
 
 | Wave | Plan | Summary | Commit | Key Deliverables |
 |------|------|---------|--------|-----------------|
 | 01 — Python Injector + Desktop UI | 04-01-PLAN.md | 04-01-SUMMARY.md | 5619bf1, dd09022 | Python APK injection toolchain (apktool/Smali/manifest/re-sign/verify), Flutter desktop injection screen with drag-drop, method selector, keystore config, verification progress stepper |
+| 02 — Rust SDK .so + FPS Overlay | 04-02-PLAN.md | 04-02-SUMMARY.md | Pending (env restriction) | Rust cdylib (cargo-ndk, all ABIs), JNI exports, Choreographer FPS, /proc CPU/Mem/Net/GPU, TCP JSON streaming on 8080, FPS overlay pill (draggable, color-coded), BenchifyService foreground service, desktop SdkStreamService |
 
 ## Next Steps
 
-Phase 4 — v2.5 Injection Engine (8 remaining: V25-03, V25-05 through V25-11)
+Phase 4 — v2.5 Injection Engine (5 remaining: V25-07 through V25-11)
 
-- Execute Plan 04-02: Rust SDK native .so + FPS overlay widget
 - Execute Plan 04-03: Frida gadget injection + WebView/JS + per-process network
 - Execute Plan 04-04: ADB broadcast automation + iOS video recording via DVT
 
