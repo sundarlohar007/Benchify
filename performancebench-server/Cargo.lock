@@ -1851,6 +1851,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dabda5859ee7c06b995b9d1165aa52c39110e079ef609db97178d86aeb051fa7"
 dependencies = [
  "async-trait",
+ "base64 0.22.1",
  "email-encoding",
  "email_address",
  "fastrand",
@@ -1861,11 +1862,14 @@ dependencies = [
  "mime",
  "native-tls",
  "nom 8.0.0",
+ "percent-encoding",
  "quoted_printable",
  "rustls",
+ "socket2",
  "tokio",
  "tokio-native-tls",
  "tokio-rustls",
+ "url",
  "webpki-roots",
 ]
 
