@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "benchify.fullname" . }}-config
+  labels:
+    {{- include "benchify.labels" . | nindent 4 }}
+data:
+  host: "0.0.0.0"
+  port: {{ .Values.service.port | quote }}
+  upload_dir: {{ .Values.server.uploadDir | quote }}
+  {{- if .Values.server.sso.enabled }}
+  sso_enabled: "true"
+  sso_redirect_base_url: {{ .Values.server.sso.redirectBaseUrl | quote }}
+  {{- end }}

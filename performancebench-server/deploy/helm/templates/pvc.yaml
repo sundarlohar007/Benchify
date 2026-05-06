@@ -1,0 +1,17 @@
+{{- if .Values.server.uploads.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "benchify.fullname" . }}-uploads
+  labels:
+    {{- include "benchify.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.server.uploads.persistence.size }}
+  {{- if .Values.server.uploads.persistence.storageClass }}
+  storageClassName: {{ .Values.server.uploads.persistence.storageClass }}
+  {{- end }}
+{{- end }}

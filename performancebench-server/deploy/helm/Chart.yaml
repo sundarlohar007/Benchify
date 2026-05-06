@@ -1,0 +1,18 @@
+apiVersion: v2
+name: benchify
+description: PerformanceBench Enterprise Server — on-premises performance profiling for mobile and desktop apps
+type: application
+version: 3.5.0
+appVersion: "3.5.0"
+keywords:
+  - performance
+  - profiling
+  - game-bench
+  - monitoring
+  - mobile
+  - desktop
+home: https://github.com/sundarlohar007/Benchify
+sources:
+  - https://github.com/sundarlohar007/Benchify
+maintainers:
+  - name: Benchify Team

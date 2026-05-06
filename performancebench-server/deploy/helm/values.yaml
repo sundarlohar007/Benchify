@@ -1,0 +1,162 @@
+# =============================================================================
+# Benchify Enterprise Server — Helm Chart Values
+# =============================================================================
+# Customize for your Kubernetes deployment.
+# All secrets should be managed via Kubernetes Secrets, not hardcoded here.
+# See docs/enterprise/README.md for full deployment instructions.
+# =============================================================================
+
+# ── Replica Count ──
+# Single replica recommended — Benchify uses stateful WebSocket sessions.
+replicaCount: 1
+
+# ── Image ──
+image:
+  repository: ghcr.io/sundarlohar007/benchify-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+# - name: ghcr-secret
+
+# ── Service ──
+service:
+  type: ClusterIP
+  port: 3000
+  # NodePort for bare-metal without load balancer:
+  # type: NodePort
+  # nodePort: 30300
+
+# ── Ingress ──
+# Requires an ingress controller (nginx, traefik, etc.).
+# WebSocket support requires nginx.ingress.kubernetes.io/proxy-read-timeout annotation.
+ingress:
+  enabled: false
+  className: nginx
+  host: benchify.example.com
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+  tls:
+    - secretName: benchify-tls
+      hosts:
+        - benchify.example.com
+  # For cert-manager TLS auto-provisioning, add:
+  # annotations:
+  #   cert-manager.io/cluster-issuer: letsencrypt-prod
+  # tls:
+  #   - secretName: benchify-tls
+  #     hosts:
+  #       - benchify.example.com
+
+# ── PostgreSQL ──
+# Embedded: uses Bitnami PostgreSQL subchart (default for dev/test).
+# External: set host/port/credentials for production databases.
+postgresql:
+  enabled: true
+  external:
+    host: ""
+    port: 5432
+  auth:
+    username: benchify
+    password: ""   # [REQUIRED] Generate: openssl rand -base64 32
+    database: benchify
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+      storageClass: ""
+
+# ── Server Configuration ──
+server:
+  # JWT secret — [REQUIRED] change to a strong random value.
+  # Generate: openssl rand -hex 32
+  jwtSecret: ""
+
+  # CORS allowed origins (browser-based dashboard access).
+  corsAllowedOrigins:
+    - "https://benchify.example.com"
+
+  # Upload directory path for session files.
+  uploadDir: "/data/uploads"
+
+  # ── SSO Configuration ──
+  sso:
+    enabled: false
+    redirectBaseUrl: "https://benchify.example.com"
+
+  # ── Jira Integration ──
+  jira:
+    enabled: false
+    baseUrl: ""
+    email: ""
+    apiToken: ""
+
+  # ── Email Notifications (SMTP) ──
+  smtp:
+    host: ""
+    port: 587
+    username: ""
+    password: ""
+    fromEmail: "benchify@example.com"
+
+  # ── Slack Notifications ──
+  slack:
+    webhookUrl: ""
+
+  # ── Resource Limits ──
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  # ── Node Selection ──
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  # ── Pod Security ──
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+  # ── Health Checks ──
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+    initialDelaySeconds: 30
+    periodSeconds: 30
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+    initialDelaySeconds: 10
+    periodSeconds: 10
+
+  # ── Uploads Persistent Volume ──
+  uploads:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: ""
+
+# ── Service Account ──
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# ── Pod Annotations ──
+podAnnotations: {}
+
+# ── Security Context ──
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
