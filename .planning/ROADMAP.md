@@ -273,34 +273,44 @@ Plans:
 
 ## Phase 6: v3.5 — Enterprise
 
-**Goal:** SAML SSO, LDAP, RBAC, JIT provisioning, Jira integration, audit log, on-premises deployment guide.
+**Goal:** OIDC+SAML+LDAP SSO, RBAC (5 roles), JIT provisioning, audit log, on-prem deploy (Docker Compose + bare metal), air-gapped support, multi-org hierarchy, Jira integration, thread-level CPU, enterprise dashboard.
 
 **Duration:** 2 days (May 29–30)
 **Requirements:** V35-01 through V35-09
 
 **Build order (wave-based parallel):**
 
-Wave 1 (parallel):
-- SAML 2.0 SSO — Okta, Azure AD, Google Workspace (V35-01)
-- LDAP authentication (V35-02)
-- JIT user provisioning (V35-03)
+Wave 1 (parallel — SSO + RBAC):
+- OIDC + SAML 2.0 + LDAP SSO integration (V35-01, V35-02)
+- JIT user provisioning with viewer default role (V35-03)
+- RBAC middleware with 5 roles: admin/manager/operator/viewer/auditor (V35-05)
 
-Wave 2 (parallel):
-- RBAC — Owner/Admin/Member/Viewer (V35-05)
-- Audit log (V35-06)
-- Multi-org/multi-project hierarchy (V35-09)
+Wave 2 (parallel — audit + deploy):
+- Audit logging — audit_events table, manual retention, CSV/JSON export (V35-06)
+- On-prem deployment — Docker Compose + bare metal systemd install script (V35-07)
+- Air-gapped deployment support (D-08)
+- Multi-org/multi-project hierarchy — team_orgs, team_projects, team_membership (V35-09)
 
-Wave 3 (parallel):
+Wave 3 (parallel — polish):
+- Dashboard SSO configuration UI + RBAC user management + audit log viewer
 - Jira issue creation from session (V35-04)
-- Thread-level CPU breakdown (V35-08)
-- On-premises deployment guide (V35-07)
+- Thread-level CPU breakdown endpoint (V35-08)
+- Helm chart for Kubernetes (optional, D-07)
+- Final hardening, enterprise deployment README
 
-**UI hint:** no — backend/configuration heavy
+**UI hint:** yes — web dashboard SSO config, user management, audit log viewer
+
+**Plans:** 3 plans across 3 waves (planned 2026-05-06)
+
+Plans:
+- [ ] 06-01-PLAN.md — Schema migration v3 (5 roles, SSO fields, sso_configs), OIDC+SAML+LDAP auth flows, JIT provisioning, RBAC middleware, admin user management API (V35-01, V35-02, V35-03, V35-05)
+- [ ] 06-02-PLAN.md — Audit logging (audit_events table + API + CSV/JSON export), team orgs/projects/membership, on-prem bare metal install script, production Docker Compose with nginx, air-gapped deployment checklist (V35-06, V35-07, V35-09)
+- [ ] 06-03-PLAN.md — Enterprise dashboard UI (SSO config, user management, audit log viewer), Jira integration, thread-level CPU breakdown, Helm chart, enterprise deployment README (V35-04, V35-08)
 
 **Success criteria:**
-1. User can log into team server with Okta SAML SSO; new user auto-provisioned via JIT
-2. Admin can assign roles (Owner/Admin/Member/Viewer) and all actions appear in audit log
-3. On-premises deployment guide allows fresh Ubuntu server to host PerformanceBench server behind nginx with TLS in under 10 steps
+1. User can log into team server with Okta/Azure AD/Google Workspace OIDC SSO; new user auto-provisioned via JIT with viewer role
+2. Admin can assign 5 roles (admin/manager/operator/viewer/auditor) via dashboard; all mutating actions appear in audit log
+3. On-premises deployment guide allows fresh Ubuntu 24.04 server to host PerformanceBench server behind nginx with TLS in under 10 steps (Docker Compose) or via bare metal install script
 
 ---
 
@@ -347,3 +357,4 @@ Phase 1 (v1.0 MVP) ──────┐
 *Phase 3 plans created: 2026-05-05*
 *Phase 4 plans created: 2026-05-06*
 *Phase 5 plans created: 2026-05-06*
+*Phase 6 plans created: 2026-05-06*
