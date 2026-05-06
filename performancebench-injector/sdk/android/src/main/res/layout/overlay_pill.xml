@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pillContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/pill_background"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="6dp"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/fpsText"
+        android:textSize="18sp"
+        android:typeface="monospace"
+        android:textColor="@android:color/white"
+        android:text="-- FPS" />
+
+    <LinearLayout
+        android:id="@+id/detailPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:gravity="start"
+        android:paddingTop="4dp">
+
+        <TextView
+            android:id="@+id/avgFpsText"
+            android:textSize="11sp"
+            android:typeface="monospace"
+            android:textColor="#CCFFFFFF"
+            android:text="Avg: --" />
+
+        <TextView
+            android:id="@+id/minFpsText"
+            android:textSize="11sp"
+            android:typeface="monospace"
+            android:textColor="#CCFFFFFF"
+            android:text="Min: --" />
+
+        <TextView
+            android:id="@+id/maxFpsText"
+            android:textSize="11sp"
+            android:typeface="monospace"
+            android:textColor="#CCFFFFFF"
+            android:text="Max: --" />
+
+        <TextView
+            android:id="@+id/jankText"
+            android:textSize="11sp"
+            android:typeface="monospace"
+            android:textColor="#CCFFFFFF"
+            android:text="Jank: 0" />
+
+    </LinearLayout>
+
+</LinearLayout>

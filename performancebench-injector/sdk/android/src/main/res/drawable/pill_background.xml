@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Rounded pill background shape for the FPS overlay.
+  20dp corner radius matching D-12 specification.
+  Color is set programmatically by FpsOverlayView based on FPS threshold.
+  This shape provides the rounded corners; actual fill color is applied via
+  setBackgroundColor().
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="20dp" />
+    <solid android:color="#CC000000" />
+</shape>

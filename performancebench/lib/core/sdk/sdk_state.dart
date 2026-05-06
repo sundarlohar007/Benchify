@@ -14,5 +14,21 @@ class SdkState {
   /// Default-off per D-03: user opts in for post-session issue scanning.
   bool detectedIssuesEnabled;
 
-  SdkState({this.diskIoSdkEnabled = true, this.detectedIssuesEnabled = false});
+  /// Whether SDK streaming is enabled (desktop connects to SDK TCP stream).
+  /// Default true when profiling an injected app.
+  bool sdkStreamEnabled;
+
+  /// Device serial for ADB port forwarding to SDK TCP server.
+  String? sdkSerial;
+
+  /// Local TCP port for SDK stream (default 8080).
+  int sdkPort;
+
+  SdkState({
+    this.diskIoSdkEnabled = true,
+    this.detectedIssuesEnabled = false,
+    this.sdkStreamEnabled = false,
+    this.sdkSerial,
+    this.sdkPort = 8080,
+  });
 }
