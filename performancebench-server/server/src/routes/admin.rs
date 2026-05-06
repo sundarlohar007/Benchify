@@ -5,7 +5,9 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use db::user_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
 use crate::error::AppError;
+use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
 
@@ -145,9 +147,25 @@ async fn update_user_role(
         ));
     }
 
+    // Get current role for audit
+    let existing_user = user_queries::get_user_by_id(&state.pool, user_id)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?
+        .ok_or(AppError::NotFound("User".to_string()))?;
+    let old_role = existing_user.role.clone();
+
     let user = user_queries::update_user_role(&state.pool, user_id, &body.role)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+
+    // Audit role change
+    let _ = audit_mw::audit_user_event(
+        &state.pool,
+        &auth_user,
+        AuditEventType::UserRoleChanged,
+        user_id,
+        serde_json::json!({"old_role": old_role, "new_role": body.role}),
+    ).await;
 
     Ok(Json(UserDetail::from(&user)))
 }
@@ -169,6 +187,20 @@ async fn update_user_status(
     let user = user_queries::update_user_status(&state.pool, user_id, body.is_active)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+
+    // Audit user activation/deactivation
+    let event_type = if body.is_active {
+        AuditEventType::UserActivated
+    } else {
+        AuditEventType::UserDeactivated
+    };
+    let _ = audit_mw::audit_user_event(
+        &state.pool,
+        &auth_user,
+        event_type,
+        user_id,
+        serde_json::json!({"is_active": body.is_active}),
+    ).await;
 
     Ok(Json(UserDetail::from(&user)))
 }

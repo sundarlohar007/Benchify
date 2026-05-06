@@ -8,7 +8,9 @@ use uuid::Uuid;
 
 use db::token_queries;
 use db::user_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
 use crate::error::AppError;
+use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::{self, AuthUser};
 use crate::utils::password;
@@ -114,6 +116,18 @@ pub async fn login(
             success = false,
             "Login failed: invalid password"
         );
+        // Audit failed login
+        let audit_actor = AuthUser {
+            user_id: user.id,
+            email: user.email.clone(),
+            role: user.role.clone(),
+        };
+        let _ = audit_mw::audit_auth_event(
+            &state.pool,
+            Some(&audit_actor),
+            AuditEventType::Login,
+            false,
+        ).await;
         return Err(AppError::Unauthorized);
     }
 
@@ -134,6 +148,19 @@ pub async fn login(
         success = true,
         "Login successful"
     );
+
+    // Audit successful login
+    let auth_user = AuthUser {
+        user_id: user.id,
+        email: user.email.clone(),
+        role: user.role.clone(),
+    };
+    let _ = audit_mw::audit_auth_event(
+        &state.pool,
+        Some(&auth_user),
+        AuditEventType::Login,
+        true,
+    ).await;
 
     let cookie = access_token_cookie(&access_token, 3600);
     let body = AuthResponse {
@@ -242,6 +269,18 @@ pub async fn refresh(
         "Tokens refreshed"
     );
 
+    // Audit token refresh
+    let _ = audit_mw::audit_auth_event(
+        &state.pool,
+        Some(&AuthUser {
+            user_id: user.id,
+            email: user.email.clone(),
+            role: user.role.clone(),
+        }),
+        AuditEventType::TokenRefresh,
+        true,
+    ).await;
+
     let cookie = access_token_cookie(&access_token, 3600);
     let body = AuthResponse {
         user: UserResponse::from(&user),
@@ -263,6 +302,23 @@ pub async fn logout(
     }
 
     tracing::info!(event_type = "logout", "User logged out");
+
+    // Audit logout — we may have a valid token to identify the user
+    let secret = state.config.jwt_secret.as_bytes();
+    if let Ok(claims) = jwt::validate_token(&body.refresh_token, secret) {
+        if let Ok(user_id) = claims.sub.parse::<uuid::Uuid>() {
+            let _ = audit_mw::audit_auth_event(
+                &state.pool,
+                Some(&AuthUser {
+                    user_id,
+                    email: claims.email,
+                    role: claims.role,
+                }),
+                AuditEventType::Logout,
+                true,
+            ).await;
+        }
+    }
 
     let response = json!({"message": "Logged out"});
     Ok((jar.add(clear_access_token_cookie()), Json(response)))

@@ -7,7 +7,9 @@ use serde::Deserialize;
 use uuid::Uuid;
 
 use db::session_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
 use crate::error::AppError;
+use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
 
@@ -113,6 +115,15 @@ pub async fn delete_session(
     session_queries::delete_session(&state.pool, session_id, auth_user.user_id)
         .await
         .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?;
+
+    // Audit session delete
+    let _ = audit_mw::audit_session_event(
+        &state.pool,
+        &auth_user,
+        AuditEventType::SessionDeleted,
+        session_id,
+        None,
+    ).await;
 
     Ok((StatusCode::OK, Json(serde_json::json!({"status": "deleted"}))))
 }

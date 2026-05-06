@@ -9,8 +9,10 @@ use uuid::Uuid;
 
 use db::sso_queries;
 use db::user_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
 use models::sso::{LdapProviderConfig, OidcProviderConfig, SamlProviderConfig};
 use crate::error::AppError;
+use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::{jwt, ldap, oidc, saml};
 
@@ -132,6 +134,25 @@ async fn issue_jwt_for_user(
         sso_provider = sso_provider,
         "SSO login successful"
     );
+
+    // Audit SSO login
+    let audit_user = crate::utils::jwt::AuthUser {
+        user_id: user.id,
+        email: user.email.clone(),
+        role: user.role.clone(),
+    };
+    let _ = audit_mw::record_audit_event(
+        &state.pool,
+        Some(&audit_user),
+        AuditEventType::SsoLogin,
+        AuditEventCategory::Auth,
+        None,
+        None,
+        serde_json::json!({
+            "success": true,
+            "sso_provider": sso_provider,
+        }),
+    ).await;
 
     let cookie = access_token_cookie(&access_token);
     let body = AuthResponse {
