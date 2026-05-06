@@ -8,8 +8,8 @@ progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 25
-  completed_plans: 24
-  percent: 96
+  completed_plans: 25
+  percent: 100
 ---
 
 # Project State: Benchify
@@ -181,12 +181,33 @@ Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-0
 - `performancebench-injector/sdk/src/models.rs` — MetricSample extended with 7 PC fields
 - `performancebench/lib/core/models/metric_sample.dart` — Dart model with PC fields
 
+### Plan 05-04 Complete: pb-pcprobe Binary + PC Video Recording + Desktop PC Profiling
+
+| Plan | Summary | Commits | Key Deliverables |
+|------|---------|---------|-----------------|
+| 04 — pb-pcprobe + PC Video | 05-04-SUMMARY.md | e77e55f, dbd4fde, 058b1df | pb-pcprobe Rust binary (CLI parsing, TCP IPC on 27184, mDNS discovery, 1Hz collector loop), cross-platform PC video recording (Windows.Graphics.Capture / AVScreenCaptureKit / ffmpeg stubs), desktop Flutter PC profiling screen (6 live fl_chart widgets, connection panel, video/marker controls) |
+
+### Key Metrics (Plan 05-04)
+
+- **28+ Rust tests** (inline: cli 8, ipc 5, discovery 3, collector 3, chunk_manager 8, windows_capture 7, mac_capture 5, linux_capture 8, mod 3)
+- **20 files** (14 created: 6 pcprobe/ + 5 pc_video/ + 4 Flutter; 5 modified: sdk lib.rs/Cargo.toml, Dart video.dart/screenrecord_service.dart/app.dart)
+- **3 commits** (one per task)
+
+### Artifacts Produced (Plan 05-04)
+
+- `performancebench-injector/pcprobe/` — 6 Rust source files (main, cli, ipc, discovery, collector, Cargo.toml)
+- `performancebench-injector/sdk/src/pc_video/` — 5 Rust modules (mod, chunk_manager, windows_capture, mac_capture, linux_capture)
+- `performancebench/lib/features/pc_profiling/` — 3 Flutter widgets (pc_probe_screen, pc_metric_charts, pc_video_settings)
+- `performancebench/lib/core/services/pcprobe_service.dart` — Dart IPC client
+- `performancebench/lib/core/models/video.dart` — Extended with target_kind field
+
 ## Next Steps
 
-Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. Plans 05-01, 05-02, and 05-03 complete.
+Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. All 4 plans complete.
 
-- Plan 05-04 (PC pb-pcprobe binary assembly + video recording) remaining
-- Overall: 82/90 requirements (8 of 10 Phase 5 requirements addressed: V30-01/02/03 via Plan 01, V30-04/05 via Plan 02, V30-06/07/08 via Plan 03)
+- Phase 5 complete: 10/10 requirements (V30-01 through V30-10)
+- Overall: 84/90 requirements (6 remaining in Phase 6)
+- Next: Phase 6 — v3.5 Enterprise (Auth + RBAC, Multi-team, Audit Logs, Client Cert, Role Management, Retention Policies, Admin Dashboard, Alert Dispatch, SLA Reports)
 
 ## Config
 
