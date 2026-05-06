@@ -37,4 +37,47 @@ export const api = {
     apiFetch<T>(path, { method: 'PUT', body: JSON.stringify(body) }),
   delete: <T>(path: string) =>
     apiFetch<T>(path, { method: 'DELETE' }),
+
+  /**
+   * Download a file from the API (e.g., audit export CSV/JSON).
+   * Triggers a browser download via a hidden anchor element.
+   */
+  download: async (path: string, filename: string): Promise<void> => {
+    const res = await fetch(path, { credentials: 'include' });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new ApiError(
+        res.status,
+        body.code || 'UNKNOWN',
+        body.message || res.statusText,
+      );
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+
+  /**
+   * POST with FormData for multipart uploads (e.g., SAML metadata XML).
+   */
+  postForm: async <T>(path: string, formData: FormData): Promise<T> => {
+    const res = await fetch(path, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new ApiError(
+        res.status,
+        body.code || 'UNKNOWN',
+        body.message || res.statusText,
+      );
+    }
+    return res.json();
+  },
 };

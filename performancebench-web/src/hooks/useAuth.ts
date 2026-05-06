@@ -7,6 +7,10 @@ export interface User {
   name: string;
   role: string;
   created_at: string;
+  is_active?: boolean;
+  auth_source?: string;
+  sso_provider?: string | null;
+  display_name?: string | null;
 }
 
 interface LoginResponse {
@@ -26,10 +30,17 @@ export function useAuth() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const isAdmin = user?.role === 'admin';
+  const isAuditor = user?.role === 'auditor';
+  const canAccessAdmin = isAdmin || isAuditor;
+
   return {
     user: user ?? null,
     isLoading,
     isAuthenticated: !!user,
+    isAdmin,
+    isAuditor,
+    canAccessAdmin,
     error,
   };
 }

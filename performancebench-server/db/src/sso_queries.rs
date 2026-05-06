@@ -88,6 +88,16 @@ pub async fn update_sso_config(
     Ok(config)
 }
 
+/// List ALL SSO configs (including inactive) for admin dashboard.
+pub async fn list_all_sso_configs(pool: &DbPool) -> DbResult<Vec<SsoConfig>> {
+    let mut client = pool.get().await?;
+    let results = sso_configs::table
+        .order(sso_configs::name.asc())
+        .load::<SsoConfig>(&mut *client)
+        .await?;
+    Ok(results)
+}
+
 /// Delete an SSO configuration by ID.
 pub async fn delete_sso_config(pool: &DbPool, config_id: Uuid) -> DbResult<()> {
     let mut client = pool.get().await?;

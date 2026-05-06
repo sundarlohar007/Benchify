@@ -1,11 +1,12 @@
 use axum::extract::{Path, Query, State};
-use axum::{Json, Router};
-use axum::routing::get;
+use axum::{Extension, Json, Router};
+use axum::routing::{delete, get, post, put};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use db::user_queries;
+use db::{sso_queries, user_queries};
 use models::audit::{AuditEventCategory, AuditEventType};
+use models::sso::SsoConfig;
 use crate::error::AppError;
 use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
@@ -76,14 +77,35 @@ impl From<&models::user::User> for UserDetail {
     }
 }
 
+// ── SSO Config types ──
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateSsoConfigRequest {
+    pub provider_type: String,
+    pub name: String,
+    pub config: serde_json::Value,
+    pub is_active: Option<bool>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateSsoConfigRequest {
+    pub name: Option<String>,
+    pub config: Option<serde_json::Value>,
+    pub is_active: Option<bool>,
+}
+
 // ── Router ──
 
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/users", get(list_users))
         .route("/users/{id}", get(get_user))
-        .route("/users/{id}/role", axum::routing::put(update_user_role))
-        .route("/users/{id}/status", axum::routing::put(update_user_status))
+        .route("/users/{id}/role", put(update_user_role))
+        .route("/users/{id}/status", put(update_user_status))
+        .route("/sso-configs", get(list_sso_configs).post(create_sso_config))
+        .route("/sso-configs/{id}", put(update_sso_config).delete(delete_sso_config))
 }
 
 // ── Handlers ──
@@ -203,4 +225,111 @@ async fn update_user_status(
     ).await;
 
     Ok(Json(UserDetail::from(&user)))
+}
+
+// ── SSO Config CRUD Handlers ──
+
+/// GET /api/v1/admin/sso-configs — list all SSO configs (active and inactive).
+async fn list_sso_configs(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<SsoConfig>>, AppError> {
+    let configs = sso_queries::list_all_sso_configs(&state.pool)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+    Ok(Json(configs))
+}
+
+/// POST /api/v1/admin/sso-configs — create a new SSO provider config.
+async fn create_sso_config(
+    State(state): State<AppState>,
+    Extension(auth_user): Extension<AuthUser>,
+    Json(body): Json<CreateSsoConfigRequest>,
+) -> Result<Json<SsoConfig>, AppError> {
+    let valid_types = ["oidc", "saml", "ldap"];
+    if !valid_types.contains(&body.provider_type.as_str()) {
+        return Err(AppError::Validation(format!(
+            "Invalid provider_type '{}'. Must be one of: oidc, saml, ldap",
+            body.provider_type
+        )));
+    }
+
+    let config = sso_queries::create_sso_config(
+        &state.pool,
+        &body.provider_type,
+        &body.name,
+        body.config.clone(),
+    )
+    .await
+    .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+
+    // Audit SSO config creation
+    let _ = audit_mw::audit_config_event(
+        &state.pool,
+        &auth_user,
+        AuditEventType::SsoConfigCreated,
+        &body.provider_type,
+        Some(config.id),
+        serde_json::json!({"name": body.name, "provider_type": body.provider_type}),
+    ).await;
+
+    Ok(Json(config))
+}
+
+/// PUT /api/v1/admin/sso-configs/{id} — update an SSO provider config.
+async fn update_sso_config(
+    State(state): State<AppState>,
+    Path(config_id): Path<Uuid>,
+    Extension(auth_user): Extension<AuthUser>,
+    Json(body): Json<UpdateSsoConfigRequest>,
+) -> Result<Json<SsoConfig>, AppError> {
+    let input = models::sso::UpdateSsoConfig {
+        name: body.name,
+        config: body.config,
+        is_active: body.is_active,
+    };
+
+    let config = sso_queries::update_sso_config(&state.pool, config_id, &input)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+
+    // Audit SSO config update
+    let _ = audit_mw::audit_config_event(
+        &state.pool,
+        &auth_user,
+        AuditEventType::SsoConfigUpdated,
+        &config.provider_type,
+        Some(config_id),
+        serde_json::json!({"updated_fields": serde_json::to_value(&input).unwrap_or_default()}),
+    ).await;
+
+    Ok(Json(config))
+}
+
+/// DELETE /api/v1/admin/sso-configs/{id} — delete an SSO provider config.
+async fn delete_sso_config(
+    State(state): State<AppState>,
+    Path(config_id): Path<Uuid>,
+    Extension(auth_user): Extension<AuthUser>,
+) -> Result<Json<serde_json::Value>, AppError> {
+    // Get config before deleting for audit
+    let existing = sso_queries::get_sso_config_by_id(&state.pool, config_id)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?
+        .ok_or(AppError::NotFound("SSO config".to_string()))?;
+
+    sso_queries::delete_sso_config(&state.pool, config_id)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+
+    // Audit SSO config deletion
+    let _ = audit_mw::audit_config_event(
+        &state.pool,
+        &auth_user,
+        AuditEventType::SsoConfigDeleted,
+        &existing.provider_type,
+        Some(config_id),
+        serde_json::json!({"name": existing.name, "provider_type": existing.provider_type}),
+    ).await;
+
+    Ok(Json(serde_json::json!({"status": "deleted"})))
 }
