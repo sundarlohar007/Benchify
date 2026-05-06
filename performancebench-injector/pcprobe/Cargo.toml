@@ -1,0 +1,33 @@
+[package]
+name = "pb-pcprobe"
+version = "3.0.0"
+edition = "2021"
+description = "PerformanceBench PC probe agent — collects performance metrics and streams to desktop host"
+license = "MIT"
+
+[[bin]]
+name = "pb-pcprobe"
+path = "src/main.rs"
+
+[dependencies]
+sdk = { path = "../sdk", features = ["pc_metrics"] }
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4"
+env_logger = "0.11"
+mdns-sd = "0.10"
+tokio = { version = "1", features = ["rt", "net", "io-util", "sync", "signal", "macros"] }
+anyhow = "1"
+sysinfo = "0.31"
+
+[target.'cfg(windows)'.dependencies]
+tokio-util = { version = "0.7", features = ["io"] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+
+[dev-dependencies]
+tempfile = "3"
