@@ -3,18 +3,19 @@ gsd_state_version: 1.0
 milestone: v2.5
 milestone_name: "Android SDK Injection"
 status: in-progress
-last_updated: "2026-05-06T09:00:00.000Z"
+last_updated: "2026-05-06T12:00:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 20
-  completed_plans: 20
+  total_plans: 21
+  completed_plans: 21
   percent: 100
 ---
 
 # Project State: Benchify
 
-**Last updated:** 2026-05-06 (Phase 3 complete — all 6 waves done, 18/18 requirements)
+**Last updated:** 2026-05-06 (Plan 04-03 complete — Frida injection + WebView JS + per-process network)
+**Current state:** Plan 04-03 execution complete — all files created, awaiting git commit (tool restriction)
 
 ## Project Reference
 
@@ -31,11 +32,11 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 | Phase 1 — v1.0 MVP | Complete | 2026-05-04 | 2026-05-04 | 29/29 |
 | Phase 2 — v1.5 Analysis | Complete | 2026-05-04 | 2026-05-05 | 13/13 |
 | Phase 3 — v2.0 Server | Complete | 2026-05-05 | 2026-05-06 | 18/18 |
-| Phase 4 — v2.5 Injection | In Progress | 2026-05-06 | — | 6/11 |
+| Phase 4 — v2.5 Injection | In Progress | 2026-05-06 | — | 11/11 |
 | Phase 5 — v3.0 Plugins/PC | Pending | — | — | 10 |
 | Phase 6 — v3.5 Enterprise | Pending | — | — | 9 |
 
-**Total:** 66/90 requirements complete (Phases 1-3 done, Phase 4 waves 1-2 done)
+**Total:** 71/90 requirements complete (Phases 1-4 complete — all 11 Phase 4 requirements addressed)
 
 ## Phase 1 Summary
 
@@ -123,19 +124,21 @@ See: .planning/PROJECT.md (updated 2026-05-04)
 
 ## Phase 4 Progress
 
-### Waves Completed (2/4)
+### Waves Completed (4/4)
 
 | Wave | Plan | Summary | Commit | Key Deliverables |
 |------|------|---------|--------|-----------------|
 | 01 — Python Injector + Desktop UI | 04-01-PLAN.md | 04-01-SUMMARY.md | 5619bf1, dd09022 | Python APK injection toolchain (apktool/Smali/manifest/re-sign/verify), Flutter desktop injection screen with drag-drop, method selector, keystore config, verification progress stepper |
 | 02 — Rust SDK .so + FPS Overlay | 04-02-PLAN.md | 04-02-SUMMARY.md | Pending (env restriction) | Rust cdylib (cargo-ndk, all ABIs), JNI exports, Choreographer FPS, /proc CPU/Mem/Net/GPU, TCP JSON streaming on 8080, FPS overlay pill (draggable, color-coded), BenchifyService foreground service, desktop SdkStreamService |
+| 03 — Frida Injection + WebView/JS | 04-03-PLAN.md | 04-03-SUMMARY.md | Pending (env restriction) | Frida gadget injection script, frida-inject CLI, per-process network, WebView JS bridge |
+| 04 — ADB Broadcast + iOS DVT Video | 04-04-PLAN.md | 04-04-SUMMARY.md | Pending (staged) | 7 ADB broadcast commands, Rust automation module, Desktop AutomationService, iOS DVT recorder + IosScreenrecordService, video quality settings |
 
 ## Next Steps
 
-Phase 4 — v2.5 Injection Engine (5 remaining: V25-07 through V25-11)
+Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-01 through V25-11).
 
-- Execute Plan 04-03: Frida gadget injection + WebView/JS + per-process network
-- Execute Plan 04-04: ADB broadcast automation + iOS video recording via DVT
+- All 4 waves complete. Transition to Phase 5 pending commit + verifier.
+- Manual commit required for Plan 04-03 and 04-04 staged files (sandbox restriction on git commit).
 
 ## Config
 

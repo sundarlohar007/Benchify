@@ -68,6 +68,19 @@ pub extern "system" fn Java_dev_benchify_SdkLoader_nativeStop(
     crate::transport::stop_streaming();
 }
 
+/// Report JS heap memory from WebView JS bridge.
+///
+/// Called by Java WebViewBridge.nativeReportJsHeap(int).
+/// Per T-04-17: Lock-free AtomicI32 — no allocations or blocking in JNI path.
+#[no_mangle]
+pub extern "system" fn Java_dev_benchify_WebViewBridge_nativeReportJsHeap(
+    _env: JNIEnv,
+    _class: JClass,
+    used_heap_kb: jint,
+) {
+    crate::metrics::webview_js::report_js_heap(used_heap_kb);
+}
+
 /// Return current metrics snapshot as JSON string.
 #[no_mangle]
 pub extern "system" fn Java_dev_benchify_SdkLoader_nativeGetStats(
@@ -77,6 +90,25 @@ pub extern "system" fn Java_dev_benchify_SdkLoader_nativeGetStats(
     let snapshot = crate::transport::get_current_stats();
     let json = serde_json::to_string(&snapshot).unwrap_or_else(|_| "{}".into());
     match env.new_string(&json) {
+        Ok(s) => s.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+/// Handle automation broadcast command from BenchifyBroadcastReceiver.
+/// Called from Java: `nativeHandleCommand(String action, String payloadJson)`.
+/// Returns JSON response string via JNI.
+#[no_mangle]
+pub extern "system" fn Java_dev_benchify_BenchifyBroadcastReceiver_nativeHandleCommand(
+    mut env: JNIEnv,
+    _class: JClass,
+    action: JString,
+    payload_json: JString,
+) -> jstring {
+    let action: String = env.get_string(&action).unwrap_or_default().into();
+    let payload: String = env.get_string(&payload_json).unwrap_or_default().into();
+    let response = crate::automation::handle_command(&action, &payload);
+    match env.new_string(&response) {
         Ok(s) => s.into_raw(),
         Err(_) => std::ptr::null_mut(),
     }

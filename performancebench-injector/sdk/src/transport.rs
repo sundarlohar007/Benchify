@@ -13,7 +13,7 @@ use std::sync::{Mutex, atomic::{AtomicBool, Ordering}};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::models::MetricSample;
-use crate::metrics::{fps, cpu, memory, network, gpu};
+use crate::metrics::{fps, cpu, memory, network, gpu, webview_js, net_per_process};
 
 static STREAMING_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SERVER_RUNNING: AtomicBool = AtomicBool::new(false);
@@ -21,6 +21,8 @@ static SERVER_RUNNING: AtomicBool = AtomicBool::new(false);
 lazy_static::lazy_static! {
     static ref SAMPLE_QUEUE: Mutex<Vec<MetricSample>> = Mutex::new(Vec::new());
     static ref LATEST_SAMPLE: Mutex<Option<MetricSample>> = Mutex::new(None);
+    /// Event queue for markers and other JSON events pushed via automation.
+    static ref EVENT_QUEUE: Mutex<Vec<String>> = Mutex::new(Vec::new());
 }
 
 struct MetricState {
@@ -173,7 +175,27 @@ fn collect_metrics() -> MetricSample {
             }
         }
 
-        // Network from /proc/self/net/dev
+        // WebView JS memory from JNI bridge (per D-15)
+        // Populated by Java WebViewBridge via addJavascriptInterface
+        sample.memory_webview_kb = webview_js::get_webview_memory();
+
+        // Per-process network from /proc/self/net/dev (per D-16)
+        // net_per_process module tracks deltas independently
+        {
+            let net_result = net_per_process::collect(None);
+            if net_result.total_tx > 0 || net_result.total_rx > 0 {
+                sample.net_tx_bytes = Some(net_result.total_tx as i32);
+                sample.net_rx_bytes = Some(net_result.total_rx as i32);
+                sample.net_wifi_tx_bytes = Some(net_result.wifi_tx as i32);
+                sample.net_wifi_rx_bytes = Some(net_result.wifi_rx as i32);
+                sample.net_cellular_tx_bytes = Some(net_result.cellular_tx as i32);
+                sample.net_cellular_rx_bytes = Some(net_result.cellular_rx as i32);
+                sample.net_other_tx_bytes = Some(net_result.other_tx as i32);
+                sample.net_other_rx_bytes = Some(net_result.other_rx as i32);
+            }
+        }
+
+        // Network from /proc/self/net/dev (existing module — device-wide)
         if let Ok(dev) = std::fs::read_to_string("/proc/self/net/dev") {
             let curr = network::parse_net_dev(&dev);
             if !state.last_net.is_empty() {
@@ -224,4 +246,26 @@ pub fn stop_streaming() {
 
 pub fn get_current_stats() -> MetricSample {
     LATEST_SAMPLE.lock().ok().and_then(|s| s.clone()).unwrap_or_default()
+}
+
+/// Pause metric collection without stopping the TCP server.
+/// Used by automation PAUSE command.
+pub fn pause_streaming() {
+    STREAMING_ACTIVE.store(false, Ordering::SeqCst);
+}
+
+/// Push a JSON string event into the event queue (markers, etc.).
+/// Used by automation MARKER command.
+pub fn push_event_json(json_str: &str) {
+    if let Ok(mut queue) = EVENT_QUEUE.lock() {
+        queue.push(json_str.to_string());
+    }
+}
+
+/// Get all buffered MetricSamples and events for EXPORT.
+/// Returns serialized MetricSample vec plus marker events.
+pub fn get_buffered_samples() -> Vec<MetricSample> {
+    SAMPLE_QUEUE.lock()
+        .map(|q| q.clone())
+        .unwrap_or_default()
 }

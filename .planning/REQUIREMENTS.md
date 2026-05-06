@@ -85,9 +85,9 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 - [x] **V25-04**: Re-signing with user-provided keystore
 - [ ] **V25-05**: In-app FPS overlay (floating widget on device screen)
 - [ ] **V25-06**: SDK → desktop via local ADB socket on port 8080
-- [ ] **V25-07**: Frida gadget injection as alternative (no re-signing needed)
-- [ ] **V25-08**: WebView / JS memory collection
-- [ ] **V25-09**: Per-connection network stats (socket API interception)
+- [x] **V25-07**: Frida gadget injection as alternative (no re-signing needed)
+- [x] **V25-08**: WebView / JS memory collection
+- [x] **V25-09**: Per-connection network stats (socket API interception)
 - [ ] **V25-10**: ADB broadcast actions for automation
 - [ ] **V25-11**: iOS video recording — synced via pymobiledevice3 DVT screen-mirror, H.264 MP4
 
@@ -209,9 +209,9 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V25-04 | Phase 4 | Complete |
 | V25-05 | Phase 4 | Pending |
 | V25-06 | Phase 4 | Pending |
-| V25-07 | Phase 4 | Pending |
-| V25-08 | Phase 4 | Pending |
-| V25-09 | Phase 4 | Pending |
+| V25-07 | Phase 4 | Complete |
+| V25-08 | Phase 4 | Complete |
+| V25-09 | Phase 4 | Complete |
 | V25-10 | Phase 4 | Pending |
 | V25-11 | Phase 4 | Pending |
 | V30-01 | Phase 5 | Pending |

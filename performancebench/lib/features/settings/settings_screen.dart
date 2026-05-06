@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../shared/theme.dart';
 import '../../app.dart';
 import 'server_settings.dart';
+import 'video_quality_settings.dart';
 
 // =============================================================================
 // Threshold Alert Providers
@@ -46,6 +47,8 @@ class SettingsScreen extends ConsumerWidget {
           _SectionHeader('Profiling', colors),
           const SizedBox(height: 8),
           _buildProfilingSection(context, colors, ref),
+          const SizedBox(height: 24),
+          const VideoQualitySettings(),
           const SizedBox(height: 24),
           _SectionHeader('Paths', colors),
           const SizedBox(height: 8),
