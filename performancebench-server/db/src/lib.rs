@@ -1,4 +1,5 @@
 pub mod alert_queries;
+pub mod audit_queries;
 pub mod connection;
 pub mod device_queries;
 pub mod lens_queries;
@@ -6,6 +7,7 @@ pub mod migrations;
 pub mod schema;
 pub mod session_queries;
 pub mod sso_queries;
+pub mod team_queries;
 pub mod token_queries;
 pub mod trend_queries;
 pub mod user_queries;
