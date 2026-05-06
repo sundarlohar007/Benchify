@@ -98,9 +98,9 @@ Requirements for v1.0 through v3.5. Each maps to roadmap phases.
 - [x] **V30-03**: Godot Plugin (GDScript) — auto-markers, RenderingServer draw calls, Autoload singleton
 - [ ] **V30-04**: iOS IPA Injection — unencrypted IPA only, free Apple ID signing, dylib injection
 - [ ] **V30-05**: tvOS Support — pyidevice tvOS connection, same metrics as iOS where exposed
-- [ ] **V30-06**: Windows PC Profiling — PDH API, DXGI presentation hooking, ETW frame timing
-- [ ] **V30-07**: PC memory metrics — working set, private bytes, GPU committed memory
-- [ ] **V30-08**: PC CPU metrics — per-process CPU time, per-thread, freq via WMI
+- [x] **V30-06**: Windows PC Profiling — PDH API, DXGI presentation hooking, ETW frame timing
+- [x] **V30-07**: PC memory metrics — working set, private bytes, GPU committed memory
+- [x] **V30-08**: PC CPU metrics — per-process CPU time, per-thread, freq via WMI
 - [ ] **V30-09**: PC video recording — Windows.Graphics.Capture, ffmpeg x11grab, AVScreenCaptureKit
 - [ ] **V30-10**: `pb-pcprobe` binary for PC profiling agent
 
@@ -219,9 +219,9 @@ Deferred to post-v3.5. Tracked but not in current roadmap.
 | V30-03 | Phase 5 | Complete |
 | V30-04 | Phase 5 | Pending |
 | V30-05 | Phase 5 | Pending |
-| V30-06 | Phase 5 | Pending |
-| V30-07 | Phase 5 | Pending |
-| V30-08 | Phase 5 | Pending |
+| V30-06 | Phase 5 | Complete |
+| V30-07 | Phase 5 | Complete |
+| V30-08 | Phase 5 | Complete |
 | V30-09 | Phase 5 | Pending |
 | V30-10 | Phase 5 | Pending |
 | V35-01 | Phase 6 | Pending |

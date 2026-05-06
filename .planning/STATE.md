@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v3.0
 milestone_name: "Game Engine Plugins + iOS Injection + tvOS + PC"
 status: in-progress
-last_updated: "2026-05-06T13:50:28.000Z"
+last_updated: "2026-05-06T13:56:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 25
-  completed_plans: 22
-  percent: 88
+  completed_plans: 23
+  percent: 92
 ---
 
 # Project State: Benchify
@@ -148,27 +148,39 @@ Phase 4 — v2.5 Injection Engine complete. All 11 requirements addressed (V25-0
 |------|---------|---------|-----------------|
 | 01 — Game Engine Plugins + Installer | 05-01-SUMMARY.md | 3bd55db, e34f21f, 5b9f0eb | Shared Rust engine_core (ScopedMarker + auto-marker + metric structs), Unity UPM plugin (C# P/Invoke + EditorWindow), Unreal C++ plugin (Blueprint BeginMarker + Slate editor), Godot GDScript plugin (Autoload + with pattern + RenderingServer dock), Desktop unified installer (EngineDetector + one-click install to Unity/Unreal/Godot projects) |
 
-### Key Metrics (Plan 05-01)
+### Plan 05-02 In Progress: iOS IPA Injection UI
 
-- **16 Rust tests passing** (7 marker + 4 auto-marker + 5 metric struct)
-- **0 dart analyze errors** (2 info-level deprecation warnings)
-- **36 new source files** (4 Rust + 8 Unity + 12 Unreal + 7 Godot + 4 Dart + 1 README)
-- **3 feature commits** (one per task)
+| Plan | Summary | Commits | Key Deliverables |
+|------|---------|---------|-----------------|
+| 02 — iOS IPA Injection | 05-02-SUMMARY.md (pending) | f1c4d70, 4393194 | Flutter desktop iOS IPA injection screen with drag-drop, auto-detect signing (free Apple ID / paid / custom cert), dylib injection pipeline |
 
-### Artifacts Produced
+### Plan 05-03 Complete: PC Profiling Metric Modules
 
-- `performancebench-injector/sdk/src/engine_core/` — Shared Rust library (marker, auto_marker, metrics)
-- `benchify-unity-plugin/` — UPM package with Runtime/Editor C# files + package.json
-- `benchify-unreal-plugin/` — UE plugin with Runtime/Editor modules + .uplugin descriptor
-- `benchify-godot-plugin/` — Godot addon with Autoload, scoped marker, editor dock
-- `performancebench/lib/features/plugins/` — EngineDetector, install service, UI screen
+| Plan | Summary | Commits | Key Deliverables |
+|------|---------|---------|-----------------|
+| 03 — PC Metric Modules | 05-03-SUMMARY.md | 77187de, c4c84a4, 85d1a2a, bc74ce0, e24f568 | Windows PDH counter framework (15+ paths per §19.2), DXGI Present hook (Detours injection + PresentMon), ETW frame timing (DxgKrnl admin session), PC memory (GetProcessMemoryInfo), PC CPU (per-thread + frequency), PcCollector orchestration, Dart MetricSample PC fields |
+
+### Key Metrics (Plan 05-03)
+
+- **66 Rust tests passing** (PDH paths, FPS, PresentMon CSV, MetricSample conversion, live PDH, memory/CPU collection)
+- **0 dart analyze errors**
+- **14 files** (11 created, 3 modified)
+- **5 commits** (2 TDD RED→GREEN pairs + Task 3)
+
+### Artifacts Produced (Plan 05-03)
+
+- `performancebench-injector/sdk/src/pc_metrics/` — 10 Rust modules (pdh, dxgi, etw, memory, cpu, disk_io, gpu, network, collector, mod)
+- `performancebench-injector/sdk/tests/pc_metrics_integration.rs` — Integration tests
+- `performancebench-injector/sdk/src/models.rs` — MetricSample extended with 7 PC fields
+- `performancebench/lib/core/models/metric_sample.dart` — Dart model with PC fields
 
 ## Next Steps
 
-Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. Plan 05-01 complete.
+Phase 5 — v3.0 Game Engine Plugins + iOS Injection + tvOS + PC. Plans 05-01 and 05-03 complete.
 
-- Plans 05-02 (iOS IPA Injection), 05-03 (tvOS pyidevice), 05-04 (PC pb-pcprobe) remaining
-- Overall: 74/90 requirements (3 of 10 Phase 5 requirements addressed)
+- Plan 05-02 (iOS IPA Injection UI) — in progress (2 commits, pending summary)
+- Plan 05-04 (tvOS + PC pb-pcprobe binary assembly) remaining
+- Overall: 80/90 requirements (6 of 10 Phase 5 requirements addressed: V30-01/02/03 via Plan 01, V30-06/07/08 via Plan 03)
 
 ## Config
 
