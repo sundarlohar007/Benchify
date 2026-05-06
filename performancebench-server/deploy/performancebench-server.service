@@ -1,0 +1,27 @@
+[Unit]
+Description=PerformanceBench Server
+Documentation=https://github.com/sundarlohar007/Benchify
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=benchify
+Group=benchify
+WorkingDirectory=/opt/benchify
+ExecStart=/opt/benchify/server
+Restart=on-failure
+RestartSec=5
+EnvironmentFile=/opt/benchify/.env
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=performancebench-server
+
+# Hardening (optional, uncomment for production)
+# NoNewPrivileges=yes
+# ProtectSystem=strict
+# ProtectHome=yes
+# ReadWritePaths=/opt/benchify/uploads
+
+[Install]
+WantedBy=multi-user.target
