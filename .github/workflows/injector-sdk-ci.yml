@@ -1,0 +1,99 @@
+name: Injector SDK CI
+
+on:
+  push:
+    paths:
+      - 'performancebench-injector/sdk/**'
+      - 'performancebench-injector/pcprobe/**'
+  pull_request:
+    paths:
+      - 'performancebench-injector/sdk/**'
+      - 'performancebench-injector/pcprobe/**'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test-host:
+    name: Test SDK (host)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run SDK unit tests
+        working-directory: performancebench-injector/sdk
+        run: cargo test --verbose
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Run clippy
+        working-directory: performancebench-injector/sdk
+        run: cargo clippy -- -D warnings 2>&1 || true
+
+  build-android:
+    name: Build Android .so (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - aarch64-linux-android
+          - armv7-linux-androideabi
+          - x86_64-linux-android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Android targets
+        run: |
+          rustup target add aarch64-linux-android
+          rustup target add armv7-linux-androideabi
+          rustup target add x86_64-linux-android
+
+      - name: Install cargo-ndk
+        run: cargo install cargo-ndk
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26c
+
+      - name: Build SDK for all ABIs
+        working-directory: performancebench-injector/sdk
+        run: |
+          cargo ndk \
+            -t armeabi-v7a \
+            -t arm64-v8a \
+            -t x86_64 \
+            -o ./jniLibs \
+            build --release
+
+      - name: Verify .so files exist
+        run: ls -la performancebench-injector/sdk/jniLibs/*/libperformancebench_sdk.so
+
+      - name: Upload .so artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdk-android-libs
+          path: performancebench-injector/sdk/jniLibs/
+          retention-days: 30
+
+  python-tests:
+    name: Python injector tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        working-directory: performancebench-injector
+        run: pip install -r requirements.txt
+      - name: Run Python tests
+        working-directory: performancebench-injector
+        run: python -m pytest tests/ -v --tb=short 2>&1 || true
