@@ -224,9 +224,9 @@ class TestFormatMetricSample:
         )
         formatted = format_metric_sample(sample)
         assert formatted["fps"] == 60.0
-        assert formatted["cpu_pct"] == 30.0
-        assert formatted["memory_pss_kb"] == 200000
-        assert formatted["thermal_status"] == 1
+        assert formatted["cpu"] == 30.0
+        assert formatted["mem_bytes"] == 200000 * 1024
+        assert formatted["thermal"] == 1
 
     def test_output_is_valid_json(self):
         """Formatted output should be valid JSON."""

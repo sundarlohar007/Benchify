@@ -4,17 +4,31 @@
 import 'package:flutter/material.dart';
 
 import '../../core/models/metric_sample.dart';
+import '../../core/services/ios_service.dart';
 import '../../shared/theme.dart';
 import '../../shared/widgets/metric_chart.dart';
 
 /// 2-column auto-adaptive grid of real-time metric chart cards.
 ///
 /// Renders MetricChart widgets for all metrics, conditionally hiding
-/// GPU/Battery sub-metrics when no data is available.
+/// battery/cellular charts when targetKind is tvos (per D-08).
+///
+/// Per 05-02-PLAN Task 2: tvOS hides battery and cellular charts
+/// (mains-powered, WiFi-only). Shows "Power: Mains" label.
 class ActiveSessionChartsTab extends StatelessWidget {
   final Stream<MetricSample> stream;
+  final TargetKind? targetKind;
 
-  const ActiveSessionChartsTab({super.key, required this.stream});
+  const ActiveSessionChartsTab({
+    super.key,
+    required this.stream,
+    this.targetKind,
+  });
+
+  /// Whether battery charts should be shown.
+  bool get _showBattery =>
+      targetKind == null ||
+      IosService.shouldShowField('battery_pct', targetKind!);
 
   @override
   Widget build(BuildContext context) {
@@ -63,46 +77,84 @@ class ActiveSessionChartsTab extends StatelessWidget {
               statCalculator: _memoryStats,
               unit: 'MB',
             ),
-            MetricChart(
-              label: 'Battery %',
-              lineColor: ChartColors.batteryPct,
-              stream: stream,
-              extractValue: (s) => s.batteryPct?.toDouble(),
-              valueFormatter: (v) =>
-                  v != null ? '${v.toInt()}%' : '--',
-              statCalculator: _batteryPctStats,
-              unit: '%',
-            ),
-            MetricChart(
-              label: 'Battery mA',
-              lineColor: ChartColors.batteryMa,
-              stream: stream,
-              extractValue: (s) => s.batteryMa,
-              valueFormatter: (v) =>
-                  v != null ? '${v.toStringAsFixed(0)} mA' : '--',
-              statCalculator: _batteryMaStats,
-              unit: 'mA',
-            ),
-            MetricChart(
-              label: 'Battery mV',
-              lineColor: ChartColors.batteryMv,
-              stream: stream,
-              extractValue: (s) => s.batteryMv,
-              valueFormatter: (v) =>
-                  v != null ? '${v.toStringAsFixed(0)} mV' : '--',
-              statCalculator: _batteryMvStats,
-              unit: 'mV',
-            ),
-            MetricChart(
-              label: 'Battery Temp',
-              lineColor: ChartColors.batteryTemp,
-              stream: stream,
-              extractValue: (s) => s.batteryTempC,
-              valueFormatter: (v) =>
-                  v != null ? '${v.toStringAsFixed(1)}°C' : '--',
-              statCalculator: _batteryTempStats,
-              unit: '°C',
-            ),
+            // Battery charts — hidden for tvOS (mains-powered, D-08)
+            if (_showBattery) ...[
+              MetricChart(
+                label: 'Battery %',
+                lineColor: ChartColors.batteryPct,
+                stream: stream,
+                extractValue: (s) => s.batteryPct?.toDouble(),
+                valueFormatter: (v) =>
+                    v != null ? '${v.toInt()}%' : '--',
+                statCalculator: _batteryPctStats,
+                unit: '%',
+              ),
+              MetricChart(
+                label: 'Battery mA',
+                lineColor: ChartColors.batteryMa,
+                stream: stream,
+                extractValue: (s) => s.batteryMa,
+                valueFormatter: (v) =>
+                    v != null ? '${v.toStringAsFixed(0)} mA' : '--',
+                statCalculator: _batteryMaStats,
+                unit: 'mA',
+              ),
+              MetricChart(
+                label: 'Battery mV',
+                lineColor: ChartColors.batteryMv,
+                stream: stream,
+                extractValue: (s) => s.batteryMv,
+                valueFormatter: (v) =>
+                    v != null ? '${v.toStringAsFixed(0)} mV' : '--',
+                statCalculator: _batteryMvStats,
+                unit: 'mV',
+              ),
+              MetricChart(
+                label: 'Battery Temp',
+                lineColor: ChartColors.batteryTemp,
+                stream: stream,
+                extractValue: (s) => s.batteryTempC,
+                valueFormatter: (v) =>
+                    v != null ? '${v.toStringAsFixed(1)}°C' : '--',
+                statCalculator: _batteryTempStats,
+                unit: '°C',
+              ),
+            ] else ...[
+              // tvOS: show Power: Mains label
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Card(
+                  color: Colors.transparent,
+                  elevation: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.power, size: 24, color: ChartColors.batteryPct),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Power: Mains',
+                          style: TextStyle(
+                            color: ChartColors.batteryPct,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'tvOS — battery unavailable (mains-powered)',
+                          style: TextStyle(
+                            color: ChartColors.batteryPct.withValues(alpha: 0.6),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
             MetricChart(
               label: 'Network',
               lineColor: ChartColors.networkTx,

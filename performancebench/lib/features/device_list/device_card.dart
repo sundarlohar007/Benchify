@@ -32,10 +32,24 @@ class DeviceCard extends StatelessWidget {
 
   IconData get _platformIcon {
     final name = device.name.toLowerCase();
+    if (name.contains('apple tv') || name.contains('tvos')) {
+      return Icons.tv;
+    }
     if (name.contains('iphone') || name.contains('ios')) {
       return Icons.phone_iphone;
     }
     return Icons.android;
+  }
+
+  String get _osLabel {
+    final name = device.name.toLowerCase();
+    if (name.contains('apple tv') || name.contains('tvos')) {
+      return 'tvOS';
+    }
+    if (name.contains('iphone') || name.contains('ios')) {
+      return 'iOS';
+    }
+    return 'Android';
   }
 
   @override
@@ -79,7 +93,7 @@ class DeviceCard extends StatelessWidget {
                       [
                         if (device.model != null) device.model,
                         if (device.osVersion != null)
-                          'Android ${device.osVersion}',
+                          '$_osLabel ${device.osVersion}',
                       ].join(' · '),
                       style: TextStyle(
                         color: colors.textSecondary,

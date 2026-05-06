@@ -7,13 +7,65 @@ import 'dart:io' show Platform, Process, ProcessSignal;
 
 import '../models/metric_sample.dart';
 
-/// Data class for an iOS device discovered via pyidevice.
+/// Target platform kind for Apple devices.
+///
+/// Per 05-02-PLAN Task 2 (D-08):
+///   Routes to correct Python collector and applies metric masking.
+enum TargetKind {
+  ios,
+  tvos;
+
+  /// Parse from Python platform field.
+  factory TargetKind.fromString(String value) {
+    switch (value) {
+      case 'tvos':
+        return TargetKind.tvos;
+      case 'ios':
+      default:
+        return TargetKind.ios;
+    }
+  }
+
+  /// Fields that should be hidden in UI for this platform.
+  Set<String> get hiddenFields {
+    switch (this) {
+      case TargetKind.ios:
+        return {};
+      case TargetKind.tvos:
+        return {
+          'battery_pct',
+          'battery_ma',
+          'battery_mv',
+          'battery_temp_c',
+          'charging',
+          'net_cellular_tx_bytes',
+          'net_cellular_rx_bytes',
+        };
+    }
+  }
+
+  /// Power source label for this platform.
+  String get powerLabel {
+    switch (this) {
+      case TargetKind.ios:
+        return 'Battery';
+      case TargetKind.tvos:
+        return 'Mains';
+    }
+  }
+}
+
+/// Data class for an Apple device discovered via pyidevice.
+///
+/// Supports both iOS and tvOS targets.
 class IosDevice {
   final String udid;
   final String name;
   final String model;
   final String osVersion;
   final bool connected;
+  final TargetKind targetKind;
+  final List<String> warnings;
 
   const IosDevice({
     required this.udid,
@@ -21,15 +73,23 @@ class IosDevice {
     required this.model,
     required this.osVersion,
     required this.connected,
+    this.targetKind = TargetKind.ios,
+    this.warnings = const [],
   });
 
   factory IosDevice.fromJson(Map<String, dynamic> json) {
+    final platform = json['platform'] as String? ?? 'ios';
     return IosDevice(
       udid: json['udid'] as String? ?? '',
       name: json['name'] as String? ?? 'Unknown',
       model: json['model'] as String? ?? '',
       osVersion: json['os_version'] as String? ?? '',
       connected: json['connected'] as bool? ?? true,
+      targetKind: TargetKind.fromString(platform),
+      warnings: (json['warnings'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 }
@@ -71,6 +131,17 @@ class IosService {
   Process? _process;
   StreamController<MetricSample>? _controller;
   bool _stopped = false;
+  TargetKind _targetKind = TargetKind.ios;
+
+  /// The current session's target platform kind (ios or tvos).
+  TargetKind get targetKind => _targetKind;
+
+  /// Whether a metric field should be shown in UI for the given platform.
+  ///
+  /// tvOS hides battery and cellular fields (mains-powered, WiFi-only).
+  static bool shouldShowField(String fieldName, TargetKind kind) {
+    return !kind.hiddenFields.contains(fieldName);
+  }
 
   /// Creates an IosService instance.
   ///
@@ -84,24 +155,56 @@ class IosService {
   /// Whether the current platform supports iOS profiling.
   static bool get isSupported => Platform.isMacOS;
 
-  /// Discover connected iOS devices.
+  /// Discover connected iOS and tvOS devices.
+  ///
+  /// Runs device_list.py first, then tvos_collector.py --list-devices for tvOS.
+  /// Returns combined device list with targetKind set per platform.
   ///
   /// Returns an empty list on non-macOS or if pyidevice is not installed.
   Future<List<IosDevice>> discoverDevices() async {
     if (!isSupported) return [];
 
+    final devices = <IosDevice>[];
+
+    // Discover iOS devices
     try {
       final result = await Process.run(
         python3Path,
         ['$agentsDir/device_list.py'],
       );
-      if (result.exitCode != 0) return [];
-      final json = jsonDecode(result.stdout as String);
-      if (json is! List) return [];
-      return json.map((e) => IosDevice.fromJson(e as Map<String, dynamic>)).toList();
+      if (result.exitCode == 0) {
+        final json = jsonDecode(result.stdout as String);
+        if (json is List) {
+          for (final e in json) {
+            final entry = Map<String, dynamic>.from(e as Map);
+            entry['platform'] = 'ios';
+            devices.add(IosDevice.fromJson(entry));
+          }
+        }
+      }
     } catch (_) {
-      return [];
+      // iOS discovery failed — continue to tvOS
     }
+
+    // Discover tvOS devices
+    try {
+      final result = await Process.run(
+        python3Path,
+        ['$agentsDir/tvos_collector.py', '--list-devices'],
+      );
+      if (result.exitCode == 0) {
+        final json = jsonDecode(result.stdout as String);
+        if (json is List) {
+          for (final e in json) {
+            devices.add(IosDevice.fromJson(Map<String, dynamic>.from(e as Map)));
+          }
+        }
+      }
+    } catch (_) {
+      // tvOS discovery failed — return iOS devices only
+    }
+
+    return devices;
   }
 
   /// List installed third-party apps on a device.
@@ -122,30 +225,39 @@ class IosService {
     }
   }
 
-  /// Start streaming iOS metrics from collector.py.
+  /// Start streaming metrics from the appropriate Python collector.
+  ///
+  /// Routes to collector.py for iOS, tvos_collector.py for tvOS.
   ///
   /// Returns a broadcast [Stream<MetricSample>] emitting one sample per second.
   /// Call [stop] to end collection.
   ///
   /// Throws [StateError] if not on macOS.
-  Stream<MetricSample> start(String udid, String bundleId) {
+  Stream<MetricSample> start(String udid, String bundleId,
+      {TargetKind targetKind = TargetKind.ios}) {
     if (!isSupported) {
-      throw StateError('iOS profiling requires macOS host');
+      throw StateError('Apple device profiling requires macOS host');
     }
 
+    _targetKind = targetKind;
     _controller = StreamController<MetricSample>.broadcast();
     _stopped = false;
 
-    _spawnCollector(udid, bundleId);
+    _spawnCollector(udid, bundleId, targetKind: targetKind);
 
     return _controller!.stream;
   }
 
-  Future<void> _spawnCollector(String udid, String bundleId) async {
+  Future<void> _spawnCollector(String udid, String bundleId,
+      {TargetKind targetKind = TargetKind.ios}) async {
     try {
+      final scriptName = targetKind == TargetKind.tvos
+          ? 'tvos_collector.py'
+          : 'collector.py';
+
       _process = await Process.start(
         python3Path,
-        ['$agentsDir/collector.py', udid, bundleId],
+        ['$agentsDir/$scriptName', '--udid', udid],
       );
 
       // Read stdout line by line
@@ -183,6 +295,12 @@ class IosService {
   void _onLine(String line) {
     try {
       final json = jsonDecode(line) as Map<String, dynamic>;
+
+      // Track platform from collector output
+      if (json.containsKey('platform')) {
+        final platform = json['platform'] as String? ?? 'ios';
+        _targetKind = TargetKind.fromString(platform);
+      }
 
       // Error from collector
       if (json.containsKey('error')) {
