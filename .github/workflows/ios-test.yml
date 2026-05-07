@@ -49,7 +49,11 @@ jobs:
 
       - name: Boot iOS simulator
         run: |
-          UDID=$(xcrun simctl create "Test-${{ matrix.ios-version }}" "iPhone 15" "com.apple.CoreSimulator.SimRuntime.iOS-${{ matrix.ios-version }}")
+          RUNTIME=$(xcrun simctl list runtimes iOS | grep "iOS" | head -1 | sed 's/.* - //' | tr -d '[:space:]')
+          DEVICE_TYPE=$(xcrun simctl list devicetypes | grep "iPhone" | head -1 | sed 's/.*(\(.*\)).*/\1/')
+          if [ -z "$DEVICE_TYPE" ]; then DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-16"; fi
+          if [ -z "$RUNTIME" ]; then RUNTIME="com.apple.CoreSimulator.SimRuntime.iOS-18-0"; fi
+          UDID=$(xcrun simctl create "Test-${{ matrix.ios-version }}" "$DEVICE_TYPE" "$RUNTIME")
           xcrun simctl boot $UDID
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
