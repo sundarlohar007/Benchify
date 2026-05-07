@@ -30,7 +30,13 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Install system deps (macOS)
+        run: brew install openssl@3 2>/dev/null || true
+
       - name: Install pyidevice
+        env:
+          LDFLAGS: "-L/usr/local/opt/openssl@3/lib"
+          CPPFLAGS: "-I/usr/local/opt/openssl@3/include"
         run: pip3 install --break-system-packages py-ios-device
 
       - name: Boot iOS simulator
