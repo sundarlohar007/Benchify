@@ -117,7 +117,7 @@ void main() {
     ));
     await insertSession(Session(
       id: 's3', deviceId: 'd1', platform: 'android',
-      appPackage: 'com.example.another', appName: 'Another Example',
+      appPackage: 'com.example.another', appName: 'Demo App',
       title: 'Profile', startedAt: 3000,
     ));
 

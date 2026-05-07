@@ -250,8 +250,8 @@ void main() {
         deviceSerial: 'emulator-5554',
       );
 
-      expect(result, isTrue); // Service returns true when ADB fails (changed behavior)
-      expect(service.isRecording, isFalse);
+      expect(result, isTrue); // unawaited() ADB command — start always succeeds
+      expect(service.isRecording, isTrue); // _sessionId set before _startChunk() call
     });
   });
 }
