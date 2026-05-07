@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import {
   ScrollText,
   Search,
@@ -8,7 +8,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth, type User } from '@/hooks/useAuth';
 import { AuditLogTable } from '@/components/admin/AuditLogTable';
 import { AuditExportButton } from '@/components/admin/AuditExportButton';
 import {
@@ -18,6 +18,14 @@ import {
 } from '@/hooks/useAudit';
 
 export const Route = createFileRoute('/admin/audit')({
+  beforeLoad: ({ context }) => {
+    const user = context.queryClient.getQueryData<User>(['auth', 'me']);
+    // Only redirect if we have cached user data and they're not admin.
+    // If data isn't cached yet, let the component's ProtectedRoute handle it.
+    if (user !== undefined && user.role !== 'admin') {
+      throw redirect({ to: '/sessions' });
+    }
+  },
   component: AuditLogPage,
 });
 
