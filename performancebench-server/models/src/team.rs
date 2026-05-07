@@ -177,7 +177,7 @@ impl From<&TeamProject> for TeamProjectResponse {
 
 #[derive(Debug, Insertable)]
 #[diesel(table_name = crate::schema::team_orgs)]
-pub(crate) struct NewTeamOrg {
+pub struct NewTeamOrg {
     pub id: Uuid,
     pub name: String,
     pub slug: String,
@@ -191,7 +191,7 @@ pub(crate) struct NewTeamOrg {
 
 #[derive(Debug, Insertable)]
 #[diesel(table_name = crate::schema::team_projects)]
-pub(crate) struct NewTeamProject {
+pub struct NewTeamProject {
     pub id: Uuid,
     pub org_id: Uuid,
     pub name: String,
@@ -205,7 +205,7 @@ pub(crate) struct NewTeamProject {
 
 #[derive(Debug, Insertable)]
 #[diesel(table_name = crate::schema::team_membership)]
-pub(crate) struct NewTeamMembership {
+pub struct NewTeamMembership {
     pub id: Uuid,
     pub user_id: Uuid,
     pub org_id: Uuid,

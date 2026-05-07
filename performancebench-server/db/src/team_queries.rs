@@ -150,8 +150,6 @@ pub async fn update_org(
     }
 
     // Partial update without name change
-    let mut updates: Vec<Box<dyn diesel::query_builder::AstPass<diesel::pg::Pg>>> = Vec::new();
-    // Instead, use a simpler approach:
     // Re-fetch, re-set fields, update
     let existing = team_orgs::table
         .find(org_id)

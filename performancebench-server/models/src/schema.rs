@@ -224,7 +224,7 @@ diesel::table! {
         target_type -> Nullable<Varchar>,
         target_id -> Nullable<Uuid>,
         details -> Jsonb,
-        ip_address -> Nullable<Inet>,
+        ip_address -> Nullable<Text>,
         user_agent -> Nullable<Text>,
         created_at -> Timestamptz,
     }

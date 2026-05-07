@@ -82,23 +82,23 @@ pub async fn create_jira_issue(
     // 4. Build Jira ADF description
     let description = build_adf_description(&session);
 
-    // 5. Build Jira API payload (v3 format)
+    // 5. Build labels (add benchify/performance if not present)
+    let mut labels = body.labels.clone();
+    if !labels.iter().any(|l| l == "performance") {
+        labels.push("performance".to_string());
+    }
+    if !labels.iter().any(|l| l == "benchify") {
+        labels.push("benchify".to_string());
+    }
+
+    // 6. Build Jira API payload (v3 format)
     let jira_payload = serde_json::json!({
         "fields": {
             "project": { "key": body.project_key },
             "issuetype": { "name": body.issue_type },
             "summary": summary,
             "description": description,
-            "labels": {
-                let mut labels = body.labels.clone();
-                if !labels.iter().any(|l| l == "performance") {
-                    labels.push("performance".to_string());
-                }
-                if !labels.iter().any(|l| l == "benchify") {
-                    labels.push("benchify".to_string());
-                }
-                labels
-            }
+            "labels": labels
         }
     });
 
