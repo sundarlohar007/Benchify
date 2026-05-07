@@ -31,12 +31,20 @@ jobs:
         run: flutter pub get
 
       - name: Install system deps (macOS)
-        run: brew install openssl@3 2>/dev/null || true
+        run: |
+          if [ -d /opt/homebrew ]; then
+            brew install openssl@3
+            echo "LDFLAGS=-L/opt/homebrew/opt/openssl@3/lib" >> $GITHUB_ENV
+            echo "CPPFLAGS=-I/opt/homebrew/opt/openssl@3/include" >> $GITHUB_ENV
+          elif [ -d /usr/local/Homebrew ]; then
+            brew install openssl@3
+            echo "LDFLAGS=-L/usr/local/opt/openssl@3/lib" >> $GITHUB_ENV
+            echo "CPPFLAGS=-I/usr/local/opt/openssl@3/include" >> $GITHUB_ENV
+          else
+            echo "No Homebrew found, trying without OpenSSL"
+          fi
 
       - name: Install pyidevice
-        env:
-          LDFLAGS: "-L/usr/local/opt/openssl@3/lib"
-          CPPFLAGS: "-I/usr/local/opt/openssl@3/include"
         run: pip3 install --break-system-packages py-ios-device
 
       - name: Boot iOS simulator
