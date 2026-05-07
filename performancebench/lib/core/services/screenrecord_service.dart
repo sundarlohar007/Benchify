@@ -130,6 +130,7 @@ class ScreenrecordService {
 
       // Schedule next chunk at 4:55 (295s) — 5s before current chunk ends
       // to ensure recording continuity (T-02-19).
+      _chunkTimer?.cancel();
       _chunkTimer = Timer(const Duration(minutes: 4, seconds: 55), () {
         _startChunk();
       });
