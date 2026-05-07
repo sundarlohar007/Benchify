@@ -13,17 +13,17 @@ import '../../core/models/session_stats.dart';
 /// Implements all 12 detection rules with correct thresholds and severity
 /// levels. Feature-flag guarded (default-off, user opts in per D-03).
 class DetectedIssuesService {
-  final SessionStatsDao _sessionStatsDao;
-  final SessionDao _sessionDao;
-  final DetectedIssueDao _detectedIssueDao;
+  final dynamic _sessionStatsDao;
+  final dynamic _sessionDao;
+  final dynamic _detectedIssueDao;
 
   DetectedIssuesService({
     required dynamic sessionStatsDao,
     required dynamic sessionDao,
     required dynamic detectedIssueDao,
-  })  : _sessionStatsDao = sessionStatsDao as SessionStatsDao,
-        _sessionDao = sessionDao as SessionDao,
-        _detectedIssueDao = detectedIssueDao as DetectedIssueDao;
+  })  : _sessionStatsDao = sessionStatsDao,
+        _sessionDao = sessionDao,
+        _detectedIssueDao = detectedIssueDao;
 
   /// Run all 12 detection rules after session completion.
   /// Writes flagged issues to the detected_issues table.

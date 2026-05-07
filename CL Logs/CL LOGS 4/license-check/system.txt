@@ -1,0 +1,8 @@
+2026-05-07T17:37:10.7090000Z Job is waiting for a hosted runner to come online.
+2026-05-07T17:37:10.6920000Z Evaluating license-check.if
+2026-05-07T17:37:10.6920000Z Evaluating: success()
+2026-05-07T17:37:10.6920000Z Result: true
+2026-05-07T17:37:10.7090000Z Job is about to start running on the hosted runner: GitHub Actions 1000000387
+2026-05-07T17:37:10.7000000Z Requested labels: ubuntu-latest
+2026-05-07T17:37:10.7000000Z Job defined at: sundarlohar007/Benchify/.github/workflows/desktop-ci.yml@refs/heads/main
+2026-05-07T17:37:10.7000000Z Waiting for a runner to pick up this job...

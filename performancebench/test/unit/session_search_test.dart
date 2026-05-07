@@ -32,13 +32,8 @@ void main() {
     final deviceModel = devRows.isNotEmpty ? devRows.first['model'] as String? : null;
     final deviceChipset = devRows.isNotEmpty ? devRows.first['chipset'] as String? : null;
 
-    // Insert into sessions
-    await db.insert('sessions', {
-      ...s.toMap(),
-      'device_name': deviceName,
-      'device_model': deviceModel,
-      'device_chipset': deviceChipset,
-    });
+    // Insert into sessions — use only toMap() columns
+    await db.insert('sessions', s.toMap());
   }
 
   setUp(() async {

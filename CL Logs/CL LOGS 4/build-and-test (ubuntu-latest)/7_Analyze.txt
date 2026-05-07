@@ -1,0 +1,137 @@
+﻿2026-05-07T17:39:13.0299979Z ##[group]Run flutter analyze 2>&1 || true
+2026-05-07T17:39:13.0300722Z [36;1mflutter analyze 2>&1 || true[0m
+2026-05-07T17:39:13.0322281Z shell: /usr/bin/bash -e {0}
+2026-05-07T17:39:13.0322521Z env:
+2026-05-07T17:39:13.0322826Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.41.9-x64/flutter
+2026-05-07T17:39:13.0323230Z   PUB_CACHE: /home/runner/.pub-cache
+2026-05-07T17:39:13.0323487Z ##[endgroup]
+2026-05-07T17:39:13.1986425Z Resolving dependencies...
+2026-05-07T17:39:13.3277911Z Downloading packages...
+2026-05-07T17:39:13.5238496Z   csv 6.0.0 (8.0.0 available)
+2026-05-07T17:39:13.5238956Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-07T17:39:13.5239354Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-07T17:39:13.5239756Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-07T17:39:13.5240492Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-07T17:39:13.5241028Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-07T17:39:13.5241579Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-07T17:39:13.5242519Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-07T17:39:13.5243144Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-07T17:39:13.5243652Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-07T17:39:13.5244112Z   go_router 13.2.5 (17.2.3 available)
+2026-05-07T17:39:13.5244474Z   js 0.6.7 (0.7.2 available)
+2026-05-07T17:39:13.5244810Z   matcher 0.12.19 (0.12.20 available)
+2026-05-07T17:39:13.5245204Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-07T17:39:13.5245589Z   meta 1.17.0 (1.18.2 available)
+2026-05-07T17:39:13.5245967Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-07T17:39:13.5246447Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-07T17:39:13.5247009Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-07T17:39:13.5247525Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-07T17:39:13.5247929Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-07T17:39:13.5248363Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-07T17:39:13.5248789Z   test_api 0.7.10 (0.7.12 available)
+2026-05-07T17:39:13.5249181Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-07T17:39:13.5249575Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-07T17:39:13.5249968Z   win32 5.15.0 (6.2.0 available)
+2026-05-07T17:39:13.5250605Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-07T17:39:13.5251023Z   xml 6.6.1 (7.0.1 available)
+2026-05-07T17:39:13.5251381Z Got dependencies!
+2026-05-07T17:39:13.5251901Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-07T17:39:13.5252596Z Try `flutter pub outdated` for more information.
+2026-05-07T17:39:29.3058721Z Analyzing performancebench...                                   
+2026-05-07T17:39:29.3064616Z 
+2026-05-07T17:39:29.3087052Z warning • The '!' will have no effect because the receiver can't be null • lib/core/analytics/analytics_service.dart:127:56 • unnecessary_non_null_assertion
+2026-05-07T17:39:29.3089421Z warning • The name File is shown, but isn't used • lib/core/services/adb_service.dart:5:23 • unused_shown_name
+2026-05-07T17:39:29.3091710Z    info • The imported package 'meta' isn't a dependency of the importing package • lib/core/services/adb_service.dart:7:8 • depend_on_referenced_packages
+2026-05-07T17:39:29.3094030Z    info • The member 'runShellCommand' overrides an inherited member but isn't annotated with '@override' • lib/core/services/adb_service.dart:210:19 • annotate_overrides
+2026-05-07T17:39:29.3096046Z warning • The value of the local variable 'sink' isn't used • lib/core/services/api_service.dart:182:15 • unused_local_variable
+2026-05-07T17:39:29.3098144Z    info • Uses 'await' on an instance of 'HttpClientRequest', which is not a subtype of 'Future' • lib/core/services/api_service.dart:182:22 • await_only_futures
+2026-05-07T17:39:29.3100053Z warning • Unused import: '../models/marker.dart' • lib/core/services/export_service.dart:14:8 • unused_import
+2026-05-07T17:39:29.3101697Z warning • Unused import: '../models/marker_stats.dart' • lib/core/services/export_service.dart:15:8 • unused_import
+2026-05-07T17:39:29.3103678Z warning • Unused import: '../models/session.dart' • lib/core/services/export_service.dart:17:8 • unused_import
+2026-05-07T17:39:29.3105134Z warning • Unused import: '../models/session_stats.dart' • lib/core/services/export_service.dart:18:8 • unused_import
+2026-05-07T17:39:29.3106549Z warning • The value of the field '_db' isn't used • lib/core/services/export_service.dart:29:18 • unused_field
+2026-05-07T17:39:29.3108062Z warning • The name Directory is shown, but isn't used • lib/core/services/ios_screenrecord_service.dart:6:23 • unused_shown_name
+2026-05-07T17:39:29.3110000Z    info • The imported package 'meta' isn't a dependency of the importing package • lib/core/services/ios_screenrecord_service.dart:8:8 • depend_on_referenced_packages
+2026-05-07T17:39:29.3122495Z    info • Angle brackets will be interpreted as HTML • lib/core/services/mac_proxy_service.dart:110:31 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3124887Z    info • The imported package 'meta' isn't a dependency of the importing package • lib/core/services/screenrecord_service.dart:8:8 • depend_on_referenced_packages
+2026-05-07T17:39:29.3127065Z warning • The '!' will have no effect because the receiver can't be null • lib/core/services/screenrecord_service.dart:415:22 • unnecessary_non_null_assertion
+2026-05-07T17:39:29.3129030Z    info • Angle brackets will be interpreted as HTML • lib/core/services/sdk_stream_service.dart:37:31 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3131121Z    info • Angle brackets will be interpreted as HTML • lib/core/services/sdk_stream_service.dart:37:52 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3132901Z    info • Angle brackets will be interpreted as HTML • lib/core/services/sdk_stream_service.dart:37:63 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3134645Z    info • Angle brackets will be interpreted as HTML • lib/core/services/sdk_stream_service.dart:38:46 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3136546Z warning • The value of the local variable 'remainingSamples' isn't used • lib/core/services/session_service.dart:38:22 • unused_local_variable
+2026-05-07T17:39:29.3138482Z warning • The '!' will have no effect because the receiver can't be null • lib/core/services/session_service.dart:52:37 • unnecessary_non_null_assertion
+2026-05-07T17:39:29.3140485Z warning • The name Platform is shown, but isn't used • lib/core/services/tidevice_service.dart:6:23 • unused_shown_name
+2026-05-07T17:39:29.3142341Z    info • The imported package 'meta' isn't a dependency of the importing package • lib/core/services/tidevice_service.dart:8:8 • depend_on_referenced_packages
+2026-05-07T17:39:29.3144237Z    info • Angle brackets will be interpreted as HTML • lib/core/services/tidevice_service.dart:67:31 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3146127Z    info • Unnecessary use of multiple underscores • lib/features/active_session/active_session_screen.dart:110:39 • unnecessary_underscores
+2026-05-07T17:39:29.3148165Z    info • Unnecessary use of multiple underscores • lib/features/active_session/active_session_screen.dart:207:39 • unnecessary_underscores
+2026-05-07T17:39:29.3149907Z    info • Unnecessary use of multiple underscores • lib/features/active_session/active_session_screen.dart:230:34 • unnecessary_underscores
+2026-05-07T17:39:29.3151909Z    info • Unnecessary use of multiple underscores • lib/features/active_session/screenshots_tab.dart:168:35 • unnecessary_underscores
+2026-05-07T17:39:29.3153596Z    info • Unnecessary use of multiple underscores • lib/features/active_session/screenshots_tab.dart:168:39 • unnecessary_underscores
+2026-05-07T17:39:29.3155277Z    info • Unnecessary use of multiple underscores • lib/features/active_session/screenshots_tab.dart:221:37 • unnecessary_underscores
+2026-05-07T17:39:29.3156920Z    info • Unnecessary use of multiple underscores • lib/features/active_session/screenshots_tab.dart:221:41 • unnecessary_underscores
+2026-05-07T17:39:29.3158565Z warning • The value of the field '_collectionsLoaded' isn't used • lib/features/app_picker/app_picker_screen.dart:46:8 • unused_field
+2026-05-07T17:39:29.3160827Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:63:37 • deprecated_member_use
+2026-05-07T17:39:29.3162127Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:74:60 • deprecated_member_use
+2026-05-07T17:39:29.3163825Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:92:39 • deprecated_member_use
+2026-05-07T17:39:29.3166232Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:99:35 • deprecated_member_use
+2026-05-07T17:39:29.3168642Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:145:37 • deprecated_member_use
+2026-05-07T17:39:29.3171666Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:156:60 • deprecated_member_use
+2026-05-07T17:39:29.3174097Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:174:42 • deprecated_member_use
+2026-05-07T17:39:29.3176489Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:224:37 • deprecated_member_use
+2026-05-07T17:39:29.3178864Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:235:60 • deprecated_member_use
+2026-05-07T17:39:29.3181667Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:257:44 • deprecated_member_use
+2026-05-07T17:39:29.3184060Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:314:37 • deprecated_member_use
+2026-05-07T17:39:29.3186449Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:325:60 • deprecated_member_use
+2026-05-07T17:39:29.3188823Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:343:44 • deprecated_member_use
+2026-05-07T17:39:29.3191460Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:403:37 • deprecated_member_use
+2026-05-07T17:39:29.3193950Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:414:60 • deprecated_member_use
+2026-05-07T17:39:29.3196390Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:465:37 • deprecated_member_use
+2026-05-07T17:39:29.3198865Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_metric_charts.dart:476:60 • deprecated_member_use
+2026-05-07T17:39:29.3201260Z    info • The private field _videoSettings could be 'final' • lib/features/pc_profiling/pc_probe_screen.dart:48:19 • prefer_final_fields
+2026-05-07T17:39:29.3203470Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pc_profiling/pc_probe_screen.dart:403:41 • deprecated_member_use
+2026-05-07T17:39:29.3205854Z warning • Unused import: '../../core/models/metric_sample.dart' • lib/features/pc_profiling/pc_video_settings.dart:8:8 • unused_import
+2026-05-07T17:39:29.3207981Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/plugins/plugin_install_card.dart:70:33 • deprecated_member_use
+2026-05-07T17:39:29.3210680Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/plugins/plugin_install_card.dart:123:22 • deprecated_member_use
+2026-05-07T17:39:29.3212725Z warning • The value of the field '_loading' isn't used • lib/features/session_detail/detail_screen.dart:50:8 • unused_field
+2026-05-07T17:39:29.3214509Z warning • Unused import: 'package:flutter_riverpod/flutter_riverpod.dart' • lib/features/session_detail/issues_tab.dart:5:8 • unused_import
+2026-05-07T17:39:29.3216504Z    info • Invalid use of a private type in a public API • lib/features/session_history/history_screen.dart:62:8 • library_private_types_in_public_api
+2026-05-07T17:39:29.3218732Z warning • The value of the local variable 'ref' isn't used • lib/features/session_history/history_screen.dart:362:21 • unused_local_variable
+2026-05-07T17:39:29.3221548Z    info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre • lib/features/settings/settings_screen.dart:376:9 • deprecated_member_use
+2026-05-07T17:39:29.3224447Z    info • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/settings/settings_screen.dart:543:15 • deprecated_member_use
+2026-05-07T17:39:29.3227544Z    info • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/settings/settings_screen.dart:545:15 • deprecated_member_use
+2026-05-07T17:39:29.3230481Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/fps_histogram_chart.dart:118:40 • deprecated_member_use
+2026-05-07T17:39:29.3232930Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/fps_histogram_chart.dart:145:40 • deprecated_member_use
+2026-05-07T17:39:29.3235295Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/metric_chart.dart:339:32 • deprecated_member_use
+2026-05-07T17:39:29.3237544Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/metric_chart.dart:340:32 • deprecated_member_use
+2026-05-07T17:39:29.3239768Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/metric_chart.dart:366:41 • deprecated_member_use
+2026-05-07T17:39:29.3242333Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/metric_chart.dart:367:41 • deprecated_member_use
+2026-05-07T17:39:29.3244471Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/metric_chart.dart:388:38 • deprecated_member_use
+2026-05-07T17:39:29.3246767Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/metric_chart.dart:409:42 • deprecated_member_use
+2026-05-07T17:39:29.3248987Z    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/shared/widgets/metric_chart.dart:658:42 • deprecated_member_use
+2026-05-07T17:39:29.3251058Z warning • Unused import: 'dart:convert' • test/core/services/automation_service_test.dart:4:8 • unused_import
+2026-05-07T17:39:29.3252457Z warning • Unused import: 'dart:io' • test/core/services/ios_screenrecord_service_test.dart:5:8 • unused_import
+2026-05-07T17:39:29.3254686Z warning • Unused import: 'package:performancebench/core/services/ios_screenrecord_service.dart' • test/core/services/ios_screenrecord_service_test.dart:8:8 • unused_import
+2026-05-07T17:39:29.3256840Z warning • The value of the local variable 'stream' isn't used • test/core/services/mac_proxy_service_test.dart:99:15 • unused_local_variable
+2026-05-07T17:39:29.3259351Z    info • The import of 'dart:async' is unnecessary because all of the used elements are also provided by the import of 'package:flutter_test/flutter_test.dart' • test/core/services/screenrecord_service_test.dart:4:8 • unnecessary_import
+2026-05-07T17:39:29.3262286Z warning • Unused import: 'package:performancebench/core/database/video_dao.dart' • test/core/services/screenrecord_service_test.dart:8:8 • unused_import
+2026-05-07T17:39:29.3264284Z warning • Unused import: 'package:performancebench/core/models/video.dart' • test/core/services/screenrecord_service_test.dart:9:8 • unused_import
+2026-05-07T17:39:29.3266549Z warning • The value of the local variable 'testService' isn't used • test/core/services/tidevice_service_test.dart:92:13 • unused_local_variable
+2026-05-07T17:39:29.3268245Z warning • Unused import: 'dart:async' • test/features/injection/injection_service_test.dart:4:8 • unused_import
+2026-05-07T17:39:29.3269777Z warning • Unused import: 'dart:convert' • test/features/injection/injection_service_test.dart:5:8 • unused_import
+2026-05-07T17:39:29.3271514Z    info • Don't invoke 'print' in production code • test/platform/linux_smoke_test.dart:20:9 • avoid_print
+2026-05-07T17:39:29.3273299Z    info • The local variable '_markerTracker' starts with an underscore • test/unit/alert_service_test.dart:40:27 • no_leading_underscores_for_local_identifiers
+2026-05-07T17:39:29.3275418Z    info • The local variable '_breachCount' starts with an underscore • test/unit/alert_service_test.dart:41:12 • no_leading_underscores_for_local_identifiers
+2026-05-07T17:39:29.3277653Z    info • The local variable '_lastBreachLabel' starts with an underscore • test/unit/alert_service_test.dart:42:15 • no_leading_underscores_for_local_identifiers
+2026-05-07T17:39:29.3279679Z    info • The local variable '_service' starts with an underscore • test/unit/alert_service_test.dart:43:21 • no_leading_underscores_for_local_identifiers
+2026-05-07T17:39:29.3281972Z    info • The local variable '_adbService' starts with an underscore • test/unit/auto_start_test.dart:23:24 • no_leading_underscores_for_local_identifiers
+2026-05-07T17:39:29.3283768Z    info • Angle brackets will be interpreted as HTML • test/unit/cpu_parser_test.dart:7:37 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3285598Z warning • A value for optional parameter 'targetFps' isn't ever given • test/unit/detected_issues_service_test.dart:56:8 • unused_element_parameter
+2026-05-07T17:39:29.3287556Z warning • Unused import: 'package:performancebench/core/models/metric_sample.dart' • test/unit/export_service_test.dart:7:8 • unused_import
+2026-05-07T17:39:29.3289638Z    info • The local variable '_makeSamples' starts with an underscore • test/unit/region_stats_test.dart:15:22 • no_leading_underscores_for_local_identifiers
+2026-05-07T17:39:29.3291744Z    info • Angle brackets will be interpreted as HTML • test/unit/ring_buffer_test.dart:8:68 • unintended_html_in_doc_comment
+2026-05-07T17:39:29.3293275Z warning • Unused import: 'package:flutter/material.dart' • test/widget_test.dart:4:8 • unused_import
+2026-05-07T17:39:29.3294631Z warning • Unused import: 'dart:async' • test/widgets/video_chart_sync_test.dart:4:8 • unused_import
+2026-05-07T17:39:29.3295302Z 
+2026-05-07T17:39:29.3332649Z 94 issues found. (ran in 15.2s)

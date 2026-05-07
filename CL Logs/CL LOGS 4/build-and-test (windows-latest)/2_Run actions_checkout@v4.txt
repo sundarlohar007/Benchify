@@ -1,0 +1,111 @@
+﻿2026-05-07T17:37:15.6118297Z ##[group]Run actions/checkout@v4
+2026-05-07T17:37:15.6119850Z with:
+2026-05-07T17:37:15.6120542Z   repository: sundarlohar007/Benchify
+2026-05-07T17:37:15.6121667Z   token: ***
+2026-05-07T17:37:15.6122479Z   ssh-strict: true
+2026-05-07T17:37:15.6123189Z   ssh-user: git
+2026-05-07T17:37:15.6123857Z   persist-credentials: true
+2026-05-07T17:37:15.6124606Z   clean: true
+2026-05-07T17:37:15.6125289Z   sparse-checkout-cone-mode: true
+2026-05-07T17:37:15.6126100Z   fetch-depth: 1
+2026-05-07T17:37:15.6126746Z   fetch-tags: false
+2026-05-07T17:37:15.6127454Z   show-progress: true
+2026-05-07T17:37:15.6128142Z   lfs: false
+2026-05-07T17:37:15.6128752Z   submodules: false
+2026-05-07T17:37:15.6129422Z   set-safe-directory: true
+2026-05-07T17:37:15.6130394Z ##[endgroup]
+2026-05-07T17:37:15.7996241Z Syncing repository: sundarlohar007/Benchify
+2026-05-07T17:37:15.7998679Z ##[group]Getting Git version info
+2026-05-07T17:37:15.7999642Z Working directory is 'D:\a\Benchify\Benchify'
+2026-05-07T17:37:15.9035066Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-05-07T17:37:16.2722613Z git version 2.54.0.windows.1
+2026-05-07T17:37:16.2788953Z ##[endgroup]
+2026-05-07T17:37:16.2812476Z Temporarily overriding HOME='D:\a\_temp\ace37f82-ac2a-4422-a8cf-8a46a8184476' before making global git config changes
+2026-05-07T17:37:16.2815465Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-07T17:37:16.2831239Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Benchify\Benchify
+2026-05-07T17:37:16.3553834Z Deleting the contents of 'D:\a\Benchify\Benchify'
+2026-05-07T17:37:16.3560696Z ##[group]Initializing the repository
+2026-05-07T17:37:16.3570416Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Benchify\Benchify
+2026-05-07T17:37:16.4326788Z Initialized empty Git repository in D:/a/Benchify/Benchify/.git/
+2026-05-07T17:37:16.4374922Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/sundarlohar007/Benchify
+2026-05-07T17:37:16.4968841Z ##[endgroup]
+2026-05-07T17:37:16.4971465Z ##[group]Disabling automatic garbage collection
+2026-05-07T17:37:16.4979514Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-05-07T17:37:16.5306596Z ##[endgroup]
+2026-05-07T17:37:16.5308743Z ##[group]Setting up auth
+2026-05-07T17:37:16.5332119Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-05-07T17:37:16.5637026Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-05-07T17:37:18.0394681Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-07T17:37:18.0717643Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-05-07T17:37:18.5883728Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-07T17:37:18.6190819Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-05-07T17:37:19.1334719Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-05-07T17:37:19.1640754Z ##[endgroup]
+2026-05-07T17:37:19.1641186Z ##[group]Fetching the repository
+2026-05-07T17:37:19.1654047Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9b6c960951895b4b4d5e51c5aa0bc315151707c5:refs/remotes/origin/main
+2026-05-07T17:37:22.7976382Z From https://github.com/sundarlohar007/Benchify
+2026-05-07T17:37:22.7977213Z  * [new ref]         9b6c960951895b4b4d5e51c5aa0bc315151707c5 -> origin/main
+2026-05-07T17:37:22.8366090Z ##[endgroup]
+2026-05-07T17:37:22.8366736Z ##[group]Determining the checkout info
+2026-05-07T17:37:22.8369721Z ##[endgroup]
+2026-05-07T17:37:22.8381134Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-05-07T17:37:22.8791884Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-05-07T17:37:22.9090021Z ##[group]Checking out the ref
+2026-05-07T17:37:22.9100443Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+2026-05-07T17:37:24.1943622Z Updating files:  51% (1073/2084)
+2026-05-07T17:37:24.3114420Z Updating files:  52% (1084/2084)
+2026-05-07T17:37:24.4284614Z Updating files:  53% (1105/2084)
+2026-05-07T17:37:24.4714689Z Updating files:  54% (1126/2084)
+2026-05-07T17:37:24.4841687Z Updating files:  55% (1147/2084)
+2026-05-07T17:37:24.4923531Z Updating files:  56% (1168/2084)
+2026-05-07T17:37:24.5017813Z Updating files:  57% (1188/2084)
+2026-05-07T17:37:24.5167238Z Updating files:  58% (1209/2084)
+2026-05-07T17:37:24.5279668Z Updating files:  59% (1230/2084)
+2026-05-07T17:37:24.5455012Z Updating files:  60% (1251/2084)
+2026-05-07T17:37:24.5570053Z Updating files:  61% (1272/2084)
+2026-05-07T17:37:24.5663563Z Updating files:  62% (1293/2084)
+2026-05-07T17:37:24.6527161Z Updating files:  63% (1313/2084)
+2026-05-07T17:37:24.6956145Z Updating files:  64% (1334/2084)
+2026-05-07T17:37:24.7074341Z Updating files:  65% (1355/2084)
+2026-05-07T17:37:24.7163076Z Updating files:  66% (1376/2084)
+2026-05-07T17:37:24.7272352Z Updating files:  67% (1397/2084)
+2026-05-07T17:37:24.7393322Z Updating files:  68% (1418/2084)
+2026-05-07T17:37:24.7482030Z Updating files:  69% (1438/2084)
+2026-05-07T17:37:24.7610128Z Updating files:  70% (1459/2084)
+2026-05-07T17:37:24.7815955Z Updating files:  71% (1480/2084)
+2026-05-07T17:37:24.7904831Z Updating files:  72% (1501/2084)
+2026-05-07T17:37:24.8424152Z Updating files:  73% (1522/2084)
+2026-05-07T17:37:24.8772670Z Updating files:  74% (1543/2084)
+2026-05-07T17:37:24.8861779Z Updating files:  75% (1563/2084)
+2026-05-07T17:37:24.8969854Z Updating files:  76% (1584/2084)
+2026-05-07T17:37:24.9053698Z Updating files:  77% (1605/2084)
+2026-05-07T17:37:24.9149087Z Updating files:  78% (1626/2084)
+2026-05-07T17:37:24.9240281Z Updating files:  79% (1647/2084)
+2026-05-07T17:37:24.9341618Z Updating files:  80% (1668/2084)
+2026-05-07T17:37:24.9409189Z Updating files:  81% (1689/2084)
+2026-05-07T17:37:24.9495611Z Updating files:  82% (1709/2084)
+2026-05-07T17:37:24.9569350Z Updating files:  83% (1730/2084)
+2026-05-07T17:37:24.9646266Z Updating files:  84% (1751/2084)
+2026-05-07T17:37:24.9721337Z Updating files:  85% (1772/2084)
+2026-05-07T17:37:24.9753051Z Updating files:  86% (1793/2084)
+2026-05-07T17:37:24.9797886Z Updating files:  86% (1802/2084)
+2026-05-07T17:37:24.9881389Z Updating files:  87% (1814/2084)
+2026-05-07T17:37:24.9968793Z Updating files:  88% (1834/2084)
+2026-05-07T17:37:25.0098821Z Updating files:  89% (1855/2084)
+2026-05-07T17:37:25.0173548Z Updating files:  90% (1876/2084)
+2026-05-07T17:37:25.0276428Z Updating files:  91% (1897/2084)
+2026-05-07T17:37:25.0356196Z Updating files:  92% (1918/2084)
+2026-05-07T17:37:25.0474560Z Updating files:  93% (1939/2084)
+2026-05-07T17:37:25.0548676Z Updating files:  94% (1959/2084)
+2026-05-07T17:37:25.0630796Z Updating files:  95% (1980/2084)
+2026-05-07T17:37:25.0720075Z Updating files:  96% (2001/2084)
+2026-05-07T17:37:25.0806929Z Updating files:  97% (2022/2084)
+2026-05-07T17:37:25.0887076Z Updating files:  98% (2043/2084)
+2026-05-07T17:37:25.0968135Z Updating files:  99% (2064/2084)
+2026-05-07T17:37:25.0973684Z Updating files: 100% (2084/2084)
+2026-05-07T17:37:25.0974341Z Updating files: 100% (2084/2084), done.
+2026-05-07T17:37:25.1260044Z Switched to a new branch 'main'
+2026-05-07T17:37:25.1263770Z branch 'main' set up to track 'origin/main'.
+2026-05-07T17:37:25.1591212Z ##[endgroup]
+2026-05-07T17:37:25.2162668Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-05-07T17:37:25.2680177Z 9b6c960951895b4b4d5e51c5aa0bc315151707c5
