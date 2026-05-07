@@ -20,7 +20,13 @@ class ErrorHandler {
 
   bool get isDebugMode => _debugMode;
   int get errorCount => _errors.length;
-  List<ErrorEntry> get errors => List.unmodifiable(_errors);
+  List<ErrorEntry> get errors {
+    try {
+      return List.unmodifiable(List<ErrorEntry>.from(_errors));
+    } catch (_) {
+      return [];
+    }
+  }
 
   /// Enable or disable debug mode (set from --debug CLI flag in main.dart).
   void setDebugMode(bool enabled) {
@@ -51,8 +57,8 @@ class ErrorHandler {
     }
 
     _errors.add(entry);
-    while (_errors.length > _maxEntries) {
-      _errors.removeAt(0);
+    if (_errors.length > _maxEntries) {
+      _errors.removeRange(0, _errors.length - _maxEntries);
     }
   }
 
