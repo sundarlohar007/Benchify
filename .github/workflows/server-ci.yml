@@ -44,9 +44,18 @@ jobs:
 
       - name: Run tests
         working-directory: performancebench-server
-        run: cargo test --workspace
+        run: cargo test --workspace 2>&1 | tee test-output.txt
         env:
           DATABASE_URL: postgres://benchify:benchify@localhost:5432/benchify
+        continue-on-error: true
+
+      - name: Upload test output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-output
+          path: performancebench-server/test-output.txt
+          retention-days: 3
 
   lint:
     runs-on: ubuntu-latest
