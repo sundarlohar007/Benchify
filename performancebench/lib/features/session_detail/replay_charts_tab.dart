@@ -36,11 +36,18 @@ class _ReplayChartsTabState extends ConsumerState<ReplayChartsTab> {
   List<MetricSample>? _samples;
   bool _loading = true;
   String? _error;
+  StreamController<MetricSample>? _chartController;
 
   @override
   void initState() {
     super.initState();
     _loadSamples();
+  }
+
+  @override
+  void dispose() {
+    _chartController?.close();
+    super.dispose();
   }
 
   Future<void> _loadSamples() async {
@@ -104,7 +111,9 @@ class _ReplayChartsTabState extends ConsumerState<ReplayChartsTab> {
 
     final samples = _samples!;
     // Create a broadcast stream from pre-loaded samples
-    final controller = StreamController<MetricSample>.broadcast();
+    _chartController?.close();
+    _chartController = StreamController<MetricSample>.broadcast();
+    final controller = _chartController!;
 
     // Schedule sample emission after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
