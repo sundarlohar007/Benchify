@@ -77,7 +77,7 @@ void main() {
       service = ScreenrecordService(
         adbShell: fakeShell,
         videoDao: null, // Will be provided when integration DB is available
-        dataDir: '/test/videos',
+        dataDir: 'test/videos',
       );
       service.configure(width: 1080, height: 1920, bitrate: 8000000);
     });
