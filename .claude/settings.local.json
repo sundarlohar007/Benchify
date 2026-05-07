@@ -64,7 +64,10 @@
       "Bash(dir D:\\\\OpenCode\\\\Benchify\\\\performancebench-server\\\\target\\\\debug\\\\build\\\\pq-sys-*\\\\out\\\\libpq.lib /s)",
       "Bash(curl -L \"https://get.enterprisedb.com/postgresql/postgresql-16.4-1-windows-x64-binaries.zip\" -o pg-bin.zip)",
       "Bash(unzip -o pg-bin.zip \"pgsql/lib/libpq.lib\" \"pgsql/include/*\" -d pg-extract)",
-      "Bash(cargo clean *)"
+      "Bash(cargo clean *)",
+      "Bash(curl -s \"https://api.github.com/repos/sundarlohar007/Benchify/actions/runs?per_page=5&branch=main\")",
+      "Bash(git fetch *)",
+      "Bash(git config *)"
     ]
   }
 }
