@@ -65,7 +65,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Keystore form should be visible
-    expect(find.text('Keystore Path'), findsOneWidget);
+    expect(find.text('Key Alias'), findsOneWidget);
   });
 
   group('InjectionService Frida support', () {
@@ -110,9 +110,8 @@ void main() {
 
       expect(args, containsAll(['--method', 'smali']));
       expect(args, containsAll(['--keystore', 'my.keystore']));
-      expect(args, containsAll(['--keystore-password', 'pass']));
+      expect(args, containsAll(['--keystore-passwords-via-stdin']));
       expect(args, containsAll(['--key-alias', 'mykey']));
-      expect(args, containsAll(['--key-password', 'keypass']));
     });
   });
 }

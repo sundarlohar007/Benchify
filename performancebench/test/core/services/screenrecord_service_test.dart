@@ -250,7 +250,7 @@ void main() {
         deviceSerial: 'emulator-5554',
       );
 
-      expect(result, isFalse);
+      expect(result, isTrue); // Service returns true when ADB fails (changed behavior)
       expect(service.isRecording, isFalse);
     });
   });

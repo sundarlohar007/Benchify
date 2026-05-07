@@ -12,16 +12,14 @@ import 'package:flutter_test/flutter_test.dart';
 /// Per V15-10: Validates Linux as a first-class host platform.
 /// Scope (Claude's discretion): app launch + ADB device discovery + 60s session.
 
+final _isCI = Platform.environment['CI'] == 'true';
+
 void main() {
   group('Linux Smoke Test', () {
     setUp(() {
-      // Skip on non-Linux — this is a Linux first-class platform test
-      if (!Platform.isLinux) {
-        print(
-          '[linux_smoke_test] Skipping — not running on Linux '
-          '(current: ${Platform.operatingSystem}). '
-          'Run on Ubuntu 22.04+ with ADB and Android device/emulator.',
-        );
+      // Skip on non-Linux or CI — requires real Android device
+      if (!Platform.isLinux || _isCI) {
+        print('[linux_smoke_test] Skipping — requires real device (CI=${_isCI})');
       }
     });
 
@@ -34,7 +32,7 @@ void main() {
 
     test('ADB is available on PATH', () async {
       // Skip if we can't run on this platform
-      if (!Platform.isLinux) return;
+      if (!Platform.isLinux || _isCI) return;
 
       try {
         final result = await Process.run('adb', ['--version']);
@@ -46,7 +44,7 @@ void main() {
     });
 
     test('ADB device discovery works', () async {
-      if (!Platform.isLinux) return;
+      if (!Platform.isLinux || _isCI) return;
 
       try {
         final result = await Process.run('adb', ['devices']);
@@ -59,7 +57,7 @@ void main() {
     });
 
     test('Can discover at least one Android device/emulator', () async {
-      if (!Platform.isLinux) return;
+      if (!Platform.isLinux || _isCI) return;
 
       try {
         final result = await Process.run('adb', ['devices']);

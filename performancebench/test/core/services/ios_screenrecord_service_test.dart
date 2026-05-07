@@ -125,6 +125,7 @@ void main() {
 
     // ── Test 3: spawn constructs correct subprocess arguments ──
     test('spawnSubprocess constructs correct arguments', () {
+      if (!Platform.isMacOS) return; // macOS-specific test
       final service = _TestableIosScreenrecordService(isMacOS: true);
 
       service.simulateSpawn(udid: '00008110-001234567890001E', sessionId: 'test-session');
