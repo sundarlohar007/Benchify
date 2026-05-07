@@ -1,17 +1,17 @@
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Extension, Json, Router};
 use axum::routing::get;
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 use uuid::Uuid;
 
-use db::session_queries;
-use models::audit::{AuditEventCategory, AuditEventType};
 use crate::error::AppError;
 use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::session_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
 
 /// Query params for session list endpoint.
 #[derive(Debug, Deserialize)]
@@ -41,7 +41,6 @@ pub async fn list_sessions(
     Query(params): Query<ListSessionsQuery>,
     Extension(auth_user): Extension<AuthUser>,
 ) -> Result<impl IntoResponse, AppError> {
-
     let tags_vec: Option<Vec<String>> = params
         .tags
         .as_ref()
@@ -83,15 +82,11 @@ pub async fn get_session(
     Path(session_id): Path<Uuid>,
     Extension(auth_user): Extension<AuthUser>,
 ) -> Result<impl IntoResponse, AppError> {
-
-    let session = session_queries::get_session_by_id_and_user(
-        &state.pool,
-        session_id,
-        auth_user.user_id,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
-    .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
+    let session =
+        session_queries::get_session_by_id_and_user(&state.pool, session_id, auth_user.user_id)
+            .await
+            .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
+            .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
 
     Ok((StatusCode::OK, Json(session)))
 }
@@ -103,14 +98,11 @@ pub async fn delete_session(
     Extension(auth_user): Extension<AuthUser>,
 ) -> Result<impl IntoResponse, AppError> {
     // Verify ownership
-    let _existing = session_queries::get_session_by_id_and_user(
-        &state.pool,
-        session_id,
-        auth_user.user_id,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
-    .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
+    let _existing =
+        session_queries::get_session_by_id_and_user(&state.pool, session_id, auth_user.user_id)
+            .await
+            .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
+            .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
 
     session_queries::delete_session(&state.pool, session_id, auth_user.user_id)
         .await
@@ -123,9 +115,13 @@ pub async fn delete_session(
         AuditEventType::SessionDeleted,
         session_id,
         None,
-    ).await;
+    )
+    .await;
 
-    Ok((StatusCode::OK, Json(serde_json::json!({"status": "deleted"}))))
+    Ok((
+        StatusCode::OK,
+        Json(serde_json::json!({"status": "deleted"})),
+    ))
 }
 
 /// GET /api/v1/sessions/{id}/cpu-threads — per-thread CPU breakdown.
@@ -138,14 +134,11 @@ pub async fn get_cpu_threads(
     Path(session_id): Path<Uuid>,
     Extension(auth_user): Extension<AuthUser>,
 ) -> Result<impl IntoResponse, AppError> {
-    let session = session_queries::get_session_by_id_and_user(
-        &state.pool,
-        session_id,
-        auth_user.user_id,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
-    .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
+    let session =
+        session_queries::get_session_by_id_and_user(&state.pool, session_id, auth_user.user_id)
+            .await
+            .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
+            .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
 
     // Check if the session has PC thread CPU data in session_stats JSONB
     let thread_cpu_data = session
@@ -169,8 +162,14 @@ pub async fn get_cpu_threads(
                     .and_then(|v| v.as_str())
                     .unwrap_or("unknown")
                     .to_string();
-                let cpu_pct = sample.get("cpu_percent").and_then(|v| v.as_f64()).unwrap_or(0.0);
-                let user_time = sample.get("user_time_ms").and_then(|v| v.as_i64()).unwrap_or(0);
+                let cpu_pct = sample
+                    .get("cpu_percent")
+                    .and_then(|v| v.as_f64())
+                    .unwrap_or(0.0);
+                let user_time = sample
+                    .get("user_time_ms")
+                    .and_then(|v| v.as_i64())
+                    .unwrap_or(0);
                 let kernel_time = sample
                     .get("kernel_time_ms")
                     .and_then(|v| v.as_i64())
@@ -235,6 +234,6 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_sessions))
         .route("/{id}", get(get_session).delete(delete_session))
         .route("/{id}/cpu-threads", get(get_cpu_threads))
-        // TODO: Re-enable after fixing jira module
-        // .route("/{id}/jira", axum::routing::post(crate::routes::jira::create_jira_issue))
+    // TODO: Re-enable after fixing jira module
+    // .route("/{id}/jira", axum::routing::post(crate::routes::jira::create_jira_issue))
 }

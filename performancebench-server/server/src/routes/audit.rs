@@ -1,19 +1,19 @@
 use axum::extract::{Path, Query, State};
 use axum::http::header;
 use axum::response::{IntoResponse, Response};
-use axum::{Extension, Json, Router};
 use axum::routing::{delete, get};
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 use serde_json::json;
 use uuid::Uuid;
 
-use db::audit_queries;
-use db::audit_queries::AuditFilter;
-use models::audit::{AuditEventCategory, AuditEventResponse, AuditEventType};
 use crate::error::AppError;
 use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::audit_queries;
+use db::audit_queries::AuditFilter;
+use models::audit::{AuditEventCategory, AuditEventResponse, AuditEventType};
 
 // ── Request types ──
 
@@ -45,13 +45,22 @@ pub struct AuditPurgeQuery {
     pub before: String,
 }
 
-fn default_offset() -> i64 { 0 }
-fn default_limit() -> i64 { 50 }
+fn default_offset() -> i64 {
+    0
+}
+fn default_limit() -> i64 {
+    50
+}
 
 fn parse_iso_date(s: &str) -> Result<chrono::NaiveDateTime, AppError> {
     chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S")
         .or_else(|_| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%d"))
-        .map_err(|e| AppError::Validation(format!("Invalid date format: {}. Use ISO 8601 (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)", e)))
+        .map_err(|e| {
+            AppError::Validation(format!(
+                "Invalid date format: {}. Use ISO 8601 (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)",
+                e
+            ))
+        })
 }
 
 // ── Router ──
@@ -81,16 +90,13 @@ async fn list_audit_events(
         to_date: params.to.as_deref().map(parse_iso_date).transpose()?,
     };
 
-    let (events, total) = audit_queries::get_audit_events(
-        &state.pool,
-        &filter,
-        params.offset,
-        params.limit,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+    let (events, total) =
+        audit_queries::get_audit_events(&state.pool, &filter, params.offset, params.limit)
+            .await
+            .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
 
-    let event_responses: Vec<AuditEventResponse> = events.into_iter().map(AuditEventResponse::from).collect();
+    let event_responses: Vec<AuditEventResponse> =
+        events.into_iter().map(AuditEventResponse::from).collect();
 
     Ok(Json(json!({
         "events": event_responses,
@@ -130,20 +136,26 @@ async fn export_audit_events(
     // Default date range: last 30 days if not specified
     let now = chrono::Utc::now().naive_utc();
     let default_from = now - chrono::Duration::days(30);
-    let from_date = params.from.as_deref().map(parse_iso_date).transpose()?.unwrap_or(default_from);
-    let to_date = params.to.as_deref().map(parse_iso_date).transpose()?.unwrap_or(now);
+    let from_date = params
+        .from
+        .as_deref()
+        .map(parse_iso_date)
+        .transpose()?
+        .unwrap_or(default_from);
+    let to_date = params
+        .to
+        .as_deref()
+        .map(parse_iso_date)
+        .transpose()?
+        .unwrap_or(now);
 
-    let categories: Option<Vec<String>> = params.category
+    let categories: Option<Vec<String>> = params
+        .category
         .map(|c| c.split(',').map(|s| s.trim().to_string()).collect());
 
-    let events = audit_queries::get_audit_events_range(
-        &state.pool,
-        from_date,
-        to_date,
-        categories,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+    let events = audit_queries::get_audit_events_range(&state.pool, from_date, to_date, categories)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
 
     // Record meta audit event for export
     let _ = audit_mw::record_audit_event(
@@ -159,7 +171,8 @@ async fn export_audit_events(
             "from": from_date.to_string(),
             "to": to_date.to_string(),
         }),
-    ).await;
+    )
+    .await;
 
     let date_str = chrono::Utc::now().format("%Y-%m-%d").to_string();
 
@@ -169,8 +182,16 @@ async fn export_audit_events(
 
             // Header
             let _ = wtr.write_record(&[
-                "id", "event_type", "event_category", "actor_id", "actor_email",
-                "target_type", "target_id", "details", "ip_address", "created_at",
+                "id",
+                "event_type",
+                "event_category",
+                "actor_id",
+                "actor_email",
+                "target_type",
+                "target_id",
+                "details",
+                "ip_address",
+                "created_at",
             ]);
 
             for event in &events {
@@ -188,9 +209,9 @@ async fn export_audit_events(
                 ]);
             }
 
-            let csv_data = wtr.into_inner().map_err(|e| {
-                AppError::Internal(format!("CSV write error: {}", e))
-            })?;
+            let csv_data = wtr
+                .into_inner()
+                .map_err(|e| AppError::Internal(format!("CSV write error: {}", e)))?;
 
             let filename = format!("audit-export-{}.csv", date_str);
 
@@ -206,9 +227,8 @@ async fn export_audit_events(
             Ok(response)
         }
         "json" => {
-            let json_data = serde_json::to_vec(&events).map_err(|e| {
-                AppError::Internal(format!("JSON serialize error: {}", e))
-            })?;
+            let json_data = serde_json::to_vec(&events)
+                .map_err(|e| AppError::Internal(format!("JSON serialize error: {}", e)))?;
 
             let filename = format!("audit-export-{}.json", date_str);
 
@@ -240,12 +260,10 @@ async fn purge_audit_events(
     let now = chrono::Utc::now().naive_utc();
     let min_retain_date = now - chrono::Duration::days(30);
     if before_date > min_retain_date {
-        return Err(AppError::Validation(
-            format!(
-                "Purge date must be at least 30 days in the past. Earliest allowed: {}",
-                min_retain_date.format("%Y-%m-%d")
-            ),
-        ));
+        return Err(AppError::Validation(format!(
+            "Purge date must be at least 30 days in the past. Earliest allowed: {}",
+            min_retain_date.format("%Y-%m-%d")
+        )));
     }
 
     let deleted_count = audit_queries::delete_audit_events_before(&state.pool, before_date)
@@ -264,7 +282,8 @@ async fn purge_audit_events(
             "purged_before": before_date.to_string(),
             "deleted_count": deleted_count,
         }),
-    ).await;
+    )
+    .await;
 
     Ok(Json(json!({
         "deleted_count": deleted_count,

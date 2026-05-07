@@ -1,7 +1,6 @@
 /// Analytics engine — 1:1 port from Dart `analytics_service.dart`.
 /// The server is the single source of truth for session statistics (D-18).
 /// Every formula must match the Dart implementation exactly.
-
 use models::marker::Marker;
 use models::metric_sample::MetricSample;
 use models::session::SessionStats;
@@ -60,11 +59,7 @@ fn compute_fps_stats(samples: &[f64]) -> FpsStats {
     let p5_rank = ((n as f64 * 0.05).ceil() as usize).clamp(1, n);
     let p5_index = p5_rank - 1;
     let fps_5th = sorted[p5_index];
-    let p95_frame_time_ms = if fps_5th > 0.0 {
-        1000.0 / fps_5th
-    } else {
-        0.0
-    };
+    let p95_frame_time_ms = if fps_5th > 0.0 { 1000.0 / fps_5th } else { 0.0 };
 
     // Stability % — Dart: count where fps between median*0.8 and median*1.2
     let lo = median * 0.8;
@@ -126,7 +121,10 @@ fn mean(values: &[f64]) -> Option<f64> {
 
 /// Peak (max) of an iterator of f64 values.
 fn peak_f64(values: &[f64]) -> Option<f64> {
-    values.iter().cloned().max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
+    values
+        .iter()
+        .cloned()
+        .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal))
 }
 
 /// Mean of i64 values (returns rounded i64).
@@ -145,7 +143,10 @@ fn peak_i64(values: &[i64]) -> Option<i64> {
 }
 
 /// Sum of an optional i64 field across all samples (matches `_sumIntField`).
-fn sum_i64_field<T: Fn(&MetricSample) -> Option<i64>>(samples: &[MetricSample], getter: T) -> Option<i64> {
+fn sum_i64_field<T: Fn(&MetricSample) -> Option<i64>>(
+    samples: &[MetricSample],
+    getter: T,
+) -> Option<i64> {
     let mut has_any = false;
     let mut sum: i64 = 0;
     for s in samples {
@@ -158,7 +159,10 @@ fn sum_i64_field<T: Fn(&MetricSample) -> Option<i64>>(samples: &[MetricSample], 
 }
 
 /// Delta of a cumulative field: (last - first) / 1024.0 for KB values.
-fn net_delta<T: Fn(&MetricSample) -> Option<i64>>(samples: &[MetricSample], getter: T) -> Option<f64> {
+fn net_delta<T: Fn(&MetricSample) -> Option<i64>>(
+    samples: &[MetricSample],
+    getter: T,
+) -> Option<f64> {
     let vals: Vec<i64> = samples.iter().filter_map(|s| getter(s)).collect();
     if vals.len() < 2 {
         None
@@ -250,7 +254,10 @@ pub fn compute_session_stats(
     let cpu_values: Vec<f64> = samples.iter().filter_map(|s| s.cpu_app_pct).collect();
     let cpu_avg = mean(&cpu_values);
     let cpu_peak = peak_f64(&cpu_values);
-    let cpu_freq_norm_values: Vec<f64> = samples.iter().filter_map(|s| s.cpu_app_pct_freq_norm).collect();
+    let cpu_freq_norm_values: Vec<f64> = samples
+        .iter()
+        .filter_map(|s| s.cpu_app_pct_freq_norm)
+        .collect();
     let cpu_avg_freq_norm = mean(&cpu_freq_norm_values);
     let cpu_peak_freq_norm = peak_f64(&cpu_freq_norm_values);
 
@@ -267,7 +274,10 @@ pub fn compute_session_stats(
     // Memory subsections
     let mem_java_vals: Vec<i64> = samples.iter().filter_map(|s| s.memory_java_kb).collect();
     let mem_native_vals: Vec<i64> = samples.iter().filter_map(|s| s.memory_native_kb).collect();
-    let mem_graphics_vals: Vec<i64> = samples.iter().filter_map(|s| s.memory_graphics_kb).collect();
+    let mem_graphics_vals: Vec<i64> = samples
+        .iter()
+        .filter_map(|s| s.memory_graphics_kb)
+        .collect();
     let mem_stack_vals: Vec<i64> = samples.iter().filter_map(|s| s.memory_stack_kb).collect();
     let mem_code_vals: Vec<i64> = samples.iter().filter_map(|s| s.memory_code_kb).collect();
     let mem_system_vals: Vec<i64> = samples.iter().filter_map(|s| s.memory_system_kb).collect();
@@ -306,7 +316,8 @@ pub fn compute_session_stats(
 
     // ── Battery/Power (§6.6) ──
     // Filter non-charging samples
-    let non_charging: Vec<&MetricSample> = samples.iter().filter(|s| s.charging != Some(1)).collect();
+    let non_charging: Vec<&MetricSample> =
+        samples.iter().filter(|s| s.charging != Some(1)).collect();
     let has_charging = samples.iter().any(|s| s.charging == Some(1));
 
     // Battery drain
@@ -320,7 +331,11 @@ pub fn compute_session_stats(
     let battery_drain_per_hour = match battery_drain_pct {
         Some(drain) => {
             let hours = duration_ms as f64 / (1000.0 * 3600.0);
-            if hours > 0.0 { Some(drain / hours) } else { Some(0.0) }
+            if hours > 0.0 {
+                Some(drain / hours)
+            } else {
+                Some(0.0)
+            }
         }
         None => None,
     };
@@ -353,7 +368,9 @@ pub fn compute_session_stats(
         total_power_mwh = Some(mwh_sum);
 
         // Average power (mW)
-        let total_dt = (non_charging[non_charging.len() - 1].timestamp - non_charging[0].timestamp) as f64 / 1000.0;
+        let total_dt = (non_charging[non_charging.len() - 1].timestamp - non_charging[0].timestamp)
+            as f64
+            / 1000.0;
         avg_power_mw = if total_dt > 0.0 {
             Some(mwh_sum * 1000.0 / (total_dt / 3600.0))
         } else {
@@ -397,12 +414,18 @@ pub fn compute_session_stats(
 
     let duration_sec = duration_ms as f64 / 1000.0;
     let net_wifi_avg_kbps = if duration_sec > 0.0 {
-        Some((net_wifi_total_tx_kb.unwrap_or(0.0) + net_wifi_total_rx_kb.unwrap_or(0.0)) / duration_sec)
+        Some(
+            (net_wifi_total_tx_kb.unwrap_or(0.0) + net_wifi_total_rx_kb.unwrap_or(0.0))
+                / duration_sec,
+        )
     } else {
         None
     };
     let net_cellular_avg_kbps = if duration_sec > 0.0 {
-        Some((net_cellular_total_tx_kb.unwrap_or(0.0) + net_cellular_total_rx_kb.unwrap_or(0.0)) / duration_sec)
+        Some(
+            (net_cellular_total_tx_kb.unwrap_or(0.0) + net_cellular_total_rx_kb.unwrap_or(0.0))
+                / duration_sec,
+        )
     } else {
         None
     };
@@ -412,7 +435,9 @@ pub fn compute_session_stats(
     let thermal_peak = peak_i64(&thermal_values);
 
     // ── Launch complete ──
-    let launch_complete_ms = markers.iter().find(|m| m.name == "launch")
+    let launch_complete_ms = markers
+        .iter()
+        .find(|m| m.name == "launch")
         .map(|m| m.started_at - first_ts);
 
     SessionStats {
@@ -513,52 +538,96 @@ mod tests {
         let sid = Uuid::new_v4();
         let samples = vec![
             MetricSample {
-                timestamp: 0, fps: Some(60.0), cpu_app_pct: Some(25.0),
-                cpu_app_pct_freq_norm: Some(20.0), memory_pss_kb: Some(500000),
-                memory_java_kb: Some(100000), memory_native_kb: Some(80000),
-                memory_graphics_kb: Some(60000), memory_stack_kb: Some(5000),
-                memory_code_kb: Some(20000), memory_system_kb: Some(15000),
-                memory_webview_kb: None, gpu_pct: Some(40.0),
-                battery_pct: Some(100), battery_ma: Some(500.0),
-                battery_mv: Some(4000.0), battery_temp_c: Some(35.0),
-                charging: Some(0), charging_source: None,
-                net_tx_bytes: Some(0), net_rx_bytes: Some(0),
-                net_wifi_tx_bytes: Some(0), net_wifi_rx_bytes: Some(0),
-                net_cellular_tx_bytes: None, net_cellular_rx_bytes: None,
-                net_other_tx_bytes: None, net_other_rx_bytes: None,
-                jank_count: Some(0), jank_small_count: Some(0),
-                jank_big_count: Some(0), jank_ratio_count: Some(0),
+                timestamp: 0,
+                fps: Some(60.0),
+                cpu_app_pct: Some(25.0),
+                cpu_app_pct_freq_norm: Some(20.0),
+                memory_pss_kb: Some(500000),
+                memory_java_kb: Some(100000),
+                memory_native_kb: Some(80000),
+                memory_graphics_kb: Some(60000),
+                memory_stack_kb: Some(5000),
+                memory_code_kb: Some(20000),
+                memory_system_kb: Some(15000),
+                memory_webview_kb: None,
+                gpu_pct: Some(40.0),
+                battery_pct: Some(100),
+                battery_ma: Some(500.0),
+                battery_mv: Some(4000.0),
+                battery_temp_c: Some(35.0),
+                charging: Some(0),
+                charging_source: None,
+                net_tx_bytes: Some(0),
+                net_rx_bytes: Some(0),
+                net_wifi_tx_bytes: Some(0),
+                net_wifi_rx_bytes: Some(0),
+                net_cellular_tx_bytes: None,
+                net_cellular_rx_bytes: None,
+                net_other_tx_bytes: None,
+                net_other_rx_bytes: None,
+                jank_count: Some(0),
+                jank_small_count: Some(0),
+                jank_big_count: Some(0),
+                jank_ratio_count: Some(0),
                 thermal_status: Some(0),
-                gpu_freq_mhz: None, gpu_mem_kb: None,
-                disk_read_kb: None, disk_write_kb: None,
-                screen_brightness: None, volume_pct: None,
-                cpu_system_pct: None, cpu_cores: None,
-                cpu_core_states_json: None, cpu_core_freqs_json: None,
-                cpu_threads_top_json: None, frametimes_json: None,
+                gpu_freq_mhz: None,
+                gpu_mem_kb: None,
+                disk_read_kb: None,
+                disk_write_kb: None,
+                screen_brightness: None,
+                volume_pct: None,
+                cpu_system_pct: None,
+                cpu_cores: None,
+                cpu_core_states_json: None,
+                cpu_core_freqs_json: None,
+                cpu_threads_top_json: None,
+                frametimes_json: None,
             },
             MetricSample {
-                timestamp: 1000, fps: Some(58.0), cpu_app_pct: Some(30.0),
-                cpu_app_pct_freq_norm: Some(25.0), memory_pss_kb: Some(510000),
-                memory_java_kb: Some(105000), memory_native_kb: Some(82000),
-                memory_graphics_kb: Some(61000), memory_stack_kb: Some(5200),
-                memory_code_kb: Some(20000), memory_system_kb: Some(15500),
-                memory_webview_kb: None, gpu_pct: Some(42.0),
-                battery_pct: Some(99), battery_ma: Some(480.0),
-                battery_mv: Some(3950.0), battery_temp_c: Some(36.0),
-                charging: Some(0), charging_source: None,
-                net_tx_bytes: Some(1024), net_rx_bytes: Some(2048),
-                net_wifi_tx_bytes: Some(1024), net_wifi_rx_bytes: Some(2048),
-                net_cellular_tx_bytes: None, net_cellular_rx_bytes: None,
-                net_other_tx_bytes: None, net_other_rx_bytes: None,
-                jank_count: Some(1), jank_small_count: Some(1),
-                jank_big_count: Some(0), jank_ratio_count: Some(0),
+                timestamp: 1000,
+                fps: Some(58.0),
+                cpu_app_pct: Some(30.0),
+                cpu_app_pct_freq_norm: Some(25.0),
+                memory_pss_kb: Some(510000),
+                memory_java_kb: Some(105000),
+                memory_native_kb: Some(82000),
+                memory_graphics_kb: Some(61000),
+                memory_stack_kb: Some(5200),
+                memory_code_kb: Some(20000),
+                memory_system_kb: Some(15500),
+                memory_webview_kb: None,
+                gpu_pct: Some(42.0),
+                battery_pct: Some(99),
+                battery_ma: Some(480.0),
+                battery_mv: Some(3950.0),
+                battery_temp_c: Some(36.0),
+                charging: Some(0),
+                charging_source: None,
+                net_tx_bytes: Some(1024),
+                net_rx_bytes: Some(2048),
+                net_wifi_tx_bytes: Some(1024),
+                net_wifi_rx_bytes: Some(2048),
+                net_cellular_tx_bytes: None,
+                net_cellular_rx_bytes: None,
+                net_other_tx_bytes: None,
+                net_other_rx_bytes: None,
+                jank_count: Some(1),
+                jank_small_count: Some(1),
+                jank_big_count: Some(0),
+                jank_ratio_count: Some(0),
                 thermal_status: Some(0),
-                gpu_freq_mhz: None, gpu_mem_kb: None,
-                disk_read_kb: None, disk_write_kb: None,
-                screen_brightness: None, volume_pct: None,
-                cpu_system_pct: None, cpu_cores: None,
-                cpu_core_states_json: None, cpu_core_freqs_json: None,
-                cpu_threads_top_json: None, frametimes_json: None,
+                gpu_freq_mhz: None,
+                gpu_mem_kb: None,
+                disk_read_kb: None,
+                disk_write_kb: None,
+                screen_brightness: None,
+                volume_pct: None,
+                cpu_system_pct: None,
+                cpu_cores: None,
+                cpu_core_states_json: None,
+                cpu_core_freqs_json: None,
+                cpu_threads_top_json: None,
+                frametimes_json: None,
             },
         ];
         let markers: Vec<Marker> = vec![];

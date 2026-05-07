@@ -1,11 +1,7 @@
-use openidconnect::core::{
-    CoreClient, CoreIdTokenClaims, CoreProviderMetadata,
-    CoreResponseType,
-};
+use openidconnect::core::{CoreClient, CoreIdTokenClaims, CoreProviderMetadata, CoreResponseType};
 use openidconnect::{
-    AuthenticationFlow, AuthorizationCode, ClientId, ClientSecret, CsrfToken, IssuerUrl,
-    Nonce, PkceCodeChallenge, PkceCodeVerifier, RedirectUrl, Scope,
-    TokenResponse as OidcTokenResponse,
+    AuthenticationFlow, AuthorizationCode, ClientId, ClientSecret, CsrfToken, IssuerUrl, Nonce,
+    PkceCodeChallenge, PkceCodeVerifier, RedirectUrl, Scope, TokenResponse as OidcTokenResponse,
 };
 
 /// Custom OIDC validation claims with nonce verification.
@@ -37,15 +33,8 @@ pub async fn start_oidc_flow(
     client_id: &str,
     client_secret: &str,
     redirect_url: &str,
-) -> Result<
-    (
-        url::Url,
-        CsrfToken,
-        Nonce,
-        PkceCodeVerifier,
-    ),
-    Box<dyn std::error::Error + Send + Sync>,
-> {
+) -> Result<(url::Url, CsrfToken, Nonce, PkceCodeVerifier), Box<dyn std::error::Error + Send + Sync>>
+{
     let metadata = discover_oidc_provider(issuer_url).await?;
 
     let client = CoreClient::from_provider_metadata(

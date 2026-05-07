@@ -1,20 +1,20 @@
 use axum::extract::{Query, State};
 use axum::response::Redirect;
-use axum::{Form, Json, Router};
 use axum::routing::{get, post};
+use axum::{Form, Json, Router};
 use axum_extra::extract::cookie::{Cookie, CookieJar, SameSite};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;
 
-use db::sso_queries;
-use db::user_queries;
-use models::audit::{AuditEventCategory, AuditEventType};
-use models::sso::{LdapProviderConfig, OidcProviderConfig, SamlProviderConfig};
 use crate::error::AppError;
 use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::{jwt, ldap, oidc, saml};
+use db::sso_queries;
+use db::user_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
+use models::sso::{LdapProviderConfig, OidcProviderConfig, SamlProviderConfig};
 
 // ── In-memory SSO state store (short-lived, per-request) ──
 // Uses a signed cookie for CSRF/PKCE/SAML relay state instead of server-side store.
@@ -83,8 +83,7 @@ fn parse_sso_state_cookie(jar: &CookieJar) -> Result<SsoCookieState, AppError> {
         .get(SSO_STATE_COOKIE)
         .map(|c| c.value().to_string())
         .ok_or(AppError::Unauthorized)?;
-    serde_json::from_str(&value)
-        .map_err(|_| AppError::Unauthorized)
+    serde_json::from_str(&value).map_err(|_| AppError::Unauthorized)
 }
 
 fn clear_sso_state_cookie() -> Cookie<'static> {
@@ -152,7 +151,8 @@ async fn issue_jwt_for_user(
             "success": true,
             "sso_provider": sso_provider,
         }),
-    ).await;
+    )
+    .await;
 
     let cookie = access_token_cookie(&access_token);
     let body = AuthResponse {
@@ -188,7 +188,9 @@ async fn oidc_login(
         .ok_or(AppError::NotFound("OIDC provider".to_string()))?;
 
     if provider.provider_type != "oidc" {
-        return Err(AppError::Validation("Provider is not an OIDC provider".to_string()));
+        return Err(AppError::Validation(
+            "Provider is not an OIDC provider".to_string(),
+        ));
     }
 
     let oidc_cfg: OidcProviderConfig = serde_json::from_value(provider.config.clone())
@@ -273,8 +275,7 @@ async fn oidc_callback(
     })?;
 
     // Extract user attributes
-    let oidc_attrs = oidc::extract_oidc_attributes(&claims)
-        .ok_or(AppError::Unauthorized)?;
+    let oidc_attrs = oidc::extract_oidc_attributes(&claims).ok_or(AppError::Unauthorized)?;
 
     // JIT provisioning
     let (user, _is_new) = user_queries::find_or_create_sso_user(
@@ -307,7 +308,9 @@ async fn saml_login(
         .ok_or(AppError::NotFound("SAML provider".to_string()))?;
 
     if provider.provider_type != "saml" {
-        return Err(AppError::Validation("Provider is not a SAML provider".to_string()));
+        return Err(AppError::Validation(
+            "Provider is not a SAML provider".to_string(),
+        ));
     }
 
     let saml_cfg: SamlProviderConfig = serde_json::from_value(provider.config.clone())
@@ -319,12 +322,9 @@ async fn saml_login(
         saml_cfg.acs_url.clone()
     };
 
-    let (redirect_url, relay_state) = saml::build_authn_request(
-        &saml_cfg.idp_sso_url,
-        &saml_cfg.sp_entity_id,
-        &acs_url,
-    )
-    .map_err(|e| AppError::Internal(format!("SAML AuthnRequest build error: {}", e)))?;
+    let (redirect_url, relay_state) =
+        saml::build_authn_request(&saml_cfg.idp_sso_url, &saml_cfg.sp_entity_id, &acs_url)
+            .map_err(|e| AppError::Internal(format!("SAML AuthnRequest build error: {}", e)))?;
 
     // Store relay state in signed cookie
     let state_data = SsoCookieState {
@@ -347,9 +347,7 @@ async fn saml_acs(
     Query(params): Query<SsoLoginQuery>,
     Form(form): Form<HashMap<String, String>>,
 ) -> Result<(CookieJar, Json<AuthResponse>), AppError> {
-    let saml_response_b64 = form
-        .get("SAMLResponse")
-        .ok_or(AppError::Unauthorized)?;
+    let saml_response_b64 = form.get("SAMLResponse").ok_or(AppError::Unauthorized)?;
 
     let sso_state = parse_sso_state_cookie(&jar)?;
 
@@ -413,7 +411,9 @@ async fn ldap_login(
         .ok_or(AppError::NotFound("LDAP provider".to_string()))?;
 
     if provider.provider_type != "ldap" {
-        return Err(AppError::Validation("Provider is not an LDAP provider".to_string()));
+        return Err(AppError::Validation(
+            "Provider is not an LDAP provider".to_string(),
+        ));
     }
 
     let ldap_cfg: LdapProviderConfig = serde_json::from_value(provider.config.clone())

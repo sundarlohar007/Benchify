@@ -85,16 +85,9 @@ pub fn require_role(
     State<AppState>,
     Request,
     Next,
-) -> std::pin::Pin<
-    Box<
-        dyn std::future::Future<
-                Output = Result<Response, AppError>,
-            > + Send,
-    >,
-> + Clone {
-    move |State(_state): State<AppState>,
-          mut request: Request,
-          next: Next| {
+) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Response, AppError>> + Send>>
++ Clone {
+    move |State(_state): State<AppState>, mut request: Request, next: Next| {
         let required_role = required_role.clone();
         Box::pin(async move {
             let auth_user = request
@@ -119,11 +112,7 @@ pub fn require_admin() -> impl Fn(
     Request,
     Next,
 ) -> std::pin::Pin<
-    Box<
-        dyn std::future::Future<
-                Output = Result<Response, AppError>,
-            > + Send,
-    >,
+    Box<dyn std::future::Future<Output = Result<Response, AppError>> + Send>,
 > + Clone {
     require_role(Role::Admin)
 }

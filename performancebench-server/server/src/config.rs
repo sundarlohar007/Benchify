@@ -96,10 +96,13 @@ impl AppConfig {
             .set_default("jwt_secret", "")?
             .set_default("host", "0.0.0.0")?
             .set_default("port", 3000)?
-            .set_default("cors_allowed_origins", vec![
-                "http://localhost:5173".to_string(),
-                "http://localhost:3000".to_string(),
-            ])?
+            .set_default(
+                "cors_allowed_origins",
+                vec![
+                    "http://localhost:5173".to_string(),
+                    "http://localhost:3000".to_string(),
+                ],
+            )?
             .set_default("upload_dir", "./uploads")?
             .set_default("sso_enabled", false)?
             .set_default("sso_redirect_base_url", "http://localhost:3000")?
@@ -112,7 +115,8 @@ impl AppConfig {
         if config.jwt_secret.is_empty() {
             return Err(config::ConfigError::Message(
                 "JWT_SECRET environment variable is required. \
-                 Generate: openssl rand -base64 64".to_string(),
+                 Generate: openssl rand -base64 64"
+                    .to_string(),
             ));
         }
 

@@ -6,14 +6,14 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use uuid::Uuid;
 
-use db::token_queries;
-use db::user_queries;
-use models::audit::{AuditEventCategory, AuditEventType};
 use crate::error::AppError;
 use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::{self, AuthUser};
 use crate::utils::password;
+use db::token_queries;
+use db::user_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
 
 // ── Request types ──
 
@@ -117,7 +117,10 @@ pub async fn login(
     }
 
     // SSO users have no password — reject password login
-    let password_hash = user.password_hash.as_deref().ok_or(AppError::Unauthorized)?;
+    let password_hash = user
+        .password_hash
+        .as_deref()
+        .ok_or(AppError::Unauthorized)?;
     let valid = password::verify_password(&body.password, password_hash)?;
     if !valid {
         tracing::info!(
@@ -137,7 +140,8 @@ pub async fn login(
             Some(&audit_actor),
             AuditEventType::Login,
             false,
-        ).await;
+        )
+        .await;
         return Err(AppError::Unauthorized);
     }
 
@@ -165,12 +169,8 @@ pub async fn login(
         email: user.email.clone(),
         role: user.role.clone(),
     };
-    let _ = audit_mw::audit_auth_event(
-        &state.pool,
-        Some(&auth_user),
-        AuditEventType::Login,
-        true,
-    ).await;
+    let _ = audit_mw::audit_auth_event(&state.pool, Some(&auth_user), AuditEventType::Login, true)
+        .await;
 
     let cookie = access_token_cookie(&access_token, 3600);
     let body = AuthResponse {
@@ -290,7 +290,8 @@ pub async fn refresh(
         }),
         AuditEventType::TokenRefresh,
         true,
-    ).await;
+    )
+    .await;
 
     let cookie = access_token_cookie(&access_token, 3600);
     let body = AuthResponse {
@@ -308,7 +309,8 @@ pub async fn logout(
     Json(body): Json<RefreshRequest>,
 ) -> Result<(CookieJar, Json<serde_json::Value>), AppError> {
     let rt_hash = token_queries::hash_token(&body.refresh_token);
-    if let Ok(Some(stored)) = token_queries::get_refresh_token_by_hash(&state.pool, &rt_hash).await {
+    if let Ok(Some(stored)) = token_queries::get_refresh_token_by_hash(&state.pool, &rt_hash).await
+    {
         let _ = token_queries::revoke_refresh_token(&state.pool, stored.id).await;
     }
 
@@ -327,7 +329,8 @@ pub async fn logout(
                 }),
                 AuditEventType::Logout,
                 true,
-            ).await;
+            )
+            .await;
         }
     }
 

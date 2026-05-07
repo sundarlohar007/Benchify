@@ -6,11 +6,11 @@ use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
 use uuid::Uuid;
 
-use db::session_queries;
-use models::metric_sample::MetricSample;
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::session_queries;
+use models::metric_sample::MetricSample;
 
 /// WebSocket upgrade handler for /ws/live/:session_id (D-47, V20-17).
 /// Browser clients connect to receive real-time metric samples.
@@ -48,11 +48,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, session_id: Uuid) {
         let mut rx = rx;
         while let Ok(sample) = rx.recv().await {
             let json = serde_json::to_string(&sample).unwrap_or_default();
-            if sender
-                .send(Message::Text(json.into()))
-                .await
-                .is_err()
-            {
+            if sender.send(Message::Text(json.into())).await.is_err() {
                 break; // client disconnected
             }
         }

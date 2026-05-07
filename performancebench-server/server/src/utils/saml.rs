@@ -1,8 +1,8 @@
-use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
-use flate2::write::DeflateEncoder;
+use base64::{Engine, engine::general_purpose::STANDARD as BASE64};
 use flate2::Compression;
-use quick_xml::events::Event;
+use flate2::write::DeflateEncoder;
 use quick_xml::Reader;
+use quick_xml::events::Event;
 use rand::Rng;
 
 /// SAML assertion data extracted from a validated SAMLResponse.
@@ -96,8 +96,8 @@ pub fn validate_saml_response(
         .decode(saml_response_b64)
         .map_err(|e| format!("SAMLResponse base64 decode failed: {}", e))?;
 
-    let xml_str = String::from_utf8(bytes)
-        .map_err(|e| format!("SAMLResponse UTF-8 decode failed: {}", e))?;
+    let xml_str =
+        String::from_utf8(bytes).map_err(|e| format!("SAMLResponse UTF-8 decode failed: {}", e))?;
 
     // 2. Parse XML with quick-xml
     let mut reader = Reader::from_str(&xml_str);
@@ -163,8 +163,7 @@ pub fn validate_saml_response(
                     if let Some(ref attr_name) = current_attr_name {
                         let attr_lower = attr_name.to_lowercase();
                         if (attr_lower.contains("email")
-                            || attr_name
-                                == "urn:oid:0.9.2342.19200300.100.1.3")
+                            || attr_name == "urn:oid:0.9.2342.19200300.100.1.3")
                             && email.is_none()
                         {
                             email = Some(text.trim().to_string());
@@ -229,9 +228,7 @@ pub fn validate_saml_response(
 }
 
 /// Extract (email, display_name) from a SAML assertion.
-pub fn extract_saml_attributes(
-    assertion: &SamlAssertion,
-) -> (String, Option<String>) {
+pub fn extract_saml_attributes(assertion: &SamlAssertion) -> (String, Option<String>) {
     // Email: use explicit attribute, or fall back to subject if it looks like an email
     let email = assertion
         .email
@@ -245,15 +242,15 @@ pub fn extract_saml_attributes(
 
 fn generate_hex_id(len: usize) -> String {
     let mut rng = rand::thread_rng();
-    (0..len).map(|_| format!("{:x}", rng.gen_range(0..16))).collect()
+    (0..len)
+        .map(|_| format!("{:x}", rng.gen_range(0..16)))
+        .collect()
 }
 
 /// Validate that a <ds:Signature> element is present in the SAML XML.
 /// Full RSA-PKCS1-SHA256 cryptographic verification will be re-enabled when
 /// a mature SAML 2.0 SP crate for Rust becomes available.
-fn validate_signature_present(
-    xml: &str,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+fn validate_signature_present(xml: &str) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !xml.contains("<ds:Signature") {
         return Err("SAMLResponse missing <ds:Signature> element".into());
     }

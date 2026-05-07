@@ -36,8 +36,8 @@ pub async fn ldap_authenticate(
         LdapConnSettings::new().set_starttls(use_starttls),
         server_url,
     )
-        .await
-        .map_err(|e| format!("LDAP connection failed: {}", e))?;
+    .await
+    .map_err(|e| format!("LDAP connection failed: {}", e))?;
 
     // Bind with service account
     ldap.simple_bind(bind_dn, bind_password)
@@ -79,8 +79,8 @@ pub async fn ldap_authenticate(
         LdapConnSettings::new().set_starttls(use_starttls),
         server_url,
     )
-        .await
-        .map_err(|e| format!("LDAP user connection failed: {}", e))?;
+    .await
+    .map_err(|e| format!("LDAP user connection failed: {}", e))?;
 
     user_ldap
         .simple_bind(&user_dn, password)

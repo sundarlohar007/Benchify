@@ -28,7 +28,7 @@ pub async fn get_fps_trends(
     end_date: &str,
     app_name: Option<&str>,
 ) -> DbResult<Vec<TrendPoint>> {
-    use diesel::sql_types::{Text, Uuid as SqlUuid, Nullable, Double};
+    use diesel::sql_types::{Double, Nullable, Text, Uuid as SqlUuid};
 
     let mut client = pool.get().await?;
 
@@ -105,7 +105,7 @@ pub async fn get_metric_trends(
     jsonb_key: &str,
     app_name: Option<&str>,
 ) -> DbResult<Vec<TrendPoint>> {
-    use diesel::sql_types::{Text, Uuid as SqlUuid, Nullable, Double};
+    use diesel::sql_types::{Double, Nullable, Text, Uuid as SqlUuid};
 
     let mut client = pool.get().await?;
 

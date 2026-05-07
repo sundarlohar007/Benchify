@@ -1,15 +1,15 @@
 use std::time::Duration;
 
+use axum::Router;
 use axum::middleware::from_fn_with_state;
 use axum::routing::{get, post};
-use axum::Router;
 use tower::limit::RateLimitLayer;
 use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 
-use crate::middleware::auth as auth_mw;
 use crate::middleware::api_token as api_token_mw;
+use crate::middleware::auth as auth_mw;
 use crate::middleware::rbac;
 use crate::state::AppState;
 
@@ -50,8 +50,7 @@ pub fn create_router(state: AppState) -> Router {
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
     // Health check
-    let health_routes = Router::new()
-        .route("/health", get(health::health_check));
+    let health_routes = Router::new().route("/health", get(health::health_check));
 
     // WebSocket live overlay (D-47, V20-17)
     // Auth required — verified in handler via session ownership check (CR-01)
@@ -60,19 +59,23 @@ pub fn create_router(state: AppState) -> Router {
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
     // OpenAPI docs (no auth required)
-    let openapi_routes = Router::new()
-        .route("/api/v1/openapi.json", get(openapi::openapi_json));
+    let openapi_routes = Router::new().route("/api/v1/openapi.json", get(openapi::openapi_json));
 
     // ── Upload route (API token auth, not JWT cookie) ──
     // The upload endpoint uses API token Bearer auth with "write" scope (D-32).
     // It must be OUTSIDE the JWT cookie middleware.
-    let upload_routes = Router::new()
-        .route("/sessions", post(upload::upload_session));
+    let upload_routes = Router::new().route("/sessions", post(upload::upload_session));
 
     // Live push batch endpoint (API token auth, desktop -> server push)
     let live_push_routes = Router::new()
-        .route("/sessions/{session_id}/live/batch", post(ws::push_live_batch))
-        .route_layer(from_fn_with_state(state.clone(), api_token_mw::api_token_middleware));
+        .route(
+            "/sessions/{session_id}/live/batch",
+            post(ws::push_live_batch),
+        )
+        .route_layer(from_fn_with_state(
+            state.clone(),
+            api_token_mw::api_token_middleware,
+        ));
 
     // ── API v1 (JWT cookie auth required) ──
     let v1_sessions = sessions::router();

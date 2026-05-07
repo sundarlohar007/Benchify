@@ -10,7 +10,11 @@ use crate::schema::lenses;
 type DbResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 /// List lenses for a user, plus any public lenses from other users.
-pub async fn list_lenses(pool: &DbPool, user_id: Uuid, include_public: bool) -> DbResult<Vec<Lens>> {
+pub async fn list_lenses(
+    pool: &DbPool,
+    user_id: Uuid,
+    include_public: bool,
+) -> DbResult<Vec<Lens>> {
     let mut client = pool.get().await?;
 
     if include_public {

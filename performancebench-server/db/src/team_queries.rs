@@ -1,8 +1,8 @@
 use diesel::prelude::*;
 use diesel_async::RunQueryDsl;
 use models::team::{
-    TeamMembership, TeamOrg, TeamOrgResponse, TeamProject, TeamProjectResponse,
-    NewTeamMembership, NewTeamOrg, NewTeamProject,
+    NewTeamMembership, NewTeamOrg, NewTeamProject, TeamMembership, TeamOrg, TeamOrgResponse,
+    TeamProject, TeamProjectResponse,
 };
 use uuid::Uuid;
 
@@ -156,7 +156,9 @@ pub async fn update_org(
         .first::<TeamOrg>(&mut *client)
         .await?;
 
-    let new_desc = description.map(|d| Some(d.to_string())).unwrap_or_else(|| existing.description.clone());
+    let new_desc = description
+        .map(|d| Some(d.to_string()))
+        .unwrap_or_else(|| existing.description.clone());
     let new_active = is_active.unwrap_or(existing.is_active);
 
     let org = diesel::update(team_orgs::table.find(org_id))
@@ -239,7 +241,8 @@ pub async fn list_projects(
         .load::<TeamProject>(&mut *client)
         .await?;
 
-    let responses: Vec<TeamProjectResponse> = projects.iter().map(TeamProjectResponse::from).collect();
+    let responses: Vec<TeamProjectResponse> =
+        projects.iter().map(TeamProjectResponse::from).collect();
 
     Ok((responses, total))
 }
@@ -272,7 +275,9 @@ pub async fn update_project(
         .first::<TeamProject>(&mut *client)
         .await?;
 
-    let new_desc = description.map(|d| Some(d.to_string())).unwrap_or_else(|| existing.description.clone());
+    let new_desc = description
+        .map(|d| Some(d.to_string()))
+        .unwrap_or_else(|| existing.description.clone());
     let new_active = is_active.unwrap_or(existing.is_active);
 
     let project = diesel::update(team_projects::table.find(project_id))
@@ -363,11 +368,7 @@ pub async fn list_members(
         .filter(team_membership::org_id.eq(org_id))
         .inner_join(users::table);
 
-    let total: i64 = base
-        .clone()
-        .count()
-        .get_result(&mut *client)
-        .await?;
+    let total: i64 = base.clone().count().get_result(&mut *client).await?;
 
     let results = base
         .select((

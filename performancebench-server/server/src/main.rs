@@ -38,11 +38,17 @@ async fn main() {
     let user_count = user_queries::count_users(&pool).await.unwrap_or(0);
     if user_count == 0 {
         let admin_password = generate_random_password();
-        let password_hash = password::hash_password(&admin_password)
-            .expect("Failed to hash admin password");
-        user_queries::create_user(&pool, "admin@localhost", &password_hash, Some("Admin"), "admin")
-            .await
-            .expect("Failed to create default admin user");
+        let password_hash =
+            password::hash_password(&admin_password).expect("Failed to hash admin password");
+        user_queries::create_user(
+            &pool,
+            "admin@localhost",
+            &password_hash,
+            Some("Admin"),
+            "admin",
+        )
+        .await
+        .expect("Failed to create default admin user");
         tracing::warn!(
             event_type = "auto_admin_created",
             email = "admin@localhost",
@@ -62,7 +68,9 @@ async fn main() {
         .parse()
         .expect("Invalid host:port binding address");
 
-    if let (Some(cert_path), Some(key_path)) = (config.tls_cert_path.as_ref(), config.tls_key_path.as_ref()) {
+    if let (Some(cert_path), Some(key_path)) =
+        (config.tls_cert_path.as_ref(), config.tls_key_path.as_ref())
+    {
         // TLS mode — load certificate and private key via rustls + axum_server
         tracing::info!(
             cert_path = %cert_path,
@@ -84,19 +92,20 @@ async fn main() {
                 // Also start HTTP→HTTPS redirect on port+1 if configured
                 let https_host = config.host.clone();
                 let https_port = config.port;
-                let redirect_addr: SocketAddr = format!("{}:{}", config.host, config.port.wrapping_sub(443).max(1))
-                    .parse()
-                    .expect("Invalid redirect port");
+                let redirect_addr: SocketAddr =
+                    format!("{}:{}", config.host, config.port.wrapping_sub(443).max(1))
+                        .parse()
+                        .expect("Invalid redirect port");
 
-                let redirect_router = axum::Router::new()
-                    .fallback(axum::routing::get(move |_host: axum::http::HeaderMap| async move {
+                let redirect_router = axum::Router::new().fallback(axum::routing::get(
+                    move |_host: axum::http::HeaderMap| async move {
                         // Simple redirect — redirect all HTTP to HTTPS
                         axum::response::Redirect::permanent(&format!(
                             "https://{}:{}/",
-                            https_host,
-                            https_port
+                            https_host, https_port
                         ))
-                    }));
+                    },
+                ));
 
                 tracing::info!("HTTP→HTTPS redirect listening on {}", redirect_addr);
                 let redirect_listener = tokio::net::TcpListener::bind(redirect_addr)

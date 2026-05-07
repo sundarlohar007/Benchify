@@ -69,10 +69,7 @@ pub async fn upsert_device(
 
 /// List devices associated with sessions owned by the given user.
 /// Joins sessions to find devices the user has profiling data for.
-pub async fn list_devices_for_user(
-    pool: &DbPool,
-    user_id: Uuid,
-) -> DbResult<Vec<DeviceInfo>> {
+pub async fn list_devices_for_user(pool: &DbPool, user_id: Uuid) -> DbResult<Vec<DeviceInfo>> {
     use crate::schema::sessions;
 
     let mut client = pool.get().await?;

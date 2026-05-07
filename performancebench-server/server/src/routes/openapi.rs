@@ -1,6 +1,6 @@
+use axum::Json;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::Json;
 
 /// GET /api/v1/openapi.json — returns OpenAPI 3.0 specification JSON.
 /// Generated manually for now; utoipa derive macros can be added later (D-17).

@@ -1,14 +1,14 @@
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Extension, Json, Router};
 use axum::routing::get;
+use axum::{Extension, Json, Router};
 use uuid::Uuid;
 
-use db::device_queries;
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::device_queries;
 
 /// GET /api/v1/devices — list devices the user has sessions for.
 pub async fn list_devices(
@@ -33,13 +33,10 @@ pub async fn get_device(
         .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
         .ok_or_else(|| AppError::NotFound("Device".to_string()))?;
 
-    let session_count = device_queries::get_device_session_count(
-        &state.pool,
-        device_id,
-        auth_user.user_id,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?;
+    let session_count =
+        device_queries::get_device_session_count(&state.pool, device_id, auth_user.user_id)
+            .await
+            .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?;
 
     Ok((
         StatusCode::OK,

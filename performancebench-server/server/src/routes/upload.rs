@@ -5,15 +5,15 @@ use axum::{Extension, Json};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use db::{alert_queries, device_queries, session_queries};
+use crate::error::AppError;
+use crate::services::analytics;
 use db::session_queries::NewSession;
+use db::{alert_queries, device_queries, session_queries};
 use models::detected_issue::DetectedIssue;
 use models::marker::Marker;
 use models::metric_sample::MetricSample;
 use models::session::Session;
 use models::video::VideoMetadata;
-use crate::error::AppError;
-use crate::services::analytics;
 // TODO: Re-enable after fixing lettre API
 // use crate::services::notifications::{
 //     dispatch_notification, NotificationChannel, NotificationPayload,
@@ -114,15 +114,16 @@ pub async fn upload_session(
 
         match name.as_str() {
             "metadata" => {
-                let bytes = field.bytes().await
+                let bytes = field
+                    .bytes()
+                    .await
                     .map_err(|e| AppError::Validation(format!("Failed to read metadata: {}", e)))?;
-                metadata_json = Some(String::from_utf8(bytes.to_vec())
-                    .map_err(|e| AppError::Validation(format!("Invalid UTF-8 in metadata: {}", e)))?);
+                metadata_json = Some(String::from_utf8(bytes.to_vec()).map_err(|e| {
+                    AppError::Validation(format!("Invalid UTF-8 in metadata: {}", e))
+                })?);
             }
             "screenshots" => {
-                let raw_name = field.file_name()
-                    .unwrap_or("unknown.png")
-                    .to_string();
+                let raw_name = field.file_name().unwrap_or("unknown.png").to_string();
 
                 // Sanitize: strip directory components to prevent path traversal (CR-02)
                 let filename = std::path::Path::new(&raw_name)
@@ -131,12 +132,18 @@ pub async fn upload_session(
                     .unwrap_or_else(|| format!("{}.png", Uuid::new_v4()));
 
                 // Belt-and-suspenders: reject filenames with suspicious patterns
-                if filename.contains("..") || filename.starts_with('/') || filename.starts_with('\\') {
-                    return Err(AppError::Validation("Invalid screenshot filename".to_string()));
+                if filename.contains("..")
+                    || filename.starts_with('/')
+                    || filename.starts_with('\\')
+                {
+                    return Err(AppError::Validation(
+                        "Invalid screenshot filename".to_string(),
+                    ));
                 }
 
-                let bytes = field.bytes().await
-                    .map_err(|e| AppError::Validation(format!("Failed to read screenshot: {}", e)))?;
+                let bytes = field.bytes().await.map_err(|e| {
+                    AppError::Validation(format!("Failed to read screenshot: {}", e))
+                })?;
                 screenshot_files.push((filename, bytes.to_vec()));
             }
             _ => {
@@ -203,22 +210,25 @@ pub async fn upload_session(
 
     // ── Parse timestamps ──
     // Reject unparseable timestamps instead of silently substituting now() (WR-10)
-    let started_at = parse_timestamp(&payload.session.started_at)
-        .ok_or_else(|| AppError::Validation(format!(
+    let started_at = parse_timestamp(&payload.session.started_at).ok_or_else(|| {
+        AppError::Validation(format!(
             "Invalid started_at timestamp: {}",
             payload.session.started_at
-        )))?;
-    let ended_at = payload.session.ended_at.as_deref()
+        ))
+    })?;
+    let ended_at = payload
+        .session
+        .ended_at
+        .as_deref()
         .and_then(parse_timestamp);
     let now = chrono::Utc::now().naive_utc();
 
     // ── Serialize JSONB fields ──
-    let metric_samples_str = serde_json::to_string(&payload.samples)
-        .unwrap_or_else(|_| "[]".to_string());
-    let markers_str = serde_json::to_string(&payload.markers)
-        .unwrap_or_else(|_| "[]".to_string());
-    let detected_issues_str = serde_json::to_string(&payload.detected_issues)
-        .unwrap_or_else(|_| "[]".to_string());
+    let metric_samples_str =
+        serde_json::to_string(&payload.samples).unwrap_or_else(|_| "[]".to_string());
+    let markers_str = serde_json::to_string(&payload.markers).unwrap_or_else(|_| "[]".to_string());
+    let detected_issues_str =
+        serde_json::to_string(&payload.detected_issues).unwrap_or_else(|_| "[]".to_string());
     let video_metadata_str = if payload.video_metadata.is_empty() {
         None
     } else {
@@ -417,10 +427,7 @@ fn parse_timestamp(s: &str) -> Option<chrono::NaiveDateTime> {
 
 /// Extract a metric value from computed SessionStats by name.
 /// Maps alert rule metric_name strings to SessionStats fields.
-fn extract_metric_value(
-    stats: &models::session::SessionStats,
-    metric_name: &str,
-) -> Option<f64> {
+fn extract_metric_value(stats: &models::session::SessionStats, metric_name: &str) -> Option<f64> {
     match metric_name {
         "fps_median" => stats.fps_median,
         "fps_stability" => stats.fps_stability,

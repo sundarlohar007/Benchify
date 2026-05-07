@@ -1,16 +1,16 @@
 use axum::extract::{Path, Query, State};
-use axum::{Extension, Json, Router};
 use axum::routing::{delete, get, post, put};
+use axum::{Extension, Json, Router};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use db::{sso_queries, user_queries};
-use models::audit::{AuditEventCategory, AuditEventType};
-use models::sso::SsoConfig;
 use crate::error::AppError;
 use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::{sso_queries, user_queries};
+use models::audit::{AuditEventCategory, AuditEventType};
+use models::sso::SsoConfig;
 
 // ── Request / Response types ──
 
@@ -24,8 +24,12 @@ pub struct ListUsersQuery {
     pub limit: i64,
 }
 
-fn default_offset() -> i64 { 0 }
-fn default_limit() -> i64 { 50 }
+fn default_offset() -> i64 {
+    0
+}
+fn default_limit() -> i64 {
+    50
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -104,8 +108,14 @@ pub fn admin_router() -> Router<AppState> {
         .route("/users/{id}", get(get_user))
         .route("/users/{id}/role", put(update_user_role))
         .route("/users/{id}/status", put(update_user_status))
-        .route("/sso-configs", get(list_sso_configs).post(create_sso_config))
-        .route("/sso-configs/{id}", put(update_sso_config).delete(delete_sso_config))
+        .route(
+            "/sso-configs",
+            get(list_sso_configs).post(create_sso_config),
+        )
+        .route(
+            "/sso-configs/{id}",
+            put(update_sso_config).delete(delete_sso_config),
+        )
 }
 
 // ── Handlers ──
@@ -187,7 +197,8 @@ async fn update_user_role(
         AuditEventType::UserRoleChanged,
         user_id,
         serde_json::json!({"old_role": old_role, "new_role": body.role}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(UserDetail::from(&user)))
 }
@@ -222,7 +233,8 @@ async fn update_user_status(
         event_type,
         user_id,
         serde_json::json!({"is_active": body.is_active}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(UserDetail::from(&user)))
 }
@@ -230,9 +242,7 @@ async fn update_user_status(
 // ── SSO Config CRUD Handlers ──
 
 /// GET /api/v1/admin/sso-configs — list all SSO configs (active and inactive).
-async fn list_sso_configs(
-    State(state): State<AppState>,
-) -> Result<Json<Vec<SsoConfig>>, AppError> {
+async fn list_sso_configs(State(state): State<AppState>) -> Result<Json<Vec<SsoConfig>>, AppError> {
     let configs = sso_queries::list_all_sso_configs(&state.pool)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
@@ -270,7 +280,8 @@ async fn create_sso_config(
         &body.provider_type,
         Some(config.id),
         serde_json::json!({"name": body.name, "provider_type": body.provider_type}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(config))
 }
@@ -300,7 +311,8 @@ async fn update_sso_config(
         &config.provider_type,
         Some(config_id),
         serde_json::json!({"updated_fields": serde_json::to_value(&input).unwrap_or_default()}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(config))
 }
@@ -329,7 +341,8 @@ async fn delete_sso_config(
         &existing.provider_type,
         Some(config_id),
         serde_json::json!({"name": existing.name, "provider_type": existing.provider_type}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(serde_json::json!({"status": "deleted"})))
 }

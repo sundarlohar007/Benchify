@@ -1,7 +1,7 @@
+use axum::Json;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
-use axum::Json;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
@@ -26,44 +26,42 @@ pub enum AppError {
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let (status, code, message, details): (StatusCode, &str, String, Option<Value>) = match &self {
-            AppError::Unauthorized => (
-                StatusCode::UNAUTHORIZED,
-                "UNAUTHORIZED",
-                "Invalid or expired credentials".to_string(),
-                None,
-            ),
-            AppError::Forbidden => (
-                StatusCode::FORBIDDEN,
-                "FORBIDDEN",
-                "Insufficient permissions".to_string(),
-                None,
-            ),
-            AppError::NotFound(resource) => (
-                StatusCode::NOT_FOUND,
-                "NOT_FOUND",
-                format!("{} not found", resource),
-                None,
-            ),
-            AppError::Conflict(reason) => (
-                StatusCode::CONFLICT,
-                "CONFLICT",
-                reason.clone(),
-                None,
-            ),
-            AppError::Validation(reason) => (
-                StatusCode::UNPROCESSABLE_ENTITY,
-                "VALIDATION_ERROR",
-                reason.clone(),
-                None,
-            ),
-            AppError::Internal(_inner) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "INTERNAL_ERROR",
-                "Internal server error".to_string(),
-                None,
-            ),
-        };
+        let (status, code, message, details): (StatusCode, &str, String, Option<Value>) =
+            match &self {
+                AppError::Unauthorized => (
+                    StatusCode::UNAUTHORIZED,
+                    "UNAUTHORIZED",
+                    "Invalid or expired credentials".to_string(),
+                    None,
+                ),
+                AppError::Forbidden => (
+                    StatusCode::FORBIDDEN,
+                    "FORBIDDEN",
+                    "Insufficient permissions".to_string(),
+                    None,
+                ),
+                AppError::NotFound(resource) => (
+                    StatusCode::NOT_FOUND,
+                    "NOT_FOUND",
+                    format!("{} not found", resource),
+                    None,
+                ),
+                AppError::Conflict(reason) => {
+                    (StatusCode::CONFLICT, "CONFLICT", reason.clone(), None)
+                }
+                AppError::Validation(reason) => (
+                    StatusCode::UNPROCESSABLE_ENTITY,
+                    "VALIDATION_ERROR",
+                    reason.clone(),
+                    None,
+                ),
+                AppError::Internal(_inner) => (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "INTERNAL_ERROR",
+                    "Internal server error".to_string(),
+                    None,
+                ),
+            };
 
         let body = json!({
             "code": code,

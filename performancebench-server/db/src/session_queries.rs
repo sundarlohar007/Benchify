@@ -46,12 +46,18 @@ pub async fn list_sessions(
         if !tag_list.is_empty() {
             // Use parameterized query with bound array — no raw string interpolation (CR-04)
             let count_query = diesel::sql_query(
-                "SELECT COUNT(*) as count FROM sessions WHERE user_id = $1 AND tags && $2::text[]"
+                "SELECT COUNT(*) as count FROM sessions WHERE user_id = $1 AND tags && $2::text[]",
             )
             .bind::<diesel::sql_types::Uuid, _>(user_id)
             .bind::<diesel::sql_types::Array<diesel::sql_types::Text>, _>(tag_list);
-            let count_rows = count_query.load::<diesel_deser::CountRow>(&mut *client).await?;
-            total = if count_rows.is_empty() { 0 } else { count_rows[0].count };
+            let count_rows = count_query
+                .load::<diesel_deser::CountRow>(&mut *client)
+                .await?;
+            total = if count_rows.is_empty() {
+                0
+            } else {
+                count_rows[0].count
+            };
 
             let data_query = diesel::sql_query(
                 r#"SELECT id, user_id, device_id, app_name, app_package, app_version,
@@ -61,7 +67,7 @@ pub async fn list_sessions(
                        video_metadata, thumbnail_path, is_uploaded, uploaded_by,
                        uploaded_at, created_at, updated_at
                 FROM sessions WHERE user_id = $1 AND tags && $2::text[]
-                ORDER BY started_at DESC OFFSET $3 LIMIT $4"#
+                ORDER BY started_at DESC OFFSET $3 LIMIT $4"#,
             )
             .bind::<diesel::sql_types::Uuid, _>(user_id)
             .bind::<diesel::sql_types::Array<diesel::sql_types::Text>, _>(tag_list)
@@ -132,10 +138,7 @@ pub async fn get_session_by_id_and_user(
 }
 
 /// Insert a new session. The `metric_samples` field is stored as a JSONB string.
-pub async fn insert_session(
-    pool: &DbPool,
-    session: &NewSession,
-) -> DbResult<Session> {
+pub async fn insert_session(pool: &DbPool, session: &NewSession) -> DbResult<Session> {
     let mut client = pool.get().await?;
     let now = chrono::Utc::now().naive_utc();
 
@@ -162,7 +165,10 @@ pub async fn insert_session(
             sessions::markers.eq(parse_jsonb_val(&session.markers_str)),
             sessions::detected_issues.eq(parse_jsonb_val(&session.detected_issues_str)),
             sessions::screenshots.eq(&session.screenshots),
-            sessions::video_metadata.eq(session.video_metadata_str.as_ref().map(|s| parse_jsonb_val(s))),
+            sessions::video_metadata.eq(session
+                .video_metadata_str
+                .as_ref()
+                .map(|s| parse_jsonb_val(s))),
             sessions::thumbnail_path.eq(&session.thumbnail_path),
             sessions::is_uploaded.eq(session.is_uploaded),
             sessions::uploaded_by.eq(session.uploaded_by),
@@ -177,11 +183,7 @@ pub async fn insert_session(
 }
 
 /// Delete a session (owner-scoped).
-pub async fn delete_session(
-    pool: &DbPool,
-    session_id: Uuid,
-    user_id: Uuid,
-) -> DbResult<()> {
+pub async fn delete_session(pool: &DbPool, session_id: Uuid, user_id: Uuid) -> DbResult<()> {
     let mut client = pool.get().await?;
     diesel::delete(
         sessions::table

@@ -68,10 +68,7 @@ fn apply_filters<'a>(
 
 /// Insert an audit event. Returns the created event.
 /// Callers should use fire-and-forget: `let _ = insert_audit_event(...).await;`
-pub async fn insert_audit_event(
-    pool: &DbPool,
-    event: CreateAuditEvent,
-) -> DbResult<AuditEvent> {
+pub async fn insert_audit_event(pool: &DbPool, event: CreateAuditEvent) -> DbResult<AuditEvent> {
     let mut client = pool.get().await?;
     let result = diesel::insert_into(audit_events::table)
         .values(&event)
@@ -142,20 +139,16 @@ pub async fn delete_audit_events_before(
 ) -> DbResult<u64> {
     let mut client = pool.get().await?;
 
-    let deleted = diesel::delete(
-        audit_events::table.filter(audit_events::created_at.lt(before_date)),
-    )
-    .execute(&mut *client)
-    .await?;
+    let deleted =
+        diesel::delete(audit_events::table.filter(audit_events::created_at.lt(before_date)))
+            .execute(&mut *client)
+            .await?;
 
     Ok(deleted as u64)
 }
 
 /// Get a single audit event by id.
-pub async fn get_audit_event_by_id(
-    pool: &DbPool,
-    event_id: Uuid,
-) -> DbResult<Option<AuditEvent>> {
+pub async fn get_audit_event_by_id(pool: &DbPool, event_id: Uuid) -> DbResult<Option<AuditEvent>> {
     let mut client = pool.get().await?;
     let result = audit_events::table
         .find(event_id)

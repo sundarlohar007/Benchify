@@ -1,14 +1,14 @@
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Extension, Json, Router};
 use axum::routing::get;
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 
-use db::trend_queries;
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::trend_queries;
 
 #[derive(Debug, Deserialize)]
 pub struct TrendsQuery {

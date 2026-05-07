@@ -1,4 +1,4 @@
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -23,7 +23,12 @@ pub struct AuthUser {
     pub role: String,
 }
 
-pub fn create_access_token(user_id: Uuid, email: &str, role: &str, secret: &[u8]) -> Result<String, AppError> {
+pub fn create_access_token(
+    user_id: Uuid,
+    email: &str,
+    role: &str,
+    secret: &[u8],
+) -> Result<String, AppError> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|_| AppError::Internal("System clock is before UNIX epoch".to_string()))?
@@ -37,8 +42,12 @@ pub fn create_access_token(user_id: Uuid, email: &str, role: &str, secret: &[u8]
         iat: now,
         token_type: "access".to_string(),
     };
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(secret))
-        .map_err(|e| AppError::Internal(format!("JWT encode error: {}", e)))
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(secret),
+    )
+    .map_err(|e| AppError::Internal(format!("JWT encode error: {}", e)))
 }
 
 pub fn create_refresh_token(user_id: Uuid, email: &str, secret: &[u8]) -> Result<String, AppError> {
@@ -55,8 +64,12 @@ pub fn create_refresh_token(user_id: Uuid, email: &str, secret: &[u8]) -> Result
         iat: now,
         token_type: "refresh".to_string(),
     };
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(secret))
-        .map_err(|e| AppError::Internal(format!("JWT encode error: {}", e)))
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(secret),
+    )
+    .map_err(|e| AppError::Internal(format!("JWT encode error: {}", e)))
 }
 
 /// Validate a JWT token and return its claims.
@@ -65,11 +78,10 @@ pub fn validate_token(token: &str, secret: &[u8]) -> Result<Claims, AppError> {
     let mut validation = Validation::new(Algorithm::HS256);
     validation.leeway = 60; // 60-second clock skew tolerance
     validation.validate_exp = true;
-    let token_data = decode::<Claims>(token, &DecodingKey::from_secret(secret), &validation).map_err(|e| {
-        match e.kind() {
+    let token_data = decode::<Claims>(token, &DecodingKey::from_secret(secret), &validation)
+        .map_err(|e| match e.kind() {
             jsonwebtoken::errors::ErrorKind::ExpiredSignature => AppError::Unauthorized,
             _ => AppError::Unauthorized,
-        }
-    })?;
+        })?;
     Ok(token_data.claims)
 }

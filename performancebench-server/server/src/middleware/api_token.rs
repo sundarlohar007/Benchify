@@ -1,12 +1,12 @@
 use axum::extract::State;
-use axum::http::{header, HeaderMap};
+use axum::http::{HeaderMap, header};
 use axum::middleware::Next;
 use axum::response::Response;
 
-use db::token_queries;
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::token_queries;
 
 /// API token middleware for machine-to-machine endpoints.
 /// Reads Authorization: Bearer <api_token>, validates against api_tokens table,

@@ -1,5 +1,5 @@
 use axum::extract::State;
-use axum::http::{header, HeaderMap};
+use axum::http::{HeaderMap, header};
 use axum::middleware::Next;
 use axum::response::Response;
 use axum_extra::extract::cookie::CookieJar;

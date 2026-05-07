@@ -115,7 +115,8 @@ pub async fn find_or_create_sso_user(
             return Err(format!(
                 "Email {} already registered with {} auth",
                 email, existing.auth_source
-            ).into());
+            )
+            .into());
         }
         // If existing user is local (or same provider), link the SSO identity
         // but don't change auth_source if it was local (preserve local login)
@@ -129,7 +130,10 @@ pub async fn find_or_create_sso_user(
                 .execute(&mut *client)
                 .await?;
             // Re-fetch to get updated row
-            let updated = users::table.find(existing.id).first::<User>(&mut *client).await?;
+            let updated = users::table
+                .find(existing.id)
+                .first::<User>(&mut *client)
+                .await?;
             return Ok((updated, false));
         }
         return Ok((existing, false));
@@ -167,11 +171,7 @@ pub async fn find_or_create_sso_user(
 }
 
 /// Update a user's role. Validates that the role is one of the 5 valid roles.
-pub async fn update_user_role(
-    pool: &DbPool,
-    user_id: Uuid,
-    new_role: &str,
-) -> DbResult<User> {
+pub async fn update_user_role(pool: &DbPool, user_id: Uuid, new_role: &str) -> DbResult<User> {
     let mut client = pool.get().await?;
     let user = diesel::update(users::table.find(user_id))
         .set((
@@ -184,11 +184,7 @@ pub async fn update_user_role(
 }
 
 /// Activate or deactivate a user.
-pub async fn update_user_status(
-    pool: &DbPool,
-    user_id: Uuid,
-    is_active: bool,
-) -> DbResult<User> {
+pub async fn update_user_status(pool: &DbPool, user_id: Uuid, is_active: bool) -> DbResult<User> {
     let mut client = pool.get().await?;
     let user = diesel::update(users::table.find(user_id))
         .set((
