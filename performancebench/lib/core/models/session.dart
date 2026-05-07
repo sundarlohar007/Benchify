@@ -109,11 +109,9 @@ class Session {
       'production_mode': productionMode,
       'strict_mode': strictMode,
       'injected': injected,
-      'has_video': hasVideo,
       'collection_id': collectionId,
       'project_id': projectId,
       'user_id': userId,
-      'is_uploaded': isUploaded ? 1 : 0,
     };
   }
 }
