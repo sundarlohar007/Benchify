@@ -67,11 +67,12 @@ class IosScreenrecordService {
   /// [python3Path] is the path to python3 (e.g., '/usr/bin/python3').
   /// [agentsDir] is the directory containing dvt_recorder.py, collector.py, etc.
   IosScreenrecordService({
-    this.python3Path = '/usr/bin/python3',
+    String? python3Path,
     required String agentsDir,
     VideoDao? videoDao,
     required String dataDir,
-  })  : _agentsDir = agentsDir,
+  })  : _python3Path = python3Path ?? '/usr/bin/python3',
+        _agentsDir = agentsDir,
         _videoDao = videoDao,
         _dataDir = dataDir;
 

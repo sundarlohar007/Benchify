@@ -31,7 +31,7 @@ jobs:
         run: flutter pub get
 
       - name: Install pyidevice
-        run: pip3 install py-ios-device
+        run: pip3 install --break-system-packages py-ios-device
 
       - name: Boot iOS simulator
         run: |

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 PerformanceBench Contributors
 #!/usr/bin/env python3
 """
 iOS Device List (Placeholder — D-01)

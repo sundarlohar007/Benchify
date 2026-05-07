@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 PerformanceBench Contributors
 #!/usr/bin/env python3
 """
 tvOS Metric Collector via pyidevice DTXProtocol.

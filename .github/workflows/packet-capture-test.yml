@@ -28,10 +28,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Install tshark
+      - name: Install system deps
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq tshark
+          sudo apt-get install -y -qq ninja-build libgtk-3-dev tshark
 
       - name: Build Linux app
         run: flutter build linux --release
