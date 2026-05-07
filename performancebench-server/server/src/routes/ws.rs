@@ -1,23 +1,32 @@
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
-use axum::extract::{Json, Path, State};
+use axum::extract::{Extension, Json, Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
 use uuid::Uuid;
 
+use db::session_queries;
 use models::metric_sample::MetricSample;
 use crate::error::AppError;
 use crate::state::AppState;
+use crate::utils::jwt::AuthUser;
 
 /// WebSocket upgrade handler for /ws/live/:session_id (D-47, V20-17).
 /// Browser clients connect to receive real-time metric samples.
+/// Requires authentication — verifies the authenticated user owns the session.
 pub async fn ws_handler(
     ws: WebSocketUpgrade,
     State(state): State<AppState>,
     Path(session_id): Path<Uuid>,
-) -> impl IntoResponse {
-    ws.on_upgrade(move |socket| handle_socket(socket, state, session_id))
+    Extension(auth_user): Extension<AuthUser>,
+) -> Result<impl IntoResponse, AppError> {
+    // Verify session ownership — prevent unauthorized access to session data (CR-01)
+    session_queries::get_session_by_id_and_user(&state.pool, session_id, auth_user.user_id)
+        .await
+        .map_err(|_| AppError::Unauthorized)?
+        .ok_or(AppError::NotFound("Session".to_string()))?;
+    Ok(ws.on_upgrade(move |socket| handle_socket(socket, state, session_id)))
 }
 
 /// Handle WebSocket connection lifecycle.

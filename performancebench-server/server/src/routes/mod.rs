@@ -50,9 +50,10 @@ pub fn create_router(state: AppState) -> Router {
         .route("/health", get(health::health_check));
 
     // WebSocket live overlay (D-47, V20-17)
-    // No auth middleware — auth checked implicitly by session UUID (unguessable)
+    // Auth required — verified in handler via session ownership check (CR-01)
     let ws_routes = Router::new()
-        .route("/live/{session_id}", get(ws::ws_handler));
+        .route("/live/{session_id}", get(ws::ws_handler))
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
     // OpenAPI docs (no auth required)
     let openapi_routes = Router::new()
