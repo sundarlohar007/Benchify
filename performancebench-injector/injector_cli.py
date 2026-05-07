@@ -23,6 +23,23 @@ from injector.manifest_patcher import patch_manifest
 from injector.frida_injector import FridaInjector
 
 
+def _read_stdin_json():
+    """Read a JSON object from stdin if available (non-blocking via isatty check).
+
+    Returns parsed dict, or empty dict on any error.
+    Used by inject/ipa-inject to receive passwords securely (T-04-02, T-05-02).
+    """
+    import json as _json
+    try:
+        if not sys.stdin.isatty():
+            data = sys.stdin.read()
+            if data.strip():
+                return _json.loads(data)
+    except Exception:
+        pass
+    return {}
+
+
 @click.group()
 @click.version_option(version="1.0.0", prog_name="PerformanceBench Injector")
 def cli():
@@ -50,8 +67,11 @@ def cli():
               help="Path to ProGuard mapping.txt for obfuscated builds (smali only)")
 @click.option("--aab", is_flag=True, default=False, help="Input is an Android App Bundle (.aab)")
 @click.option("--work-dir", type=click.Path(), help="Working directory for decompilation (smali only)")
+@click.option("--keystore-passwords-via-stdin", is_flag=True, default=False,
+              help="Read keystore/key passwords from stdin JSON (secure, T-04-02)")
 def inject(apk, method, keystore, keystore_password, key_alias, key_password,
-           sdk_so_dir, gadget_so, gadget_config, output, proguard_mapping, aab, work_dir):
+           sdk_so_dir, gadget_so, gadget_config, output, proguard_mapping, aab, work_dir,
+           keystore_passwords_via_stdin):
     """Run the full APK injection pipeline.
 
     Two injection paths:
@@ -67,6 +87,12 @@ def inject(apk, method, keystore, keystore_password, key_alias, key_password,
         Original APK signature is preserved.
         Recommended for CI/CD automation (per D-25).
     """
+    # Read passwords from stdin if the secure flag is set (T-04-02)
+    if keystore_passwords_via_stdin:
+        stdin_data = _read_stdin_json()
+        keystore_password = keystore_password or stdin_data.get('keystore_password') or ''
+        key_password = key_password or stdin_data.get('key_password') or ''
+
     import tempfile
 
     # ---- Frida gadget path (per D-09, D-25) ----
@@ -269,8 +295,10 @@ def resign(apk, keystore, keystore_password, key_alias, key_password, output):
 @click.option("--profile-path", type=click.Path(exists=True),
               help="Path to .mobileprovision provisioning profile (paid signing)")
 @click.option("--cert-identity", help="Certificate identity hash (user certificate signing)")
+@click.option("--password-via-stdin", is_flag=True, default=False,
+              help="Read app-specific password from stdin (secure, T-05-02)")
 def ipa_inject(input_ipa, output, signing, apple_id, team_id, framework_dir,
-               app_specific_password, profile_path, cert_identity):
+               app_specific_password, profile_path, cert_identity, password_via_stdin):
     """Inject PerformanceBench.framework into an iOS IPA.
 
     Steps: extract -> FairPlay check -> embed framework -> patch Info.plist ->
@@ -281,6 +309,11 @@ def ipa_inject(input_ipa, output, signing, apple_id, team_id, framework_dir,
         python injector_cli.py ipa-inject --input app.ipa --signing paid --apple-id user@icloud.com --team-id ABC123 --profile-path profile.mobileprovision
         python injector_cli.py ipa-inject --input app.ipa --signing cert --cert-identity ABC123DEF456
     """
+    # Read app-specific password from stdin if the secure flag is set (T-05-02)
+    if password_via_stdin:
+        stdin_data = _read_stdin_json()
+        app_specific_password = app_specific_password or stdin_data.get('app_specific_password') or ''
+
     import json as json_mod
     from injector.ipa_injector import inject_dylib, InjectionResult
 

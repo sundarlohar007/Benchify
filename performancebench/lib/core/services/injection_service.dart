@@ -186,7 +186,7 @@ class InjectionService {
       isAab: isAab,
     );
 
-    _spawnProcess(args);
+    _spawnProcess(args, keystore: keystore);
 
     return _controller!.stream;
   }

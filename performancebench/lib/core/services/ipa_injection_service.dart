@@ -222,7 +222,7 @@ class IpaInjectionService {
       appSpecificPassword: appSpecificPassword,
     );
 
-    _spawnProcess(args);
+    _spawnProcess(args, appSpecificPassword: appSpecificPassword);
 
     return _controller!.stream;
   }
@@ -247,7 +247,10 @@ class IpaInjectionService {
       _process = await Process.start(args.first, args.sublist(1));
 
       if (appSpecificPassword != null && args.contains('--password-via-stdin')) {
-        _process!.stdin.write('$appSpecificPassword\n');
+        final passwordJson = jsonEncode({
+          'app_specific_password': appSpecificPassword,
+        });
+        _process!.stdin.write(passwordJson);
         await _process!.stdin.close();
       }
 

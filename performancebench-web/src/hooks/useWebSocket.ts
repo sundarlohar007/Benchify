@@ -2,13 +2,19 @@ import { useEffect, useRef, useCallback } from 'react';
 
 type SampleListener = (sample: Record<string, unknown>) => void;
 
+const MAX_RETRIES = 30;
+const BASE_DELAY_MS = 1000;
+const MAX_DELAY_MS = 30000;
+
 export function useWebSocket(sessionId: string | null) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<number>();
   const listenersRef = useRef<Set<SampleListener>>(new Set());
+  const retryCountRef = useRef(0);
 
   const connect = useCallback(() => {
     if (!sessionId) return;
+    if (retryCountRef.current >= MAX_RETRIES) return;
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/ws/live/${sessionId}`;
@@ -23,9 +29,20 @@ export function useWebSocket(sessionId: string | null) {
       }
     };
 
+    ws.onopen = () => {
+      // Reset retry counter on successful connection
+      retryCountRef.current = 0;
+    };
+
     ws.onclose = () => {
-      // Auto-reconnect after 2s
-      reconnectTimeoutRef.current = window.setTimeout(connect, 2000);
+      if (retryCountRef.current < MAX_RETRIES) {
+        const delay = Math.min(
+          BASE_DELAY_MS * Math.pow(2, retryCountRef.current),
+          MAX_DELAY_MS,
+        );
+        retryCountRef.current++;
+        reconnectTimeoutRef.current = window.setTimeout(connect, delay);
+      }
     };
 
     ws.onerror = () => {
@@ -36,6 +53,7 @@ export function useWebSocket(sessionId: string | null) {
   }, [sessionId]);
 
   useEffect(() => {
+    retryCountRef.current = 0;
     connect();
     return () => {
       wsRef.current?.close();

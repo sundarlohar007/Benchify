@@ -44,35 +44,27 @@ pub async fn list_sessions(
 
     if let Some(tag_list) = tags {
         if !tag_list.is_empty() {
-            let tag_filter = format!(
-                "tags && ARRAY[{}]::text[]",
-                tag_list
-                    .iter()
-                    .map(|t| format!("'{}'", t.replace('\'', "''")))
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            );
-
-            let count_query = diesel::sql_query(format!(
-                "SELECT COUNT(*) as count FROM sessions WHERE user_id = $1 AND {}",
-                tag_filter
-            ))
-            .bind::<diesel::sql_types::Uuid, _>(user_id);
+            // Use parameterized query with bound array — no raw string interpolation (CR-04)
+            let count_query = diesel::sql_query(
+                "SELECT COUNT(*) as count FROM sessions WHERE user_id = $1 AND tags && $2::text[]"
+            )
+            .bind::<diesel::sql_types::Uuid, _>(user_id)
+            .bind::<diesel::sql_types::Array<diesel::sql_types::Text>, _>(tag_list);
             let count_rows = count_query.load::<diesel_deser::CountRow>(&mut *client).await?;
             total = if count_rows.is_empty() { 0 } else { count_rows[0].count };
 
-            let data_query = diesel::sql_query(format!(
+            let data_query = diesel::sql_query(
                 r#"SELECT id, user_id, device_id, app_name, app_package, app_version,
                        device_model, device_os_version, chipset, tags, project_id,
                        collection_id, notes, started_at, ended_at, duration_seconds,
                        session_stats, metric_samples, markers, detected_issues, screenshots,
                        video_metadata, thumbnail_path, is_uploaded, uploaded_by,
                        uploaded_at, created_at, updated_at
-                FROM sessions WHERE user_id = $1 AND {}
-                ORDER BY started_at DESC OFFSET $2 LIMIT $3"#,
-                tag_filter
-            ))
+                FROM sessions WHERE user_id = $1 AND tags && $2::text[]
+                ORDER BY started_at DESC OFFSET $3 LIMIT $4"#
+            )
             .bind::<diesel::sql_types::Uuid, _>(user_id)
+            .bind::<diesel::sql_types::Array<diesel::sql_types::Text>, _>(tag_list)
             .bind::<diesel::sql_types::BigInt, _>(offset)
             .bind::<diesel::sql_types::BigInt, _>(limit);
             sessions_data = data_query.load::<Session>(&mut *client).await?;
