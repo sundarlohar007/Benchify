@@ -145,7 +145,7 @@ class _InjectionScreenState extends ConsumerState<InjectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
+    final colors = AppColors.of(context);
     final selectedMethod = ref.watch(selectedMethodProvider);
     final apkPath = ref.watch(apkPathProvider);
     final apkFileName = ref.watch(apkFileNameProvider);
