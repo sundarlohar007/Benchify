@@ -54,6 +54,10 @@ jobs:
         if: runner.os == 'Windows'
         run: flutter build windows --release
 
+      - name: Install NSIS
+        if: runner.os == 'Windows'
+        run: choco install nsis -y --no-progress
+
       - name: Package Windows installer
         if: runner.os == 'Windows'
         uses: joncloud/makensis-action@v4
