@@ -92,7 +92,7 @@ impl AppConfig {
                     .separator("__")
                     .try_parsing(true),
             )
-            .set_default("database_url", "postgres://benchify:benchify@localhost:5432/benchify")?
+            .set_default("database_url", "postgres://localhost:5432/benchify")?
             .set_default("jwt_secret", "")?
             .set_default("host", "0.0.0.0")?
             .set_default("port", 3000)?
@@ -108,13 +108,12 @@ impl AppConfig {
 
         let mut config: AppConfig = cfg.try_deserialize()?;
 
-        // Auto-generate JWT secret if not provided
+        // Require JWT_SECRET at startup — auto-generation invalidates all user sessions
         if config.jwt_secret.is_empty() {
-            config.jwt_secret = uuid::Uuid::new_v4().to_string();
-            tracing::warn!(
-                jwt_secret = %config.jwt_secret,
-                "JWT_SECRET not set — auto-generated UUID. Set JWT_SECRET in .env to persist across restarts."
-            );
+            return Err(config::ConfigError::Message(
+                "JWT_SECRET environment variable is required. \
+                 Generate: openssl rand -base64 64".to_string(),
+            ));
         }
 
         Ok(config)

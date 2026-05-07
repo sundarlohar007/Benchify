@@ -26,7 +26,7 @@ pub struct AuthUser {
 pub fn create_access_token(user_id: Uuid, email: &str, role: &str, secret: &[u8]) -> Result<String, AppError> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .map_err(|_| AppError::Internal("System clock is before UNIX epoch".to_string()))?
         .as_secs() as usize;
     let claims = Claims {
         sub: user_id.to_string(),
@@ -44,7 +44,7 @@ pub fn create_access_token(user_id: Uuid, email: &str, role: &str, secret: &[u8]
 pub fn create_refresh_token(user_id: Uuid, email: &str, secret: &[u8]) -> Result<String, AppError> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .map_err(|_| AppError::Internal("System clock is before UNIX epoch".to_string()))?
         .as_secs() as usize;
     let claims = Claims {
         sub: user_id.to_string(),
