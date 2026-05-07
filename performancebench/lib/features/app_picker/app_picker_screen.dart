@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../shared/theme.dart';
 import '../../core/services/adb_service.dart';
 import '../../core/database/database.dart';
 import '../../core/database/collection_dao.dart';
+import '../../core/database/session_dao.dart';
 import '../../core/models/collection.dart';
+import '../../core/models/session.dart';
 import '../settings/settings_screen.dart';
 import 'app_list_item.dart';
 
@@ -34,11 +38,13 @@ class AppPickerScreen extends ConsumerStatefulWidget {
 }
 
 class _AppPickerScreenState extends ConsumerState<AppPickerScreen> {
+  AppInfo? _selectedApp;
   String? _selectedCollectionId;
   String _projectId = '';
   String _tags = '';
   List<Collection> _collections = [];
   bool _collectionsLoaded = false;
+  bool _startingSession = false;
 
   @override
   void initState() {
@@ -110,7 +116,7 @@ class _AppPickerScreenState extends ConsumerState<AppPickerScreen> {
                 app: app,
                 colors: colors,
                 onTap: () {
-                  // Navigate to active session — will be wired in Wave 2
+                  setState(() => _selectedApp = app);
                 },
                 isWatched: isWatched,
                 onWatchToggle: () {
@@ -185,9 +191,22 @@ class _AppPickerScreenState extends ConsumerState<AppPickerScreen> {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: null, // Wired in Wave 2 with actual selection
-                  icon: const Icon(Icons.play_arrow, size: 16),
-                  label: const Text('Start Profiling'),
+                  onPressed: _selectedApp != null && !_startingSession
+                      ? _startProfiling
+                      : null,
+                  icon: _startingSession
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.play_arrow, size: 16),
+                  label: Text(_selectedApp != null
+                      ? 'Profile ${_selectedApp!.name}'
+                      : 'Select an app to begin'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.accentBlue,
                     foregroundColor: Colors.white,
@@ -201,6 +220,41 @@ class _AppPickerScreenState extends ConsumerState<AppPickerScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _startProfiling() async {
+    if (_selectedApp == null) return;
+    setState(() => _startingSession = true);
+
+    try {
+      final db = await initDatabase();
+      final sessionDao = SessionDao(db);
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final session = Session(
+        id: const Uuid().v4(),
+        deviceId: widget.deviceId,
+        appPackage: _selectedApp!.package,
+        appName: _selectedApp!.name,
+        title: '${_selectedApp!.name} — ${DateTime.now().toIso8601String().substring(0, 19)}',
+        platform: 'android',
+        startedAt: now,
+        tags: _tags,
+        projectId: _projectId.isNotEmpty ? _projectId : null,
+        collectionId: _selectedCollectionId,
+      );
+      await sessionDao.insert(session);
+      if (mounted) {
+        context.pushNamed('activeSession', pathParameters: {'sessionId': session.id});
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to start session: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _startingSession = false);
+    }
   }
 
   Widget _buildCollectionDropdown(AppColors colors) {
