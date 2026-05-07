@@ -1,5 +1,5 @@
 use axum::extract::ws::{Message, WebSocket, WebSocketUpgrade};
-use axum::extract::{Json, Path, State};
+use axum::extract::{Extension, Json, Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use futures_util::{SinkExt, StreamExt};
@@ -9,6 +9,7 @@ use uuid::Uuid;
 use models::metric_sample::MetricSample;
 use crate::error::AppError;
 use crate::state::AppState;
+use crate::utils::jwt::AuthUser;
 
 /// WebSocket upgrade handler for /ws/live/:session_id (D-47, V20-17).
 /// Browser clients connect to receive real-time metric samples.
@@ -69,6 +70,13 @@ async fn handle_socket(socket: WebSocket, state: AppState, session_id: Uuid) {
     };
 
     tracing::info!(session_id = %session_id, "WebSocket client disconnected");
+
+    // Clean up broadcast senders with no active receivers (WR-08)
+    // Prevents unbounded HashMap growth as sessions come and go
+    {
+        let mut sessions = state.live_sessions.lock().await;
+        sessions.retain(|_, tx| tx.receiver_count() > 0);
+    }
 }
 
 /// Batch push endpoint: desktop sends multiple MetricSamples every ~5 seconds.
@@ -82,11 +90,19 @@ pub struct LiveBatchBody {
 pub async fn push_live_batch(
     State(state): State<AppState>,
     Path(session_id): Path<Uuid>,
+    Extension(auth_user): Extension<AuthUser>,
     Json(body): Json<LiveBatchBody>,
 ) -> Result<impl IntoResponse, AppError> {
+    // Scope check — reject read-only API tokens (WR-07)
+    if auth_user.role != "write" && auth_user.role != "admin" {
+        return Err(AppError::Forbidden);
+    }
+
     // Get or create broadcast channel
     let tx = {
         let mut sessions = state.live_sessions.lock().await;
+        // Clean up dead entries with no active receivers (WR-08)
+        sessions.retain(|_, tx| tx.receiver_count() > 0);
         sessions
             .entry(session_id)
             .or_insert_with(|| {
