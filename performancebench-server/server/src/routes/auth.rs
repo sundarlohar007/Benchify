@@ -106,6 +106,16 @@ pub async fn login(
         .map_err(map_db_err)?
         .ok_or(AppError::Unauthorized)?;
 
+    // Reject login for deactivated accounts (CR-03)
+    if !user.is_active {
+        tracing::info!(
+            event_type = "login",
+            user_id = %user.id,
+            "Login rejected: account deactivated"
+        );
+        return Err(AppError::Unauthorized);
+    }
+
     // SSO users have no password — reject password login
     let password_hash = user.password_hash.as_deref().ok_or(AppError::Unauthorized)?;
     let valid = password::verify_password(&body.password, password_hash)?;
