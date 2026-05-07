@@ -26,7 +26,7 @@ async fn handle_socket(socket: WebSocket, state: AppState, session_id: Uuid) {
 
     // Get or create broadcast channel for this session
     let rx = {
-        let mut sessions = state.live_sessions.lock().unwrap();
+        let mut sessions = state.live_sessions.lock().await;
         let tx = sessions.entry(session_id).or_insert_with(|| {
             let (tx, _) = tokio::sync::broadcast::channel(1024);
             tx
@@ -86,7 +86,7 @@ pub async fn push_live_batch(
 ) -> Result<impl IntoResponse, AppError> {
     // Get or create broadcast channel
     let tx = {
-        let mut sessions = state.live_sessions.lock().unwrap();
+        let mut sessions = state.live_sessions.lock().await;
         sessions
             .entry(session_id)
             .or_insert_with(|| {
