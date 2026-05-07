@@ -50,13 +50,57 @@ jobs:
 
       - name: Boot iOS simulator
         run: |
-          RUNTIME=$(xcrun simctl list runtimes iOS | grep "iOS" | head -1 | sed 's/.* - //' | tr -d '[:space:]')
-          DEVICE_TYPE=$(xcrun simctl list devicetypes | grep "iPhone" | head -1 | sed 's/.*(\(.*\)).*/\1/')
-          if [ -z "$DEVICE_TYPE" ]; then DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-16"; fi
-          if [ -z "$RUNTIME" ]; then RUNTIME="com.apple.CoreSimulator.SimRuntime.iOS-18-0"; fi
-          UDID=$(xcrun simctl create "Test-${{ matrix.ios-version }}" "$DEVICE_TYPE" "$RUNTIME")
-          xcrun simctl boot $UDID
-          echo "SIM_UDID=$UDID" >> $GITHUB_ENV
+          TARGET_VER="${{ matrix.ios-version }}"
+
+          # Pick runtime: exact match → major-version match → latest available
+          RUNTIME=$(xcrun simctl list runtimes iOS -j | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          rts = [r for r in data.get('runtimes', []) if r.get('isAvailable', True)]
+          target = '$TARGET_VER'
+          m = next((r for r in rts if r.get('version') == target), None)
+          if not m:
+              major = target.split('.')[0]
+              m = next((r for r in rts if r.get('version', '').startswith(major + '.')), None)
+          if not m and rts:
+              def keyfn(r):
+                  try:
+                      return tuple(int(x) for x in r['version'].split('.'))
+                  except Exception:
+                      return (0,)
+              rts.sort(key=keyfn, reverse=True)
+              m = rts[0]
+          print(m['identifier'] if m else '')
+          ")
+
+          # Pick a modern iPhone device type compatible with iOS 16+/17+
+          DEVICE_TYPE=$(xcrun simctl list devicetypes -j | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          types = data.get('devicetypes', [])
+          for pref in ['iPhone-15-Pro', 'iPhone-15', 'iPhone-14-Pro', 'iPhone-14',
+                       'iPhone-16-Pro', 'iPhone-16', 'iPhone-13']:
+              m = next((t for t in types
+                        if t.get('identifier', '').endswith('.' + pref)), None)
+              if m:
+                  print(m['identifier'])
+                  sys.exit(0)
+          iphones = [t for t in types if 'iPhone' in t.get('identifier', '')]
+          if iphones:
+              print(iphones[-1]['identifier'])
+          ")
+
+          if [ -z "$RUNTIME" ] || [ -z "$DEVICE_TYPE" ]; then
+            echo "::warning::No iOS runtime/device available for $TARGET_VER on this image — skipping simulator boot"
+            exit 0
+          fi
+
+          echo "Runtime: $RUNTIME"
+          echo "Device:  $DEVICE_TYPE"
+
+          UDID=$(xcrun simctl create "Test-$TARGET_VER" "$DEVICE_TYPE" "$RUNTIME")
+          xcrun simctl boot "$UDID"
+          echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
 
       - name: Run iOS integration tests
         run: |

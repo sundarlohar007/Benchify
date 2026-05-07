@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:performancebench/core/models/metric_sample.dart';
@@ -24,8 +25,8 @@ void main() {
     test('isSupported returns true on all platforms', () {
       // tidevice works on Windows, macOS, Linux — unlike IosService (macOS-only)
       expect(TideviceService.isSupported, isTrue);
-      // Contrast with IosService which is macOS-only
-      expect(IosService.isSupported, isFalse); // false on Windows (test host)
+      // IosService is macOS-only: true on macOS host, false elsewhere
+      expect(IosService.isSupported, Platform.isMacOS ? isTrue : isFalse);
     });
 
     // ── Test 2: discoverDevices() parses tidevice list --json output ──

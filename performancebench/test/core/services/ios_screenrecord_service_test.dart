@@ -133,7 +133,7 @@ void main() {
       expect(service.spawnedProcesses.length, 1);
       final args = service.spawnedProcesses.first;
 
-      expect(args, contains('dvt_recorder.py'));
+      expect(args, anyElement(contains('dvt_recorder.py')));
       expect(args, contains('00008110-001234567890001E'));
       expect(args, contains('--quality'));
       expect(args, contains('1080p'));

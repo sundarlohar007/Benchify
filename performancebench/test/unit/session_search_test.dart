@@ -117,11 +117,11 @@ void main() {
     ));
     await insertSession(Session(
       id: 's3', deviceId: 'd1', platform: 'android',
-      appPackage: 'com.demo.app', appName: 'Demo App',
+      appPackage: 'com.demo.app', appName: 'Example Demo',
       title: 'Profile', startedAt: 3000,
     ));
 
-    // Search by substring in app_package
+    // Search matches s1 via app_package and s3 via app_name
     final results1 = await sessionDao.searchSessions('example');
     expect(results1.length, 2);
     expect(results1.any((s) => s.id == 's1'), isTrue);
