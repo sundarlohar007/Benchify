@@ -240,7 +240,8 @@ pub async fn refresh(
         .map_err(map_db_err)?
         .ok_or(AppError::Unauthorized)?;
 
-    if stored.is_revoked {
+    let now = chrono::Utc::now().naive_utc();
+    if stored.is_revoked || stored.expires_at <= now {
         return Err(AppError::Unauthorized);
     }
 
