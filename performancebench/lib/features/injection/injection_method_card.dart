@@ -28,7 +28,7 @@ class InjectionMethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
+    final colors = AppColors.of(context);
     final borderColor = isSelected ? colors.accentBlue : colors.borderSubtle;
     final bgColor = isSelected
         ? colors.accentBlue.withValues(alpha: 0.1)

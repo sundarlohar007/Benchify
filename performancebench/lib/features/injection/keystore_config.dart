@@ -43,7 +43,7 @@ class _KeystoreConfigFormState extends State<KeystoreConfigForm> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
+    final colors = AppColors.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),

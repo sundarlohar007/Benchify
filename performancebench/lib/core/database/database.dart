@@ -120,7 +120,10 @@ Future<void> _migrateV1(Database db) async {
         injected          INTEGER DEFAULT 0,
         collection_id     TEXT,
         project_id        TEXT,
-        user_id           TEXT
+        user_id           TEXT,
+        has_video         INTEGER DEFAULT 0,
+        is_uploaded       INTEGER DEFAULT 0,
+        uploaded_at       INTEGER
     )
   ''');
 

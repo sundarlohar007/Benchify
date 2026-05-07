@@ -52,7 +52,7 @@ class IpaVerificationProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
+    final colors = AppColors.of(context);
 
     if (stepStates.isEmpty && !isRunning) return const SizedBox.shrink();
 

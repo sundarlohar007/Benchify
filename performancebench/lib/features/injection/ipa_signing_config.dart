@@ -53,7 +53,7 @@ class _IpaSigningConfigFormState extends State<IpaSigningConfigForm> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
+    final colors = AppColors.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -168,7 +168,7 @@ class _IpaInjectionScreenState extends ConsumerState<IpaInjectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
+    final colors = AppColors.of(context);
     final ipaPath = ref.watch(ipaPathProvider);
     final ipaFileName = ref.watch(ipaFileNameProvider);
     final ipaFileSize = ref.watch(ipaFileSizeProvider);
