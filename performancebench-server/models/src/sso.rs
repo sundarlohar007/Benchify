@@ -112,7 +112,7 @@ pub struct CreateSsoConfig {
     pub updated_at: chrono::NaiveDateTime,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateSsoConfig {
     pub name: Option<String>,

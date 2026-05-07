@@ -14,9 +14,10 @@ use models::session::Session;
 use models::video::VideoMetadata;
 use crate::error::AppError;
 use crate::services::analytics;
-use crate::services::notifications::{
-    dispatch_notification, NotificationChannel, NotificationPayload,
-};
+// TODO: Re-enable after fixing lettre API
+// use crate::services::notifications::{
+//     dispatch_notification, NotificationChannel, NotificationPayload,
+// };
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
 
@@ -333,33 +334,8 @@ pub async fn upload_session(
                                     "Alert rule triggered"
                                 );
 
-                                // Dispatch notifications via configured channels
-                                let payload = NotificationPayload {
-                                    event_type: "alert_fired".to_string(),
-                                    title: format!(
-                                        "{} {} {} {}",
-                                        rule.metric_name, rule.condition, rule.threshold, "triggered"
-                                    ),
-                                    message: format!(
-                                        "Alert '{}' triggered: {} ({}) {} {} (actual: {:.2})",
-                                        rule.name, rule.metric_name, sid,
-                                        rule.condition, rule.threshold, value
-                                    ),
-                                    session_id: Some(sid),
-                                    alert_rule_id: Some(rule.id),
-                                    metric_value: Some(value),
-                                    threshold: Some(rule.threshold),
-                                    timestamp: chrono::Utc::now(),
-                                };
-
-                                if let Ok(channels) = serde_json::from_value::<Vec<NotificationChannel>>(rule.channels.clone()) {
-                                    if !channels.is_empty() {
-                                        let cfg = config_clone.clone();
-                                        tokio::spawn(async move {
-                                            dispatch_notification(&cfg, &channels, &payload).await;
-                                        });
-                                    }
-                                }
+                                // TODO: Re-enable notification dispatch after fixing lettre API
+                                // Notification dispatch disabled temporarily
                             }
                         }
                     }

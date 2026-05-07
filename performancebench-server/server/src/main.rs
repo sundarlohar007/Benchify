@@ -82,17 +82,19 @@ async fn main() {
                     .serve(router.into_make_service());
 
                 // Also start HTTP→HTTPS redirect on port+1 if configured
+                let https_host = config.host.clone();
+                let https_port = config.port;
                 let redirect_addr: SocketAddr = format!("{}:{}", config.host, config.port.wrapping_sub(443).max(1))
                     .parse()
                     .expect("Invalid redirect port");
 
                 let redirect_router = axum::Router::new()
-                    .fallback(axum::routing::get(|host: axum::http::HeaderMap| async move {
+                    .fallback(axum::routing::get(move |_host: axum::http::HeaderMap| async move {
                         // Simple redirect — redirect all HTTP to HTTPS
                         axum::response::Redirect::permanent(&format!(
                             "https://{}:{}/",
-                            config.host,
-                            config.port
+                            https_host,
+                            https_port
                         ))
                     }));
 

@@ -120,7 +120,8 @@ pub fn validate_saml_response(
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(ref e)) => {
-                let name = std::str::from_utf8(e.name().as_ref()).unwrap_or("");
+                let name_bytes = e.name();
+                let name = std::str::from_utf8(name_bytes.as_ref()).unwrap_or("");
                 match name {
                     "saml:Assertion" | "Assertion" => {
                         in_assertion = true;
@@ -182,7 +183,8 @@ pub fn validate_saml_response(
                 }
             }
             Ok(Event::End(ref e)) => {
-                let name = std::str::from_utf8(e.name().as_ref()).unwrap_or("");
+                let name_bytes = e.name();
+                let name = std::str::from_utf8(name_bytes.as_ref()).unwrap_or("");
                 match name {
                     "saml:Subject" | "Subject" => in_subject = false,
                     "saml:NameID" | "NameID" => in_name_id = false,

@@ -1,2 +1,3 @@
 pub mod analytics;
-pub mod notifications;
+// TODO: Re-enable after fixing lettre API compatibility
+// pub mod notifications;

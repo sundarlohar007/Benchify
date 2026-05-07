@@ -29,7 +29,7 @@ impl FpsStats {
         one_percent_low: 0.0,
         p95_frame_time_ms: 0.0,
         stability_pct: 0.0,
-        histogram_json: "{}".to_string(),
+        histogram_json: String::new(),
         variability_index: 0.0,
     };
 }
@@ -81,7 +81,7 @@ fn compute_fps_stats(samples: &[f64]) -> FpsStats {
     let histogram_json = serde_json::to_string(
         &histogram
             .iter()
-            .map(|(k, v)| (k.to_string(), v))
+            .map(|(k, v)| (k.to_string(), *v))
             .collect::<std::collections::HashMap<String, i64>>(),
     )
     .unwrap_or_else(|_| "{}".to_string());

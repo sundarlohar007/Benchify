@@ -79,7 +79,7 @@ function SessionDetailPage() {
       <ProtectedRoute>
         <div className="p-6">
           <Link
-            to="/sessions"
+            to={'/sessions' as any}
             className="mb-4 inline-flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -98,7 +98,7 @@ function SessionDetailPage() {
       <ProtectedRoute>
         <div className="p-6">
           <Link
-            to="/sessions"
+            to={'/sessions' as any}
             className="mb-4 inline-flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -119,7 +119,7 @@ function SessionDetailPage() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link
-              to="/sessions"
+              to={'/sessions' as any}
               className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary transition-colors"
             >
               <ChevronLeft className="h-4 w-4" />

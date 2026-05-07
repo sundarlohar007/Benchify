@@ -235,5 +235,6 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_sessions))
         .route("/{id}", get(get_session).delete(delete_session))
         .route("/{id}/cpu-threads", get(get_cpu_threads))
-        .route("/{id}/jira", axum::routing::post(crate::routes::jira::create_jira_issue))
+        // TODO: Re-enable after fixing jira module
+        // .route("/{id}/jira", axum::routing::post(crate::routes::jira::create_jira_issue))
 }

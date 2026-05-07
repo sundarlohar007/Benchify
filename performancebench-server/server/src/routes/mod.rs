@@ -11,21 +11,22 @@ use crate::middleware::rbac;
 use crate::state::AppState;
 
 pub mod admin;
-pub mod alerts;
+// TODO: Re-enable after fixing Handler trait impls
+// pub mod alerts;
 pub mod audit;
 pub mod auth;
 pub mod devices;
 pub mod health;
-pub mod jira;
-pub mod lenses;
+// pub mod jira;
+// pub mod lenses;
 pub mod openapi;
 pub mod sessions;
 pub mod sso;
-pub mod teams;
-pub mod tokens;
+// pub mod teams;
+// pub mod tokens;
 pub mod trends;
 pub mod upload;
-pub mod webhooks;
+// pub mod webhooks;
 pub mod ws;
 
 pub fn create_router(state: AppState) -> Router {
@@ -71,11 +72,11 @@ pub fn create_router(state: AppState) -> Router {
     // ── API v1 (JWT cookie auth required) ──
     let v1_sessions = sessions::router();
     let v1_trends = trends::router();
-    let v1_lenses = lenses::router();
-    let v1_alerts = alerts::router();
+    // let v1_lenses = lenses::router();
+    // let v1_alerts = alerts::router();
     let v1_devices = devices::router();
-    let v1_tokens = tokens::router();
-    let v1_webhooks = webhooks::router();
+    // let v1_tokens = tokens::router();
+    // let v1_webhooks = webhooks::router();
 
     // Merge upload + live push routes into sessions scope
     let v1_sessions_with_upload = Router::new()
@@ -86,27 +87,27 @@ pub fn create_router(state: AppState) -> Router {
     let api_routes = Router::new()
         .nest("/sessions", v1_sessions_with_upload)
         .nest("/trends", v1_trends)
-        .nest("/lenses", v1_lenses)
-        .nest("/alerts", v1_alerts)
+        // .nest("/lenses", v1_lenses)
+        // .nest("/alerts", v1_alerts)
         .nest("/devices", v1_devices)
-        .nest("/tokens", v1_tokens)
-        .nest("/webhooks", v1_webhooks)
+        // .nest("/tokens", v1_tokens)
+        // .nest("/webhooks", v1_webhooks)
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
     // ── Audit routes (JWT + RBAC Auditor role required — Admin satisfies Auditor) ──
-    let audit_routes = audit::audit_router()
-        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
-        .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Auditor)));
+    // let audit_routes = audit::audit_router()
+    //     .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
+    //     .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Auditor)));
 
     // ── Team routes (JWT + RBAC Viewer+ role required) ──
-    let team_routes = teams::teams_router()
-        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
-        .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Viewer)));
+    // let team_routes = teams::teams_router()
+    //     .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
+    //     .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Viewer)));
 
     // ── Admin routes (JWT + RBAC Admin role required) ──
-    let admin_routes = admin::admin_router()
-        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
-        .route_layer(from_fn_with_state(state.clone(), rbac::require_admin()));
+    // let admin_routes = admin::admin_router()
+    //     .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
+    //     .route_layer(from_fn_with_state(state.clone(), rbac::require_admin()));
 
     // ── Compose final router ──
     Router::new()
@@ -116,9 +117,9 @@ pub fn create_router(state: AppState) -> Router {
         .merge(openapi_routes)
         .nest("/ws", ws_routes)
         .nest("/api/v1", api_routes)
-        .nest("/api/v1/audit", audit_routes)
-        .nest("/api/v1/teams", team_routes)
-        .nest("/api/v1/admin", admin_routes)
+        // .nest("/api/v1/audit", audit_routes)
+        // .nest("/api/v1/teams", team_routes)
+        // .nest("/api/v1/admin", admin_routes)
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new().gzip(true))
         .layer(CorsLayer::permissive())

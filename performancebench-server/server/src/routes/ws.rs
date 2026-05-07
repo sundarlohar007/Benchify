@@ -61,9 +61,11 @@ async fn handle_socket(socket: WebSocket, state: AppState, session_id: Uuid) {
     });
 
     // Wait for either task to finish
+    let send_abort = send_task.abort_handle();
+    let recv_abort = recv_task.abort_handle();
     tokio::select! {
-        _ = (&mut send_task) => recv_task.abort(),
-        _ = (&mut recv_task) => send_task.abort(),
+        _ = send_task => { recv_abort.abort(); },
+        _ = recv_task => { send_abort.abort(); },
     };
 
     tracing::info!(session_id = %session_id, "WebSocket client disconnected");
@@ -95,6 +97,7 @@ pub async fn push_live_batch(
     };
 
     let mut sent = 0u64;
+    let batch_size = body.samples.len();
     for sample in body.samples {
         if tx.send(sample).is_ok() {
             sent += 1;
@@ -103,7 +106,7 @@ pub async fn push_live_batch(
 
     tracing::debug!(
         session_id = %session_id,
-        batch_size = body.samples.len(),
+        batch_size = batch_size,
         sent = sent,
         "Live batch pushed"
     );

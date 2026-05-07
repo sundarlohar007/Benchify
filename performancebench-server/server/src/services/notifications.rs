@@ -100,24 +100,22 @@ async fn send_email(
         ))?;
 
     let mailer = lettre::AsyncSmtpTransport::<lettre::Tokio1Executor>::relay(smtp_host)?
-        .credentials(
+        .credentials(lettre::transport::smtp::authentication::Credentials::new(
             config
                 .smtp_username
                 .as_deref()
                 .unwrap_or("")
-                .to_string()
-                .into(),
+                .to_string(),
             config
                 .smtp_password
                 .as_deref()
                 .unwrap_or("")
-                .to_string()
-                .into(),
-        )
+                .to_string(),
+        ))
         .port(config.smtp_port.unwrap_or(587))
         .build();
 
-    mailer.send(email).await?;
+    let _ = mailer.send(email).await.map_err(|e| format!("Email send failed: {}", e))?;
     Ok(())
 }
 
