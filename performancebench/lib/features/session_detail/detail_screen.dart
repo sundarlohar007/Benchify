@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart' show Database;
 
 import '../../shared/theme.dart';
 import '../../core/database/database.dart';
@@ -37,6 +38,7 @@ class SessionDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
+  Database? _db;
   Session? _session;
   List<Collection> _collections = [];
 
@@ -52,12 +54,24 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _initAndLoad();
+  }
+
+  Future<void> _initAndLoad() async {
+    _db = await initDatabase();
+    await _loadData();
+  }
+
+  @override
+  void dispose() {
+    _db?.close();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
     try {
-      final db = await initDatabase();
+      final db = _db;
+      if (db == null) return;
       final sessionDao = SessionDao(db);
       final collectionDao = CollectionDao(db);
 
@@ -84,7 +98,8 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
     setState(() => _saving = true);
 
     try {
-      final db = await initDatabase();
+      final db = _db;
+      if (db == null) return;
       final sessionDao = SessionDao(db);
 
       if (_editTags != null) {
@@ -211,7 +226,8 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
                   ReplayChartsTab(
                     sessionId: widget.sessionId,
                     onRegionSelected: (startMs, endMs) async {
-                      final db = await initDatabase();
+                      final db = _db;
+                      if (db == null) return;
                       final metricDao = MetricDao(db);
                       final sessionStatsDao = SessionStatsDao(db);
                       final markerDao = MarkerDao(db);
