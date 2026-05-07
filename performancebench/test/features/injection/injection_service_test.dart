@@ -45,9 +45,8 @@ void main() {
       expect(argsString, contains('--method smali'));
       expect(argsString, contains('--keystore'));
       expect(argsString, contains('/path/to/keystore.jks'));
-      expect(argsString, contains('--keystore-password pass123'));
+      expect(argsString, contains('--keystore-passwords-via-stdin'));
       expect(argsString, contains('--key-alias mykey'));
-      expect(argsString, contains('--key-password keypass'));
     });
 
     test('constructs CLI args without optional fields', () {

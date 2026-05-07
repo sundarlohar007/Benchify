@@ -1,0 +1,157 @@
+﻿2026-05-07T17:49:00.9099570Z Current runner version: '2.334.0'
+2026-05-07T17:49:00.9123104Z ##[group]Runner Image Provisioner
+2026-05-07T17:49:00.9123887Z Hosted Compute Agent
+2026-05-07T17:49:00.9124428Z Version: 20260213.493
+2026-05-07T17:49:00.9124996Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-05-07T17:49:00.9125747Z Build Date: 2026-02-13T00:28:41Z
+2026-05-07T17:49:00.9126352Z Worker ID: {00929196-b4dc-4b53-891d-a03a387c18bf}
+2026-05-07T17:49:00.9127233Z Azure Region: westcentralus
+2026-05-07T17:49:00.9127860Z ##[endgroup]
+2026-05-07T17:49:00.9129274Z ##[group]Operating System
+2026-05-07T17:49:00.9129892Z Ubuntu
+2026-05-07T17:49:00.9130416Z 24.04.4
+2026-05-07T17:49:00.9130861Z LTS
+2026-05-07T17:49:00.9131276Z ##[endgroup]
+2026-05-07T17:49:00.9131808Z ##[group]Runner Image
+2026-05-07T17:49:00.9132309Z Image: ubuntu-24.04
+2026-05-07T17:49:00.9132890Z Version: 20260413.86.1
+2026-05-07T17:49:00.9134036Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+2026-05-07T17:49:00.9135485Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+2026-05-07T17:49:00.9136383Z ##[endgroup]
+2026-05-07T17:49:00.9137647Z ##[group]GITHUB_TOKEN Permissions
+2026-05-07T17:49:00.9139706Z Contents: read
+2026-05-07T17:49:00.9140233Z Metadata: read
+2026-05-07T17:49:00.9140727Z Packages: read
+2026-05-07T17:49:00.9141238Z ##[endgroup]
+2026-05-07T17:49:00.9143291Z Secret source: Actions
+2026-05-07T17:49:00.9144035Z Prepare workflow directory
+2026-05-07T17:49:00.9482453Z Prepare all required actions
+2026-05-07T17:49:00.9521096Z Getting action download info
+2026-05-07T17:49:01.3596583Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-05-07T17:49:01.5506524Z Complete job name: license-check
+2026-05-07T17:49:01.6312095Z ##[group]Run actions/checkout@v4
+2026-05-07T17:49:01.6312918Z with:
+2026-05-07T17:49:01.6313316Z   repository: sundarlohar007/Benchify
+2026-05-07T17:49:01.6313998Z   token: ***
+2026-05-07T17:49:01.6314397Z   ssh-strict: true
+2026-05-07T17:49:01.6314778Z   ssh-user: git
+2026-05-07T17:49:01.6315156Z   persist-credentials: true
+2026-05-07T17:49:01.6315583Z   clean: true
+2026-05-07T17:49:01.6315970Z   sparse-checkout-cone-mode: true
+2026-05-07T17:49:01.6316446Z   fetch-depth: 1
+2026-05-07T17:49:01.6316827Z   fetch-tags: false
+2026-05-07T17:49:01.6317501Z   show-progress: true
+2026-05-07T17:49:01.6317893Z   lfs: false
+2026-05-07T17:49:01.6318243Z   submodules: false
+2026-05-07T17:49:01.6318636Z   set-safe-directory: true
+2026-05-07T17:49:01.6319344Z ##[endgroup]
+2026-05-07T17:49:01.7432379Z Syncing repository: sundarlohar007/Benchify
+2026-05-07T17:49:01.7434630Z ##[group]Getting Git version info
+2026-05-07T17:49:01.7435350Z Working directory is '/home/runner/work/Benchify/Benchify'
+2026-05-07T17:49:01.7436330Z [command]/usr/bin/git version
+2026-05-07T17:49:01.7481045Z git version 2.53.0
+2026-05-07T17:49:01.7508158Z ##[endgroup]
+2026-05-07T17:49:01.7525593Z Temporarily overriding HOME='/home/runner/work/_temp/03991437-33df-4ce3-a94b-a14065248e42' before making global git config changes
+2026-05-07T17:49:01.7528271Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-07T17:49:01.7532889Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Benchify/Benchify
+2026-05-07T17:49:01.7565950Z Deleting the contents of '/home/runner/work/Benchify/Benchify'
+2026-05-07T17:49:01.7569992Z ##[group]Initializing the repository
+2026-05-07T17:49:01.7573763Z [command]/usr/bin/git init /home/runner/work/Benchify/Benchify
+2026-05-07T17:49:01.7654567Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-07T17:49:01.7656247Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-07T17:49:01.7657649Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-07T17:49:01.7658359Z hint: call:
+2026-05-07T17:49:01.7658713Z hint:
+2026-05-07T17:49:01.7659189Z hint: 	git config --global init.defaultBranch <name>
+2026-05-07T17:49:01.7660014Z hint:
+2026-05-07T17:49:01.7660540Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-07T17:49:01.7661953Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-07T17:49:01.7662647Z hint:
+2026-05-07T17:49:01.7663023Z hint: 	git branch -m <name>
+2026-05-07T17:49:01.7663450Z hint:
+2026-05-07T17:49:01.7664022Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-07T17:49:01.7665182Z Initialized empty Git repository in /home/runner/work/Benchify/Benchify/.git/
+2026-05-07T17:49:01.7667349Z [command]/usr/bin/git remote add origin https://github.com/sundarlohar007/Benchify
+2026-05-07T17:49:01.7696211Z ##[endgroup]
+2026-05-07T17:49:01.7696959Z ##[group]Disabling automatic garbage collection
+2026-05-07T17:49:01.7700688Z [command]/usr/bin/git config --local gc.auto 0
+2026-05-07T17:49:01.7728667Z ##[endgroup]
+2026-05-07T17:49:01.7729318Z ##[group]Setting up auth
+2026-05-07T17:49:01.7735372Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-07T17:49:01.7765491Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-07T17:49:01.8039917Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-07T17:49:01.8071150Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-07T17:49:01.8289142Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-07T17:49:01.8328070Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-07T17:49:01.8544624Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-07T17:49:01.8578878Z ##[endgroup]
+2026-05-07T17:49:01.8580118Z ##[group]Fetching the repository
+2026-05-07T17:49:01.8588932Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d35bdec10cf4a3ecaba31b872cec01a41a0a1f8b:refs/remotes/origin/main
+2026-05-07T17:49:08.4956274Z From https://github.com/sundarlohar007/Benchify
+2026-05-07T17:49:08.4958552Z  * [new ref]         d35bdec10cf4a3ecaba31b872cec01a41a0a1f8b -> origin/main
+2026-05-07T17:49:08.4985921Z ##[endgroup]
+2026-05-07T17:49:08.4986756Z ##[group]Determining the checkout info
+2026-05-07T17:49:08.4988356Z ##[endgroup]
+2026-05-07T17:49:08.4993051Z [command]/usr/bin/git sparse-checkout disable
+2026-05-07T17:49:08.5030442Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-07T17:49:08.5056010Z ##[group]Checking out the ref
+2026-05-07T17:49:08.5059696Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-05-07T17:49:09.5351250Z Updating files:  84% (2258/2684)
+2026-05-07T17:49:09.5419322Z Updating files:  85% (2282/2684)
+2026-05-07T17:49:09.5651540Z Updating files:  86% (2309/2684)
+2026-05-07T17:49:09.6566898Z Updating files:  87% (2336/2684)
+2026-05-07T17:49:09.7203118Z Updating files:  88% (2362/2684)
+2026-05-07T17:49:09.7212979Z Updating files:  89% (2389/2684)
+2026-05-07T17:49:09.7233758Z Updating files:  90% (2416/2684)
+2026-05-07T17:49:09.7250691Z Updating files:  91% (2443/2684)
+2026-05-07T17:49:09.7285363Z Updating files:  92% (2470/2684)
+2026-05-07T17:49:09.7300712Z Updating files:  93% (2497/2684)
+2026-05-07T17:49:09.7321111Z Updating files:  94% (2523/2684)
+2026-05-07T17:49:09.7341439Z Updating files:  95% (2550/2684)
+2026-05-07T17:49:09.7355992Z Updating files:  96% (2577/2684)
+2026-05-07T17:49:09.7379525Z Updating files:  97% (2604/2684)
+2026-05-07T17:49:09.7396570Z Updating files:  98% (2631/2684)
+2026-05-07T17:49:09.7411014Z Updating files:  99% (2658/2684)
+2026-05-07T17:49:09.7411902Z Updating files: 100% (2684/2684)
+2026-05-07T17:49:09.7412338Z Updating files: 100% (2684/2684), done.
+2026-05-07T17:49:09.7452054Z Switched to a new branch 'main'
+2026-05-07T17:49:09.7455037Z branch 'main' set up to track 'origin/main'.
+2026-05-07T17:49:09.7514203Z ##[endgroup]
+2026-05-07T17:49:09.7553614Z [command]/usr/bin/git log -1 --format=%H
+2026-05-07T17:49:09.7574766Z d35bdec10cf4a3ecaba31b872cec01a41a0a1f8b
+2026-05-07T17:49:09.7766329Z ##[group]Run missing=0
+2026-05-07T17:49:09.7766682Z [36;1mmissing=0[0m
+2026-05-07T17:49:09.7766971Z [36;1mfor dir in lib/ test/ ios_agents/; do[0m
+2026-05-07T17:49:09.7767619Z [36;1m  if [ -d "$dir" ]; then[0m
+2026-05-07T17:49:09.7768182Z [36;1m    count=$(grep -rL "SPDX-License-Identifier: MIT" "$dir" --include="*.dart" --include="*.py" 2>/dev/null | wc -l)[0m
+2026-05-07T17:49:09.7768758Z [36;1m    if [ "$count" -gt 0 ]; then[0m
+2026-05-07T17:49:09.7769134Z [36;1m      echo "ERROR: $count files in $dir missing MIT header"[0m
+2026-05-07T17:49:09.7769716Z [36;1m      grep -rL "SPDX-License-Identifier: MIT" "$dir" --include="*.dart" --include="*.py"[0m
+2026-05-07T17:49:09.7770209Z [36;1m      missing=$((missing + count))[0m
+2026-05-07T17:49:09.7770498Z [36;1m    fi[0m
+2026-05-07T17:49:09.7770703Z [36;1m  fi[0m
+2026-05-07T17:49:09.7770909Z [36;1mdone[0m
+2026-05-07T17:49:09.7771129Z [36;1mif [ "$missing" -gt 0 ]; then[0m
+2026-05-07T17:49:09.7771535Z [36;1m  echo "FAILED: $missing file(s) missing MIT SPDX header"[0m
+2026-05-07T17:49:09.7771893Z [36;1m  exit 1[0m
+2026-05-07T17:49:09.7772109Z [36;1mfi[0m
+2026-05-07T17:49:09.7772366Z [36;1mecho "All source files have MIT SPDX headers."[0m
+2026-05-07T17:49:09.7797416Z shell: /usr/bin/bash -e {0}
+2026-05-07T17:49:09.7797742Z ##[endgroup]
+2026-05-07T17:49:09.7880803Z All source files have MIT SPDX headers.
+2026-05-07T17:49:09.7974592Z Post job cleanup.
+2026-05-07T17:49:09.8984373Z [command]/usr/bin/git version
+2026-05-07T17:49:09.9019985Z git version 2.53.0
+2026-05-07T17:49:09.9063745Z Temporarily overriding HOME='/home/runner/work/_temp/30f53033-d75f-496f-ba84-64514022f73e' before making global git config changes
+2026-05-07T17:49:09.9064672Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-07T17:49:09.9069433Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Benchify/Benchify
+2026-05-07T17:49:09.9105212Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-07T17:49:09.9137811Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-07T17:49:09.9370764Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-07T17:49:09.9394095Z http.https://github.com/.extraheader
+2026-05-07T17:49:09.9407155Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-05-07T17:49:09.9436295Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-07T17:49:09.9654730Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-07T17:49:09.9684955Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-07T17:49:10.0005469Z Cleaning up orphan processes
+2026-05-07T17:49:10.0292597Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

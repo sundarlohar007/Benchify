@@ -1,0 +1,41 @@
+﻿2026-05-07T17:52:15.4281091Z ##[group]Run flutter analyze 2>&1 || true
+2026-05-07T17:52:15.4281519Z [36;1mflutter analyze 2>&1 || true[0m
+2026-05-07T17:52:15.4341026Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-05-07T17:52:15.4341415Z env:
+2026-05-07T17:52:15.4341725Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-07T17:52:15.4342194Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-07T17:52:15.4342510Z ##[endgroup]
+2026-05-07T17:52:16.5388509Z Resolving dependencies...
+2026-05-07T17:52:16.6883691Z Downloading packages...
+2026-05-07T17:52:17.0392638Z   csv 6.0.0 (8.0.0 available)
+2026-05-07T17:52:17.0393234Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-07T17:52:17.0393706Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-07T17:52:17.0395248Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-07T17:52:17.0395730Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-07T17:52:17.0396319Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-07T17:52:17.0397260Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-07T17:52:17.0397959Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-07T17:52:17.0398614Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-07T17:52:17.0399212Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-07T17:52:17.0399727Z   go_router 13.2.5 (17.2.3 available)
+2026-05-07T17:52:17.0400121Z   js 0.6.7 (0.7.2 available)
+2026-05-07T17:52:17.0400513Z   matcher 0.12.19 (0.12.20 available)
+2026-05-07T17:52:17.0400899Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-07T17:52:17.0401408Z   meta 1.17.0 (1.18.2 available)
+2026-05-07T17:52:17.0401853Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-07T17:52:17.0402674Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-07T17:52:17.0403044Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-07T17:52:17.0403421Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-07T17:52:17.0403672Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-07T17:52:17.0403972Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-07T17:52:17.0404271Z   test_api 0.7.10 (0.7.12 available)
+2026-05-07T17:52:17.0404533Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-07T17:52:17.0404841Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-07T17:52:17.0405109Z   win32 5.15.0 (6.2.0 available)
+2026-05-07T17:52:17.0405383Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-07T17:52:17.0405653Z   xml 6.6.1 (7.0.1 available)
+2026-05-07T17:52:17.0405908Z Got dependencies!
+2026-05-07T17:52:17.0406239Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-07T17:52:17.0406615Z Try `flutter pub outdated` for more information.
+2026-05-07T17:52:21.5745171Z Analyzing performancebench...                                   
+2026-05-07T17:52:21.5960053Z ##[error]The operation was canceled.

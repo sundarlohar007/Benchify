@@ -1,0 +1,36 @@
+﻿2026-05-07T17:49:07.0077442Z Current runner version: '2.334.0'
+2026-05-07T17:49:07.0101874Z ##[group]Runner Image Provisioner
+2026-05-07T17:49:07.0102705Z Hosted Compute Agent
+2026-05-07T17:49:07.0103245Z Version: 20260213.493
+2026-05-07T17:49:07.0103944Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-05-07T17:49:07.0104603Z Build Date: 2026-02-13T00:28:41Z
+2026-05-07T17:49:07.0105246Z Worker ID: {c40816be-3237-402c-9f9a-161025d6b065}
+2026-05-07T17:49:07.0105898Z Azure Region: westus
+2026-05-07T17:49:07.0106665Z ##[endgroup]
+2026-05-07T17:49:07.0108001Z ##[group]Operating System
+2026-05-07T17:49:07.0108659Z Ubuntu
+2026-05-07T17:49:07.0109107Z 24.04.4
+2026-05-07T17:49:07.0109544Z LTS
+2026-05-07T17:49:07.0110013Z ##[endgroup]
+2026-05-07T17:49:07.0110513Z ##[group]Runner Image
+2026-05-07T17:49:07.0111033Z Image: ubuntu-24.04
+2026-05-07T17:49:07.0111469Z Version: 20260413.86.1
+2026-05-07T17:49:07.0112496Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+2026-05-07T17:49:07.0114154Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+2026-05-07T17:49:07.0115080Z ##[endgroup]
+2026-05-07T17:49:07.0116369Z ##[group]GITHUB_TOKEN Permissions
+2026-05-07T17:49:07.0118172Z Contents: read
+2026-05-07T17:49:07.0118725Z Metadata: read
+2026-05-07T17:49:07.0119177Z Packages: read
+2026-05-07T17:49:07.0120158Z ##[endgroup]
+2026-05-07T17:49:07.0122263Z Secret source: Actions
+2026-05-07T17:49:07.0122973Z Prepare workflow directory
+2026-05-07T17:49:07.0530659Z Prepare all required actions
+2026-05-07T17:49:07.0569015Z Getting action download info
+2026-05-07T17:49:07.5714506Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-05-07T17:49:07.6753969Z Download action repository 'subosito/flutter-action@v2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+2026-05-07T17:49:08.0026814Z Download action repository 'joncloud/makensis-action@v4' (SHA:c481d9faa93b9189844ea92c602866e7b4f7371b)
+2026-05-07T17:49:08.2949078Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-05-07T17:49:08.5411535Z Getting action download info
+2026-05-07T17:49:08.7654504Z Download action repository 'actions/cache@v5' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-05-07T17:49:09.4381980Z Complete job name: build-and-test (ubuntu-latest)
