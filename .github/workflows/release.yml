@@ -1,0 +1,303 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 PerformanceBench Contributors
+#
+# Tag-triggered release workflow. Builds desktop installers (Windows/macOS/Linux),
+# mobile apps (Android APK + iOS unsigned IPA), and game-engine SDK plugins
+# (Unity/Unreal/Godot) plus the Python injector tool. Uploads everything to a
+# GitHub Release named after the tag.
+#
+# Usage:
+#   git tag v0.1.0 && git push --tags
+#   OR: Actions → Release → Run workflow → enter "v0.1.0"
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g., v0.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  resolve-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set.outputs.version }}
+      tag: ${{ steps.set.outputs.tag }}
+    steps:
+      - id: set
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag=$TAG version=$VERSION"
+
+  build-linux:
+    needs: resolve-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve-version.outputs.tag }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Linux deps
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev libsecret-1-dev libglib2.0-dev cmake pkg-config libasound2-dev libpulse-dev libmpv-dev mpv
+
+      - name: Build Linux desktop
+        working-directory: performancebench
+        run: |
+          flutter pub get
+          flutter build linux --release
+          bash linux/build_appimage.sh
+
+      - name: Stage AppImage
+        run: |
+          VER="${{ needs.resolve-version.outputs.version }}"
+          mkdir -p dist
+          # build_appimage.sh writes *.AppImage somewhere — find and rename
+          APPIMAGE=$(find performancebench -maxdepth 4 -name "*.AppImage" | head -1)
+          if [ -z "$APPIMAGE" ]; then
+            echo "::error::No AppImage produced"
+            exit 1
+          fi
+          cp "$APPIMAGE" "dist/performancebench-${VER}-linux-x86_64.AppImage"
+
+      - name: Build Android APK
+        working-directory: performancebench-mobile
+        run: |
+          flutter pub get
+          flutter build apk --release
+
+      - name: Stage APK
+        run: |
+          VER="${{ needs.resolve-version.outputs.version }}"
+          cp performancebench-mobile/build/app/outputs/flutter-apk/app-release.apk \
+             "dist/performancebench-mobile-${VER}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-android-artifacts
+          path: dist/*
+          retention-days: 1
+
+  build-macos:
+    needs: resolve-version
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve-version.outputs.tag }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install macOS deps
+        run: brew install cocoapods 2>/dev/null || true
+
+      - name: Build macOS desktop DMG
+        working-directory: performancebench
+        run: |
+          flutter pub get
+          flutter build macos --release
+          bash macos/package_dmg.sh
+
+      - name: Stage DMG
+        run: |
+          VER="${{ needs.resolve-version.outputs.version }}"
+          mkdir -p dist
+          DMG=$(find performancebench -maxdepth 4 -name "*.dmg" | head -1)
+          if [ -z "$DMG" ]; then
+            echo "::error::No DMG produced"
+            exit 1
+          fi
+          cp "$DMG" "dist/performancebench-${VER}-macos-universal.dmg"
+
+      - name: Build iOS IPA (unsigned)
+        working-directory: performancebench-mobile
+        run: |
+          flutter pub get
+          flutter build ios --release --no-codesign
+
+      - name: Package unsigned IPA
+        run: |
+          VER="${{ needs.resolve-version.outputs.version }}"
+          mkdir -p ipa-build/Payload
+          cp -r performancebench-mobile/build/ios/iphoneos/Runner.app ipa-build/Payload/
+          (cd ipa-build && zip -qr "../dist/performancebench-mobile-${VER}-unsigned.ipa" Payload)
+          rm -rf ipa-build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-ios-artifacts
+          path: dist/*
+          retention-days: 1
+
+  build-windows:
+    needs: resolve-version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve-version.outputs.tag }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Build Windows
+        working-directory: performancebench
+        run: flutter build windows --release
+
+      - name: Install NSIS
+        run: choco install nsis -y --no-progress
+
+      - name: Package Windows installer
+        uses: joncloud/makensis-action@v4
+        with:
+          script-file: performancebench/windows/installer/performancebench.nsi
+
+      - name: Stage installer
+        shell: pwsh
+        run: |
+          $ver = "${{ needs.resolve-version.outputs.version }}"
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $exe = Get-ChildItem -Path performancebench -Recurse -Filter '*.exe' |
+                 Where-Object { $_.Name -notmatch 'performancebench\.exe$' } |
+                 Select-Object -First 1
+          if (-not $exe) { Write-Error "No installer .exe produced"; exit 1 }
+          Copy-Item $exe.FullName "dist/performancebench-${ver}-windows-x64.exe"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: dist/*
+          retention-days: 1
+
+  build-plugins:
+    needs: resolve-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve-version.outputs.tag }}
+
+      - name: Package game-engine plugins + injector tool
+        run: |
+          VER="${{ needs.resolve-version.outputs.version }}"
+          mkdir -p dist
+
+          # Unity package — zip Editor/, Runtime/, package.json, README.md
+          (cd benchify-unity-plugin && \
+            zip -qr "../dist/benchify-unity-${VER}.zip" \
+              Editor Runtime package.json README.md)
+
+          # Unreal plugin — zip uplugin descriptor + Source/
+          (cd benchify-unreal-plugin && \
+            zip -qr "../dist/benchify-unreal-${VER}.zip" \
+              Benchify.uplugin Source README.md)
+
+          # Godot plugin — zip addons/ + .gdextension
+          (cd benchify-godot-plugin && \
+            zip -qr "../dist/benchify-godot-${VER}.zip" \
+              addons benchify_plugin.gdextension README.md)
+
+          # Injector Python tool
+          (cd performancebench-injector && \
+            zip -qr "../dist/performancebench-injector-${VER}.zip" \
+              frida injector pcprobe sdk tests injector_cli.py requirements.txt README.md)
+
+          ls -la dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugins-artifacts
+          path: dist/*
+          retention-days: 1
+
+  release:
+    needs: [resolve-version, build-linux, build-macos, build-windows, build-plugins]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: List artifacts
+        run: ls -la dist/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.resolve-version.outputs.tag }}
+          name: Benchify ${{ needs.resolve-version.outputs.version }}
+          draft: false
+          prerelease: ${{ startsWith(needs.resolve-version.outputs.version, '0.') || contains(needs.resolve-version.outputs.version, '-') }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          body: |
+            # Benchify ${{ needs.resolve-version.outputs.version }}
+
+            Free, open-source mobile + desktop performance profiler — GameBench alternative at $0. 100% local, zero telemetry, MIT license.
+
+            ## Downloads
+
+            ### Desktop profiler
+            | Platform | File | Notes |
+            |---|---|---|
+            | Windows | `performancebench-${{ needs.resolve-version.outputs.version }}-windows-x64.exe` | NSIS installer. Unsigned — SmartScreen will warn; click *More info* → *Run anyway*. |
+            | macOS   | `performancebench-${{ needs.resolve-version.outputs.version }}-macos-universal.dmg` | Unsigned — Gatekeeper will warn; right-click *Open* the first time, or `xattr -dr com.apple.quarantine /Applications/PerformanceBench.app`. |
+            | Linux   | `performancebench-${{ needs.resolve-version.outputs.version }}-linux-x86_64.AppImage` | `chmod +x *.AppImage && ./*.AppImage`. Requires `libmpv` for video features. |
+
+            ### Mobile companion (FPS overlay)
+            | Platform | File | Install |
+            |---|---|---|
+            | Android | `performancebench-mobile-${{ needs.resolve-version.outputs.version }}.apk` | Debug-signed (ephemeral CI key). Enable *Install unknown apps* for your file manager, then tap APK. Updates may require uninstall first (signing key changes per release). |
+            | iOS     | `performancebench-mobile-${{ needs.resolve-version.outputs.version }}-unsigned.ipa` | Unsigned — sideload via [AltStore](https://altstore.io) or [Sideloadly](https://sideloadly.io). Free Apple ID requires re-signing every 7 days; paid Developer ID lasts 1 year. |
+
+            ### Game-engine SDKs
+            | Engine | File | Install |
+            |---|---|---|
+            | Unity  | `benchify-unity-${{ needs.resolve-version.outputs.version }}.zip` | Extract into `Packages/com.benchify.sdk/` or import via *Window* → *Package Manager* → *Add from disk*. |
+            | Unreal | `benchify-unreal-${{ needs.resolve-version.outputs.version }}.zip` | Extract into `<YourProject>/Plugins/Benchify/`, then enable in *Edit* → *Plugins*. |
+            | Godot  | `benchify-godot-${{ needs.resolve-version.outputs.version }}.zip` | Extract `addons/` to project root, enable in *Project Settings* → *Plugins*. |
+
+            ### Tooling
+            | Tool | File | Install |
+            |---|---|---|
+            | Injector CLI | `performancebench-injector-${{ needs.resolve-version.outputs.version }}.zip` | `unzip && cd performancebench-injector && pip install -r requirements.txt && python injector_cli.py --help` |
+
+            ## Verification
+            All artifacts built from tag `${{ needs.resolve-version.outputs.tag }}` in public CI. Inspect the workflow run for full provenance.
+
+            ## Links
+            - Source: https://github.com/sundarlohar007/Benchify
+            - Spec: [`UNIFIED-SPEC.md`](https://github.com/sundarlohar007/Benchify/blob/main/UNIFIED-SPEC.md)
+            - Issues: https://github.com/sundarlohar007/Benchify/issues
+            - License: [MIT](https://github.com/sundarlohar007/Benchify/blob/main/LICENSE)
+          files: |
+            dist/*
