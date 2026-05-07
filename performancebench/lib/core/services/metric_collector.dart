@@ -16,6 +16,7 @@ import '../parsers/thermal_parser.dart';
 import '../sdk/sdk_state.dart';
 import 'adb_service.dart';
 import 'alert_service.dart';
+import 'error_handler.dart';
 
 /// Collects performance metrics from an Android device at 1Hz.
 ///
@@ -322,7 +323,8 @@ class MetricCollector {
 
       _pendingBatch.add(sample);
       _controller?.add(sample);
-    } catch (_) {
+    } catch (e, stack) {
+      ErrorHandler().logError('MetricCollector._tick', e, stack);
       _consecutiveFailures++;
     }
   }
