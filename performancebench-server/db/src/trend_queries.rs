@@ -123,10 +123,10 @@ pub async fn get_metric_trends(
     }
 
     let rows = if let Some(app) = app_name {
-        let sql = format!(
+        diesel::sql_query(
             r#"
             SELECT started_at::text as ts, id as sid, app_name,
-                   (session_stats->>'{}')::double precision as val
+                   (session_stats->>$5)::double precision as val
             FROM sessions
             WHERE user_id = $1
               AND started_at >= $2::timestamptz
@@ -134,34 +134,32 @@ pub async fn get_metric_trends(
               AND app_name = $4
             ORDER BY started_at ASC
             "#,
-            jsonb_key,
-        );
-        diesel::sql_query(sql)
-            .bind::<SqlUuid, _>(user_id)
-            .bind::<Text, _>(start_date.to_string())
-            .bind::<Text, _>(end_date.to_string())
-            .bind::<Text, _>(app.to_string())
-            .load::<TrendRow>(&mut *client)
-            .await?
+        )
+        .bind::<SqlUuid, _>(user_id)
+        .bind::<Text, _>(start_date.to_string())
+        .bind::<Text, _>(end_date.to_string())
+        .bind::<Text, _>(app.to_string())
+        .bind::<Text, _>(jsonb_key.to_string())
+        .load::<TrendRow>(&mut *client)
+        .await?
     } else {
-        let sql = format!(
+        diesel::sql_query(
             r#"
             SELECT started_at::text as ts, id as sid, app_name,
-                   (session_stats->>'{}')::double precision as val
+                   (session_stats->>$4)::double precision as val
             FROM sessions
             WHERE user_id = $1
               AND started_at >= $2::timestamptz
               AND started_at <= $3::timestamptz
             ORDER BY started_at ASC
             "#,
-            jsonb_key,
-        );
-        diesel::sql_query(sql)
-            .bind::<SqlUuid, _>(user_id)
-            .bind::<Text, _>(start_date.to_string())
-            .bind::<Text, _>(end_date.to_string())
-            .load::<TrendRow>(&mut *client)
-            .await?
+        )
+        .bind::<SqlUuid, _>(user_id)
+        .bind::<Text, _>(start_date.to_string())
+        .bind::<Text, _>(end_date.to_string())
+        .bind::<Text, _>(jsonb_key.to_string())
+        .load::<TrendRow>(&mut *client)
+        .await?
     };
 
     Ok(rows

@@ -190,8 +190,12 @@ pub async fn upload_session(
     };
 
     // ── Parse timestamps ──
+    // Reject unparseable timestamps instead of silently substituting now() (WR-10)
     let started_at = parse_timestamp(&payload.session.started_at)
-        .unwrap_or_else(|| chrono::Utc::now().naive_utc());
+        .ok_or_else(|| AppError::Validation(format!(
+            "Invalid started_at timestamp: {}",
+            payload.session.started_at
+        )))?;
     let ended_at = payload.session.ended_at.as_deref()
         .and_then(parse_timestamp);
     let now = chrono::Utc::now().naive_utc();
