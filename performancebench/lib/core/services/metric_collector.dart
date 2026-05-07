@@ -258,7 +258,10 @@ class MetricCollector {
           _controller?.addError(
             'ADB connection lost after 5 consecutive total failures',
           );
-          stop();
+          // Cancel timer first to prevent new ticks from firing while flushing
+          _timer?.cancel();
+          _timer = null;
+          unawaited(stop());
         }
         return;
       }
