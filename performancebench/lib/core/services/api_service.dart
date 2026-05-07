@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Base HTTP client for the PerformanceBench team server REST API.
@@ -17,13 +18,32 @@ class ApiService {
 
   ApiService({required this.baseUrl, this.apiToken});
 
-  /// Create an ApiService from SharedPreferences settings.
+  /// Create an ApiService from secure storage with SharedPreferences fallback.
   /// Returns null if server URL is not configured.
+  ///
+  /// The API token is stored in platform-encrypted storage
+  /// (Windows DPAPI, macOS Keychain, Linux libsecret) via flutter_secure_storage.
+  /// Falls back to SharedPreferences for migration from older plaintext storage.
   static Future<ApiService?> fromPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     final serverUrl = prefs.getString('server_url');
     if (serverUrl == null || serverUrl.isEmpty) return null;
-    final apiToken = prefs.getString('api_token');
+
+    // Read API token from secure storage, with migration from plaintext
+    const secureStorage = FlutterSecureStorage();
+    String? apiToken = await secureStorage.read(key: 'api_token');
+
+    // Migration: if not in secure storage, check plaintext SharedPreferences
+    if (apiToken == null || apiToken.isEmpty) {
+      final legacyToken = prefs.getString('api_token');
+      if (legacyToken != null && legacyToken.isNotEmpty) {
+        // Migrate to secure storage and clear plaintext copy
+        await secureStorage.write(key: 'api_token', value: legacyToken);
+        await prefs.remove('api_token');
+        apiToken = legacyToken;
+      }
+    }
+
     return ApiService(baseUrl: serverUrl, apiToken: apiToken);
   }
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
-use tokio::sync::broadcast;
+use std::sync::Arc;
+use tokio::sync::{broadcast, Mutex};
 use uuid::Uuid;
 
 use db::connection::DbPool;
@@ -14,6 +14,7 @@ pub struct AppState {
     pub config: AppConfig,
     /// Per-session broadcast channels for WebSocket live overlay.
     /// Maps session_id -> broadcast sender (ring buffer of 1024 samples).
+    /// Uses tokio::sync::Mutex to avoid blocking tokio worker threads.
     pub live_sessions: Arc<Mutex<HashMap<Uuid, broadcast::Sender<MetricSample>>>>,
 }
 

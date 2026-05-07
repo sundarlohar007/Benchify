@@ -2,13 +2,18 @@ import { useState, useCallback } from 'react';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { Users as UsersIcon, Search } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth, type User } from '@/hooks/useAuth';
 import { UserTable } from '@/components/admin/UserTable';
 import { useUsers, useUpdateUserRole, useUpdateUserStatus } from '@/hooks/useAdmin';
 
 export const Route = createFileRoute('/admin/users')({
   beforeLoad: ({ context }) => {
-    // Client-side role guard — server enforces authorization
+    const user = context.queryClient.getQueryData<User>(['auth', 'me']);
+    // Only redirect if we have cached user data and they're not admin.
+    // If data isn't cached yet, let the component's ProtectedRoute handle it.
+    if (user !== undefined && user.role !== 'admin') {
+      throw redirect({ to: '/sessions' });
+    }
   },
   component: UserManagementPage,
 });

@@ -181,7 +181,8 @@ class IpaInjectionService {
       args.addAll(['--framework-dir', frameworkDir]);
     }
     if (appSpecificPassword != null && appSpecificPassword.isNotEmpty) {
-      args.addAll(['--app-specific-password', appSpecificPassword]);
+      // Password passed via stdin, not CLI args
+      args.add('--password-via-stdin');
     }
 
     return args;
@@ -241,9 +242,14 @@ class IpaInjectionService {
     return _controller!.stream;
   }
 
-  Future<void> _spawnProcess(List<String> args) async {
+  Future<void> _spawnProcess(List<String> args, {String? appSpecificPassword}) async {
     try {
       _process = await Process.start(args.first, args.sublist(1));
+
+      if (appSpecificPassword != null && args.contains('--password-via-stdin')) {
+        _process!.stdin.write('$appSpecificPassword\n');
+        await _process!.stdin.close();
+      }
 
       _process!.stdout
           .transform(utf8.decoder)
