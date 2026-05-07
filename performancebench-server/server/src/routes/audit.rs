@@ -296,6 +296,7 @@ async fn purge_audit_events(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::Datelike;
 
     #[test]
     fn test_parse_iso_date_valid() {
