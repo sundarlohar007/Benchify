@@ -120,9 +120,21 @@ pub async fn upload_session(
                     .map_err(|e| AppError::Validation(format!("Invalid UTF-8 in metadata: {}", e)))?);
             }
             "screenshots" => {
-                let filename = field.file_name()
+                let raw_name = field.file_name()
                     .unwrap_or("unknown.png")
                     .to_string();
+
+                // Sanitize: strip directory components to prevent path traversal (CR-02)
+                let filename = std::path::Path::new(&raw_name)
+                    .file_name()
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap_or_else(|| format!("{}.png", Uuid::new_v4()));
+
+                // Belt-and-suspenders: reject filenames with suspicious patterns
+                if filename.contains("..") || filename.starts_with('/') || filename.starts_with('\\') {
+                    return Err(AppError::Validation("Invalid screenshot filename".to_string()));
+                }
+
                 let bytes = field.bytes().await
                     .map_err(|e| AppError::Validation(format!("Failed to read screenshot: {}", e)))?;
                 screenshot_files.push((filename, bytes.to_vec()));
