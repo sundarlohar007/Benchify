@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Wifi, WifiOff } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -73,24 +73,17 @@ function LivePage() {
     setConnected(true);
   }, [sessionId]);
 
-  // Subscribe to all metrics for the summary cards
-  useState(() => {
-    // This runs on mount, but we need it after connection
-  });
+  // Subscribe to all metrics via useEffect — properly cleans up on unmount
+  // or when wsSessionId changes, preventing memory leaks and stale listeners.
+  const cleanupRef = useRef<(() => void) | null>(null);
 
-  // Effect to subscribe when wsSessionId changes
-  const [listenerActive, setListenerActive] = useState(false);
-  if (!listenerActive && wsSessionId) {
-    setListenerActive(true);
-  }
+  useEffect(() => {
+    if (!wsSessionId) return;
 
-  // Track the sample listener
-  const sampleListenerRef = {
-    current: null as (() => void) | null,
-  };
+    // Clean up previous listener before subscribing a new one
+    cleanupRef.current?.();
 
-  if (wsSessionId && !sampleListenerRef.current) {
-    sampleListenerRef.current = onSample((sample) => {
+    const cleanup = onSample((sample) => {
       const values: Record<string, number | null> = {};
       for (const m of METRICS) {
         values[m.key] = m.extract(sample);
@@ -98,7 +91,13 @@ function LivePage() {
       setCurrentValues(values);
       setConnected(true);
     });
-  }
+    cleanupRef.current = cleanup;
+
+    return () => {
+      cleanup();
+      cleanupRef.current = null;
+    };
+  }, [wsSessionId, onSample]);
 
   return (
     <ProtectedRoute>
