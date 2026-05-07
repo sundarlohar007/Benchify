@@ -68,6 +68,10 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
   void _handleStop() {
     _stopwatch.stop();
     _elapsedTimer?.cancel();
+    // TODO: Call the active session service to stop collection, flush, and finalize
+    // The session termination pipeline (stop MetricCollector, flush pending batches,
+    // update session end-time in DB) must be invoked here before navigating away.
+    // await ref.read(sessionServiceProvider).stopSession(widget.sessionId);
     context.go('/');
   }
 
