@@ -2,6 +2,7 @@
 // Copyright (c) 2024 PerformanceBench Contributors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../shared/theme.dart';
@@ -42,7 +43,21 @@ class _ServerSettingsWidgetState extends State<ServerSettingsWidget> {
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     _urlController.text = prefs.getString('server_url') ?? '';
-    _tokenController.text = prefs.getString('api_token') ?? '';
+
+    // Read API token from secure storage (platform-encrypted)
+    const secureStorage = FlutterSecureStorage();
+    final secureToken = await secureStorage.read(key: 'api_token');
+    if (secureToken != null && secureToken.isNotEmpty) {
+      _tokenController.text = secureToken;
+    } else {
+      // Fallback: check legacy SharedPreferences for migration
+      final legacyToken = prefs.getString('api_token');
+      if (legacyToken != null && legacyToken.isNotEmpty) {
+        await secureStorage.write(key: 'api_token', value: legacyToken);
+        await prefs.remove('api_token');
+        _tokenController.text = legacyToken;
+      }
+    }
   }
 
   Future<void> _saveUrl(String value) async {
@@ -51,11 +66,14 @@ class _ServerSettingsWidgetState extends State<ServerSettingsWidget> {
   }
 
   Future<void> _saveToken(String value) async {
-    final prefs = await SharedPreferences.getInstance();
+    const secureStorage = FlutterSecureStorage();
     if (value.isNotEmpty) {
-      await prefs.setString('api_token', value.trim());
-    } else {
+      await secureStorage.write(key: 'api_token', value: value.trim());
+      // Also clear any legacy plaintext copy
+      final prefs = await SharedPreferences.getInstance();
       await prefs.remove('api_token');
+    } else {
+      await secureStorage.delete(key: 'api_token');
     }
   }
 
