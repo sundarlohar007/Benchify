@@ -10,6 +10,7 @@ diesel = { version = "2.3", features = ["postgres", "uuid", "serde_json", "chron
 diesel_migrations = "2.3"
 diesel-async = { version = "0.9", features = ["postgres", "deadpool"] }
 deadpool-postgres = { version = "0.14", features = ["serde"] }
+pq-sys = { version = "0.6", features = ["bundled"] }
 jsonwebtoken = "10.3"
 bcrypt = "0.19"
 thiserror = "2.0"
