@@ -42,9 +42,9 @@ class UpdateService {
       return _cachedUpdate;
     }
 
+    final client = HttpClient();
+    client.connectionTimeout = const Duration(seconds: 10);
     try {
-      final client = HttpClient();
-      client.connectionTimeout = const Duration(seconds: 10);
       final request = await client.getUrl(Uri.parse(_repoUrl));
       request.headers.set('User-Agent', 'PerformanceBench/1.0.0');
       request.headers.set('Accept', 'application/vnd.github.v3+json');
@@ -75,6 +75,8 @@ class UpdateService {
       return null;
     } catch (_) {
       return null;
+    } finally {
+      client.close();
     }
   }
 
