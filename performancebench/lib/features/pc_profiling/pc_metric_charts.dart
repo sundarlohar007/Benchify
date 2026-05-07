@@ -100,8 +100,6 @@ class PcFpsChart extends StatelessWidget {
                 barWidth: 2,
                 dotData: const FlDotData(
                   show: true,
-                  dotColor: Colors.red,
-                  dotSize: 4,
                 ),
               ),
           ],

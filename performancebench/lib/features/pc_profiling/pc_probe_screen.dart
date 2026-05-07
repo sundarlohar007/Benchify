@@ -267,7 +267,7 @@ class _PcProbeScreenState extends ConsumerState<PcProbeScreen> {
             if (isConnected && status != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Host: ${service.hostLabel} | Uptime: ${_formatUptime(status.uptimeS)}',
+                'Host: ${ref.read(pcprobeServiceProvider).hostLabel} | Uptime: ${_formatUptime(status.uptimeS)}',
                 style: TextStyle(color: Colors.grey[500], fontSize: 12),
               ),
               Text(

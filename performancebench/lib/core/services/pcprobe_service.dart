@@ -135,7 +135,7 @@ class PcProbeConnection {
 
   /// Send a JSON command to the probe.
   Future<void> _sendCommand(Map<String, dynamic> command) async {
-    if (_socket.done) return;
+    if (!_healthy) return;
     final json = jsonEncode(command);
     _socket.write('$json\n');
     await _socket.flush();

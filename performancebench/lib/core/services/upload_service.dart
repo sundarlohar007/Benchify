@@ -125,7 +125,7 @@ class UploadService {
       );
 
       // Screenshot file paths
-      final screenshotPaths = screenshots.map((s) => s.filePath).toList();
+      final screenshotPaths = screenshots.map((s) => s.filepath).toList();
 
       // Apply gzip compression to metadata (D-23)
       final metadataJson = jsonEncode(payload);
@@ -143,7 +143,7 @@ class UploadService {
         lastResponse = await api.uploadMultipart(
           '/api/v1/sessions',
           metadata: metadataJson,
-          screenshotPaths: screenshotPaths,
+          screenshotPaths: List<String>.from(screenshotPaths),
           onProgress: (progress, sent, total) {
             _progressController.add(UploadProgress(
               sessionId: session.id,
