@@ -43,19 +43,17 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('performancebench-server/Cargo.lock') }}
 
       - name: Run tests
+        id: test
         working-directory: performancebench-server
-        run: cargo test --workspace 2>&1 | tee test-output.txt
+        run: |
+          cargo test --workspace 2>&1 | tee test-output.txt
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "## Server Test Output" >> $GITHUB_STEP_SUMMARY
+          tail -100 test-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
         env:
           DATABASE_URL: postgres://benchify:benchify@localhost:5432/benchify
         continue-on-error: true
-
-      - name: Upload test output
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: server-test-output
-          path: performancebench-server/test-output.txt
-          retention-days: 3
 
   lint:
     runs-on: ubuntu-latest
