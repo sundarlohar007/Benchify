@@ -50,7 +50,21 @@
       "Bash(npx vite *)",
       "Bash(curl -s http://localhost:5173)",
       "Bash(kill %1)",
-      "Bash(grep -oP 'server\\\\\\\\src\\\\\\\\routes\\\\\\\\[^:]+')"
+      "Bash(grep -oP 'server\\\\\\\\src\\\\\\\\routes\\\\\\\\[^:]+')",
+      "Bash(where pg_config)",
+      "Bash(dir \"C:\\\\Program Files\\\\PostgreSQL\\\\*\\\\lib\\\\libpq.lib\")",
+      "Bash(dir \"D:\\\\*postgres*\\\\lib\\\\libpq.lib\" /s)",
+      "Bash(vcpkg install *)",
+      "Bash(docker --version)",
+      "Bash(docker info *)",
+      "Bash(winget install *)",
+      "Bash(choco install *)",
+      "Bash(cargo metadata *)",
+      "Bash(cargo build *)",
+      "Bash(dir D:\\\\OpenCode\\\\Benchify\\\\performancebench-server\\\\target\\\\debug\\\\build\\\\pq-sys-*\\\\out\\\\libpq.lib /s)",
+      "Bash(curl -L \"https://get.enterprisedb.com/postgresql/postgresql-16.4-1-windows-x64-binaries.zip\" -o pg-bin.zip)",
+      "Bash(unzip -o pg-bin.zip \"pgsql/lib/libpq.lib\" \"pgsql/include/*\" -d pg-extract)",
+      "Bash(cargo clean *)"
     ]
   }
 }

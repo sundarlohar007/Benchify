@@ -19,6 +19,7 @@ tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
 config = "0.15"
 axum = { version = "0.8", features = ["multipart", "ws"] }
 tokio = { version = "1.52", features = ["full"] }
+tower = { version = "0.5", features = ["limit"] }
 tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip", "decompression-gzip"] }
 chrono = { version = "0.4", features = ["serde"] }
 axum-extra = { version = "0.10", features = ["cookie"] }

@@ -132,10 +132,10 @@ class InjectionService {
       if (keystore.keystorePath.isNotEmpty) {
         args.addAll([
           '--keystore', keystore.keystorePath,
-          '--keystore-password', keystore.keystorePassword,
           '--key-alias', keystore.keyAlias,
-          '--key-password', keystore.keyPassword,
         ]);
+        // Passwords passed via stdin, not CLI args (T-04-02)
+        args.addAll(['--keystore-passwords-via-stdin']);
       }
 
       if (sdkSoDir.isNotEmpty) {
@@ -186,7 +186,7 @@ class InjectionService {
       isAab: isAab,
     );
 
-    _spawnProcess(args);
+    _spawnProcess(args, keystore: keystore);
 
     return _controller!.stream;
   }
@@ -233,12 +233,22 @@ class InjectionService {
     }
   }
 
-  Future<void> _spawnProcess(List<String> args) async {
+  Future<void> _spawnProcess(List<String> args, {KeystoreConfig? keystore}) async {
     try {
       _process = await Process.start(
         args.first,
         args.sublist(1),
       );
+
+      // Write keystore passwords via stdin (not CLI args — T-04-02)
+      if (keystore != null && args.contains('--keystore-passwords-via-stdin')) {
+        final passwordJson = jsonEncode({
+          'keystore_password': keystore.keystorePassword,
+          'key_password': keystore.keyPassword,
+        });
+        _process!.stdin.write(passwordJson);
+        await _process!.stdin.close();
+      }
 
       // Read stdout line by line
       _process!.stdout

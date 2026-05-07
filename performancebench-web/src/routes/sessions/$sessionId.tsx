@@ -358,6 +358,26 @@ function JiraIssueModal({
 
 // ─── Export helpers ───────────────────────────────────────────────────────
 
+/**
+ * Escape a value for safe CSV output.  Handles three concerns:
+ *  1. CSV injection — cells starting with =, +, -, @ are prefixed with a tab
+ *     (OWASP CSV Injection mitigation).
+ *  2. Field delimiters — commas, newlines, or double-quotes trigger
+ *     RFC 4180 quoting and internal-double-quote escaping.
+ *  3. null / undefined → empty string.
+ */
+function escapeCsvValue(val: unknown): string {
+  if (val == null) return '';
+  const str = String(val);
+  // Prevent formula injection: prefix with tab if starts with =, +, -, @
+  const safeStr = /^[=+\-@]/.test(str) ? '\t' + str : str;
+  // Escape quotes and wrap if contains special chars
+  if (/[",\n\r]/.test(safeStr)) {
+    return '"' + safeStr.replace(/"/g, '""') + '"';
+  }
+  return safeStr;
+}
+
 function downloadExport(session: SessionDetail, format: 'json' | 'csv') {
   const appName = session.app_name ?? 'session';
   const id = session.id.slice(0, 8);
@@ -384,13 +404,7 @@ function downloadExport(session: SessionDetail, format: 'json' | 'csv') {
     );
     const header = keys.join(',');
     const rows = samples.map((s) =>
-      keys
-        .map((k) => {
-          const val = (s as Record<string, unknown>)[k];
-          if (val == null) return '';
-          return String(val);
-        })
-        .join(','),
+      keys.map((k) => escapeCsvValue((s as Record<string, unknown>)[k])).join(','),
     );
     const csv = [header, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });

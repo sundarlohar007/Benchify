@@ -1,6 +1,9 @@
+use std::time::Duration;
+
 use axum::middleware::from_fn_with_state;
 use axum::routing::{get, post};
 use axum::Router;
+use tower::limit::RateLimitLayer;
 use tower_http::compression::CompressionLayer;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
@@ -32,13 +35,14 @@ pub mod ws;
 pub fn create_router(state: AppState) -> Router {
     // ── Public routes (no auth required) ──
 
-    // Auth routes
+    // Auth routes — rate limited to prevent brute-force attacks (WR-06)
     let public_auth = Router::new()
         .route("/auth/login", post(auth::login))
         .route("/auth/register", post(auth::register))
         .route("/auth/refresh", post(auth::refresh))
         .route("/auth/logout", post(auth::logout))
-        .merge(sso::sso_router());
+        .merge(sso::sso_router())
+        .layer(RateLimitLayer::new(5, Duration::from_secs(60)));
 
     // Protected auth routes (require JWT)
     let protected_auth = Router::new()
@@ -50,9 +54,10 @@ pub fn create_router(state: AppState) -> Router {
         .route("/health", get(health::health_check));
 
     // WebSocket live overlay (D-47, V20-17)
-    // No auth middleware — auth checked implicitly by session UUID (unguessable)
+    // Auth required — verified in handler via session ownership check (CR-01)
     let ws_routes = Router::new()
-        .route("/live/{session_id}", get(ws::ws_handler));
+        .route("/live/{session_id}", get(ws::ws_handler))
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
     // OpenAPI docs (no auth required)
     let openapi_routes = Router::new()
