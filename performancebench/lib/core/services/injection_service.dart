@@ -92,12 +92,17 @@ class InjectionService {
 
   /// Creates an InjectionService instance.
   ///
-  /// [pythonPath] — path to Python executable (default: 'python3').
+  /// [pythonPath] — path to Python executable. If null, resolves to `python3`
+  /// on POSIX and `python` on Windows (Windows ships `python.exe`, not
+  /// `python3.exe`, so the previous default broke the entire injector flow
+  /// on that platform).
   /// [injectorScriptPath] — path to injector_cli.py in performancebench-injector/.
   InjectionService({
-    this.pythonPath = 'python3',
+    String? pythonPath,
     required this.injectorScriptPath,
-  });
+  }) : pythonPath = pythonPath ?? _defaultPython();
+
+  static String _defaultPython() => Platform.isWindows ? 'python' : 'python3';
 
   /// Build CLI argument list for the inject subcommand.
   List<String> buildInjectArgs({
@@ -258,15 +263,13 @@ class InjectionService {
         (line) {
           final event = parseStepLine(line);
           if (event != null) {
-            _controller?.add(event);
+            _safeAdd(event);
             if (event.step == InjectionStep.done || event.step == InjectionStep.error) {
-              _controller?.close();
+              _safeClose();
             }
           }
         },
-        onDone: () {
-          _controller?.close();
-        },
+        onDone: _safeClose,
       );
 
       // Capture stderr for diagnostics
@@ -279,7 +282,7 @@ class InjectionService {
       // Handle process exit
       _process!.exitCode.then((code) {
         if (code != 0 && !_stopped) {
-          _controller?.add(
+          _safeAdd(
             StepEvent(
               step: InjectionStep.error,
               status: 'fail',
@@ -287,34 +290,54 @@ class InjectionService {
             ),
           );
         }
-        _controller?.close();
+        _safeClose();
       });
     } catch (e) {
-      _controller?.add(
+      _safeAdd(
         StepEvent(
           step: InjectionStep.error,
           status: 'fail',
           detail: e.toString(),
         ),
       );
-      _controller?.close();
+      _safeClose();
     }
+  }
+
+  /// Add an event only if the controller is still open; prevents
+  /// `Bad state: Cannot add new events after calling close` when the
+  /// stdout listener and the exitCode handler race.
+  void _safeAdd(StepEvent event) {
+    final c = _controller;
+    if (c != null && !c.isClosed) c.add(event);
+  }
+
+  /// Close idempotently.
+  void _safeClose() {
+    final c = _controller;
+    if (c != null && !c.isClosed) c.close();
   }
 
   /// Abort the injection subprocess. SIGTERM, then SIGKILL after 3s.
   /// Pattern identical to IosService.stop().
   void stop() {
     _stopped = true;
-    if (_process != null) {
-      _process!.kill(ProcessSignal.sigterm);
+    // Capture local refs BEFORE clearing _process so the delayed sigkill
+    // doesn't dereference null. Old code set _process = null synchronously
+    // and then the Future.delayed callback did `_process!.kill(sigkill)`.
+    final p = _process;
+    _process = null;
+    if (p != null) {
+      p.kill(ProcessSignal.sigterm);
       Future.delayed(const Duration(seconds: 3), () {
-        if (_process != null) {
-          _process!.kill(ProcessSignal.sigkill);
+        try {
+          p.kill(ProcessSignal.sigkill);
+        } catch (_) {
+          // Process may already be dead.
         }
       });
-      _process = null;
     }
-    _controller?.close();
+    _safeClose();
     _controller = null;
   }
 

@@ -15,7 +15,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | #     | Area                                                        | Status      | Findings | Slice report                                    |
 |-------|-------------------------------------------------------------|-------------|---------:|-------------------------------------------------|
 | S-01  | Flutter desktop — main + lifecycle                          | DONE        |        7 | [slice-01](./slice-01-flutter-desktop-main.md)  |
-| S-02  | Flutter desktop — services                                  | pending     |        — |                                                 |
+| S-02  | Flutter desktop — services                                  | DONE        |       26 | [slice-02](./slice-02-flutter-desktop-services.md) |
 | S-03  | Flutter desktop — parsers / utils                           | pending     |        — |                                                 |
 | S-04  | Flutter desktop — UI screens                                | pending     |        — |                                                 |
 | S-05  | Flutter mobile — runtime                                    | pending     |        — |                                                 |
@@ -41,12 +41,12 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 
 | Severity | Open | Fixed | Deferred | Wontfix | Total |
 |----------|-----:|------:|---------:|--------:|------:|
-| BLOCKER  |    0 |     0 |        0 |       0 |     0 |
-| HIGH     |    0 |     1 |        0 |       0 |     1 |
-| MED      |    0 |     1 |        1 |       0 |     2 |
-| LOW      |    0 |     1 |        1 |       0 |     2 |
-| NIT      |    0 |     1 |        1 |       0 |     2 |
-| **All**  |    0 |     4 |        3 |       0 |     7 |
+| BLOCKER  |    0 |     0 |        1 |       0 |     1 |
+| HIGH     |    0 |     3 |        2 |       0 |     5 |
+| MED      |    0 |     7 |       11 |       0 |    18 |
+| LOW      |    0 |     2 |        4 |       0 |     6 |
+| NIT      |    0 |     1 |        2 |       0 |     3 |
+| **All**  |    0 |    13 |       20 |       0 |    33 |
 
 ## Conventions
 

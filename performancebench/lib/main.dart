@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'app.dart';
+import 'core/services/error_handler.dart';
 
 /// Debug mode flag — set via `--debug` command-line argument.
 /// Stored as a Riverpod provider so all widgets can access it (D-16).
@@ -31,8 +32,11 @@ void main(List<String> args) {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    // Parse --debug flag (D-16).
+    // Parse --debug flag (D-16) and propagate to the singleton ErrorHandler
+    // so its first log obeys the flag. The Riverpod provider is also kept
+    // for widget consumption.
     final debugMode = args.contains('--debug');
+    ErrorHandler().setDebugMode(debugMode);
 
     // Initialise window manager for custom title bar (D-11, §9.3).
     await windowManager.ensureInitialized();

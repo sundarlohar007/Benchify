@@ -260,15 +260,23 @@ class IosScreenrecordService {
       return null;
     }
 
-    // Build chunk metadata array
-    final chunksJson = _chunks.map((c) => {
-      'chunk': c.chunkIndex,
-      'file': c.fileName,
-      'startMs': c.startMs,
-    }).toList();
-
-    // Calculate total duration from chunk count (5 min per chunk)
-    final totalDurationMs = _chunks.length * 300000;
+    // Build chunk metadata array. Each chunk's duration is the gap to the
+    // next chunk's start; the last chunk runs from its start to wall-clock
+    // stop. Old code multiplied chunk count by a hardcoded 300_000 ms and
+    // mis-counted aborted runs.
+    final stopMs = DateTime.now().millisecondsSinceEpoch;
+    final chunksJson = <Map<String, dynamic>>[];
+    for (var i = 0; i < _chunks.length; i++) {
+      final c = _chunks[i];
+      final endMs = (i + 1 < _chunks.length) ? _chunks[i + 1].startMs : stopMs;
+      chunksJson.add({
+        'chunk': c.chunkIndex,
+        'file': c.fileName,
+        'startMs': c.startMs,
+        'durationMs': endMs - c.startMs,
+      });
+    }
+    final totalDurationMs = stopMs - _chunks.first.startMs;
     final primaryFile = _chunks.first.fileName;
 
     // Build Video record following ScreenrecordService pattern (per D-17)
