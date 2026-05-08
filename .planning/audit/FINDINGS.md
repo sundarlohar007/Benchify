@@ -480,3 +480,115 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-02
 - **Discovered:** 2026-05-08
+
+---
+
+### B-034 — `cpu_parser._extractPidTicks` mis-parses comm names containing ')'
+
+- **Severity:** MED
+- **Where:** `performancebench/lib/core/parsers/cpu_parser.dart:225-242`
+- **User-visible symptom:** Apps whose process name contains parentheses (e.g. `com.foo:my_proc(test)`) report wildly wrong CPU% — the parser splits on the first `)` and shifts every field index by one.
+- **Root cause:** `pidStat.indexOf(')')` returns the position of the first close-paren. /proc/`<pid>`/stat's `comm` field can contain spaces and parens, so only the *last* `)` reliably terminates `comm`. The Rust SDK parser at `performancebench-injector/sdk/src/metrics/cpu.rs::parse_proc_self_stat` already uses `rfind(')')`; the Dart side drifted.
+- **Fix:** Switch to `lastIndexOf(')')`; doc comment updated to point readers at the Rust side as the canonical implementation.
+- **Status:** FIXED:<pending>
+- **Related:** B-031 (stale PID compounds the symptom)
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-035 — `_extractSystemTicks` omits `steal` from total ticks
+
+- **Severity:** LOW
+- **Where:** `cpu_parser.dart:245-280`
+- **User-visible symptom:** On virtualised hosts (cloud / emulator), system CPU% is slightly off because hypervisor steal time is excluded from `totalTicks`.
+- **Root cause:** Sums `user + nice + system + idle + iowait + irq + softirq` — stops at field 7 (softirq). `steal` (field 8) and `guest`/`guest_nice` (9, 10) are not included.
+- **Fix (planned):** Sum through `steal` (and ignore `guest`/`guest_nice` since they're already counted inside `user`). Verify against §5.2 once.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-036 — `chargingSource='none'` while `charging=true` on status 2/5 fallback
+
+- **Severity:** LOW
+- **Where:** `battery_parser.dart:74-88` (pre-fix)
+- **User-visible symptom:** Some ROMs expose `status: 2` (charging) but no AC/USB/Wireless/Dock flag. The parser used to flag the device as charging while reporting `chargingSource='none'`, which is the same value it returns when *not* charging — consumers couldn't distinguish the two.
+- **Root cause:** Final `else` branch wrote `'none'` for the fallback case.
+- **Fix:** Return `'unknown'` for the status-2/5-with-no-source case so consumers can branch on it.
+- **Status:** FIXED:<pending>
+- **Related:** —
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-037 — Redundant `? true : false` ternary on already-boolean expression
+
+- **Severity:** NIT
+- **Where:** `battery_parser.dart:72`
+- **User-visible symptom:** None.
+- **Root cause:** `(anyPowered || status == 2 || status == 5) ? true : false` is just `anyPowered || status == 2 || status == 5`.
+- **Fix:** Removed the ternary.
+- **Status:** FIXED:<pending>
+- **Related:** —
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-038 — Dead `fps < 0 ? 0 : fps` check
+
+- **Severity:** NIT
+- **Where:** `fps_parser.dart:186` (pre-fix)
+- **User-visible symptom:** None.
+- **Root cause:** `fps = 1000.0 / meanDelta` where `meanDelta > 0` (filtered upstream); the branch always passed through. The empty-deltas branch sets fps to 0.0 directly. Branch was unreachable as negative.
+- **Fix:** Drop the guard; pass `fps` through.
+- **Status:** FIXED:<pending>
+- **Related:** —
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-039 — `memory_parser` regex assumes Android 7+ dumpsys format
+
+- **Severity:** LOW
+- **Where:** `memory_parser.dart:73-99`
+- **User-visible symptom:** Devices on Android 6 and earlier may produce mostly-null memory subsections; the `TOTAL` line still works.
+- **Root cause:** `dumpsys meminfo` reformatted between Android 5/6 and 7; the parser anchors on Android 7+ headers (`Java Heap`, `Native Heap`, `EGL mtrack`, …). Older builds use different labels.
+- **Fix (planned):** Either drop pre-Android 7 support explicitly (most users are on 8+) or add a fallback table for the older labels.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-040 — `disk_io_parser` device list missing `nvme*`
+
+- **Severity:** LOW
+- **Where:** `disk_io_parser.dart:53`
+- **User-visible symptom:** Newer flagships using NVMe storage (e.g. some 2024+ Pixels and Snapdragon-X laptops booted as Android-on-x86) report null disk I/O.
+- **Root cause:** Hardcoded match for `sda`, `mmcblk0`, `vda`. Modern devices may expose primary storage as `nvme0n1`.
+- **Fix (planned):** Match `nvme0n1` (and similar) in addition to the existing list.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-041 — `SdkState` mutable shared state without synchronization
+
+- **Severity:** LOW
+- **Where:** `core/sdk/sdk_state.dart`
+- **User-visible symptom:** None observed yet. Risk: a settings UI mutation racing with a live profiling tick reads a partially updated config.
+- **Root cause:** All five fields are plain mutable bools / ints, with no `ChangeNotifier` or lock guarding them. Riverpod isn't aware of the writes.
+- **Fix (planned):** Convert to a Riverpod `StateNotifier` so reads go through the framework's read-your-writes guarantee, and writes invalidate dependents. Couples to settings UI in S-04.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-03
+- **Discovered:** 2026-05-08
