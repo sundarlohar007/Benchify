@@ -114,3 +114,369 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-01
 - **Discovered:** 2026-05-08
+
+---
+
+### B-008 — Battery design capacity reads the wrong sysfs file
+
+- **Severity:** HIGH
+- **Where:** `performancebench/lib/core/services/adb_service.dart:515-524` (pre-fix)
+- **User-visible symptom:** `static_device.battery_capacity_mah` ends up holding the device's *current charge percentage* (0-100) instead of mAh design capacity. Comparison/trend dashboards built off this column are nonsense.
+- **Root cause:** Fallback path read `/sys/class/power_supply/battery/capacity`, which the Linux power-supply class exports as the current charge fraction (0-100). The design-capacity field is `charge_full_design` (µAh).
+- **Fix:** Read `charge_full_design`, divide by 1000, sanity-check the value (>100k µAh, <50 Ah) to reject misconfigured ROMs that keep the percentage layout.
+- **Status:** FIXED:e4b1933
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-009 — `logcat -d` then `-c` race drops launch events
+
+- **Severity:** MED
+- **Where:** `adb_service.dart:799-820`
+- **User-visible symptom:** Auto-detected app launches occasionally missed; the user has to start the session manually.
+- **Root cause:** `runShellCommand('logcat -d')` dumps the buffer; the next call clears it (`logcat -c`). Lines that arrive between the two calls are wiped without ever being read.
+- **Fix (planned):** Switch to `logcat -T <last-ts>` filter and stop clearing the buffer; or pipe logcat continuously instead of polling.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-010 — `pullFile` accepts path-traversal in `remotePath`
+
+- **Severity:** MED
+- **Where:** `adb_service.dart:230-255`
+- **User-visible symptom:** A caller passing `/sdcard/../etc/passwd` would read outside the intended sandbox.
+- **Root cause:** Validation is `startsWith('/sdcard/')` / `startsWith('/data/local/tmp/')` only — `..` segments are not normalised.
+- **Fix (planned):** Resolve `..` segments before checking; reject any path containing `..`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-011 — `collectStaticData` runs ADB calls sequentially
+
+- **Severity:** MED
+- **Where:** `adb_service.dart:416-579`
+- **User-visible symptom:** Picking a device freezes the UI for ~10-15 s while five `adb shell` calls run back-to-back, each with 3 s timeout.
+- **Root cause:** Calls are sequential `await`s; there is no `Future.wait` parallelisation.
+- **Fix (planned):** Wrap independent calls in `Future.wait`; keep the 3 s per-call timeout.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-012 — `startLogcatMonitor` leaks `StreamController` on cancel
+
+- **Severity:** MED
+- **Where:** `adb_service.dart:795-826`
+- **User-visible symptom:** Long-lived sessions accrue memory; events emitted after a logical cancel can sneak through.
+- **Root cause:** `onCancel` flips `stopped = true` but never closes the controller; the recursive `poll()` keeps a reference alive.
+- **Fix (planned):** Close the controller in `onCancel`; null the field; guard `controller.add` against post-close state.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-018 (same shape in InjectionService — fixed there)
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-013 — Recording duration assumes every chunk is exactly 300 s
+
+- **Severity:** MED
+- **Where:** `screenrecord_service.dart:230-234, 257-261`; `ios_screenrecord_service.dart:271`
+- **User-visible symptom:** A session stopped mid-chunk reports the wrong duration; gap-between-chunks calculation goes negative; UI scrub bar shows wrong total length.
+- **Root cause:** Both services compute `chunkEnd = chunkStart + 300000` and `totalDuration = lastStart - firstStart + 300000`, regardless of when the chunk actually ended.
+- **Fix:** Capture wall-clock `stopMs` once at top of `stop()`; per-chunk duration is `(nextChunk.startMs - chunkStartMs)` for non-last and `(stopMs - chunkStartMs)` for last; total duration is `stopMs - recordingStart`.
+- **Status:** FIXED:e4b1933
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-014 — `startPcRecording` is a stub
+
+- **Severity:** HIGH
+- **Where:** `screenrecord_service.dart:357-377`
+- **User-visible symptom:** User clicks Record on the PC-profiling screen; method returns true; nothing is recorded.
+- **Root cause:** Method only mutates internal state and prints a log line. No probe message, no subprocess, no chunk timer.
+- **Fix (planned):** Wire to `PcProbeConnection.startVideo` (already implemented in `pcprobe_service.dart:170`) and track chunk metadata via the probe's NDJSON stream.
+- **Status:** DEFERRED-TO-S15
+- **Related:** B-015
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-015 — `stopPcRecording` writes empty Video record
+
+- **Severity:** HIGH
+- **Where:** `screenrecord_service.dart:383-419`
+- **User-visible symptom:** A PC-profiling session ends with a `Video` row that has `filepath=''`, `durationMs=0`, `fileSizeBytes=0`. Session detail view appears broken.
+- **Root cause:** Counterpart to B-014 — `stopPcRecording` writes whatever default state was set, since nothing populated it.
+- **Fix (planned):** Land alongside B-014 — pull chunk metadata from probe `eventStream`.
+- **Status:** DEFERRED-TO-S15
+- **Related:** B-014
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-016 — `ScreenshotService` saves identical 1×1 black JPEGs
+
+- **Severity:** BLOCKER
+- **Where:** `screenshot_service.dart:185-265`
+- **User-visible symptom:** Every screenshot stored is the same hardcoded 1×1 black-pixel JPEG. The "Screenshots" tab in session detail shows what looks like a corrupted gallery.
+- **Root cause:** `_downscale` returns a solid dark grey buffer (no PNG decode logic at all); `_encodeJpegBasic` returns the result of `_minimalJpeg()`, a 256-byte hardcoded literal. The class commentary even says "placeholder that compiles". The PNG dimensions parser at the top is real, but everything past `_parsePngDimensions` is fake.
+- **Fix (planned):** Two-step:
+  1. **S-04 (UI)**: hide / disable the screenshot toggle until the real implementation lands. Avoids polluting the DB with junk.
+  2. **S-20 (or follow-up slice)**: add `image: ^4.x` to pubspec, implement real PNG decode + JPEG encode using `img.copyResize` + `img.encodeJpg`.
+- **Status:** DEFERRED-TO-S04 (UI gate) → S-20 (real impl)
+- **Related:** B-017
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-017 — `AdbServiceRaw.runShellCommandRaw` ignores its arguments
+
+- **Severity:** MED
+- **Where:** `screenshot_service.dart:268-291`
+- **User-visible symptom:** Bypasses the resolved ADB path; ignores the caller's `command`. Couples B-016 to the wrong execution surface.
+- **Root cause:** Extension hardcodes `Process.run('adb', ['-s', deviceSerial, 'exec-out', 'screencap', '-p'])`. Caller's `command` parameter is dropped.
+- **Fix (planned):** Use the resolved `_adbPath`; honour `command` (split into argv); land alongside B-016 since they're the same code path.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-016
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-018 — `_controller.add` after `close()` race
+
+- **Severity:** MED
+- **Where:** `injection_service.dart:280-291` and `ipa_injection_service.dart:284-295` (pre-fix)
+- **User-visible symptom:** Injection occasionally crashes the desktop app with `Bad state: Cannot add new events after calling close`. Repro is timing-dependent: stdout listener emits the terminal `done` event and closes the controller, then `exitCode.then` fires for a non-zero code and tries to add an `error` event to the closed controller.
+- **Root cause:** No `isClosed` guard around `_controller?.add`.
+- **Fix:** Added `_safeAdd` / `_safeClose` helpers that consult `isClosed` before mutating; rewired all add/close call sites.
+- **Status:** FIXED:e4b1933
+- **Related:** B-019, B-022
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-019 — `stop()` nulls `_process` before delayed sigkill
+
+- **Severity:** MED
+- **Where:** `injection_service.dart:306-319` and `ipa_injection_service.dart:309-322` (pre-fix)
+- **User-visible symptom:** SIGKILL fallback never fires; if the Python process ignores SIGTERM, the user has to kill it via Task Manager / `kill -9`.
+- **Root cause:** `_process = null` was set synchronously, then a `Future.delayed(3s)` callback referenced `_process!.kill(sigkill)` — the bang fails because `_process` is now null.
+- **Fix:** Capture local `p = _process` before clearing; delayed callback closes over `p`. Wrapped in `try/catch` to swallow "already exited".
+- **Status:** FIXED:e4b1933
+- **Related:** B-018, B-022
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-020 — `pythonPath` default `'python3'` breaks injector on Windows
+
+- **Severity:** MED
+- **Where:** `injection_service.dart:97`
+- **User-visible symptom:** Windows users see "step=error, status=fail" with stderr `'python3' is not recognized as an internal or external command`. The entire APK injection flow is unusable on the most common dev platform.
+- **Root cause:** Default value hardcoded as `'python3'`. Windows ships `python.exe` (no `3` suffix); the launcher only works inside virtualenvs / Anaconda.
+- **Fix:** Constructor calls `_defaultPython()` which returns `'python'` on Windows and `'python3'` elsewhere. Caller can still override.
+- **Status:** FIXED:e4b1933
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-021 — No 5-min subprocess timeout despite T-04-05 doc comment
+
+- **Severity:** MED
+- **Where:** `injection_service.dart` class-level docstring + `_spawnProcess`
+- **User-visible symptom:** A wedged Python injector hangs indefinitely; user has to abort manually.
+- **Root cause:** Comment promises "T-04-05: Subprocess timeout at 5 minutes. SIGTERM -> SIGKILL." but no `Timer` or `.timeout()` is wired.
+- **Fix (planned):** Wrap process spawn in a 5-min watchdog timer that calls `stop()` on expiry; expose timeout duration as a constructor argument.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-022
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-022 — `IpaInjectionService` shares B-018 / B-019 / B-021
+
+- **Severity:** MED
+- **Where:** `ipa_injection_service.dart`
+- **User-visible symptom:** Same race + signal + timeout problems as the Android-side `InjectionService`, but on macOS-only IPA path.
+- **Root cause:** The IPA service was modeled on the APK service and inherited the same bugs verbatim.
+- **Fix:** B-018 (close-after-add) and B-019 (process-null race) ported across; B-021 (timeout) deferred together with the Android side.
+- **Status:** PARTIAL FIX (B-018, B-019 fixed at e4b1933); B-021 portion DEFERRED-TO-S20
+- **Related:** B-018, B-019, B-021
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-023 — `ErrorHandler.setDebugMode()` never called from `--debug` flag
+
+- **Severity:** MED
+- **Where:** `error_handler.dart:32` + `main.dart` (caller side)
+- **User-visible symptom:** Running with `--debug` correctly populates `debugModeProvider`, but the singleton `ErrorHandler` keeps its default `_debugMode = false` — error logs print one-line release format with no stack trace, even in debug runs.
+- **Root cause:** No code path calls `ErrorHandler().setDebugMode(...)`. The Riverpod provider and the singleton are decoupled.
+- **Fix:** `main.dart` now calls `ErrorHandler().setDebugMode(debugMode)` immediately after parsing `args.contains('--debug')`.
+- **Status:** FIXED:e4b1933
+- **Related:** B-002
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-024 — `UpdateService._currentVersion = '1.0.0'` shadows real release line
+
+- **Severity:** HIGH
+- **Where:** `update_service.dart:28`
+- **User-visible symptom:** All current releases are `0.1.x`. Comparing `0.1.x` against `1.0.0` always returns "you're up to date", so the in-app update banner never fires.
+- **Root cause:** Constant pinned to `'1.0.0'` and never updated.
+- **Fix:** Interim hardcode to `'0.1.1'` (matches the only published GitHub release as of audit time) with a TODO referencing S-19 to wire `package_info_plus` so the version follows the build number.
+- **Status:** FIXED:e4b1933
+- **Related:** B-025
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-025 — `_compareVersions` can't parse pre-release suffixes
+
+- **Severity:** MED
+- **Where:** `update_service.dart:84-93`
+- **User-visible symptom:** Latest release `0.1.1-rc.6` is parsed as `[0, 1, null]` (since `int.tryParse('1-rc') == null`), which collapses to `[0, 1, 0]` and gives a wrong "newer" verdict.
+- **Root cause:** Splits on `.` then tries each segment as int — pre-release suffixes break the parse.
+- **Fix:** Strip everything from `-` onward before splitting. Strict semver pre-release ordering deferred — sufficient for the "is there a new release line" question that the banner answers.
+- **Status:** FIXED:e4b1933
+- **Related:** B-024
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-026 — Plugin install backup `.bak` overwrites prior backup
+
+- **Severity:** MED
+- **Where:** `plugin_install_service.dart:91, 140, 265, 320`
+- **User-visible symptom:** Run install → uninstall → reinstall → uninstall → the `.bak` written first round is gone, replaced by a backup of the *modified* manifest. User can't roll back to the original.
+- **Root cause:** Backup path is always `'$manifestPath.bak'`. Each run clobbers prior copies.
+- **Fix (planned):** Suffix backup with timestamp or a monotonic counter; only write backup when `.bak` doesn't already exist.
+- **Status:** DEFERRED-TO-S13
+- **Related:** B-027
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-027 — `PluginInstallService._pluginSourceDir = 'plugins'` is cwd-relative
+
+- **Severity:** MED
+- **Where:** `plugin_install_service.dart:37`
+- **User-visible symptom:** Engine plugin install fails with "Plugin source files not bundled with this build" unless the user happened to launch the app from the right directory.
+- **Root cause:** Constant path `'plugins'` resolves against `pwd`, not the app's bundle directory.
+- **Fix (planned):** Resolve via `Platform.resolvedExecutable` and walk up to the app's bundle/data root; fall back to a packaged-asset path for installer builds.
+- **Status:** DEFERRED-TO-S13
+- **Related:** B-026
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-028 — `_resolveChipsetVendor` matches too broadly
+
+- **Severity:** LOW
+- **Where:** `adb_service.dart:601-616`
+- **User-visible symptom:** Some devices get the wrong chipset vendor in static metadata (e.g. anything with `mt` in `ro.board.platform` is tagged MediaTek; `hi`-prefixed boards become HiSilicon).
+- **Root cause:** Substring matches like `lower.contains('hi')`, `lower.contains('mt')`, `lower.contains('sc')` are too permissive.
+- **Fix (planned):** Anchor matches to word boundaries; bias toward known-good prefix patterns (`mt6`, `sm[0-9]+`, `hi3`, …).
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-029 — `collectAppData` minSdk regex blocked by unrelated gate
+
+- **Severity:** LOW
+- **Where:** `adb_service.dart:684-691` (pre-fix)
+- **User-visible symptom:** `static_app.min_sdk` mostly stayed null because the gate was structurally wrong, even though the regex itself worked.
+- **Root cause:** The minSdk match was nested inside `if (compileSdkVersionCodename match == null)` — leftover from an earlier refactor. The gate happens to evaluate as true for typical lines, so it usually did fire, but the dependency was confusing and brittle.
+- **Fix:** Match `minSdkVersion=(\d+)` directly without the unrelated gate.
+- **Status:** FIXED:e4b1933
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-030 — `MetricCollector.statusStream` getter throws if accessed before `start()`
+
+- **Severity:** LOW
+- **Where:** `metric_collector.dart:94`
+- **User-visible symptom:** A widget that subscribes to `statusStream` before the collector has started will crash with `Null check operator used on a null value`.
+- **Root cause:** Getter does `_statusController!`. The controller is only created inside `start()`.
+- **Fix (planned):** Lazy-init the controller on first access, or return `Stream.empty()` until `start()` runs.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-031 — `MetricCollector._pid` discovered once; stale across restarts
+
+- **Severity:** LOW
+- **Where:** `metric_collector.dart:155-185, 35`
+- **User-visible symptom:** If the target Android app crashes and Android assigns a new PID, the collector continues to read `/proc/<old-pid>` paths and silently returns no useful samples.
+- **Root cause:** PID resolved once during `_initSession`; never refreshed.
+- **Fix (planned):** Periodically re-resolve PID (every N seconds, or on consecutive failure threshold) via `pidof`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-032 — `MetricCollector._consecutiveFailures` declared, never used
+
+- **Severity:** NIT
+- **Where:** `metric_collector.dart:44`
+- **User-visible symptom:** None.
+- **Root cause:** Field reserved for a back-off / abort policy that wasn't implemented.
+- **Fix (planned):** Either implement the back-off (auto-stop after N failed ticks) or delete the field.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
+
+---
+
+### B-033 — `PcProbeConnection._toSnakeCase` is a no-op despite the name
+
+- **Severity:** NIT
+- **Where:** `pcprobe_service.dart:121-124`
+- **User-visible symptom:** None.
+- **Root cause:** Comment explains the probe already emits snake_case, so the method just returns the input. The method name is misleading.
+- **Fix (planned):** Inline the call site or rename the method to `_passThrough` to match what it does.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-02
+- **Discovered:** 2026-05-08
