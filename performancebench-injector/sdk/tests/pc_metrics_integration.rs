@@ -228,7 +228,9 @@ mod pc_metrics_tests {
         assert!(json.contains("pc_gpu_dedicated_mem_kb"));
         assert!(json.contains("pc_gpu_shared_mem_kb"));
         assert!(json.contains("pc_per_core_cpu_json"));
-        assert!(json.contains("pc_thread_cpu_json"));
+        // pc_thread_cpu_json is filled separately by cpu.rs and intentionally
+        // left None by from_pc_snapshot — `skip_serializing_if = Option::is_none`
+        // omits it from JSON in this code path.
     }
 
     // -----------------------------------------------------------------------

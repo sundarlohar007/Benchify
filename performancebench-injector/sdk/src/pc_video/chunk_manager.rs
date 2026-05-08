@@ -120,7 +120,7 @@ impl ChunkManager {
     /// Build ffmpeg concat demuxer format file content.
     ///
     /// Returns a string suitable for writing to a concat list file:
-    /// ```
+    /// ```text
     /// file 'chunk_000.h264'
     /// file 'chunk_001.h264'
     /// ```

@@ -7,8 +7,9 @@ use std::time::Duration;
 /// FPS as 1e9 / avg_frame_delta_ns over a 1-second window.
 #[test]
 fn test_fps_calculation_with_frame_deltas() {
-    // Simulate frame timestamps at 60fps (16.67ms per frame)
-    let frame_deltas_ns: Vec<u64> = (0..60).map(|i| 16_666_667u64 * (i + 1)).collect();
+    // compute_fps takes per-frame deltas (ns between consecutive frames),
+    // not cumulative timestamps. 60fps = ~16.67ms = 16_666_667ns per delta.
+    let frame_deltas_ns: Vec<u64> = vec![16_666_667u64; 60];
     let fps = performancebench_sdk::metrics::fps::compute_fps(&frame_deltas_ns);
     // Should be approximately 60 fps
     assert!(fps > 55.0 && fps < 65.0, "Expected ~60 fps, got {}", fps);
@@ -18,10 +19,12 @@ fn test_fps_calculation_with_frame_deltas() {
 /// Extracts utime + stime from fields 14-15 (1-indexed) and computes app CPU percentage.
 #[test]
 fn test_cpu_parser_parses_proc_self_stat() {
+    // Per proc(5): utime is field 14, stime is field 15 (1-indexed, after comm).
+    // In this line, those positions are 100 and 50.
     let stat_line = "12345 (my.app) S 1 12345 12345 0 -1 4194304 1234 56 78 90 100 50 25 20 15 0 0 0 12345 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
     let (utime, stime) = performancebench_sdk::metrics::cpu::parse_proc_self_stat(stat_line);
-    assert_eq!(utime, 50, "Expected utime=50, got {}", utime);
-    assert_eq!(stime, 25, "Expected stime=25, got {}", stime);
+    assert_eq!(utime, 100, "Expected utime=100, got {}", utime);
+    assert_eq!(stime, 50, "Expected stime=50, got {}", stime);
 }
 
 /// Test 3: Memory parser extracts PSS from ActivityManager-like output.

@@ -77,18 +77,21 @@ mod tests {
 
     #[test]
     fn test_parse_proc_self_stat_normal() {
+        // /proc/self/stat fields (1-indexed per proc(5)):
+        //   1=pid 2=comm 3=state 4=ppid 5=pgrp 6=session 7=tty 8=tpgid 9=flags
+        //   10=minflt 11=cminflt 12=majflt 13=cmajflt 14=utime 15=stime
         let line = "12345 (my.app) S 1 12345 12345 0 -1 4194304 1234 56 78 90 100 50 25 20 15 0 0 0 12345 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
         let (utime, stime) = parse_proc_self_stat(line);
-        assert_eq!(utime, 50);
-        assert_eq!(stime, 25);
+        assert_eq!(utime, 100);
+        assert_eq!(stime, 50);
     }
 
     #[test]
     fn test_parse_proc_self_stat_spaces_in_name() {
         let line = "42 (My Cool App) S 1 42 42 0 -1 1073741824 500 0 0 100 200 300 400 50 60 0 0 0 1000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
         let (utime, stime) = parse_proc_self_stat(line);
-        assert_eq!(utime, 300);
-        assert_eq!(stime, 400);
+        assert_eq!(utime, 200);
+        assert_eq!(stime, 300);
     }
 
     #[test]

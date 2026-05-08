@@ -102,9 +102,14 @@ fn handle_start_session(payload: &Value) -> String {
     // Set session ID in transport layer
     transport::set_session_id(session_id);
 
-    // Start streaming if not already active
+    // Start streaming if not already active.
+    // start_metric_collection() runs an infinite collect-loop, so it must
+    // run on a dedicated thread — calling it inline would block the caller
+    // (and, since we still hold AUTOMATION_STATE, every other handler too).
     if !state.profiling_active {
-        transport::start_metric_collection();
+        std::thread::spawn(|| {
+            transport::start_metric_collection();
+        });
         transport::resume_streaming();
         state.profiling_active = true;
         state.paused = false;
@@ -438,6 +443,9 @@ mod tests {
 
     #[test]
     fn test_marker_without_session() {
+        // AUTOMATION_STATE is shared across parallel tests via lazy_static;
+        // ensure profiling is inactive before asserting MARKER fails.
+        handle_command("STOP_SESSION", "{}");
         let response = handle_command("MARKER", r#"{"note":"test"}"#);
         let json = parse_response(&response);
         assert_eq!(json["status"], "error");

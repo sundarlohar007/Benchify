@@ -22,7 +22,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Run SDK unit tests
         working-directory: performancebench-injector/sdk
-        run: cargo test --verbose
+        # --test-threads=1: tests share lazy_static globals (AUTOMATION_STATE,
+        # transport queues); parallel runs race on shared state.
+        run: cargo test --verbose -- --test-threads=1
 
   clippy:
     name: Clippy
