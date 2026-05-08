@@ -1021,7 +1021,7 @@ Schema per entry:
 - **User-visible symptom:** iOS home-screen label reads "Performancebench Mobile" — wrong branding. Doesn't match the Android `android:label="Benchify Mobile"` (post-B-066) or the in-app `MaterialApp.title="Benchify Mobile"`.
 - **Root cause:** Flutter scaffolder default; never updated when the project was rebranded.
 - **Fix:** `CFBundleDisplayName` → `"Benchify Mobile"`.
-- **Status:** FIXED:<pending-S07>
+- **Status:** FIXED:1d86ba1
 - **Related:** B-066, B-072
 - **Found in:** S-07
 - **Discovered:** 2026-05-08
@@ -1035,7 +1035,7 @@ Schema per entry:
 - **User-visible symptom:** Some system UIs (Settings → General → iPhone Storage, App Switcher in some cases) fall back to `CFBundleName` when `CFBundleDisplayName` isn't surfaced. User saw `performancebench_mobile` snake-case there.
 - **Root cause:** Same scaffolder leak as B-071.
 - **Fix:** `CFBundleName` → `"Benchify Mobile"`.
-- **Status:** FIXED:<pending-S07>
+- **Status:** FIXED:1d86ba1
 - **Related:** B-071, B-066
 - **Found in:** S-07
 - **Discovered:** 2026-05-08
