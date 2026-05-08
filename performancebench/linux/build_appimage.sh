@@ -28,12 +28,26 @@ echo "==> Creating AppImage..."
 mkdir -p AppDir
 cp -r "${BUILD_DIR}"/* AppDir/
 
-# Create minimal .desktop file for linuxdeploy
+# Stage icon for linuxdeploy. Reuse the macOS asset (PNG) — we don't have a
+# Linux-native icon file. linuxdeploy needs the icon at a path it can find via
+# --icon-file, OR matching the desktop file's Icon= name under hicolor.
+ICON_SRC="../macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png"
+ICON_DST="AppDir/performancebench.png"
+if [ -f "${ICON_SRC}" ]; then
+  cp "${ICON_SRC}" "${ICON_DST}"
+else
+  echo "::error::Icon source missing: ${ICON_SRC}"
+  exit 1
+fi
+
+# Create minimal .desktop file for linuxdeploy. Icon= must be present and must
+# match the icon basename (no extension) for linuxdeploy to accept it.
 mkdir -p AppDir/usr/share/applications
 cat > AppDir/usr/share/applications/performancebench.desktop << 'DESKTOPEOF'
 [Desktop Entry]
 Name=PerformanceBench
 Exec=performancebench
+Icon=performancebench
 Type=Application
 Categories=Development;
 DESKTOPEOF
@@ -43,7 +57,8 @@ export APPIMAGE_EXTRACT_AND_RUN=1
 "${LINUXDEPLOY}" \
   --appdir AppDir \
   --output appimage \
-  --desktop-file AppDir/usr/share/applications/performancebench.desktop
+  --desktop-file AppDir/usr/share/applications/performancebench.desktop \
+  --icon-file "${ICON_DST}"
 
 # Rename output (linuxdeploy emits something like PerformanceBench-x86_64.AppImage)
 APPIMAGE_OUT=$(ls -1 ./*.AppImage 2>/dev/null | head -1 || true)

@@ -21,7 +21,8 @@ SetCompressor /SOLID lzma
 !define MUI_ICON "..\..\windows\runner\resources\app_icon.ico"
 !define MUI_UNICON "..\..\windows\runner\resources\app_icon.ico"
 
-!insertmacro MUI_PAGE_LICENSE "..\..\LICENSE"
+; LICENSE lives at the repo root; this script is at performancebench/windows/installer/.
+!insertmacro MUI_PAGE_LICENSE "..\..\..\LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_UNPAGE_CONFIRM
