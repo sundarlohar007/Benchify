@@ -38,19 +38,19 @@ Type=Application
 Categories=Development;
 DESKTOPEOF
 
+# APPIMAGE_EXTRACT_AND_RUN works around missing FUSE on minimal CI runners.
+export APPIMAGE_EXTRACT_AND_RUN=1
 "${LINUXDEPLOY}" \
   --appdir AppDir \
   --output appimage \
-  --desktop-file AppDir/usr/share/applications/performancebench.desktop 2>/dev/null || true
+  --desktop-file AppDir/usr/share/applications/performancebench.desktop
 
-# Rename output
-if ls *.AppImage 1>/dev/null 2>&1; then
-  mv ./*.AppImage "${OUTPUT}"
-  chmod +x "${OUTPUT}"
-  echo "✅ AppImage created: ${OUTPUT}"
-else
-  # Fallback: simple tar.gz
-  echo "==> AppImage not available — creating tar.gz fallback..."
-  tar -czf "${APP_NAME}-${VERSION}-linux-x64.tar.gz" -C build/linux/x64/release bundle
-  echo "✅ Archive created: ${APP_NAME}-${VERSION}-linux-x64.tar.gz"
+# Rename output (linuxdeploy emits something like PerformanceBench-x86_64.AppImage)
+APPIMAGE_OUT=$(ls -1 ./*.AppImage 2>/dev/null | head -1 || true)
+if [ -z "${APPIMAGE_OUT}" ]; then
+  echo "::error::linuxdeploy did not produce an AppImage"
+  exit 1
 fi
+mv "${APPIMAGE_OUT}" "${OUTPUT}"
+chmod +x "${OUTPUT}"
+echo "✅ AppImage created: ${OUTPUT}"

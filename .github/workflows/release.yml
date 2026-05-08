@@ -64,7 +64,12 @@ jobs:
       - name: Install Linux deps
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libsecret-1-dev libglib2.0-dev cmake pkg-config libasound2-dev libpulse-dev libmpv-dev mpv
+          # libfuse2 is required by linuxdeploy/AppImage runtime on Ubuntu 24.04
+          # (default ships libfuse3; AppImage tooling is not yet libfuse3-aware).
+          sudo apt-get install -y \
+            ninja-build libgtk-3-dev libsecret-1-dev libglib2.0-dev cmake pkg-config \
+            libasound2-dev libpulse-dev libmpv-dev mpv \
+            libfuse2 fuse
 
       - name: Build Linux desktop
         working-directory: performancebench
@@ -79,19 +84,12 @@ jobs:
         run: |
           VER="${{ needs.resolve-version.outputs.version }}"
           mkdir -p dist
-          # build_appimage.sh writes *.AppImage somewhere — find and rename
           APPIMAGE=$(find performancebench -maxdepth 4 -name "*.AppImage" | head -1)
-          if [ -n "$APPIMAGE" ]; then
-            cp "$APPIMAGE" "dist/performancebench-${VER}-linux-x86_64.AppImage"
-          else
-            TARBALL=$(find performancebench -maxdepth 4 -name "*.tar.gz" | head -1)
-            if [ -n "$TARBALL" ]; then
-              cp "$TARBALL" "dist/performancebench-${VER}-linux-x86_64.tar.gz"
-            else
-              echo "::error::No AppImage or tar.gz produced"
-              exit 1
-            fi
+          if [ -z "$APPIMAGE" ]; then
+            echo "::error::build_appimage.sh produced no AppImage"
+            exit 1
           fi
+          cp "$APPIMAGE" "dist/performancebench-${VER}-linux-x86_64.AppImage"
 
       - name: Build Android APK
         working-directory: performancebench-mobile
@@ -126,7 +124,7 @@ jobs:
       - name: Install macOS deps
         run: brew install cocoapods 2>/dev/null || true
 
-      - name: Build macOS desktop DMG
+      - name: Build macOS desktop DMG + PKG
         working-directory: performancebench
         env:
           VERSION: ${{ needs.resolve-version.outputs.version }}
@@ -134,8 +132,9 @@ jobs:
           flutter pub get
           flutter build macos --release
           bash macos/package_dmg.sh
+          bash macos/package_pkg.sh
 
-      - name: Stage DMG
+      - name: Stage DMG + PKG
         run: |
           VER="${{ needs.resolve-version.outputs.version }}"
           mkdir -p dist
@@ -145,6 +144,12 @@ jobs:
             exit 1
           fi
           cp "$DMG" "dist/performancebench-${VER}-macos-universal.dmg"
+          PKG=$(find performancebench -maxdepth 4 -name "*.pkg" | head -1)
+          if [ -z "$PKG" ]; then
+            echo "::error::No PKG produced"
+            exit 1
+          fi
+          cp "$PKG" "dist/performancebench-${VER}-macos-universal.pkg"
 
       - name: Build iOS IPA (unsigned)
         working-directory: performancebench-mobile
@@ -195,11 +200,26 @@ jobs:
         run: |
           $ver = "${{ needs.resolve-version.outputs.version }}"
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          $exe = Get-ChildItem -Path performancebench -Recurse -Filter '*.exe' |
-                 Where-Object { $_.Name -notmatch 'performancebench\.exe$' } |
-                 Select-Object -First 1
-          if (-not $exe) { Write-Error "No installer .exe produced"; exit 1 }
-          Copy-Item $exe.FullName "dist/performancebench-${ver}-windows-x64.exe"
+          # NSIS OutFile writes relative to script CWD. joncloud/makensis-action
+          # may run from repo root or script dir depending on version, so search
+          # both with an explicit installer-name pattern (NSI hard-codes the
+          # 'performancebench-setup-' prefix). Fail loud if missing or too small.
+          $candidates = @(
+            (Get-ChildItem -Path . -Recurse -Filter 'performancebench-setup-*.exe' -ErrorAction SilentlyContinue)
+          ) | Sort-Object Length -Descending
+          if (-not $candidates -or $candidates.Count -eq 0) {
+            Write-Error "No performancebench-setup-*.exe found anywhere — NSIS step failed silently"
+            Get-ChildItem -Path . -Recurse -Filter '*.exe' | Format-Table FullName, Length
+            exit 1
+          }
+          $exe = $candidates[0]
+          # Sanity: real NSIS installer with bundled Flutter app should be >= 10 MB.
+          if ($exe.Length -lt 10MB) {
+            Write-Error ("Installer suspiciously small: {0} bytes ({1})" -f $exe.Length, $exe.FullName)
+            exit 1
+          }
+          Write-Host ("Staging installer: {0} ({1:N0} bytes)" -f $exe.FullName, $exe.Length)
+          Copy-Item $exe.FullName "dist/performancebench-${ver}-windows-x64-setup.exe"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -279,9 +299,10 @@ jobs:
             ### Desktop profiler
             | Platform | File | Notes |
             |---|---|---|
-            | Windows | `performancebench-${{ needs.resolve-version.outputs.version }}-windows-x64.exe` | NSIS installer. Unsigned — SmartScreen will warn; click *More info* → *Run anyway*. |
-            | macOS   | `performancebench-${{ needs.resolve-version.outputs.version }}-macos-universal.dmg` | Unsigned — Gatekeeper will warn; right-click *Open* the first time, or `xattr -dr com.apple.quarantine /Applications/PerformanceBench.app`. |
-            | Linux   | `performancebench-${{ needs.resolve-version.outputs.version }}-linux-x86_64.AppImage` | `chmod +x *.AppImage && ./*.AppImage`. Requires `libmpv` for video features. |
+            | Windows     | `performancebench-${{ needs.resolve-version.outputs.version }}-windows-x64-setup.exe` | NSIS installer wizard. Unsigned — SmartScreen will warn; click *More info* → *Run anyway*. |
+            | macOS (DMG) | `performancebench-${{ needs.resolve-version.outputs.version }}-macos-universal.dmg` | Drag `PerformanceBench.app` to `/Applications`. Unsigned — Gatekeeper will warn; right-click *Open* the first time, or `xattr -dr com.apple.quarantine /Applications/PerformanceBench.app`. |
+            | macOS (PKG) | `performancebench-${{ needs.resolve-version.outputs.version }}-macos-universal.pkg` | Wizard-driven installer that drops the app into `/Applications`. Unsigned — same Gatekeeper warning, allow under *System Settings* → *Privacy & Security*. |
+            | Linux       | `performancebench-${{ needs.resolve-version.outputs.version }}-linux-x86_64.AppImage` | `chmod +x *.AppImage && ./*.AppImage`. Requires `libmpv` for video features. |
 
             ### Mobile companion (FPS overlay)
             | Platform | File | Install |
