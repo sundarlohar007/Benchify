@@ -31,9 +31,6 @@ fn test_parse_net_dev_skips_loopback_and_header() {
 
 #[test]
 fn test_classify_interface_wifi_cellular_other() {
-    // Use the module's classify function (may need to be public or test-accessible)
-    let net = &performancebench_sdk::metrics::net_per_process;
-
     // We test via the collect interface
     let wifi_iface = performancebench_sdk::metrics::net_per_process::NetInterface {
         name: "wlan0".into(),

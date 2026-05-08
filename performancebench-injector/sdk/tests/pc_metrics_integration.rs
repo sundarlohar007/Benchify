@@ -243,6 +243,6 @@ mod pc_metrics_tests {
         let snap = pdh::PcMetricsSnapshot::default();
         assert_eq!(snap.timestamp, 0);
         assert!(snap.fps.is_none());
-        assert!(snap.pc_handle_count.is_none());
+        assert!(snap.handle_count.is_none());
     }
 }
