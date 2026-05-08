@@ -927,3 +927,87 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
+
+---
+
+### B-065 — `INTERNET` permission missing from main `AndroidManifest.xml`
+
+- **Severity:** HIGH
+- **Where:** `performancebench-mobile/android/app/src/main/AndroidManifest.xml` (pre-fix)
+- **User-visible symptom:** Release / profile APK launches but every API call fails with `SocketException: failed host lookup` or "Failed to connect" toast. The companion app is unusable when distributed via the Release artifact (`performancebench-mobile-*.apk` from `release.yml`). Debug builds work because `app/src/debug/AndroidManifest.xml` declares `INTERNET` separately.
+- **Root cause:** `INTERNET` was added to the debug + profile manifests during scaffolding, but the main manifest never got it. AGP merges per-build-type manifests — so release builds inherit only the main manifest plus the (empty) release-specific tweaks.
+- **Fix:** Added `<uses-permission android:name="android.permission.INTERNET"/>` to the main manifest with a comment explaining why the debug-only declaration isn't enough.
+- **Status:** FIXED:<pending-S06>
+- **Related:** B-067, B-053
+- **Found in:** S-06
+- **Discovered:** 2026-05-08
+
+---
+
+### B-066 — App label is the raw module name
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/android/app/src/main/AndroidManifest.xml:3` (pre-fix)
+- **User-visible symptom:** Launcher icon labelled `performancebench_mobile`. Looks unfinished and doesn't match the in-app branding (`MaterialApp.title = 'Benchify Mobile'`).
+- **Root cause:** Flutter project scaffolder's default; never replaced.
+- **Fix:** Bumped to `"Benchify Mobile"` to align with the in-app title.
+- **Status:** FIXED:<pending-S06>
+- **Related:** —
+- **Found in:** S-06
+- **Discovered:** 2026-05-08
+
+---
+
+### B-067 — No `usesCleartextTraffic` config
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/android/app/src/main/AndroidManifest.xml`
+- **User-visible symptom:** A user pointing the app at a `http://192.168.…` server (B-058) succeeds at the network layer but Android 9+ blocks the cleartext connection by default. Confusing failure mode: connect succeeds in DNS but the actual request silently fails.
+- **Root cause:** No `android:usesCleartextTraffic` or `networkSecurityConfig` set; default = false on `targetSdk >= 28`.
+- **Fix (planned):** Either explicitly set `usesCleartextTraffic="false"` and reject HTTP in the connect dialog (B-058) or expose a per-host LAN exception via `networkSecurityConfig`. Decide alongside B-058 in S-20.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-058, B-053
+- **Found in:** S-06
+- **Discovered:** 2026-05-08
+
+---
+
+### B-068 — No backup / data extraction rules
+
+- **Severity:** LOW
+- **Where:** `performancebench-mobile/android/app/src/main/AndroidManifest.xml`
+- **User-visible symptom:** None directly. Risk: API token persisted via `SharedPreferences` (B-054) is auto-backed-up to Google Drive on Android 6+, becoming a credential exfiltration vector if the user's Google account is compromised.
+- **Root cause:** Android Auto Backup is on by default for `targetSdk >= 23`. No `android:fullBackupContent` / `android:dataExtractionRules` exclusion declared.
+- **Fix (planned):** Bundle with B-054 — opt the prefs file out of cloud backup once tokens are moved to `flutter_secure_storage`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-054
+- **Found in:** S-06
+- **Discovered:** 2026-05-08
+
+---
+
+### B-069 — Release `signingConfig` falls back to debug keys
+
+- **Severity:** LOW
+- **Where:** `performancebench-mobile/android/app/build.gradle.kts:33-39`
+- **User-visible symptom:** Each CI release generates an ephemeral debug key. Users who installed an earlier build must uninstall before installing a new release (Android refuses signature mismatches on update). The `release.yml` notes already warn about this.
+- **Root cause:** Scaffold default; no upload-key generation / signing configuration wired into Gradle.
+- **Fix (planned):** Provision a stable upload key (likely via GitHub Secrets), inject keystore + alias + passwords through env vars, and switch `signingConfig` accordingly. Pinned to S-19 (build/CI) where the release.yml lives.
+- **Status:** DEFERRED-TO-S19
+- **Related:** —
+- **Found in:** S-06
+- **Discovered:** 2026-05-08
+
+---
+
+### B-070 — Launch theme flashes white before Flutter renders
+
+- **Severity:** NIT
+- **Where:** `performancebench-mobile/android/app/src/main/res/values/styles.xml`, `drawable/launch_background.xml` (pre-fix)
+- **User-visible symptom:** Launching the app on Android < API 21 (or in light mode on newer devices) shows a brief white flash before the dark Flutter UI takes over. The `values-night/styles.xml` already used `Theme.Black.NoTitleBar`, but the day variant hadn't been aligned.
+- **Root cause:** Flutter project scaffolder defaults `LaunchTheme` to `Theme.Light.NoTitleBar` + `@android:color/white` background. The companion app currently ships dark-only.
+- **Fix:** Re-parented `LaunchTheme` and `NormalTheme` to `Theme.Black.NoTitleBar`; swapped the day drawable's `@android:color/white` to `?android:colorBackground` to match the v21+ drawable's pattern.
+- **Status:** FIXED:<pending-S06>
+- **Related:** —
+- **Found in:** S-06
+- **Discovered:** 2026-05-08
