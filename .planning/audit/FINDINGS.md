@@ -82,7 +82,7 @@ Schema per entry:
 - **User-visible symptom:** None. Dev-side risk: a typo (`'cahrt'`) compiles but breaks the feedback-loop guard, causing infinite seek/scrub loops.
 - **Root cause:** `StateProvider<String>` accepts arbitrary text. Allowed values (`'video'`, `'chart'`, `'scrub_bar'`, `'none'`) live only in the doc comment.
 - **Fix:** Replaced with `enum PlayheadSource { none, video, chart, scrubBar }` and `StateProvider<PlayheadSource>`; migrated 3 caller sites (`replay_charts_tab.dart:135`, `video_tab.dart:157`, `video_player_widget.dart:108-111`). Typos in source values are now compile errors instead of runtime feedback-loop bugs.
-- **Status:** FIXED:<pending-S04>
+- **Status:** FIXED:b4c0df1
 - **Related:** —
 - **Found in:** S-01
 - **Resolved in:** S-04
@@ -111,7 +111,7 @@ Schema per entry:
 - **User-visible symptom:** None — `cpuSystem` is dimmed by `cpuSystemDim` (alpha 0x60) when used, so the two never overlap visually. But the field name suggests a distinct hue.
 - **Root cause:** Likely intentional (system = same hue as app, dim variant for background fill), but the duplicated full-opacity constant is confusing and invites accidental misuse.
 - **Fix:** Inline doc comment on `ChartColors.cpuSystem` documents the deliberate hue-share with `cpuApp` (system-CPU is meant to read as a quieter sibling, not a separate metric). Pointer added so consumers reach for `cpuSystemDim` (alpha 0x60) for fills/backgrounds.
-- **Status:** FIXED:<pending-S04>
+- **Status:** FIXED:b4c0df1
 - **Related:** —
 - **Found in:** S-01
 - **Resolved in:** S-04
@@ -240,7 +240,7 @@ Schema per entry:
 - **Fix (planned):** Two-step:
   1. **S-04 (UI)**: hide / disable the screenshot toggle until the real implementation lands. Avoids polluting the DB with junk. **DONE in S-04** — `ScreenshotsTab` empty state now reads "Screenshot capture is not enabled in this build" rather than promising thumbnails. (See also B-050.)
   2. **S-20 (or follow-up slice)**: add `image: ^4.x` to pubspec, implement real PNG decode + JPEG encode using `img.copyResize` + `img.encodeJpg`.
-- **Status:** PARTIAL FIX (UI gate FIXED:<pending-S04>); real impl DEFERRED-TO-S20
+- **Status:** PARTIAL FIX (UI gate FIXED:b4c0df1); real impl DEFERRED-TO-S20
 - **Related:** B-017, B-050
 - **Found in:** S-02
 - **Discovered:** 2026-05-08
@@ -604,7 +604,7 @@ Schema per entry:
 - **User-visible symptom:** Theme dropdown in Settings appeared frozen or showed no current selection. Picking a value also looked broken because Flutter logged an internal assertion when `value:` didn't match any item.
 - **Root cause:** `_DropdownRow('Theme', current.name, ...)` used the enum's `.name` (`'dark'`, `'light'`, `'highContrast'`, `'system'`) as the `value:` argument, but the items list used display labels (`'Dark'`, `'Light'`, `'High Contrast'`, `'System'`). Mismatch.
 - **Fix:** Map `ThemeModeOption` → display label via switch before passing to `_DropdownRow`. The dropdown's `value:` now always matches one of its items; selection round-trips through the enum mapping that already existed in `onChanged`.
-- **Status:** FIXED:<pending-S04>
+- **Status:** FIXED:b4c0df1
 - **Related:** B-001, B-003
 - **Found in:** S-04
 - **Discovered:** 2026-05-08
@@ -632,7 +632,7 @@ Schema per entry:
 - **User-visible symptom:** About screen says "Version: 1.0.0" while all releases are `0.1.x`. Misleads bug reporters about which build they're running.
 - **Root cause:** Direct sister of B-024 — same hardcoded string in a different file.
 - **Fix:** Bumped the literal to `'0.1.1'` to match the latest published release. TODO references S-19 to wire `package_info_plus` so the value follows the build.
-- **Status:** FIXED:<pending-S04>
+- **Status:** FIXED:b4c0df1
 - **Related:** B-024
 - **Found in:** S-04
 - **Discovered:** 2026-05-08
@@ -724,7 +724,7 @@ Schema per entry:
 - **User-visible symptom:** With no captures yet, the tab said "Screenshots will appear here during recording" — promising a feature that doesn't actually run (B-016: `ScreenshotService` is fake AND never instantiated).
 - **Root cause:** Empty-state text was written under the assumption that the screenshot pipeline would be live by ship.
 - **Fix:** Replaced the empty-state with a clear "Screenshot capture is not enabled in this build" banner that explicitly says encoding is queued. Removes the false promise.
-- **Status:** FIXED:<pending-S04>
+- **Status:** FIXED:b4c0df1
 - **Related:** B-016, B-048
 - **Found in:** S-04
 - **Discovered:** 2026-05-08
