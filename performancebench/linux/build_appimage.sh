@@ -74,12 +74,17 @@ export APPIMAGE_EXTRACT_AND_RUN=1
   --icon-file "${ICON_DST}" \
   --executable "${EXECUTABLE}"
 
-# Rename output (linuxdeploy emits something like PerformanceBench-x86_64.AppImage)
-APPIMAGE_OUT=$(ls -1 ./*.AppImage 2>/dev/null | head -1 || true)
+# Rename output (linuxdeploy emits e.g. PerformanceBench-x86_64.AppImage; if
+# the VERSION env is set it may already include the version and match OUTPUT
+# exactly — skip the mv in that case to avoid `mv: src and dst are same file`).
+APPIMAGE_OUT=$(ls -1 ./*.AppImage 2>/dev/null | grep -v linuxdeploy | head -1 || true)
 if [ -z "${APPIMAGE_OUT}" ]; then
   echo "::error::linuxdeploy did not produce an AppImage"
   exit 1
 fi
-mv "${APPIMAGE_OUT}" "${OUTPUT}"
+APPIMAGE_OUT="${APPIMAGE_OUT#./}"
+if [ "${APPIMAGE_OUT}" != "${OUTPUT}" ]; then
+  mv "${APPIMAGE_OUT}" "${OUTPUT}"
+fi
 chmod +x "${OUTPUT}"
-echo "✅ AppImage created: ${OUTPUT}"
+echo "AppImage created: ${OUTPUT}"
