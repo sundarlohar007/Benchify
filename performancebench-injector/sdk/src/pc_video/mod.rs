@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// Cross-platform PC video recording library.
-///
-/// Per-platform native capture (per D-10, §32.12):
-/// - **Windows**: Windows.Graphics.Capture + Media Foundation -> H.264 MP4
-/// - **macOS**: AVScreenCaptureKit + AVAssetWriter -> MP4
-/// - **Linux**: ffmpeg subprocess (x11grab / kmsgrab) -> H.264 MP4
-///
-/// All platforms use the same 5-minute chunk pattern as Android/iOS video
-/// recording (per §32.3). Chunks are raw H.264 NALs, concatenated via ffmpeg
-/// concat demuxer (no re-encode) post-capture.
+//! Cross-platform PC video recording library.
+//!
+//! Per-platform native capture (per D-10, §32.12):
+//! - **Windows**: Windows.Graphics.Capture + Media Foundation -> H.264 MP4
+//! - **macOS**: AVScreenCaptureKit + AVAssetWriter -> MP4
+//! - **Linux**: ffmpeg subprocess (x11grab / kmsgrab) -> H.264 MP4
+//!
+//! All platforms use the same 5-minute chunk pattern as Android/iOS video
+//! recording (per §32.3). Chunks are raw H.264 NALs, concatenated via ffmpeg
+//! concat demuxer (no re-encode) post-capture.
 
 pub mod chunk_manager;
 

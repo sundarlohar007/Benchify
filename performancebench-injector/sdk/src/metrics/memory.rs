@@ -1,10 +1,10 @@
-/// Memory metric collection via ActivityManager JNI and /proc/self/status.
-///
-/// Primary: ActivityManager.getProcessMemoryInfo([pid]) via JNI.
-/// Fallback: Read /proc/self/status VmRSS if ActivityManager unavailable.
-///
-/// Maps to: memory_pss_kb (totalPss), memory_java_kb (dalvikPss),
-/// memory_native_kb (nativePss), memory_system_kb (otherPss).
+//! Memory metric collection via ActivityManager JNI and /proc/self/status.
+//!
+//! Primary: ActivityManager.getProcessMemoryInfo([pid]) via JNI.
+//! Fallback: Read /proc/self/status VmRSS if ActivityManager unavailable.
+//!
+//! Maps to: memory_pss_kb (totalPss), memory_java_kb (dalvikPss),
+//! memory_native_kb (nativePss), memory_system_kb (otherPss).
 
 /// Memory information from ActivityManager or /proc fallback.
 #[derive(Debug, Clone, PartialEq, Eq)]

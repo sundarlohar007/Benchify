@@ -1,11 +1,11 @@
-/// Transport layer: TCP server on 127.0.0.1:8080 emitting newline-delimited JSON.
-///
-/// Per D-11: JSON over TCP port 8080. Matches iOS collector.py pattern.
-/// Per D-13: Always-on from app start. Desktop connects anytime.
-///
-/// Threat mitigations (T-04-08, T-04-12):
-/// - Bound to 127.0.0.1 only — not routable.
-/// - Dedicated thread with 1s sleep. If collection takes >1s, skip cycle.
+//! Transport layer: TCP server on 127.0.0.1:8080 emitting newline-delimited JSON.
+//!
+//! Per D-11: JSON over TCP port 8080. Matches iOS collector.py pattern.
+//! Per D-13: Always-on from app start. Desktop connects anytime.
+//!
+//! Threat mitigations (T-04-08, T-04-12):
+//! - Bound to 127.0.0.1 only — not routable.
+//! - Dedicated thread with 1s sleep. If collection takes >1s, skip cycle.
 
 use std::io::Write;
 use std::net::{TcpListener, TcpStream};
@@ -14,6 +14,8 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::models::MetricSample;
 use crate::metrics::{fps, cpu, memory, network, webview_js, net_per_process};
+#[cfg(target_os = "android")]
+use crate::metrics::gpu;
 
 static STREAMING_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SERVER_RUNNING: AtomicBool = AtomicBool::new(false);

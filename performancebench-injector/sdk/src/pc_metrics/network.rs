@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// Per-interface network metrics via PDH counters.
-///
-/// Uses PDH counters:
-/// - `\Network Interface(*)\Bytes Received/sec`
-/// - `\Network Interface(*)\Bytes Sent/sec`
-///
-/// Values are cumulative; rate calculation deferred to consumer.
-///
-/// All code is `#[cfg(windows)]` gated.
+//! Per-interface network metrics via PDH counters.
+//!
+//! Uses PDH counters:
+//! - `\Network Interface(*)\Bytes Received/sec`
+//! - `\Network Interface(*)\Bytes Sent/sec`
+//!
+//! Values are cumulative; rate calculation deferred to consumer.
+//!
+//! All code is `#[cfg(windows)]` gated.
 
 /// Network metrics extracted from a PDH snapshot.
 #[derive(Debug, Clone, Default)]

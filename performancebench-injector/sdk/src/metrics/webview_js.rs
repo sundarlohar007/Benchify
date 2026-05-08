@@ -1,18 +1,18 @@
-/// WebView JavaScript memory collection via addJavascriptInterface bridge.
-///
-/// Per D-15: WebView JS collection via WebView.addJavascriptInterface().
-/// Periodically calls window.performance.memory, reports usedJSHeapSize.
-///
-/// Architecture:
-///   Java WebViewBridge calls nativeReportJsHeap(int) via JNI ->
-///   Rust report_js_heap(i32) stores value in AtomicI32 ->
-///   On each 1Hz tick, get_webview_memory() reads the atomic and
-///   the value is included in MetricSample.memory_webview_kb.
-///
-/// Per T-04-17: JNI callback runs on binder thread — use AtomicI32
-/// (lock-free) for stats. No allocations or blocking operations.
-/// Per T-04-14: Only exposes reportMemory(int) — validated input.
-/// Single method, no file access, no shell commands exposed to JS.
+//! WebView JavaScript memory collection via addJavascriptInterface bridge.
+//!
+//! Per D-15: WebView JS collection via WebView.addJavascriptInterface().
+//! Periodically calls window.performance.memory, reports usedJSHeapSize.
+//!
+//! Architecture:
+//!   Java WebViewBridge calls nativeReportJsHeap(int) via JNI ->
+//!   Rust report_js_heap(i32) stores value in AtomicI32 ->
+//!   On each 1Hz tick, get_webview_memory() reads the atomic and
+//!   the value is included in MetricSample.memory_webview_kb.
+//!
+//! Per T-04-17: JNI callback runs on binder thread — use AtomicI32
+//! (lock-free) for stats. No allocations or blocking operations.
+//! Per T-04-14: Only exposes reportMemory(int) — validated input.
+//! Single method, no file access, no shell commands exposed to JS.
 
 use std::sync::atomic::{AtomicI32, Ordering};
 

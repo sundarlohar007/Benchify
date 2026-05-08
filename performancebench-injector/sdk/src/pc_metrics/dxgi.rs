@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// DXGI Present hook for game FPS measurement on Windows.
-///
-/// Two methods as Rust library code:
-/// - **Method A — Detours injection** (preferred, low overhead):
-///   Injects a DLL that hooks IDXGISwapChain::Present via Microsoft Detours.
-///   Timestamps are written to a shared memory ring buffer.
-/// - **Method B — PresentMon integration** (fallback, no injection):
-///   Ships presentmon.exe (MIT-licensed) and parses its CSV stdout.
-///
-/// Both methods feed frame deltas (ns) to crate::metrics::fps for FPS computation
-/// and jank classification, reusing Phase 4 SDK logic exactly.
-///
-/// All DXGI code is `#[cfg(windows)]` gated.
+//! DXGI Present hook for game FPS measurement on Windows.
+//!
+//! Two methods as Rust library code:
+//! - **Method A — Detours injection** (preferred, low overhead):
+//!   Injects a DLL that hooks IDXGISwapChain::Present via Microsoft Detours.
+//!   Timestamps are written to a shared memory ring buffer.
+//! - **Method B — PresentMon integration** (fallback, no injection):
+//!   Ships presentmon.exe (MIT-licensed) and parses its CSV stdout.
+//!
+//! Both methods feed frame deltas (ns) to crate::metrics::fps for FPS computation
+//! and jank classification, reusing Phase 4 SDK logic exactly.
+//!
+//! All DXGI code is `#[cfg(windows)]` gated.
 
 use crate::metrics::fps::{self, FpsResult};
 

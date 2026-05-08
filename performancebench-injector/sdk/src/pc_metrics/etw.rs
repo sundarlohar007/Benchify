@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// ETW (Event Tracing for Windows) frame timing session.
-///
-/// Opens an ETW trace session for provider Microsoft-Windows-DxgKrnl
-/// (GUID: {802EC45A-1E99-4B83-9920-87C98277BA9D}) to capture
-/// PresentHistory events (Event ID 481) for non-DX games (Vulkan/OpenGL).
-///
-/// **Admin required** for ETW kernel session per §19.7.
-/// All ETW code is `#[cfg(windows)]` gated.
+//! ETW (Event Tracing for Windows) frame timing session.
+//!
+//! Opens an ETW trace session for provider Microsoft-Windows-DxgKrnl
+//! (GUID: {802EC45A-1E99-4B83-9920-87C98277BA9D}) to capture
+//! PresentHistory events (Event ID 481) for non-DX games (Vulkan/OpenGL).
+//!
+//! **Admin required** for ETW kernel session per §19.7.
+//! All ETW code is `#[cfg(windows)]` gated.
 
 /// ETW frame timing session handle.
 #[derive(Debug)]

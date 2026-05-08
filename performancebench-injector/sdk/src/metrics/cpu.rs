@@ -1,16 +1,16 @@
-/// CPU metric collection via /proc/self/stat and /proc/stat.
-///
-/// Read utime + stime from fields 14-15 (1-indexed) of /proc/self/stat.
-/// Compute delta per second, divide by clock ticks (_SC_CLK_TCK via libc::sysconf),
-/// normalize to percentage.
-/// Read /proc/stat for system-wide CPU time to compute cpu_system_pct.
-///
-/// Output fields: cpu_app_pct, cpu_system_pct, cpu_app_pct_freq_norm,
-/// cpu_cores, cpu_core_states_json, cpu_core_freqs_json.
+//! CPU metric collection via /proc/self/stat and /proc/stat.
+//!
+//! Read utime + stime from fields 14-15 (1-indexed) of /proc/self/stat.
+//! Compute delta per second, divide by clock ticks (_SC_CLK_TCK via libc::sysconf),
+//! normalize to percentage.
+//! Read /proc/stat for system-wide CPU time to compute cpu_system_pct.
+//!
+//! Output fields: cpu_app_pct, cpu_system_pct, cpu_app_pct_freq_norm,
+//! cpu_cores, cpu_core_states_json, cpu_core_freqs_json.
 
-/// Parse /proc/self/stat line and extract utime and stime.
-/// Fields 14 = utime, 15 = stime (1-indexed).
-/// The process name (field 2) may contain spaces enclosed in parentheses.
+//! Parse /proc/self/stat line and extract utime and stime.
+//! Fields 14 = utime, 15 = stime (1-indexed).
+//! The process name (field 2) may contain spaces enclosed in parentheses.
 pub fn parse_proc_self_stat(line: &str) -> (u64, u64) {
     let close_paren = match line.rfind(')') {
         Some(pos) => pos,

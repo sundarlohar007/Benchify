@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// Linux video capture via ffmpeg subprocess.
-///
-/// Per §32.12: captures display via ffmpeg x11grab (X11) or kmsgrab (Wayland),
-/// encodes to H.264 MP4 chunks.
-///
-/// Architecture:
-/// - Detects display server: X11 (`$DISPLAY`) vs Wayland (`$XDG_SESSION_TYPE`)
-/// - X11: `ffmpeg -f x11grab -video_size {W}x{H} -framerate {FPS} -i {DISPLAY}`
-/// - Wayland: `ffmpeg -f kmsgrab -i /dev/dri/card0` or pipewire via `pw-record`
-/// - `-c:v libx264 -preset ultrafast -tune zerolatency` for low-latency
-/// - `-f h264 -t {CHUNK_DURATION}` for raw H.264 output with time limit
-/// - Spawn loop: when ffmpeg exits (chunk complete), immediately spawn next chunk
-///
-/// ffmpeg must be installed on the system (see user_setup in PLAN.md).
+//! Linux video capture via ffmpeg subprocess.
+//!
+//! Per §32.12: captures display via ffmpeg x11grab (X11) or kmsgrab (Wayland),
+//! encodes to H.264 MP4 chunks.
+//!
+//! Architecture:
+//! - Detects display server: X11 (`$DISPLAY`) vs Wayland (`$XDG_SESSION_TYPE`)
+//! - X11: `ffmpeg -f x11grab -video_size {W}x{H} -framerate {FPS} -i {DISPLAY}`
+//! - Wayland: `ffmpeg -f kmsgrab -i /dev/dri/card0` or pipewire via `pw-record`
+//! - `-c:v libx264 -preset ultrafast -tune zerolatency` for low-latency
+//! - `-f h264 -t {CHUNK_DURATION}` for raw H.264 output with time limit
+//! - Spawn loop: when ffmpeg exits (chunk complete), immediately spawn next chunk
+//!
+//! ffmpeg must be installed on the system (see user_setup in PLAN.md).
 
 use std::process::{Child, Command, Stdio};
 

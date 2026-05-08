@@ -1,10 +1,10 @@
-/// Per-process network metrics via /proc/self/net/dev.
-///
-/// Per D-16: Track cumulative TX/RX bytes per interface.
-/// Compute per-second deltas. Classify: wifi (wlan*), cellular (rmnet*), other.
-///
-/// Output fields: net_tx_bytes, net_rx_bytes, net_wifi_tx_bytes, net_wifi_rx_bytes,
-/// net_cellular_tx_bytes, net_cellular_rx_bytes, net_other_tx_bytes, net_other_rx_bytes.
+//! Per-process network metrics via /proc/self/net/dev.
+//!
+//! Per D-16: Track cumulative TX/RX bytes per interface.
+//! Compute per-second deltas. Classify: wifi (wlan*), cellular (rmnet*), other.
+//!
+//! Output fields: net_tx_bytes, net_rx_bytes, net_wifi_tx_bytes, net_wifi_rx_bytes,
+//! net_cellular_tx_bytes, net_cellular_rx_bytes, net_other_tx_bytes, net_other_rx_bytes.
 
 /// Network interface statistics from /proc/self/net/dev.
 #[derive(Debug, Clone, PartialEq, Eq)]

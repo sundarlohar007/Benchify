@@ -86,6 +86,12 @@ const darkThemeDefaults = {
         color: 'rgba(60, 60, 60, 0.25)',
         drawBorder: false,
       },
+      title: {
+        display: false,
+        text: '',
+        color: '#858585',
+        font: { size: 11 },
+      },
     },
   },
   plugins: {
@@ -123,7 +129,7 @@ export function TrendChart({
     base.scales = {
       ...base.scales,
       y: {
-        ...(base.scales.y as Record<string, unknown>),
+        ...base.scales.y,
         title: {
           display: !!yAxisLabel,
           text: yAxisLabel ?? '',

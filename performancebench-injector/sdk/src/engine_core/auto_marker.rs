@@ -1,9 +1,9 @@
-/// Auto-marker triggers for game engine scene/application lifecycle events.
-///
-/// Per D-01: Auto-marker logic in shared Rust core.
-/// Engine wrappers (Unity/Unreal/Godot) call these on scene loads, app start, etc.
-///
-/// MIT License — Copyright (c) 2026 Benchify
+//! Auto-marker triggers for game engine scene/application lifecycle events.
+//!
+//! Per D-01: Auto-marker logic in shared Rust core.
+//! Engine wrappers (Unity/Unreal/Godot) call these on scene loads, app start, etc.
+//!
+//! MIT License — Copyright (c) 2026 Benchify
 
 use crate::engine_core::marker::{begin_scene_marker, end_marker};
 

@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// GPU metrics via PDH counters.
-///
-/// Uses PDH counters:
-/// - `\GPU Engine(*engtype_3D)\Utilization Percentage`
-/// - `\GPU Process Memory(*)\Dedicated Usage`
-/// - `\GPU Process Memory(*)\Shared Usage`
-///
-/// All code is `#[cfg(windows)]` gated.
+//! GPU metrics via PDH counters.
+//!
+//! Uses PDH counters:
+//! - `\GPU Engine(*engtype_3D)\Utilization Percentage`
+//! - `\GPU Process Memory(*)\Dedicated Usage`
+//! - `\GPU Process Memory(*)\Shared Usage`
+//!
+//! All code is `#[cfg(windows)]` gated.
 
 /// GPU metrics extracted from a PDH snapshot.
 #[derive(Debug, Clone, Default)]

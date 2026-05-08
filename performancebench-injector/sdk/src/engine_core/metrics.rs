@@ -1,13 +1,13 @@
-/// Engine-specific metric collectors for game engine profiling.
-///
-/// Each game engine exposes different performance stats through its own API.
-/// These structs collect engine-native metrics that the Rust core doesn't
-/// have direct access to — the engine wrappers populate these and push them
-/// via JSON to the TCP transport.
-///
-/// Per D-01: Shared Rust core — metric collector bridge reused by all three engine wrappers.
-///
-/// MIT License — Copyright (c) 2026 Benchify
+//! Engine-specific metric collectors for game engine profiling.
+//!
+//! Each game engine exposes different performance stats through its own API.
+//! These structs collect engine-native metrics that the Rust core doesn't
+//! have direct access to — the engine wrappers populate these and push them
+//! via JSON to the TCP transport.
+//!
+//! Per D-01: Shared Rust core — metric collector bridge reused by all three engine wrappers.
+//!
+//! MIT License — Copyright (c) 2026 Benchify
 
 /// Unity-specific per-frame rendering and memory statistics.
 /// Populated by Unity C# plugin via `UnityStats` and `Profiler` APIs.

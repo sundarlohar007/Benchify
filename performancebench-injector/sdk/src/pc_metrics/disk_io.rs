@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// Disk I/O per process via PDH counters.
-///
-/// Uses PDH `\Process(exe)\IO Read Bytes/sec` and `\IO Write Bytes/sec` counters.
-/// Values are cumulative; rate calculation deferred to consumer.
-///
-/// All code is `#[cfg(windows)]` gated.
+//! Disk I/O per process via PDH counters.
+//!
+//! Uses PDH `\Process(exe)\IO Read Bytes/sec` and `\IO Write Bytes/sec` counters.
+//! Values are cumulative; rate calculation deferred to consumer.
+//!
+//! All code is `#[cfg(windows)]` gated.
 
 /// Snapshot of disk I/O for a process (cumulative bytes).
 #[derive(Debug, Clone, Default)]

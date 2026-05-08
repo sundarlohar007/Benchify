@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// PC CPU metrics: per-process CPU time, per-thread CPU %, frequency via WMI.
-///
-/// Per D-11 and §19.2: PC-appropriate CPU metrics including per-thread breakdown
-/// and CPU frequency from Win32_Processor WMI.
-///
-/// All code is `#[cfg(windows)]` gated.
+//! PC CPU metrics: per-process CPU time, per-thread CPU %, frequency via WMI.
+//!
+//! Per D-11 and §19.2: PC-appropriate CPU metrics including per-thread breakdown
+//! and CPU frequency from Win32_Processor WMI.
+//!
+//! All code is `#[cfg(windows)]` gated.
 
 /// Per-thread CPU data.
 #[derive(Debug, Clone)]

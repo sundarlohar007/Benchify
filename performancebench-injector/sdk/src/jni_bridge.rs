@@ -1,13 +1,15 @@
-/// JNI bridge: native function exports for Java dev.benchify.SdkLoader.
-///
-/// Naming convention matches Java package:
-///   Java: dev.benchify.SdkLoader.nativeInit(Context, FpsOverlayView)
-///   Rust: Java_dev_benchify_SdkLoader_nativeInit
-///
-/// Per D-10: Full ADB replacement — all metrics from native hooks and /proc reads.
+//! JNI bridge: native function exports for Java dev.benchify.SdkLoader.
+//!
+//! Naming convention matches Java package:
+//!   Java: dev.benchify.SdkLoader.nativeInit(Context, FpsOverlayView)
+//!   Rust: Java_dev_benchify_SdkLoader_nativeInit
+//!
+//! Per D-10: Full ADB replacement — all metrics from native hooks and /proc reads.
 
 use jni::JNIEnv;
-use jni::objects::{JClass, JObject, JString};
+use jni::objects::{JClass, JObject};
+#[cfg(target_os = "android")]
+use jni::objects::JString;
 use jni::sys::{jint, jstring};
 
 /// Called when the native library is loaded. Initializes android_logger.
@@ -101,7 +103,7 @@ pub extern "system" fn Java_dev_benchify_SdkLoader_nativeGetStats(
 #[cfg(target_os = "android")]
 #[no_mangle]
 pub extern "system" fn Java_dev_benchify_BenchifyBroadcastReceiver_nativeHandleCommand(
-    env: JNIEnv,
+    mut env: JNIEnv,
     _class: JClass,
     action: JString,
     payload_json: JString,

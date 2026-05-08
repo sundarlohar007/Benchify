@@ -1,8 +1,8 @@
-/// GPU utilization via sysfs.
-///
-/// Read /sys/class/kgsl/kgsl-3d0/gpubusy (Adreno) or
-/// /sys/class/misc/mali0/device/utilization (Mali).
-/// Output field: gpu_pct.
+//! GPU utilization via sysfs.
+//!
+//! Read /sys/class/kgsl/kgsl-3d0/gpubusy (Adreno) or
+//! /sys/class/misc/mali0/device/utilization (Mali).
+//! Output field: gpu_pct.
 
 /// Parse Adreno gpubusy: "<gpu_busy_ns> <total_ns>"
 /// GPU % = (gpu_busy / total) * 100.

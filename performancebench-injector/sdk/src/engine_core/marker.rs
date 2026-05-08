@@ -1,10 +1,10 @@
-/// Scoped marker state machine for game engine profiling.
-///
-/// Per D-01: Shared Rust core library — BeginMarker/EndMarker API.
-/// Per D-02: Scoped marker pattern (start at creation, end on scope exit).
-/// Thread-safe via Mutex for concurrent use from engine main threads.
-///
-/// MIT License — Copyright (c) 2026 Benchify
+//! Scoped marker state machine for game engine profiling.
+//!
+//! Per D-01: Shared Rust core library — BeginMarker/EndMarker API.
+//! Per D-02: Scoped marker pattern (start at creation, end on scope exit).
+//! Thread-safe via Mutex for concurrent use from engine main threads.
+//!
+//! MIT License — Copyright (c) 2026 Benchify
 
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::sync::Mutex;

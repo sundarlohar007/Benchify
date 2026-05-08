@@ -1,10 +1,10 @@
-/// FPS metric collection via Choreographer frame callback hook.
-///
-/// Compute FPS as 1e9 / avg_frame_delta_ns over a 1-second window.
-/// Classify jank: frame delta > 2x vsync period = small jank, > 4x = big jank.
-///
-/// Output fields: fps, jank_count, jank_small_count, jank_big_count,
-/// jank_ratio_count, frametimes_json.
+//! FPS metric collection via Choreographer frame callback hook.
+//!
+//! Compute FPS as 1e9 / avg_frame_delta_ns over a 1-second window.
+//! Classify jank: frame delta > 2x vsync period = small jank, > 4x = big jank.
+//!
+//! Output fields: fps, jank_count, jank_small_count, jank_big_count,
+//! jank_ratio_count, frametimes_json.
 
 const VSYNC_NS: u64 = 16_666_667; // ~16.67ms for 60Hz
 const JANK_SMALL_MULTIPLIER: u64 = 2;

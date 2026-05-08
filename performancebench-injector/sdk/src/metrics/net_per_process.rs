@@ -1,19 +1,19 @@
-/// Per-process network statistics from /proc/<pid>/net/dev.
-///
-/// Per D-16: Per-process network totals via /proc/pid/net/dev.
-/// TX/RX bytes per interface. No socket-level interception.
-///
-/// At runtime, the SDK reads its own process's network stats via
-/// /proc/self/net/dev (equivalent to /proc/<pid>/net/dev in same process).
-/// This provides the app's own network usage, not device-wide.
-///
-/// Interface classification:
-///   - wlan*, wifi* -> wifi
-///   - rmnet* -> cellular
-///   - everything else -> other
-///
-/// Per T-04-16: Reads only current process's /proc/self/net/dev —
-/// no cross-process data access.
+//! Per-process network statistics from /proc/<pid>/net/dev.
+//!
+//! Per D-16: Per-process network totals via /proc/pid/net/dev.
+//! TX/RX bytes per interface. No socket-level interception.
+//!
+//! At runtime, the SDK reads its own process's network stats via
+//! /proc/self/net/dev (equivalent to /proc/<pid>/net/dev in same process).
+//! This provides the app's own network usage, not device-wide.
+//!
+//! Interface classification:
+//!   - wlan*, wifi* -> wifi
+//!   - rmnet* -> cellular
+//!   - everything else -> other
+//!
+//! Per T-04-16: Reads only current process's /proc/self/net/dev —
+//! no cross-process data access.
 
 use std::fs;
 

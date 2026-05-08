@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// PDH (Performance Data Helper) counter framework for Windows PC profiling.
-///
-/// Provides CPU, memory, disk I/O, network, GPU, thread, and handle counters
-/// via Windows PDH API (pdh.dll). Counter paths match UNIFIED-SPEC §19.2 table exactly.
-///
-/// All PDH code is `#[cfg(windows)]` gated; non-Windows targets get stubs returning Err.
+//! PDH (Performance Data Helper) counter framework for Windows PC profiling.
+//!
+//! Provides CPU, memory, disk I/O, network, GPU, thread, and handle counters
+//! via Windows PDH API (pdh.dll). Counter paths match UNIFIED-SPEC §19.2 table exactly.
+//!
+//! All PDH code is `#[cfg(windows)]` gated; non-Windows targets get stubs returning Err.
 
+#[cfg(windows)]
 use std::time::{SystemTime, UNIX_EPOCH};
 
 // ---------------------------------------------------------------------------

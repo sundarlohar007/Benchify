@@ -1,15 +1,15 @@
-/// ADB broadcast automation — 7 command handlers for CI/CD workflows.
-///
-/// Per D-22: Full command set via ADB broadcast:
-///   START_SESSION, STOP_SESSION, PAUSE, RESUME, MARKER, SCREENSHOT, EXPORT
-///
-/// Per D-23: Intent extras + JSON payload format. Command via com.benchify.COMMAND,
-/// payload via extras. SDK responds with JSON status.
-///
-/// Threat mitigations (T-04-19):
-/// - Command handlers validate input: action string checked against known 7 commands,
-///   payload JSON parsed with error handling. Malformed JSON returns error status,
-///   does not crash.
+//! ADB broadcast automation — 7 command handlers for CI/CD workflows.
+//!
+//! Per D-22: Full command set via ADB broadcast:
+//!   START_SESSION, STOP_SESSION, PAUSE, RESUME, MARKER, SCREENSHOT, EXPORT
+//!
+//! Per D-23: Intent extras + JSON payload format. Command via com.benchify.COMMAND,
+//! payload via extras. SDK responds with JSON status.
+//!
+//! Threat mitigations (T-04-19):
+//! - Command handlers validate input: action string checked against known 7 commands,
+//!   payload JSON parsed with error handling. Malformed JSON returns error status,
+//!   does not crash.
 
 use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};

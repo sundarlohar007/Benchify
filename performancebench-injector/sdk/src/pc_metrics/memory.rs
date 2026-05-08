@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// PC memory metrics: working set, private bytes, GPU committed memory.
-///
-/// Per D-11 and §19.2: PC-appropriate memory metrics, not forced mobile parity.
-/// Uses GetProcessMemoryInfo (working set, private bytes) and PDH counters
-/// for GPU committed memory.
-///
-/// All code is `#[cfg(windows)]` gated.
+//! PC memory metrics: working set, private bytes, GPU committed memory.
+//!
+//! Per D-11 and §19.2: PC-appropriate memory metrics, not forced mobile parity.
+//! Uses GetProcessMemoryInfo (working set, private bytes) and PDH counters
+//! for GPU committed memory.
+//!
+//! All code is `#[cfg(windows)]` gated.
 
 /// Snapshot of PC memory metrics for a single process.
 #[derive(Debug, Clone, Default)]

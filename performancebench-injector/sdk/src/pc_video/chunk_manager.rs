@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// Chunk manager for PC video recording.
-///
-/// Manages 5-minute chunk rotation (per §32.3), tracks chunk metadata,
-/// and generates concat lists and JSON metadata matching the videos table schema.
-///
-/// Chunk naming: `chunk_{index:03}.h264` (raw H.264 NALs).
-/// Output directory: `{output_dir}/{session_id}/`.
+//! Chunk manager for PC video recording.
+//!
+//! Manages 5-minute chunk rotation (per §32.3), tracks chunk metadata,
+//! and generates concat lists and JSON metadata matching the videos table schema.
+//!
+//! Chunk naming: `chunk_{index:03}.h264` (raw H.264 NALs).
+//! Output directory: `{output_dir}/{session_id}/`.
 
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::SystemTime;
 
 /// Manages video chunk rotation and metadata.
 #[derive(Debug, Clone)]

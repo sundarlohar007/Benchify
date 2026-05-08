@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-/// PC metrics collector — orchestrates all PC metric modules for a 1Hz tick.
-///
-/// The PcCollector ties together PDH counters, DXGI frame timing, ETW session,
-/// memory, CPU, disk I/O, GPU, and network modules into a single tick() call
-/// that produces a complete MetricSample.
-///
-/// Used by the pb-pcprobe binary (Plan 05-04) in its main profiling loop.
+//! PC metrics collector — orchestrates all PC metric modules for a 1Hz tick.
+//!
+//! The PcCollector ties together PDH counters, DXGI frame timing, ETW session,
+//! memory, CPU, disk I/O, GPU, and network modules into a single tick() call
+//! that produces a complete MetricSample.
+//!
+//! Used by the pb-pcprobe binary (Plan 05-04) in its main profiling loop.
 
 use crate::models::MetricSample;
 use crate::pc_metrics::dxgi::{self, DxgiMethod, DxgiSession};
