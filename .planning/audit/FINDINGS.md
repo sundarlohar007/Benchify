@@ -738,7 +738,7 @@ Schema per entry:
 - **User-visible symptom:** Tapping a list row on the mobile companion sometimes leaves the back gesture unable to return to the list — the navigation stack mysteriously resets between gestures. Triggered by any rebuild (e.g. orientation change, theme update from MediaQuery).
 - **Root cause:** `final router = AppRouter.create(_apiService);` was inside `build()`. Every rebuild minted a brand-new `GoRouter` whose internal stack was empty.
 - **Fix:** Shell now caches a `GoRouterHandle` in state; recreated only when `_setApi` runs. Splash screen covers the boot-time prefs read.
-- **Status:** FIXED:<pending-S05>
+- **Status:** FIXED:0fe69f5
 - **Related:** B-052
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
@@ -755,7 +755,7 @@ Schema per entry:
   - Added `void Function(ApiService) onConnected` parameter to `AppRouter.create`.
   - Shell's `_setApi` rebuilds the router with the fresh `api` before navigating.
   - Added `redirect:` that bounces any non-`/settings` navigation lacking a live api back to settings, as a guardrail for future paths.
-- **Status:** FIXED:<pending-S05>
+- **Status:** FIXED:0fe69f5
 - **Related:** B-051, B-057
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
@@ -769,7 +769,7 @@ Schema per entry:
 - **User-visible symptom:** On a flaky cellular connection, `Connect` (or any session/trends load) hangs indefinitely — UI stays on "Connecting..." or the spinner forever.
 - **Root cause:** `http.Client.get` / `http.Client.post` have no default timeout.
 - **Fix:** 15-second `.timeout()` on every request. Throws `TimeoutException`, surfaced through existing error handling.
-- **Status:** FIXED:<pending-S05>
+- **Status:** FIXED:0fe69f5
 - **Related:** —
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
@@ -811,7 +811,7 @@ Schema per entry:
 - **User-visible symptom:** Any uncaught async exception kills the app silently. Sister of B-002.
 - **Root cause:** `main()` calls `runApp` directly with no `runZonedGuarded` / `FlutterError.onError`.
 - **Fix:** Mirror desktop `main.dart` — install `FlutterError.onError` + wrap startup in `runZonedGuarded<Future<void>>`.
-- **Status:** FIXED:<pending-S05>
+- **Status:** FIXED:0fe69f5
 - **Related:** B-002
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
@@ -825,7 +825,7 @@ Schema per entry:
 - **User-visible symptom:** Subset of B-052 — any post-connect path that loses the api crashes on `api!`.
 - **Root cause:** Defensive coding gap: routes assumed api always non-null at navigate time, with no fallback.
 - **Fix:** Covered by B-052's `redirect:` — any non-`/settings` route bounces back when api is null.
-- **Status:** FIXED:<pending-S05> (subsumed by B-052)
+- **Status:** FIXED:0fe69f5 (subsumed by B-052)
 - **Related:** B-052
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
@@ -867,7 +867,7 @@ Schema per entry:
 - **User-visible symptom:** A malformed or truncated `session.id` (under 8 chars) would crash the list card with `RangeError`.
 - **Root cause:** Hardcoded `substring(0, 8)` with no length check.
 - **Fix:** Length-guard before substring; falls back to the full id when too short.
-- **Status:** FIXED:<pending-S05>
+- **Status:** FIXED:0fe69f5
 - **Related:** —
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
@@ -923,7 +923,7 @@ Schema per entry:
 - **User-visible symptom:** None.
 - **Root cause:** Direct `SharedPreferences` access used to live in `_loadApiService`; later refactored to delegate to `ApiService.fromPreferences()`, but the import wasn't pruned.
 - **Fix:** Dropped the import in the same edit that fixed B-051 / B-052.
-- **Status:** FIXED:<pending-S05>
+- **Status:** FIXED:0fe69f5
 - **Related:** —
 - **Found in:** S-05
 - **Discovered:** 2026-05-08
