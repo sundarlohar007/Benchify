@@ -1011,3 +1011,59 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-06
 - **Discovered:** 2026-05-08
+
+---
+
+### B-071 — `CFBundleDisplayName` mis-cased "Performancebench Mobile"
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/ios/Runner/Info.plist:9-10` (pre-fix)
+- **User-visible symptom:** iOS home-screen label reads "Performancebench Mobile" — wrong branding. Doesn't match the Android `android:label="Benchify Mobile"` (post-B-066) or the in-app `MaterialApp.title="Benchify Mobile"`.
+- **Root cause:** Flutter scaffolder default; never updated when the project was rebranded.
+- **Fix:** `CFBundleDisplayName` → `"Benchify Mobile"`.
+- **Status:** FIXED:<pending-S07>
+- **Related:** B-066, B-072
+- **Found in:** S-07
+- **Discovered:** 2026-05-08
+
+---
+
+### B-072 — `CFBundleName` is raw module name `performancebench_mobile`
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/ios/Runner/Info.plist:17-18` (pre-fix)
+- **User-visible symptom:** Some system UIs (Settings → General → iPhone Storage, App Switcher in some cases) fall back to `CFBundleName` when `CFBundleDisplayName` isn't surfaced. User saw `performancebench_mobile` snake-case there.
+- **Root cause:** Same scaffolder leak as B-071.
+- **Fix:** `CFBundleName` → `"Benchify Mobile"`.
+- **Status:** FIXED:<pending-S07>
+- **Related:** B-071, B-066
+- **Found in:** S-07
+- **Discovered:** 2026-05-08
+
+---
+
+### B-073 — No `NSAppTransportSecurity` config
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/ios/Runner/Info.plist`
+- **User-visible symptom:** A user pointing the app at a `http://192.168.…` self-hosted server silently fails — iOS 14+ blocks cleartext by default. Same flavour as Android B-067 + B-058.
+- **Root cause:** No `NSAppTransportSecurity` block declared. iOS default = HTTPS only; cleartext exceptions must be opted in via `NSAllowsArbitraryLoads` or `NSExceptionDomains`.
+- **Fix (planned):** Decide alongside B-067 / B-058 / B-054 in S-20 — either explicitly forbid HTTP in the connect dialog (clean) or expose a per-host LAN exception via `NSExceptionDomains` (more permissive but riskier).
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-058, B-067, B-054
+- **Found in:** S-07
+- **Discovered:** 2026-05-08
+
+---
+
+### B-074 — `RunnerTests.swift` is empty Xcode stub
+
+- **Severity:** NIT
+- **Where:** `performancebench-mobile/ios/RunnerTests/RunnerTests.swift`
+- **User-visible symptom:** None. Dev-side: native iOS test target exists but has zero tests, signalling the iOS side has no smoke coverage even when the Dart side does.
+- **Root cause:** Default Xcode template; never replaced.
+- **Fix (planned):** Either add a basic launch / engine-init smoke test, or delete the test target entirely. Decide alongside the rest of the testing-coverage gap in S-20.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-07
+- **Discovered:** 2026-05-08
