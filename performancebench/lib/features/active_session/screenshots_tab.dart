@@ -67,28 +67,39 @@ class _ScreenshotsTabState extends State<ScreenshotsTab> {
     final colors = AppColors.of(context);
 
     if (_entries.isEmpty) {
+      // B-016 / S-04 UI gate: ScreenshotService is currently a placeholder
+      // (saves identical 1×1 black JPEGs) AND is never instantiated. Tell the
+      // user up front so they don't wait for thumbnails that will never come.
+      // Real implementation tracked under B-016 → S-20.
       return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.image, size: 48, color: colors.textDisabled),
-            const SizedBox(height: 12),
-            Text(
-              'Screenshots will appear here during recording',
-              style: TextStyle(
-                color: colors.textSecondary,
-                fontSize: TextTokens.sm,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.image_not_supported,
+                  size: 48, color: colors.textDisabled),
+              const SizedBox(height: 12),
+              Text(
+                'Screenshot capture is not enabled in this build',
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: TextTokens.sm,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Enable sizes in Settings → Screenshots',
-              style: TextStyle(
-                color: colors.textDisabled,
-                fontSize: TextTokens.xs,
+              const SizedBox(height: 4),
+              Text(
+                'Real screenshot encoding (PNG decode + JPEG encode) is '
+                'queued for a future release. The capture pipeline currently '
+                'produces placeholder data.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colors.textDisabled,
+                  fontSize: TextTokens.xs,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }

@@ -132,7 +132,7 @@ class _ReplayChartsTabState extends ConsumerState<ReplayChartsTab> {
 
         // Sync playhead to region end for video-chart bidirectional sync (D-06)
         ref.read(playheadProvider.notifier).state = endMs;
-        ref.read(playheadSourceProvider.notifier).state = 'chart';
+        ref.read(playheadSourceProvider.notifier).state = PlayheadSource.chart;
       }
     }
 

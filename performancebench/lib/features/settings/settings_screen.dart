@@ -239,17 +239,35 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildAppearanceSection(AppColors colors, ThemeModeOption current, WidgetRef ref) {
+    // The dropdown items use display labels (`'Dark'`, `'Light'`, `'High
+    // Contrast'`, `'System'`); previously this row passed `current.name`
+    // (the enum name like `'highContrast'`), which never matched any item
+    // and dropped the dropdown into an invalid-value state — selecting any
+    // option also looked broken because Flutter logged an assertion (B-042).
+    final displayLabel = switch (current) {
+      ThemeModeOption.dark => 'Dark',
+      ThemeModeOption.light => 'Light',
+      ThemeModeOption.highContrast => 'High Contrast',
+      ThemeModeOption.system => 'System',
+    };
     return _SettingsGroup(children: [
-      _DropdownRow('Theme', current.name, ['Dark', 'Light', 'High Contrast', 'System'], colors, onChanged: (v) {
-        final mode = switch (v) {
-          'Dark' => ThemeModeOption.dark,
-          'Light' => ThemeModeOption.light,
-          'High Contrast' => ThemeModeOption.highContrast,
-          _ => ThemeModeOption.system,
-        };
-        ref.read(themeModeProvider.notifier).state = mode;
-      }),
-      _DropdownRow('Monospace font', 'Auto', ['Auto', 'Cascadia Code', 'SF Mono', 'JetBrains Mono'], colors),
+      _DropdownRow(
+        'Theme',
+        displayLabel,
+        const ['Dark', 'Light', 'High Contrast', 'System'],
+        colors,
+        onChanged: (v) {
+          final mode = switch (v) {
+            'Dark' => ThemeModeOption.dark,
+            'Light' => ThemeModeOption.light,
+            'High Contrast' => ThemeModeOption.highContrast,
+            _ => ThemeModeOption.system,
+          };
+          ref.read(themeModeProvider.notifier).state = mode;
+        },
+      ),
+      _DropdownRow('Monospace font', 'Auto',
+          const ['Auto', 'Cascadia Code', 'SF Mono', 'JetBrains Mono'], colors),
     ]);
   }
 
@@ -287,8 +305,10 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildAboutSection(AppColors colors) {
+    // TODO(audit S-19 build/CI): replace hardcode with `package_info_plus`
+    // so this can't drift from the build version. Sister of B-024.
     return _SettingsGroup(children: [
-      _InfoRow('Version', '1.0.0', colors),
+      _InfoRow('Version', '0.1.1', colors),
       _InfoRow('License', 'MIT', colors),
       _InfoRow('GitHub', 'github.com/sundarlohar007/Benchify', colors),
       const SizedBox(height: 8),

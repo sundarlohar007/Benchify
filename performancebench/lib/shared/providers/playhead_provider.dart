@@ -16,12 +16,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// - Scrub bar drag  → playheadProvider updated → both update
 final playheadProvider = StateProvider<int?>((ref) => null);
 
-/// Whether the playhead was last moved by the video, chart, or scrub bar.
+/// Origin of the most recent playhead update.
 ///
-/// Prevents feedback loops where video seeks chart which seeks video.
-/// Consumers:
-/// - 'video': video position changed → charts should update; video should NOT seek
-/// - 'chart': chart tapped/dragged → video should seek; charts should NOT update position
-/// - 'scrub_bar': shared bar dragged → both video and charts should update
-/// - 'none': no playhead activity yet
-final playheadSourceProvider = StateProvider<String>((ref) => 'none');
+/// Used to break the feedback loop between video and charts: each consumer
+/// checks the source before applying its own seek/scroll, so a video-driven
+/// update doesn't cause the video to seek itself.
+enum PlayheadSource {
+  /// No playhead activity yet (initial state).
+  none,
+
+  /// Video position changed → charts should update; video should NOT seek.
+  video,
+
+  /// Chart tapped/dragged → video should seek; charts should NOT update position.
+  chart,
+
+  /// Shared scrub bar dragged → both video and charts should update.
+  scrubBar,
+}
+
+/// Last source that moved the playhead.
+///
+/// Replaced the prior `StateProvider<String>` (B-005): a typo in any of the
+/// caller sites silently bypassed the loop guard and produced runaway
+/// scrub/seek loops. The enum makes typos a compile error.
+final playheadSourceProvider =
+    StateProvider<PlayheadSource>((ref) => PlayheadSource.none);

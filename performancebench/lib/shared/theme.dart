@@ -15,6 +15,11 @@ import 'package:flutter/material.dart';
 class ChartColors {
   static const Color fps = Color(0xFF569CD6);
   static const Color cpuApp = Color(0xFF4EC9B0);
+  // `cpuSystem` shares the same hue as `cpuApp` deliberately — the spec wants
+  // the system-CPU line to read as a quieter sibling of the app-CPU line, not
+  // a different metric. The dimmed `cpuSystemDim` (alpha 0x60) is what most
+  // call sites should use for fills/backgrounds; reach for `cpuSystem` only
+  // when a full-opacity system-CPU stroke is genuinely needed (B-007).
   static const Color cpuSystem = Color(0xFF4EC9B0);
   static const Color cpuSystemDim = Color(0x604EC9B0);
   static const Color memory = Color(0xFFCE9178);

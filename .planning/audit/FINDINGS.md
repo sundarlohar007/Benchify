@@ -81,10 +81,11 @@ Schema per entry:
 - **Where:** `performancebench/lib/shared/providers/playhead_provider.dart:27`; consumers `lib/features/session_detail/replay_charts_tab.dart:135`, `lib/features/session_detail/video_tab.dart:157`, `lib/shared/widgets/video_player_widget.dart:108`.
 - **User-visible symptom:** None. Dev-side risk: a typo (`'cahrt'`) compiles but breaks the feedback-loop guard, causing infinite seek/scrub loops.
 - **Root cause:** `StateProvider<String>` accepts arbitrary text. Allowed values (`'video'`, `'chart'`, `'scrub_bar'`, `'none'`) live only in the doc comment.
-- **Fix (planned):** Replace with `enum PlayheadSource { none, video, chart, scrubBar }` and `StateProvider<PlayheadSource>`; update 3 callers.
-- **Status:** DEFERRED-TO-S04
+- **Fix:** Replaced with `enum PlayheadSource { none, video, chart, scrubBar }` and `StateProvider<PlayheadSource>`; migrated 3 caller sites (`replay_charts_tab.dart:135`, `video_tab.dart:157`, `video_player_widget.dart:108-111`). Typos in source values are now compile errors instead of runtime feedback-loop bugs.
+- **Status:** FIXED:<pending-S04>
 - **Related:** —
 - **Found in:** S-01
+- **Resolved in:** S-04
 - **Discovered:** 2026-05-08
 
 ---
@@ -109,10 +110,11 @@ Schema per entry:
 - **Where:** `performancebench/lib/shared/theme.dart:17-18`
 - **User-visible symptom:** None — `cpuSystem` is dimmed by `cpuSystemDim` (alpha 0x60) when used, so the two never overlap visually. But the field name suggests a distinct hue.
 - **Root cause:** Likely intentional (system = same hue as app, dim variant for background fill), but the duplicated full-opacity constant is confusing and invites accidental misuse.
-- **Fix (planned):** Either drop `cpuSystem` and have callers use `cpuApp`+`cpuSystemDim` directly, or comment the intent inline. Decide alongside the rest of `ChartColors` consumers.
-- **Status:** DEFERRED-TO-S04
+- **Fix:** Inline doc comment on `ChartColors.cpuSystem` documents the deliberate hue-share with `cpuApp` (system-CPU is meant to read as a quieter sibling, not a separate metric). Pointer added so consumers reach for `cpuSystemDim` (alpha 0x60) for fills/backgrounds.
+- **Status:** FIXED:<pending-S04>
 - **Related:** —
 - **Found in:** S-01
+- **Resolved in:** S-04
 - **Discovered:** 2026-05-08
 
 ---
@@ -236,10 +238,10 @@ Schema per entry:
 - **User-visible symptom:** Every screenshot stored is the same hardcoded 1×1 black-pixel JPEG. The "Screenshots" tab in session detail shows what looks like a corrupted gallery.
 - **Root cause:** `_downscale` returns a solid dark grey buffer (no PNG decode logic at all); `_encodeJpegBasic` returns the result of `_minimalJpeg()`, a 256-byte hardcoded literal. The class commentary even says "placeholder that compiles". The PNG dimensions parser at the top is real, but everything past `_parsePngDimensions` is fake.
 - **Fix (planned):** Two-step:
-  1. **S-04 (UI)**: hide / disable the screenshot toggle until the real implementation lands. Avoids polluting the DB with junk.
+  1. **S-04 (UI)**: hide / disable the screenshot toggle until the real implementation lands. Avoids polluting the DB with junk. **DONE in S-04** — `ScreenshotsTab` empty state now reads "Screenshot capture is not enabled in this build" rather than promising thumbnails. (See also B-050.)
   2. **S-20 (or follow-up slice)**: add `image: ^4.x` to pubspec, implement real PNG decode + JPEG encode using `img.copyResize` + `img.encodeJpg`.
-- **Status:** DEFERRED-TO-S04 (UI gate) → S-20 (real impl)
-- **Related:** B-017
+- **Status:** PARTIAL FIX (UI gate FIXED:<pending-S04>); real impl DEFERRED-TO-S20
+- **Related:** B-017, B-050
 - **Found in:** S-02
 - **Discovered:** 2026-05-08
 
@@ -591,4 +593,138 @@ Schema per entry:
 - **Status:** DEFERRED-TO-S20
 - **Related:** —
 - **Found in:** S-03
+- **Discovered:** 2026-05-08
+
+---
+
+### B-042 — Settings theme dropdown value mismatch
+
+- **Severity:** HIGH
+- **Where:** `performancebench/lib/features/settings/settings_screen.dart:241-253` (pre-fix)
+- **User-visible symptom:** Theme dropdown in Settings appeared frozen or showed no current selection. Picking a value also looked broken because Flutter logged an internal assertion when `value:` didn't match any item.
+- **Root cause:** `_DropdownRow('Theme', current.name, ...)` used the enum's `.name` (`'dark'`, `'light'`, `'highContrast'`, `'system'`) as the `value:` argument, but the items list used display labels (`'Dark'`, `'Light'`, `'High Contrast'`, `'System'`). Mismatch.
+- **Fix:** Map `ThemeModeOption` → display label via switch before passing to `_DropdownRow`. The dropdown's `value:` now always matches one of its items; selection round-trips through the enum mapping that already existed in `onChanged`.
+- **Status:** FIXED:<pending-S04>
+- **Related:** B-001, B-003
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-043 — Settings rows have no `onChanged` wiring
+
+- **Severity:** MED
+- **Where:** `settings_screen.dart` — Sample rate, Screenshot interval, Chart time window, Auto-detect layer name, Show null gaps, Animate chart scroll, Monospace font, FPS histogram bucket, Chart grid columns; "Paths" rows; "Keyboard Shortcuts" rows.
+- **User-visible symptom:** ~12 settings appear functional (toggle slides, dropdown opens) but changing them has no effect; no provider is mutated, nothing is persisted.
+- **Root cause:** Riverpod plumbing was only added for the alert thresholds + theme. The rest of the UI shipped as scaffolding with `onChanged: null` (or default no-op constructors).
+- **Fix (planned):** Per-row provider wiring. Group similar rows (sample rate, screenshot interval, chart window) under a single `ProfilingSettings` notifier. Couple to `SdkState` rewrite (B-041).
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-041, B-045
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-044 — Settings About section hardcodes `'1.0.0'`
+
+- **Severity:** HIGH
+- **Where:** `settings_screen.dart:291` (pre-fix)
+- **User-visible symptom:** About screen says "Version: 1.0.0" while all releases are `0.1.x`. Misleads bug reporters about which build they're running.
+- **Root cause:** Direct sister of B-024 — same hardcoded string in a different file.
+- **Fix:** Bumped the literal to `'0.1.1'` to match the latest published release. TODO references S-19 to wire `package_info_plus` so the value follows the build.
+- **Status:** FIXED:<pending-S04>
+- **Related:** B-024
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-045 — "Reset Onboarding" button has empty `onPressed`
+
+- **Severity:** MED
+- **Where:** `settings_screen.dart:295-300`
+- **User-visible symptom:** Button visible in Settings but clicking it does nothing; user can't replay the onboarding flow without nuking app data.
+- **Root cause:** Stubbed during the skeleton-first scaffold (D-02). The `onPressed: () { /* Reset onboarding flag */ }` body is a comment with no implementation.
+- **Fix (planned):** Read/clear the onboarding flag from `SharedPreferences`; couple with whichever flag the onboarding feature uses (`features/onboarding/`). Also navigate to `/onboarding` so the user sees the result.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-003 (both need shared_preferences plumbing)
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-046 — Settings GitHub URL row is plain text, not a link
+
+- **Severity:** NIT
+- **Where:** `settings_screen.dart:293`
+- **User-visible symptom:** User can't click the GitHub URL to open the repo; has to copy-paste manually.
+- **Root cause:** `_InfoRow` just renders text with no gesture detector.
+- **Fix (planned):** Wrap the value in `InkWell` + `launchUrl` (already a transitive dep via flutter SDK). Cosmetic.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-047 — `ActiveSessionScreen._handleStop` skips `SessionService.stopSession`
+
+- **Severity:** HIGH
+- **Where:** `performancebench/lib/features/active_session/active_session_screen.dart:68-76`
+- **User-visible symptom:** When the user clicks Stop, the screen navigates back to the device list, BUT:
+  - the last 0–5 s of pending samples in `MetricCollector._pendingBatch` are never flushed (lost),
+  - `session.endedAt` and `durationMs` are never updated in the DB,
+  - `AnalyticsService.computeSessionStats` / `computeMarkerStats` never run,
+  - `DetectedIssuesService.runAllRules` (D-03 opt-in) never fires.
+  Session detail view loads a row with `endedAt = null`, no stats, no markers stats.
+- **Root cause:** The screen was scaffolded with a `// TODO: Call the active session service to stop collection, flush, and finalize` comment. The plumbing it needs (a `sessionServiceProvider`, the active session row, the active collector reference) was never added.
+- **Fix (planned, ~30 LOC across 3 files):**
+  1. Add `final sessionServiceProvider = Provider<SessionService>(...)` in `core/services/session_service.dart` (or wherever the DAO providers live).
+  2. Wire the running `MetricCollector` into the service via `setActiveCollector(...)` at session start.
+  3. In `_handleStop`: load the `Session` row by id (`SessionDao.getById`), `await ref.read(sessionServiceProvider).stopSession(session)`, then navigate.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-031 (stale PID compounds the symptom for long sessions)
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-048 — `ActiveSessionScreen._handleScreenshot` empty stub
+
+- **Severity:** MED
+- **Where:** `active_session_screen.dart:78-80`
+- **User-visible symptom:** Manual screenshot button does nothing during a session.
+- **Root cause:** Stubbed pending integration with `ScreenshotService` (which itself is fake — see B-016).
+- **Fix (planned):** Wire after B-016's real implementation lands. Until then, the button should be visibly disabled.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-016, B-050
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-049 — `AppPickerScreen._loadCollections` swallows DB errors silently
+
+- **Severity:** LOW
+- **Where:** `app_picker/app_picker_screen.dart:55-71`
+- **User-visible symptom:** If the DB fails to open, the user sees an empty Collections list with no indication something went wrong. Same for any future schema migration error.
+- **Root cause:** `catch (_) { setState(() => _collectionsLoaded = true); }` — the error is dropped.
+- **Fix (planned):** Route the exception through `ErrorHandler().logError(...)` (already imported elsewhere) and surface a one-line "Failed to load collections" banner.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-04
+- **Discovered:** 2026-05-08
+
+---
+
+### B-050 — `ScreenshotsTab` empty-state implies feature works
+
+- **Severity:** LOW
+- **Where:** `features/active_session/screenshots_tab.dart:69-94` (pre-fix)
+- **User-visible symptom:** With no captures yet, the tab said "Screenshots will appear here during recording" — promising a feature that doesn't actually run (B-016: `ScreenshotService` is fake AND never instantiated).
+- **Root cause:** Empty-state text was written under the assumption that the screenshot pipeline would be live by ship.
+- **Fix:** Replaced the empty-state with a clear "Screenshot capture is not enabled in this build" banner that explicitly says encoding is queued. Removes the false promise.
+- **Status:** FIXED:<pending-S04>
+- **Related:** B-016, B-048
+- **Found in:** S-04
 - **Discovered:** 2026-05-08

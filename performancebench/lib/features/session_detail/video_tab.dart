@@ -154,7 +154,8 @@ class _VideoTabState extends ConsumerState<VideoTab> {
           chunksJson: video.chunksJson ?? '[]',
           onSeek: (int ms) {
             ref.read(playheadProvider.notifier).state = ms;
-            ref.read(playheadSourceProvider.notifier).state = 'scrub_bar';
+            ref.read(playheadSourceProvider.notifier).state =
+                PlayheadSource.scrubBar;
           },
           colors: colors,
         ),

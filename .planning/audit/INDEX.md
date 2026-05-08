@@ -17,7 +17,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | S-01  | Flutter desktop — main + lifecycle                          | DONE        |        7 | [slice-01](./slice-01-flutter-desktop-main.md)  |
 | S-02  | Flutter desktop — services                                  | DONE        |       26 | [slice-02](./slice-02-flutter-desktop-services.md) |
 | S-03  | Flutter desktop — parsers / utils                           | DONE        |        8 | [slice-03](./slice-03-flutter-desktop-parsers.md) |
-| S-04  | Flutter desktop — UI screens                                | pending     |        — |                                                 |
+| S-04  | Flutter desktop — UI screens                                | DONE        |        9 | [slice-04](./slice-04-flutter-desktop-ui.md)    |
 | S-05  | Flutter mobile — runtime                                    | pending     |        — |                                                 |
 | S-06  | Flutter mobile — Android side                               | pending     |        — |                                                 |
 | S-07  | Flutter mobile — iOS side                                   | pending     |        — |                                                 |
@@ -42,11 +42,11 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | Severity | Open | Fixed | Deferred | Wontfix | Total |
 |----------|-----:|------:|---------:|--------:|------:|
 | BLOCKER  |    0 |     0 |        1 |       0 |     1 |
-| HIGH     |    0 |     3 |        2 |       0 |     5 |
-| MED      |    0 |     8 |       11 |       0 |    19 |
-| LOW      |    0 |     3 |        8 |       0 |    11 |
-| NIT      |    0 |     3 |        2 |       0 |     5 |
-| **All**  |    0 |    17 |       24 |       0 |    41 |
+| HIGH     |    0 |     5 |        3 |       0 |     8 |
+| MED      |    0 |     9 |       12 |       0 |    21 |
+| LOW      |    0 |     5 |        8 |       0 |    13 |
+| NIT      |    0 |     4 |        3 |       0 |     7 |
+| **All**  |    0 |    23 |       27 |       0 |    50 |
 
 ## Conventions
 
