@@ -59,7 +59,7 @@ class TestDecompileApk:
 
     @patch("injector.apk_decompiler.subprocess.run")
     def test_calls_apktool_with_correct_args(self, mock_run, temp_dir):
-        """Should call apktool with -f -s flags and correct output directory."""
+        """Default mode decodes both smali and resources (no skip flags)."""
         mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
 
         apk_path = _create_fake_apk(temp_dir, "input.apk")
@@ -72,8 +72,26 @@ class TestDecompileApk:
         assert "apktool" in args
         assert "d" in args
         assert "-f" in args
-        assert "-s" in args
+        # Default must NOT carry `-s` (skip smali) — that was the B-085
+        # bug; injection requires smali to be decoded.
+        assert "-s" not in args
+        # Resources are decoded by default (not opted out).
+        assert "--no-res" not in args
         assert apk_path in args
+
+    @patch("injector.apk_decompiler.subprocess.run")
+    def test_no_res_skips_resource_decoding_only(self, mock_run, temp_dir):
+        """`no_res=True` adds --no-res but still decodes smali."""
+        mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
+
+        apk_path = _create_fake_apk(temp_dir, "input.apk")
+        out_dir = os.path.join(temp_dir, "decoded")
+
+        decompile_apk(apk_path, out_dir, no_res=True)
+
+        args = mock_run.call_args[0][0]
+        assert "--no-res" in args
+        assert "-s" not in args  # smali still decoded
 
     @patch("injector.apk_decompiler.subprocess.run")
     def test_returns_decompile_result_on_success(self, mock_run, temp_dir):

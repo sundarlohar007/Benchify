@@ -100,12 +100,21 @@ def decompile_apk(
     # Validate input first
     validate_apk(apk_path)
 
-    # Build apktool command
+    # Build apktool command. We always need smali decoded (the whole point
+    # of the injector — smali_patcher walks the decoded smali files for the
+    # Application subclass). The previous code did `-s` here, which is
+    # apktool's flag for *skipping smali decoding* — it confused `-s` with
+    # `--no-res`. Net effect: the default flow produced an `apktool d`
+    # output with no smali files, find_application_smali() returned None,
+    # and the injector silently shipped an unmodified APK that "succeeded"
+    # but ran without the SDK (B-085).
+    #
+    # Keep the `no_res` knob so callers that only need the manifest can
+    # still skip resource decoding for speed; default behaviour now decodes
+    # both resources and smali.
     cmd = [apktool_path, "d", "-f"]
     if no_res:
         cmd.append("--no-res")
-    else:
-        cmd.append("-s")  # Skip resource decoding for speed when not needed
 
     # Clean output dir if it exists
     if os.path.exists(output_dir):
