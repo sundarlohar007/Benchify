@@ -103,32 +103,15 @@ final routerProvider = Provider<GoRouter>((ref) {
 // App Root
 // =============================================================================
 
-class App extends ConsumerStatefulWidget {
+class App extends ConsumerWidget {
   const App({super.key});
 
   @override
-  ConsumerState<App> createState() => _AppState();
-}
-
-class _AppState extends ConsumerState<App> with WindowListener {
-  @override
-  void initState() {
-    super.initState();
-    windowManager.addListener(this);
-  }
-
-  @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);
 
-    // Select ThemeData based on user preference (D-14)
+    // Select ThemeData based on user preference (D-14).
     ThemeData theme;
     switch (themeMode) {
       case ThemeModeOption.dark:
@@ -146,12 +129,14 @@ class _AppState extends ConsumerState<App> with WindowListener {
         theme = systemTheme(brightness: brightness);
     }
 
+    // Force MaterialApp to apply our computed `theme` directly. We do the
+    // light/dark swap ourselves above, so we set themeMode to .light to make
+    // MaterialApp prefer `theme:` over the absent `darkTheme:` arg.
     return MaterialApp.router(
       title: 'PerformanceBench',
       debugShowCheckedModeBanner: false,
       theme: theme,
-      darkTheme: darkTheme(),
-      themeMode: ThemeMode.dark, // Manual control via themeModeProvider
+      themeMode: ThemeMode.light,
       routerConfig: router,
     );
   }
