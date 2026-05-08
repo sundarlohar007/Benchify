@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'routes/app_router.dart';
 import 'services/api_service.dart';
-import 'screens/settings/server_settings_screen.dart';
 
 class BenchifyMobileApp extends StatefulWidget {
   const BenchifyMobileApp({super.key});
@@ -14,7 +13,8 @@ class BenchifyMobileApp extends StatefulWidget {
 }
 
 class _BenchifyMobileAppState extends State<BenchifyMobileApp> {
-  ApiService? _apiService;
+  bool _loaded = false;
+  GoRouterHandle? _routerHandle;
 
   @override
   void initState() {
@@ -24,12 +24,45 @@ class _BenchifyMobileAppState extends State<BenchifyMobileApp> {
 
   Future<void> _loadApiService() async {
     final api = await ApiService.fromPreferences();
-    setState(() => _apiService = api);
+    if (!mounted) return;
+    setState(() {
+      _loaded = true;
+      _routerHandle = AppRouter.create(api: api, onConnected: _setApi);
+    });
+  }
+
+  /// Called by `ServerSettingsScreen` after a successful health-check.
+  ///
+  /// Pre-fix (B-052): the old `onConnected` handler only called
+  /// `GoRouter.of(context).go('/sessions')`, but the routes for
+  /// `/sessions` and `/trends` had captured the *original* (null)
+  /// `ApiService` via closure when the router was first built. So the
+  /// user got a crash on `api!` the moment the navigation completed.
+  /// Now we rebuild the router with the new api before navigating, so
+  /// the route closures see the connected service.
+  void _setApi(ApiService api) {
+    setState(() {
+      _routerHandle = AppRouter.create(api: api, onConnected: _setApi);
+    });
+    _routerHandle?.router.go('/sessions');
   }
 
   @override
   Widget build(BuildContext context) {
-    final router = AppRouter.create(_apiService);
+    // While the prefs read is in flight (or the router hasn't been
+    // built yet), show a small splash. Pre-fix (B-051): the router was
+    // recreated on every build call, throwing away the in-memory nav
+    // stack — a tap on a list row could navigate "forward" but back
+    // gestures landed somewhere unexpected.
+    if (!_loaded || _routerHandle == null) {
+      return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: Color(0xFF1E1E1E),
+          body: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
 
     return MaterialApp.router(
       title: 'Benchify Mobile',
@@ -69,7 +102,7 @@ class _BenchifyMobileAppState extends State<BenchifyMobileApp> {
           bodySmall: TextStyle(color: Color(0xFF858585)),
         ),
       ),
-      routerConfig: router,
+      routerConfig: _routerHandle!.router,
     );
   }
 }

@@ -728,3 +728,202 @@ Schema per entry:
 - **Related:** B-016, B-048
 - **Found in:** S-04
 - **Discovered:** 2026-05-08
+
+---
+
+### B-051 — `app.dart` rebuilds the entire `GoRouter` on every `build()`
+
+- **Severity:** HIGH
+- **Where:** `performancebench-mobile/lib/app.dart:32` (pre-fix)
+- **User-visible symptom:** Tapping a list row on the mobile companion sometimes leaves the back gesture unable to return to the list — the navigation stack mysteriously resets between gestures. Triggered by any rebuild (e.g. orientation change, theme update from MediaQuery).
+- **Root cause:** `final router = AppRouter.create(_apiService);` was inside `build()`. Every rebuild minted a brand-new `GoRouter` whose internal stack was empty.
+- **Fix:** Shell now caches a `GoRouterHandle` in state; recreated only when `_setApi` runs. Splash screen covers the boot-time prefs read.
+- **Status:** FIXED:<pending-S05>
+- **Related:** B-052
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-052 — First-connect flow crashes on `api!`
+
+- **Severity:** HIGH
+- **Where:** `performancebench-mobile/lib/routes/app_router.dart:22-25` (pre-fix), `screens/sessions/session_list_screen.dart`, `screens/sessions/session_detail_screen.dart`, `screens/trends/trends_screen.dart`
+- **User-visible symptom:** Brand-new install: enter URL + token → click Connect → app immediately crashes with `Null check operator used on a null value`. Companion app unusable on first run.
+- **Root cause:** Routes captured `api` via closure when `AppRouter.create(api)` first ran (with `api == null`). `ServerSettingsScreen.onConnected(api)` only called `GoRouter.of(context).go('/sessions')`; the new `api` never made it to the route closures, so `api!` exploded.
+- **Fix:**
+  - Added `void Function(ApiService) onConnected` parameter to `AppRouter.create`.
+  - Shell's `_setApi` rebuilds the router with the fresh `api` before navigating.
+  - Added `redirect:` that bounces any non-`/settings` navigation lacking a live api back to settings, as a guardrail for future paths.
+- **Status:** FIXED:<pending-S05>
+- **Related:** B-051, B-057
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-053 — `ApiService` calls have no timeout
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/lib/services/api_service.dart:33-62` (pre-fix)
+- **User-visible symptom:** On a flaky cellular connection, `Connect` (or any session/trends load) hangs indefinitely — UI stays on "Connecting..." or the spinner forever.
+- **Root cause:** `http.Client.get` / `http.Client.post` have no default timeout.
+- **Fix:** 15-second `.timeout()` on every request. Throws `TimeoutException`, surfaced through existing error handling.
+- **Status:** FIXED:<pending-S05>
+- **Related:** —
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-054 — API token persisted in `SharedPreferences` plaintext
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/lib/screens/settings/server_settings_screen.dart:54-57`, `services/api_service.dart:19`
+- **User-visible symptom:** None directly. Risk: any process / backup / debug bridge with read access to the app's prefs file can extract the bearer token.
+- **Root cause:** `SharedPreferences.setString('api_token', token)` writes to the plain prefs XML on Android / `NSUserDefaults` on iOS — neither is encrypted at rest.
+- **Fix (planned):** Move to `flutter_secure_storage` (Keychain on iOS, EncryptedSharedPreferences on Android).
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-058
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-055 — `SessionCard` colors fps badge by `target_fps`
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/lib/widgets/session_card.dart:21-26`
+- **User-visible symptom:** A session that targeted 60 fps but actually ran at 12 fps shows up as a green "60 fps" badge — implying the run was healthy when it was terrible.
+- **Root cause:** Color logic keys off `session['target_fps']` (the configured target) rather than `session['actual_avg_fps']` (what the device delivered).
+- **Fix (planned):** Switch to `actual_avg_fps`. Needs a contract check on the server `/api/v1/sessions` response shape — defer to S-19 where build/CI carries the server contract context.
+- **Status:** DEFERRED-TO-S19
+- **Related:** —
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-056 — Mobile `main.dart` has no top-level error guard
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/lib/main.dart:6-9` (pre-fix)
+- **User-visible symptom:** Any uncaught async exception kills the app silently. Sister of B-002.
+- **Root cause:** `main()` calls `runApp` directly with no `runZonedGuarded` / `FlutterError.onError`.
+- **Fix:** Mirror desktop `main.dart` — install `FlutterError.onError` + wrap startup in `runZonedGuarded<Future<void>>`.
+- **Status:** FIXED:<pending-S05>
+- **Related:** B-002
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-057 — `api!` non-null assertions across routes
+
+- **Severity:** MED
+- **Where:** `app_router.dart:30, 36, 42` (pre-fix)
+- **User-visible symptom:** Subset of B-052 — any post-connect path that loses the api crashes on `api!`.
+- **Root cause:** Defensive coding gap: routes assumed api always non-null at navigate time, with no fallback.
+- **Fix:** Covered by B-052's `redirect:` — any non-`/settings` route bounces back when api is null.
+- **Status:** FIXED:<pending-S05> (subsumed by B-052)
+- **Related:** B-052
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-058 — Server URL accepts `http://` — no HTTPS enforcement
+
+- **Severity:** LOW
+- **Where:** `screens/settings/server_settings_screen.dart:42-67`
+- **User-visible symptom:** None visible; security posture problem. A user pointing the app at `http://192.168.…` sends the bearer token in cleartext on the LAN.
+- **Root cause:** No URL validation in the connect flow.
+- **Fix (planned):** Reject non-`https://` URLs unless the user has flagged a "I'm on a trusted LAN" override (rare). Couples to B-054.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-054
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-059 — Token-clear leaves stale token in prefs
+
+- **Severity:** LOW
+- **Where:** `screens/settings/server_settings_screen.dart:55-58`
+- **User-visible symptom:** If the user blanks the token field and reconnects, the old token still lives in `SharedPreferences` until reinstall.
+- **Root cause:** `if (token.isNotEmpty) prefs.setString(...)` — empty case never `prefs.remove(...)`.
+- **Fix (planned):** Else-branch to `prefs.remove('api_token')`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-054
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-060 — `SessionCard.substring(0, 8)` crashes on short ids
+
+- **Severity:** LOW
+- **Where:** `widgets/session_card.dart:18` (pre-fix)
+- **User-visible symptom:** A malformed or truncated `session.id` (under 8 chars) would crash the list card with `RangeError`.
+- **Root cause:** Hardcoded `substring(0, 8)` with no length check.
+- **Fix:** Length-guard before substring; falls back to the full id when too short.
+- **Status:** FIXED:<pending-S05>
+- **Related:** —
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-061 — `TrendsScreen` date formatting uses local time
+
+- **Severity:** LOW
+- **Where:** `screens/trends/trends_screen.dart:36-37`
+- **User-visible symptom:** Around DST transitions or when the device is in a timezone east/west of UTC midnight, the trend window can shift by a day.
+- **Root cause:** `DateTime.now().toIso8601String().split('T')[0]` uses local time.
+- **Fix (planned):** Convert to UTC before formatting (`DateTime.now().toUtc()`).
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-062 — `ServerSettingsScreen._isConnecting` not reset on success
+
+- **Severity:** NIT
+- **Where:** `screens/settings/server_settings_screen.dart:33-67`
+- **User-visible symptom:** On the rare race where `onConnected` runs but the screen lingers (e.g. an extra frame before route switch), the button still says "Connecting...".
+- **Root cause:** No `_isConnecting = false` on the success path.
+- **Fix (planned):** Reset flag before invoking `onConnected`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-063 — `SessionDetailScreen` computes display vars during loading state
+
+- **Severity:** NIT
+- **Where:** `screens/sessions/session_detail_screen.dart:48-56`
+- **User-visible symptom:** None.
+- **Root cause:** Build method extracts `appName`, `deviceId`, `dateStr`, etc. *before* the `_isLoading` ternary, so the work runs every frame even while the spinner is showing.
+- **Fix (planned):** Move the var extraction inside the loaded branch.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-05
+- **Discovered:** 2026-05-08
+
+---
+
+### B-064 — `app.dart` had unused `shared_preferences` import
+
+- **Severity:** NIT
+- **Where:** `performancebench-mobile/lib/app.dart:4` (pre-fix)
+- **User-visible symptom:** None.
+- **Root cause:** Direct `SharedPreferences` access used to live in `_loadApiService`; later refactored to delegate to `ApiService.fromPreferences()`, but the import wasn't pruned.
+- **Fix:** Dropped the import in the same edit that fixed B-051 / B-052.
+- **Status:** FIXED:<pending-S05>
+- **Related:** —
+- **Found in:** S-05
+- **Discovered:** 2026-05-08

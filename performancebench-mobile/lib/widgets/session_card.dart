@@ -15,7 +15,11 @@ class SessionCard extends StatelessWidget {
     final deviceId = session['device_id'] as String? ?? '—';
     final startedAt = session['started_at'];
     final targetFps = session['target_fps'];
-    final sessionId = (session['id'] as String?)?.substring(0, 8) ?? '—';
+    // Defensive substring: most ids are 36-char UUIDs, but a malformed or
+    // truncated value would crash `substring(0, 8)` (B-060). Guard the length.
+    final fullId = session['id'] as String?;
+    final sessionId =
+        (fullId != null && fullId.length >= 8) ? fullId.substring(0, 8) : (fullId ?? '—');
 
     final dateStr = _formatDate(startedAt);
     final Color fpsColor =
