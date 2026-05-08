@@ -26,7 +26,7 @@ Schema per entry:
 - **User-visible symptom:** Choosing Light / High Contrast / System in Settings has zero visible effect; the UI stays in dark theme.
 - **Root cause:** `MaterialApp.router(... themeMode: ThemeMode.dark)` is hardcoded. With `themeMode == ThemeMode.dark` and `darkTheme:` provided, Flutter ignores the dynamic `theme:` argument and always renders the dark variant. The `themeModeProvider` switch above computes the right `ThemeData` but the answer is thrown away by `MaterialApp`.
 - **Fix:** Map `ThemeModeOption` to `ThemeMode` (`light | system`) so `MaterialApp` actually applies `theme:`. Drop the redundant `darkTheme:` argument.
-- **Status:** FIXED in this slice (commit added at end of S-01)
+- **Status:** FIXED:4b895be
 - **Related:** B-003 (themes not persisted compounds the silent-no-op surprise)
 - **Found in:** S-01
 - **Discovered:** 2026-05-08
@@ -40,7 +40,7 @@ Schema per entry:
 - **User-visible symptom:** Any uncaught async exception kills the app with no log; users see the window vanish on a Future error and have nothing to report.
 - **Root cause:** `main()` calls `runApp` directly. Neither `FlutterError.onError` (framework errors) nor `runZonedGuarded` (async / out-of-zone errors) is set, so unhandled errors are swallowed by the runtime.
 - **Fix:** Wrap startup in `runZonedGuarded<Future<void>>(...)`; install `FlutterError.onError` that logs via `FlutterError.presentError` and prints the exception in debug builds. Hook for future structured logging is left as a TODO referencing the logging slice.
-- **Status:** FIXED in this slice
+- **Status:** FIXED:4b895be
 - **Related:** —
 - **Found in:** S-01
 - **Discovered:** 2026-05-08
@@ -68,7 +68,7 @@ Schema per entry:
 - **User-visible symptom:** None directly; dead-code path — when window-event handling becomes needed (close confirmation, minimise tracking), the listener is registered but does nothing because no override is implemented.
 - **Root cause:** `with WindowListener` mixes in the listener interface; `windowManager.addListener(this)` registers, but no `onWindow*` overrides exist.
 - **Fix:** Strip the mixin + add/remove listener calls. `_AppState` becomes a plain `ConsumerWidget`. Re-add when an actual reactor exists.
-- **Status:** FIXED in this slice
+- **Status:** FIXED:4b895be
 - **Related:** —
 - **Found in:** S-01
 - **Discovered:** 2026-05-08
@@ -96,7 +96,7 @@ Schema per entry:
 - **User-visible symptom:** None. Dev-side: declares a Riverpod surface that no widget reads.
 - **Root cause:** Provider was declared in anticipation of D-18 ("iOS video UI shown disabled on non-macOS") but no consumer was added. Grep for `isMacOSProvider` returns only the declaration. Real callers use `Platform.isMacOS` directly.
 - **Fix:** Delete the provider. Re-introduce when an actual consumer is wired.
-- **Status:** FIXED in this slice
+- **Status:** FIXED:4b895be
 - **Related:** —
 - **Found in:** S-01
 - **Discovered:** 2026-05-08
