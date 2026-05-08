@@ -31,12 +31,14 @@ cp -r "${BUILD_DIR}"/* AppDir/
 # Stage icon for linuxdeploy. Reuse the macOS asset (PNG) — we don't have a
 # Linux-native icon file. linuxdeploy needs the icon at a path it can find via
 # --icon-file, OR matching the desktop file's Icon= name under hicolor.
-ICON_SRC="../macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png"
+# This script is invoked from the `performancebench/` working directory, so
+# the macOS asset path is relative to that — NOT one level up.
+ICON_SRC="macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png"
 ICON_DST="AppDir/performancebench.png"
 if [ -f "${ICON_SRC}" ]; then
   cp "${ICON_SRC}" "${ICON_DST}"
 else
-  echo "::error::Icon source missing: ${ICON_SRC}"
+  echo "::error::Icon source missing: ${ICON_SRC} (pwd=$(pwd))"
   exit 1
 fi
 

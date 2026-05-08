@@ -62,7 +62,9 @@ jobs:
         if: runner.os == 'Windows'
         uses: joncloud/makensis-action@v4
         with:
-          script-file: windows/installer/performancebench.nsi
+          # makensis-action resolves script-file from workspace root, ignoring
+          # the job's `working-directory: performancebench` setting.
+          script-file: performancebench/windows/installer/performancebench.nsi
 
       - name: Upload Windows installer
         if: runner.os == 'Windows'
