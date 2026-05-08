@@ -1105,7 +1105,7 @@ Schema per entry:
 - **User-visible symptom:** Description string `"A new Flutter project."` would appear on any future App Store / Play Store listing and in `flutter pub` metadata.
 - **Root cause:** Flutter scaffolder default; never updated when the project was rebranded.
 - **Fix:** One-sentence description naming the project ("Benchify Mobile — companion viewer for Benchify performance profiling sessions...") + clarifying that profiling happens on the desktop side.
-- **Status:** FIXED:<pending-S08>
+- **Status:** FIXED:d64421f
 - **Related:** —
 - **Found in:** S-08
 - **Discovered:** 2026-05-08
@@ -1133,7 +1133,7 @@ Schema per entry:
 - **User-visible symptom:** Embedded version metadata (Android `versionName`, iOS `CFBundleShortVersionString`) was `0.1.0`, while the published APK filename was `performancebench-mobile-0.1.1-rc.6.apk`. Bug reporters quoting the in-app build version contradicted the filename they downloaded.
 - **Root cause:** Mobile pubspec wasn't bumped in lockstep with the desktop pubspec / `release.yml` tag.
 - **Fix:** Bumped `0.1.0+1` → `0.1.1+2`. Build-number incremented to keep Android's `versionCode` strictly increasing (Play Store requirement, applies even to sideloaded APKs that may later be uploaded).
-- **Status:** FIXED:<pending-S08>
+- **Status:** FIXED:d64421f
 - **Related:** B-024, B-044
 - **Found in:** S-08
 - **Discovered:** 2026-05-08
@@ -1147,7 +1147,7 @@ Schema per entry:
 - **User-visible symptom:** Anyone landing on the mobile sub-project from GitHub saw "# performancebench_mobile / A new Flutter project" with three Flutter learning links and nothing else. No install instructions, no link back to the parent project.
 - **Root cause:** `flutter create` README, never replaced.
 - **Fix:** Wrote a proper README — install matrix per platform, first-run walkthrough, build-from-source commands, link back to parent Releases page, call-outs for known UX gaps (B-054, B-069, B-083) so contributors landing here see the open work.
-- **Status:** FIXED:<pending-S08>
+- **Status:** FIXED:d64421f
 - **Related:** —
 - **Found in:** S-08
 - **Discovered:** 2026-05-08
