@@ -490,7 +490,7 @@ Schema per entry:
 - **User-visible symptom:** Apps whose process name contains parentheses (e.g. `com.foo:my_proc(test)`) report wildly wrong CPU% — the parser splits on the first `)` and shifts every field index by one.
 - **Root cause:** `pidStat.indexOf(')')` returns the position of the first close-paren. /proc/`<pid>`/stat's `comm` field can contain spaces and parens, so only the *last* `)` reliably terminates `comm`. The Rust SDK parser at `performancebench-injector/sdk/src/metrics/cpu.rs::parse_proc_self_stat` already uses `rfind(')')`; the Dart side drifted.
 - **Fix:** Switch to `lastIndexOf(')')`; doc comment updated to point readers at the Rust side as the canonical implementation.
-- **Status:** FIXED:<pending>
+- **Status:** FIXED:be467cc
 - **Related:** B-031 (stale PID compounds the symptom)
 - **Found in:** S-03
 - **Discovered:** 2026-05-08
@@ -518,7 +518,7 @@ Schema per entry:
 - **User-visible symptom:** Some ROMs expose `status: 2` (charging) but no AC/USB/Wireless/Dock flag. The parser used to flag the device as charging while reporting `chargingSource='none'`, which is the same value it returns when *not* charging — consumers couldn't distinguish the two.
 - **Root cause:** Final `else` branch wrote `'none'` for the fallback case.
 - **Fix:** Return `'unknown'` for the status-2/5-with-no-source case so consumers can branch on it.
-- **Status:** FIXED:<pending>
+- **Status:** FIXED:be467cc
 - **Related:** —
 - **Found in:** S-03
 - **Discovered:** 2026-05-08
@@ -532,7 +532,7 @@ Schema per entry:
 - **User-visible symptom:** None.
 - **Root cause:** `(anyPowered || status == 2 || status == 5) ? true : false` is just `anyPowered || status == 2 || status == 5`.
 - **Fix:** Removed the ternary.
-- **Status:** FIXED:<pending>
+- **Status:** FIXED:be467cc
 - **Related:** —
 - **Found in:** S-03
 - **Discovered:** 2026-05-08
@@ -546,7 +546,7 @@ Schema per entry:
 - **User-visible symptom:** None.
 - **Root cause:** `fps = 1000.0 / meanDelta` where `meanDelta > 0` (filtered upstream); the branch always passed through. The empty-deltas branch sets fps to 0.0 directly. Branch was unreachable as negative.
 - **Fix:** Drop the guard; pass `fps` through.
-- **Status:** FIXED:<pending>
+- **Status:** FIXED:be467cc
 - **Related:** —
 - **Found in:** S-03
 - **Discovered:** 2026-05-08
