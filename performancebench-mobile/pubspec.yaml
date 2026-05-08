@@ -1,22 +1,14 @@
 name: performancebench_mobile
-description: "A new Flutter project."
+description: "Benchify Mobile — companion viewer for Benchify performance profiling sessions. Connects to your self-hosted Benchify server and browses sessions, trends, and per-app stats from the road."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
-version: 0.1.0+1
+# Version follows the desktop release line so banners + APK filenames align
+# (B-079, sister of B-024). Bump in lockstep with the parent project tag.
+# build-name → versionName (Android) / CFBundleShortVersionString (iOS).
+# build-number → versionCode / CFBundleVersion.
+version: 0.1.1+2
 
 environment:
   sdk: ^3.11.5

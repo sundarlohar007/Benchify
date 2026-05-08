@@ -21,7 +21,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | S-05  | Flutter mobile — runtime                                    | DONE        |       14 | [slice-05](./slice-05-flutter-mobile-runtime.md) |
 | S-06  | Flutter mobile — Android side                               | DONE        |        6 | [slice-06](./slice-06-flutter-mobile-android.md) |
 | S-07  | Flutter mobile — iOS side                                   | DONE        |        4 | [slice-07](./slice-07-flutter-mobile-ios.md)    |
-| S-08  | Mobile companion — install + first-run UX                   | pending     |        — |                                                 |
+| S-08  | Mobile companion — install + first-run UX                   | DONE        |        9 | [slice-08](./slice-08-mobile-companion-ux.md)   |
 | S-09  | Injector — Python core (frida, smali, manifest, resigner)   | pending     |        — |                                                 |
 | S-10  | Injector — CLI + workflows                                  | pending     |        — |                                                 |
 | S-11  | Injector — SDK Rust lib (transport, jni_bridge, automation) | pending     |        — |                                                 |
@@ -43,10 +43,10 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 |----------|-----:|------:|---------:|--------:|------:|
 | BLOCKER  |    0 |     0 |        1 |       0 |     1 |
 | HIGH     |    0 |     8 |        3 |       0 |    11 |
-| MED      |    0 |    14 |       17 |       0 |    31 |
-| LOW      |    0 |     6 |       13 |       0 |    19 |
+| MED      |    0 |    15 |       21 |       0 |    36 |
+| LOW      |    0 |     8 |       16 |       0 |    24 |
 | NIT      |    0 |     6 |        6 |       0 |    12 |
-| **All**  |    0 |    34 |       40 |       0 |    74 |
+| **All**  |    0 |    37 |       46 |       0 |    83 |
 
 ## Conventions
 

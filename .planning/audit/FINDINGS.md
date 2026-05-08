@@ -1067,3 +1067,131 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-07
 - **Discovered:** 2026-05-08
+
+---
+
+### B-075 — Android launcher icons are the default Flutter logo
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/android/app/src/main/res/mipmap-{m,h,xh,xxh,xxxh}dpi/ic_launcher.png`
+- **User-visible symptom:** User installs the APK and gets the generic blue Flutter "F" on the home screen. Indistinguishable from any other Flutter dev project; reduces trust ("did I download the right APK?").
+- **Root cause:** Flutter scaffolder default; never replaced. All five mipmap densities still ship the canonical Flutter logo.
+- **Fix (planned):** Generate a real brand mark (SVG → PNG at 48/72/96/144/192 px). Couples to B-076 (iOS) — same source asset.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-076
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-076 — iOS app icons are the default Flutter logo
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-*.png` (16 sizes)
+- **User-visible symptom:** Same as B-075 but on iOS — sideloaded app shows the default Flutter logo on the home screen.
+- **Root cause:** Flutter scaffolder default. The 1024×1024 master is also default; all derivative sizes follow.
+- **Fix (planned):** Same source asset as B-075; render through Xcode's Assets catalog or `flutter_launcher_icons`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-075
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-077 — `pubspec.yaml` description was scaffolder default
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/pubspec.yaml:2` (pre-fix)
+- **User-visible symptom:** Description string `"A new Flutter project."` would appear on any future App Store / Play Store listing and in `flutter pub` metadata.
+- **Root cause:** Flutter scaffolder default; never updated when the project was rebranded.
+- **Fix:** One-sentence description naming the project ("Benchify Mobile — companion viewer for Benchify performance profiling sessions...") + clarifying that profiling happens on the desktop side.
+- **Status:** FIXED:<pending-S08>
+- **Related:** —
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-078 — `pubspec.yaml` package name `performancebench_mobile`
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/pubspec.yaml:1`
+- **User-visible symptom:** None directly; the snake-cased package name leaks into Dart import paths, the Android `applicationId`, the iOS `CFBundleIdentifier`, etc. — already mostly hidden by display-name overrides (B-066 / B-071) but inconsistent across the stack.
+- **Root cause:** Module identifier from `flutter create`. Renaming cascades.
+- **Fix (planned):** Coordinated rename: `pubspec.yaml` `name:`, Android `namespace` + `applicationId` in `app/build.gradle.kts`, iOS bundle identifier in `project.pbxproj`. Bundle into S-20 with the rest of the rebrand cleanup.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-066, B-071, B-072
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-079 — `pubspec.yaml` version drift from desktop release line
+
+- **Severity:** LOW
+- **Where:** `performancebench-mobile/pubspec.yaml:19` (pre-fix)
+- **User-visible symptom:** Embedded version metadata (Android `versionName`, iOS `CFBundleShortVersionString`) was `0.1.0`, while the published APK filename was `performancebench-mobile-0.1.1-rc.6.apk`. Bug reporters quoting the in-app build version contradicted the filename they downloaded.
+- **Root cause:** Mobile pubspec wasn't bumped in lockstep with the desktop pubspec / `release.yml` tag.
+- **Fix:** Bumped `0.1.0+1` → `0.1.1+2`. Build-number incremented to keep Android's `versionCode` strictly increasing (Play Store requirement, applies even to sideloaded APKs that may later be uploaded).
+- **Status:** FIXED:<pending-S08>
+- **Related:** B-024, B-044
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-080 — `README.md` was the Flutter scaffolder default
+
+- **Severity:** LOW
+- **Where:** `performancebench-mobile/README.md` (pre-fix)
+- **User-visible symptom:** Anyone landing on the mobile sub-project from GitHub saw "# performancebench_mobile / A new Flutter project" with three Flutter learning links and nothing else. No install instructions, no link back to the parent project.
+- **Root cause:** `flutter create` README, never replaced.
+- **Fix:** Wrote a proper README — install matrix per platform, first-run walkthrough, build-from-source commands, link back to parent Releases page, call-outs for known UX gaps (B-054, B-069, B-083) so contributors landing here see the open work.
+- **Status:** FIXED:<pending-S08>
+- **Related:** —
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-081 — First-run UX: server URL field has no guidance
+
+- **Severity:** MED
+- **Where:** `performancebench-mobile/lib/screens/settings/server_settings_screen.dart:97-101`
+- **User-visible symptom:** User installs the app, opens it, lands on Connect — sees an empty `Server URL` field with placeholder `https://192.168.1.100:3000` and no idea what URL to actually type. Bug reports likely to look like "Connect button doesn't work" when really the user has no idea what their desktop is exposing.
+- **Root cause:** Skeleton UX — no help link, no "How do I find this?" affordance, no tooltip or expandable hint.
+- **Fix (planned):** Add an info button next to the field that pops a sheet explaining how to find the desktop's API URL (Settings → Server section on desktop). Couples to B-082 (mDNS) and B-083 (token).
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-082, B-083
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-082 — No mDNS / Bonjour discovery for the desktop server
+
+- **Severity:** LOW
+- **Where:** `performancebench-mobile/lib/screens/settings/server_settings_screen.dart`
+- **User-visible symptom:** User has to manually type the desktop's LAN IP. On most home networks the IP changes when the desktop reconnects, so the saved URL silently breaks.
+- **Root cause:** Manual config only. The desktop server doesn't advertise via mDNS, and the mobile app doesn't browse for `_benchify._tcp.local.` peers.
+- **Fix (planned):** Add `multicast_dns` to the mobile pubspec; advertise via the desktop's `multicast_dns` package or platform mDNS; show a "Discovered servers" list above the manual URL field.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-081
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
+
+---
+
+### B-083 — No token-generation flow surfaced to the user
+
+- **Severity:** LOW
+- **Where:** Cross-cuts mobile `server_settings_screen.dart` + desktop server settings.
+- **User-visible symptom:** Even after the URL field is solved, users have no clear path to obtain an API token. Best-case: they manually open `~/.config/benchify/server.json` (or wherever) and copy the token. Many will give up.
+- **Root cause:** No "Generate token" button on the desktop server screen, no QR code that the mobile app can scan.
+- **Fix (planned):** Two-pronged in S-20:
+  1. Desktop server settings (S-04 follow-up): expose a "Pair mobile" button that generates a fresh token + QR.
+  2. Mobile connect screen (this slice): add a QR scanner camera path next to the manual fields.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-081, B-082
+- **Found in:** S-08
+- **Discovered:** 2026-05-08
