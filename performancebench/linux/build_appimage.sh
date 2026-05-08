@@ -54,13 +54,25 @@ Type=Application
 Categories=Development;
 DESKTOPEOF
 
+# Flutter's Linux build emits the binary + data/ + lib/ as siblings; we copy
+# the whole bundle into AppDir root so the binary's runtime layout is preserved.
+# linuxdeploy normally searches AppDir/usr/bin for the executable named in
+# `Exec=`; pass --executable explicitly so it picks up the root-level binary.
+EXECUTABLE="AppDir/performancebench"
+if [ ! -x "${EXECUTABLE}" ]; then
+  echo "::error::Flutter binary missing or not executable: ${EXECUTABLE}"
+  ls -la AppDir | head -20
+  exit 1
+fi
+
 # APPIMAGE_EXTRACT_AND_RUN works around missing FUSE on minimal CI runners.
 export APPIMAGE_EXTRACT_AND_RUN=1
 "${LINUXDEPLOY}" \
   --appdir AppDir \
   --output appimage \
   --desktop-file AppDir/usr/share/applications/performancebench.desktop \
-  --icon-file "${ICON_DST}"
+  --icon-file "${ICON_DST}" \
+  --executable "${EXECUTABLE}"
 
 # Rename output (linuxdeploy emits something like PerformanceBench-x86_64.AppImage)
 APPIMAGE_OUT=$(ls -1 ./*.AppImage 2>/dev/null | head -1 || true)
