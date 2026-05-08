@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import type { QueryClient } from '@tanstack/react-query';
 import { Users as UsersIcon, Search } from 'lucide-react';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth, type User } from '@/hooks/useAuth';
@@ -8,7 +9,8 @@ import { useUsers, useUpdateUserRole, useUpdateUserStatus } from '@/hooks/useAdm
 
 export const Route = createFileRoute('/admin/users')({
   beforeLoad: ({ context }) => {
-    const user = context.queryClient.getQueryData<User>(['auth', 'me']);
+    const ctx = context as { queryClient: QueryClient };
+    const user = ctx.queryClient.getQueryData<User>(['auth', 'me']);
     // Only redirect if we have cached user data and they're not admin.
     // If data isn't cached yet, let the component's ProtectedRoute handle it.
     if (user !== undefined && user.role !== 'admin') {

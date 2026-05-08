@@ -7,7 +7,7 @@
 /// Per D-10: Full ADB replacement — all metrics from native hooks and /proc reads.
 
 use jni::JNIEnv;
-use jni::objects::{JClass, JObject};
+use jni::objects::{JClass, JObject, JString};
 use jni::sys::{jint, jstring};
 
 /// Called when the native library is loaded. Initializes android_logger.
@@ -29,7 +29,7 @@ pub extern "system" fn JNI_OnLoad(
 /// Returns immediately (non-blocking).
 #[no_mangle]
 pub extern "system" fn Java_dev_benchify_SdkLoader_nativeInit(
-    mut env: JNIEnv,
+    env: JNIEnv,
     _class: JClass,
     context: JObject,
     fps_overlay: JObject,
@@ -101,13 +101,13 @@ pub extern "system" fn Java_dev_benchify_SdkLoader_nativeGetStats(
 #[cfg(target_os = "android")]
 #[no_mangle]
 pub extern "system" fn Java_dev_benchify_BenchifyBroadcastReceiver_nativeHandleCommand(
-    mut env: JNIEnv,
+    env: JNIEnv,
     _class: JClass,
     action: JString,
     payload_json: JString,
 ) -> jstring {
-    let action: String = env.get_string(&action).unwrap_or_default().into();
-    let payload: String = env.get_string(&payload_json).unwrap_or_default().into();
+    let action: String = env.get_string(&action).map(|s| s.into()).unwrap_or_default();
+    let payload: String = env.get_string(&payload_json).map(|s| s.into()).unwrap_or_default();
     let response = crate::automation::handle_command(&action, &payload);
     match env.new_string(&response) {
         Ok(s) => s.into_raw(),

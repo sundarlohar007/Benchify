@@ -404,7 +404,7 @@ function downloadExport(session: SessionDetail, format: 'json' | 'csv') {
     );
     const header = keys.join(',');
     const rows = samples.map((s) =>
-      keys.map((k) => escapeCsvValue((s as Record<string, unknown>)[k])).join(','),
+      keys.map((k) => escapeCsvValue((s as unknown as Record<string, unknown>)[k])).join(','),
     );
     const csv = [header, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });

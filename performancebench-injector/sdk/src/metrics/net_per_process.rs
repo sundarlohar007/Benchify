@@ -15,7 +15,6 @@
 /// Per T-04-16: Reads only current process's /proc/self/net/dev —
 /// no cross-process data access.
 
-use std::collections::HashMap;
 use std::fs;
 
 /// Network interface statistics from /proc/self/net/dev.
@@ -183,6 +182,7 @@ pub fn summarize_deltas(deltas: &[NetDelta]) -> NetPerProcessResult {
 /// Computes byte deltas per interface. Classifies by interface type.
 ///
 /// On first call, stores initial snapshot and returns empty result.
+#[allow(static_mut_refs)]
 pub fn collect(pid: Option<u32>) -> NetPerProcessResult {
     let effective_pid = pid.unwrap_or(unsafe { TRACKED_PID });
 
@@ -205,7 +205,7 @@ pub fn collect(pid: Option<u32>) -> NetPerProcessResult {
 
     unsafe {
         let prev = PREV_SNAPSHOT.take();
-        let (deltas, result) = match prev {
+        let (_deltas, result) = match prev {
             Some(ref p) => {
                 let d = compute_deltas(p, &current);
                 let r = summarize_deltas(&d);

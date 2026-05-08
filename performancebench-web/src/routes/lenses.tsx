@@ -124,7 +124,7 @@ function LensesPage() {
     if (filters.projectId) params.set('project_id', filters.projectId);
     if (filters.dateFrom) params.set('date_from', filters.dateFrom);
     if (filters.dateTo) params.set('date_to', filters.dateTo);
-    navigate({ to: '/sessions', search: Object.fromEntries(params) });
+    navigate({ to: '/sessions', search: Object.fromEntries(params) as any });
   };
 
   const startEdit = (lens: Lens) => {

@@ -68,6 +68,8 @@ jobs:
 
       - name: Build Linux desktop
         working-directory: performancebench
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
         run: |
           flutter pub get
           flutter build linux --release
@@ -79,11 +81,17 @@ jobs:
           mkdir -p dist
           # build_appimage.sh writes *.AppImage somewhere — find and rename
           APPIMAGE=$(find performancebench -maxdepth 4 -name "*.AppImage" | head -1)
-          if [ -z "$APPIMAGE" ]; then
-            echo "::error::No AppImage produced"
-            exit 1
+          if [ -n "$APPIMAGE" ]; then
+            cp "$APPIMAGE" "dist/performancebench-${VER}-linux-x86_64.AppImage"
+          else
+            TARBALL=$(find performancebench -maxdepth 4 -name "*.tar.gz" | head -1)
+            if [ -n "$TARBALL" ]; then
+              cp "$TARBALL" "dist/performancebench-${VER}-linux-x86_64.tar.gz"
+            else
+              echo "::error::No AppImage or tar.gz produced"
+              exit 1
+            fi
           fi
-          cp "$APPIMAGE" "dist/performancebench-${VER}-linux-x86_64.AppImage"
 
       - name: Build Android APK
         working-directory: performancebench-mobile
@@ -120,6 +128,8 @@ jobs:
 
       - name: Build macOS desktop DMG
         working-directory: performancebench
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
         run: |
           flutter pub get
           flutter build macos --release

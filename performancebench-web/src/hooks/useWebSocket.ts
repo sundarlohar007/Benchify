@@ -8,7 +8,7 @@ const MAX_DELAY_MS = 30000;
 
 export function useWebSocket(sessionId: string | null) {
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<number>();
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const listenersRef = useRef<Set<SampleListener>>(new Set());
   const retryCountRef = useRef(0);
 

@@ -123,7 +123,7 @@ export function TrendChart({
     base.scales = {
       ...base.scales,
       y: {
-        ...base.scales.y,
+        ...(base.scales.y as Record<string, unknown>),
         title: {
           display: !!yAxisLabel,
           text: yAxisLabel ?? '',

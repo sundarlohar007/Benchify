@@ -28,10 +28,20 @@ echo "==> Creating AppImage..."
 mkdir -p AppDir
 cp -r "${BUILD_DIR}"/* AppDir/
 
+# Create minimal .desktop file for linuxdeploy
+mkdir -p AppDir/usr/share/applications
+cat > AppDir/usr/share/applications/performancebench.desktop << 'DESKTOPEOF'
+[Desktop Entry]
+Name=PerformanceBench
+Exec=performancebench
+Type=Application
+Categories=Development;
+DESKTOPEOF
+
 "${LINUXDEPLOY}" \
   --appdir AppDir \
   --output appimage \
-  --desktop-file AppDir/data/flutter_assets/linux.desktop 2>/dev/null || true
+  --desktop-file AppDir/usr/share/applications/performancebench.desktop 2>/dev/null || true
 
 # Rename output
 if ls *.AppImage 1>/dev/null 2>&1; then

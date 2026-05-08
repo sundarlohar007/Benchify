@@ -13,7 +13,7 @@ use std::sync::{Mutex, atomic::{AtomicBool, Ordering}};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::models::MetricSample;
-use crate::metrics::{fps, cpu, memory, network, gpu, webview_js, net_per_process};
+use crate::metrics::{fps, cpu, memory, network, webview_js, net_per_process};
 
 static STREAMING_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SERVER_RUNNING: AtomicBool = AtomicBool::new(false);
@@ -46,7 +46,7 @@ static METRIC_STATE: once_cell::sync::Lazy<Mutex<MetricState>> = once_cell::sync
 });
 
 pub fn set_session_id(id: &str) {
-    METRIC_STATE.lock().ok().map(|mut s| s.session_id = id.to_string());
+    if let Ok(mut s) = METRIC_STATE.lock() { s.session_id = id.to_string(); }
 }
 
 /// Start TCP server on 127.0.0.1:8080. Accepts one client at a time.
@@ -238,7 +238,7 @@ fn collect_metrics() -> MetricSample {
 }
 
 pub fn push_frame_delta(delta_ns: u64) {
-    METRIC_STATE.lock().ok().map(|mut s| s.frame_deltas.push(delta_ns));
+    if let Ok(mut s) = METRIC_STATE.lock() { s.frame_deltas.push(delta_ns); }
 }
 
 pub fn resume_streaming() { STREAMING_ACTIVE.store(true, Ordering::SeqCst); }

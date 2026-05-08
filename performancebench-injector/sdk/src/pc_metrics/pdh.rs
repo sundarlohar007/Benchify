@@ -492,6 +492,7 @@ pub fn close_query(_query: PdhQuery) {
 }
 
 /// Get the current timestamp in Unix milliseconds.
+#[cfg(windows)]
 fn now_ms() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)

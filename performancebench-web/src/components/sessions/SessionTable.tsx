@@ -278,7 +278,7 @@ export function SessionTable({
                 onClick={() =>
                   navigate({
                     to: '/sessions/$sessionId',
-                    params: { sessionId: row.original.id },
+                    params: { sessionId: row.original.id } as any,
                   })
                 }
                 className="cursor-pointer border-b border-border-subtle/50 transition-colors hover:bg-bg-hover"

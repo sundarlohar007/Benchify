@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import type { QueryClient } from '@tanstack/react-query';
 import {
   ScrollText,
   Search,
@@ -19,7 +20,8 @@ import {
 
 export const Route = createFileRoute('/admin/audit')({
   beforeLoad: ({ context }) => {
-    const user = context.queryClient.getQueryData<User>(['auth', 'me']);
+    const ctx = context as { queryClient: QueryClient };
+    const user = ctx.queryClient.getQueryData<User>(['auth', 'me']);
     // Only redirect if we have cached user data and they're not admin.
     // If data isn't cached yet, let the component's ProtectedRoute handle it.
     if (user !== undefined && user.role !== 'admin') {

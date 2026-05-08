@@ -7,7 +7,7 @@
 /// Parse Adreno gpubusy: "<gpu_busy_ns> <total_ns>"
 /// GPU % = (gpu_busy / total) * 100.
 pub fn parse_adreno_gpubusy(content: &str) -> Option<f64> {
-    let parts: Vec<&str> = content.trim().split_whitespace().collect();
+    let parts: Vec<&str> = content.split_whitespace().collect();
     if parts.len() < 2 {
         return None;
     }
@@ -22,7 +22,7 @@ pub fn parse_adreno_gpubusy(content: &str) -> Option<f64> {
 /// Parse Mali utilization: "<gpu_util> <gpu_util_max>" (0-256 range).
 /// GPU % = (gpu_util / 256) * 100.
 pub fn parse_mali_utilization(content: &str) -> Option<f64> {
-    let parts: Vec<&str> = content.trim().split_whitespace().collect();
+    let parts: Vec<&str> = content.split_whitespace().collect();
     if parts.is_empty() {
         return None;
     }
