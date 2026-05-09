@@ -155,8 +155,8 @@ pub fn concat_chunks_to_mp4(session: &VideoSession, output_path: &std::path::Pat
     std::fs::write(&list_path, &concat_list)
         .map_err(|e| format!("Failed to write concat list: {}", e))?;
 
-    // Run ffmpeg concat (no re-encode)
-    let status = std::process::Command::new("ffmpeg")
+    // Run ffmpeg concat (no re-encode), capture stderr for diagnostics
+    let output = std::process::Command::new("ffmpeg")
         .args([
             "-f", "concat",
             "-safe", "0",
@@ -166,11 +166,18 @@ pub fn concat_chunks_to_mp4(session: &VideoSession, output_path: &std::path::Pat
             "-y", // Overwrite output
         ])
         .arg(output_path)
-        .status()
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::piped())
+        .output()
         .map_err(|e| format!("ffmpeg not found or failed to start: {}", e))?;
 
-    if !status.success() {
-        return Err(format!("ffmpeg concat failed with exit code: {:?}", status.code()));
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!(
+            "ffmpeg concat failed (exit code: {:?}): {}",
+            output.status.code(),
+            stderr.chars().take(500).collect::<String>(),
+        ));
     }
 
     // Clean up temp list

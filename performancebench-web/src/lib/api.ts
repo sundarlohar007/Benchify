@@ -26,6 +26,11 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
       body.message || res.statusText,
     );
   }
+  // Handle 204 No Content and empty bodies (e.g., DELETE responses)
+  const contentLength = res.headers.get('content-length');
+  if (res.status === 204 || contentLength === '0') {
+    return undefined as unknown as T;
+  }
   return res.json();
 }
 

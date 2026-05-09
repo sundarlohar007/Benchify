@@ -25,7 +25,12 @@ class UpdateInfo {
 class UpdateService {
   static const _repoUrl =
       'https://api.github.com/repos/sundarlohar007/Benchify/releases/latest';
-  static const _currentVersion = '1.0.0';
+  // Tracks the published release line. Bump in lockstep with new git tags.
+  // TODO(audit S-19 build/CI): replace with `package_info_plus`-derived version
+  // so this can't drift from the build number. Until then, stale here means
+  // the update banner wrongly says "you're up to date" — exactly the failure
+  // mode B-024 documents.
+  static const _currentVersion = '0.1.1';
   static const _cacheDuration = Duration(hours: 6);
 
   DateTime? _lastCheck;
@@ -81,14 +86,25 @@ class UpdateService {
   }
 
   /// Compare semver strings. Returns > 0 if a > b.
+  ///
+  /// Strips a trailing pre-release tag (`-rc.1`, `-beta`, …) before parsing
+  /// so `0.1.1` vs `0.1.1-rc.6` doesn't break on `int.tryParse('1-rc')`.
+  /// Pre-release ordering itself is intentionally not honoured — the update
+  /// banner exists to flag a newer release line, not to differentiate rc vs
+  /// final. Tightening that semantic is queued for S-20.
   int _compareVersions(String a, String b) {
-    final aParts = a.split('.').map(int.tryParse).toList();
-    final bParts = b.split('.').map(int.tryParse).toList();
+    final aParts = _stripPreRelease(a).split('.').map(int.tryParse).toList();
+    final bParts = _stripPreRelease(b).split('.').map(int.tryParse).toList();
     for (var i = 0; i < 3; i++) {
       final aVal = i < aParts.length ? (aParts[i] ?? 0) : 0;
       final bVal = i < bParts.length ? (bParts[i] ?? 0) : 0;
       if (aVal != bVal) return aVal - bVal;
     }
     return 0;
+  }
+
+  static String _stripPreRelease(String v) {
+    final dash = v.indexOf('-');
+    return dash < 0 ? v : v.substring(0, dash);
   }
 }

@@ -262,18 +262,16 @@ class IpaInjectionService {
           try {
             final json = jsonDecode(line) as Map<String, dynamic>;
             final event = IpaStepEvent.fromJson(json);
-            _controller?.add(event);
+            _safeAdd(event);
             if (event.step == IpaInjectionStep.done ||
                 event.step == IpaInjectionStep.error) {
-              _controller?.close();
+              _safeClose();
             }
           } catch (_) {
             // Skip non-JSON lines
           }
         },
-        onDone: () {
-          _controller?.close();
-        },
+        onDone: _safeClose,
       );
 
       _process!.stderr.transform(utf8.decoder).listen((line) {
@@ -283,7 +281,7 @@ class IpaInjectionService {
 
       _process!.exitCode.then((code) {
         if (code != 0 && !_stopped) {
-          _controller?.add(
+          _safeAdd(
             IpaStepEvent(
               step: IpaInjectionStep.error,
               status: 'fail',
@@ -291,33 +289,46 @@ class IpaInjectionService {
             ),
           );
         }
-        _controller?.close();
+        _safeClose();
       });
     } catch (e) {
-      _controller?.add(
+      _safeAdd(
         IpaStepEvent(
           step: IpaInjectionStep.error,
           status: 'fail',
           detail: e.toString(),
         ),
       );
-      _controller?.close();
+      _safeClose();
     }
+  }
+
+  void _safeAdd(IpaStepEvent event) {
+    final c = _controller;
+    if (c != null && !c.isClosed) c.add(event);
+  }
+
+  void _safeClose() {
+    final c = _controller;
+    if (c != null && !c.isClosed) c.close();
   }
 
   /// Abort the injection subprocess.
   void stop() {
     _stopped = true;
-    if (_process != null) {
-      _process!.kill(ProcessSignal.sigterm);
+    final p = _process;
+    _process = null;
+    if (p != null) {
+      p.kill(ProcessSignal.sigterm);
       Future.delayed(const Duration(seconds: 3), () {
-        if (_process != null) {
-          _process!.kill(ProcessSignal.sigkill);
+        try {
+          p.kill(ProcessSignal.sigkill);
+        } catch (_) {
+          // Process may already be dead.
         }
       });
-      _process = null;
     }
-    _controller?.close();
+    _safeClose();
     _controller = null;
   }
 }

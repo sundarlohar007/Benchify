@@ -185,15 +185,29 @@ class ScreenrecordService {
       await videoDir.create(recursive: true);
     }
 
+    // Capture wall-clock recording stop timestamp BEFORE state reset so we
+    // can compute true duration / last-chunk length without assuming each
+    // chunk ran for the full 300 s window.
+    final stopMs = DateTime.now().millisecondsSinceEpoch;
+    final recordingDurationMs = stopMs - _recordingStartMs;
+
     // Pull each chunk from device
     final pulledChunks = <Map<String, dynamic>>[];
     final gaps = <int>[]; // Inter-chunk gaps in ms
     int? prevChunkEndMs;
 
-    for (final chunk in _chunks) {
+    for (var i = 0; i < _chunks.length; i++) {
+      final chunk = _chunks[i];
       final devicePath = chunk.devicePath;
       final chunkNum = chunk.chunkIndex;
       final chunkStartMs = chunk.startMs;
+      // True chunk length: gap to next chunk's start, or for the last chunk
+      // the wall-clock time between this chunk and stop. The old code used
+      // a hardcoded 300_000 ms per chunk which mis-counts aborted runs and
+      // produced negative gap values when a chunk ran longer than expected.
+      final chunkDurationMs = (i + 1 < _chunks.length)
+          ? (_chunks[i + 1].startMs - chunkStartMs)
+          : (recordingDurationMs - chunkStartMs);
 
       final hostFileName =
           '${sessionId}_chunk_${chunkNum.toString().padLeft(3, '0')}.mp4';
@@ -223,15 +237,16 @@ class ScreenrecordService {
           'chunk': chunkNum,
           'file': hostFileName,
           'startMs': chunkStartMs,
+          'durationMs': chunkDurationMs,
           'fileSizeBytes': hostFileSize,
         });
 
-        // Calculate gap from previous chunk end
+        // Calculate gap from previous chunk end (real end, not start+300s).
         if (prevChunkEndMs != null) {
           final gap = chunkStartMs - prevChunkEndMs;
           if (gap > 0) gaps.add(gap);
         }
-        prevChunkEndMs = chunkStartMs + 300000; // ~5 min per chunk
+        prevChunkEndMs = chunkStartMs + chunkDurationMs;
 
         // Clean up device file
         try {
@@ -254,11 +269,8 @@ class ScreenrecordService {
 
     if (pulledChunks.isEmpty) return null;
 
-    // Calculate total duration from chunk timing
-    final firstChunkStart = pulledChunks.first['startMs'] as int;
-    final lastChunkStart = pulledChunks.last['startMs'] as int;
-    final totalDurationMs =
-        lastChunkStart - firstChunkStart + 300000; // last chunk ~300s
+    // Total duration from real wall-clock; total size from pulled bytes.
+    final totalDurationMs = recordingDurationMs;
     final totalSizeBytes =
         pulledChunks.fold<int>(0, (sum, c) => sum + (c['fileSizeBytes'] as int));
 

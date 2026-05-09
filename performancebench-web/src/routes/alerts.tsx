@@ -155,8 +155,8 @@ function AlertEventsList({
     <div className="space-y-2">
       {events.map((event) => {
         const severity =
-          event.threshold > 0
-            ? event.metric_value / event.threshold
+          event.threshold !== 0
+            ? Math.abs(event.metric_value / event.threshold)
             : 0;
         const severityBadge =
           severity >= 2

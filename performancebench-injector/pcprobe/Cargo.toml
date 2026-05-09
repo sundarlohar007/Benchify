@@ -10,16 +10,18 @@ name = "pb-pcprobe"
 path = "src/main.rs"
 
 [dependencies]
-sdk = { path = "../sdk", features = ["pc_metrics"] }
+sdk = { package = "performancebench-sdk", path = "../sdk" }
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 log = "0.4"
 env_logger = "0.11"
 mdns-sd = "0.10"
-tokio = { version = "1", features = ["rt", "net", "io-util", "sync", "signal", "macros"] }
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "net", "io-util", "sync", "signal", "macros", "time"] }
 anyhow = "1"
 sysinfo = "0.31"
+hostname = "0.4"
+flume = "0.11"
 
 [target.'cfg(windows)'.dependencies]
 tokio-util = { version = "0.7", features = ["io"] }

@@ -1,0 +1,106 @@
+﻿2026-05-08T12:39:01.4705723Z ##[group]Run actions/checkout@v4
+2026-05-08T12:39:01.4706203Z with:
+2026-05-08T12:39:01.4706378Z   ref: v0.1.1-rc.5
+2026-05-08T12:39:01.4706586Z   repository: sundarlohar007/Benchify
+2026-05-08T12:39:01.4707198Z   token: ***
+2026-05-08T12:39:01.4707391Z   ssh-strict: true
+2026-05-08T12:39:01.4707574Z   ssh-user: git
+2026-05-08T12:39:01.4707771Z   persist-credentials: true
+2026-05-08T12:39:01.4708000Z   clean: true
+2026-05-08T12:39:01.4708190Z   sparse-checkout-cone-mode: true
+2026-05-08T12:39:01.4708417Z   fetch-depth: 1
+2026-05-08T12:39:01.4708590Z   fetch-tags: false
+2026-05-08T12:39:01.4708781Z   show-progress: true
+2026-05-08T12:39:01.4708963Z   lfs: false
+2026-05-08T12:39:01.4709154Z   submodules: false
+2026-05-08T12:39:01.4709339Z   set-safe-directory: true
+2026-05-08T12:39:01.4709699Z ##[endgroup]
+2026-05-08T12:39:01.5599720Z Syncing repository: sundarlohar007/Benchify
+2026-05-08T12:39:01.5600946Z ##[group]Getting Git version info
+2026-05-08T12:39:01.5601305Z Working directory is '/home/runner/work/Benchify/Benchify'
+2026-05-08T12:39:01.5601890Z [command]/usr/bin/git version
+2026-05-08T12:39:01.5669577Z git version 2.53.0
+2026-05-08T12:39:01.5689014Z ##[endgroup]
+2026-05-08T12:39:01.5705313Z Temporarily overriding HOME='/home/runner/work/_temp/0225ae8a-2a72-4684-88ec-441db4aac4c3' before making global git config changes
+2026-05-08T12:39:01.5706025Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-08T12:39:01.5710754Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Benchify/Benchify
+2026-05-08T12:39:01.5739223Z Deleting the contents of '/home/runner/work/Benchify/Benchify'
+2026-05-08T12:39:01.5742134Z ##[group]Initializing the repository
+2026-05-08T12:39:01.5745407Z [command]/usr/bin/git init /home/runner/work/Benchify/Benchify
+2026-05-08T12:39:01.5822875Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-08T12:39:01.5823655Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-08T12:39:01.5824375Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-08T12:39:01.5824902Z hint: call:
+2026-05-08T12:39:01.5825152Z hint:
+2026-05-08T12:39:01.5825531Z hint: 	git config --global init.defaultBranch <name>
+2026-05-08T12:39:01.5825943Z hint:
+2026-05-08T12:39:01.5826366Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-08T12:39:01.5827257Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-08T12:39:01.5827802Z hint:
+2026-05-08T12:39:01.5828090Z hint: 	git branch -m <name>
+2026-05-08T12:39:01.5828420Z hint:
+2026-05-08T12:39:01.5828882Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-08T12:39:01.5829658Z Initialized empty Git repository in /home/runner/work/Benchify/Benchify/.git/
+2026-05-08T12:39:01.5834946Z [command]/usr/bin/git remote add origin https://github.com/sundarlohar007/Benchify
+2026-05-08T12:39:01.5859583Z ##[endgroup]
+2026-05-08T12:39:01.5860172Z ##[group]Disabling automatic garbage collection
+2026-05-08T12:39:01.5863356Z [command]/usr/bin/git config --local gc.auto 0
+2026-05-08T12:39:01.5885910Z ##[endgroup]
+2026-05-08T12:39:01.5886415Z ##[group]Setting up auth
+2026-05-08T12:39:01.5891579Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-08T12:39:01.5915319Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-08T12:39:01.7798999Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-08T12:39:01.7826859Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-08T12:39:01.8034479Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-08T12:39:01.8063836Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-08T12:39:01.8256178Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-08T12:39:01.9530185Z ##[endgroup]
+2026-05-08T12:39:01.9530929Z ##[group]Fetching the repository
+2026-05-08T12:39:01.9537937Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +refs/heads/v0.1.1-rc.5*:refs/remotes/origin/v0.1.1-rc.5* +refs/tags/v0.1.1-rc.5*:refs/tags/v0.1.1-rc.5*
+2026-05-08T12:39:09.0568718Z From https://github.com/sundarlohar007/Benchify
+2026-05-08T12:39:09.0569446Z  * [new tag]         v0.1.1-rc.5 -> v0.1.1-rc.5
+2026-05-08T12:39:09.0588209Z ##[endgroup]
+2026-05-08T12:39:09.0588524Z ##[group]Determining the checkout info
+2026-05-08T12:39:09.0594970Z [command]/usr/bin/git branch --list --remote origin/v0.1.1-rc.5
+2026-05-08T12:39:09.0619874Z [command]/usr/bin/git tag --list v0.1.1-rc.5
+2026-05-08T12:39:09.0635991Z v0.1.1-rc.5
+2026-05-08T12:39:09.0639608Z ##[endgroup]
+2026-05-08T12:39:09.0643819Z [command]/usr/bin/git sparse-checkout disable
+2026-05-08T12:39:09.0685517Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-08T12:39:09.0706449Z ##[group]Checking out the ref
+2026-05-08T12:39:09.0710603Z [command]/usr/bin/git checkout --progress --force refs/tags/v0.1.1-rc.5
+2026-05-08T12:39:10.1019502Z Updating files:  88% (2378/2687)
+2026-05-08T12:39:10.1028772Z Updating files:  89% (2392/2687)
+2026-05-08T12:39:10.1042178Z Updating files:  90% (2419/2687)
+2026-05-08T12:39:10.1055761Z Updating files:  91% (2446/2687)
+2026-05-08T12:39:10.1086362Z Updating files:  92% (2473/2687)
+2026-05-08T12:39:10.1097497Z Updating files:  93% (2499/2687)
+2026-05-08T12:39:10.1114044Z Updating files:  94% (2526/2687)
+2026-05-08T12:39:10.1133980Z Updating files:  95% (2553/2687)
+2026-05-08T12:39:10.1145647Z Updating files:  96% (2580/2687)
+2026-05-08T12:39:10.1162267Z Updating files:  97% (2607/2687)
+2026-05-08T12:39:10.1175703Z Updating files:  98% (2634/2687)
+2026-05-08T12:39:10.1186788Z Updating files:  99% (2661/2687)
+2026-05-08T12:39:10.1187269Z Updating files: 100% (2687/2687)
+2026-05-08T12:39:10.1187567Z Updating files: 100% (2687/2687), done.
+2026-05-08T12:39:10.1231634Z Note: switching to 'refs/tags/v0.1.1-rc.5'.
+2026-05-08T12:39:10.1232623Z 
+2026-05-08T12:39:10.1233076Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-05-08T12:39:10.1234124Z changes and commit them, and you can discard any commits you make in this
+2026-05-08T12:39:10.1234620Z state without impacting any branches by switching back to a branch.
+2026-05-08T12:39:10.1234913Z 
+2026-05-08T12:39:10.1235069Z If you want to create a new branch to retain commits you create, you may
+2026-05-08T12:39:10.1235485Z do so (now or later) by using -c with the switch command. Example:
+2026-05-08T12:39:10.1235683Z 
+2026-05-08T12:39:10.1235798Z   git switch -c <new-branch-name>
+2026-05-08T12:39:10.1235930Z 
+2026-05-08T12:39:10.1236017Z Or undo this operation with:
+2026-05-08T12:39:10.1236137Z 
+2026-05-08T12:39:10.1236213Z   git switch -
+2026-05-08T12:39:10.1236302Z 
+2026-05-08T12:39:10.1236472Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-05-08T12:39:10.1236710Z 
+2026-05-08T12:39:10.1236896Z HEAD is now at b48be95 fix(release): pass Flutter binary to linuxdeploy via --executable
+2026-05-08T12:39:10.1301784Z ##[endgroup]
+2026-05-08T12:39:10.1340246Z [command]/usr/bin/git log -1 --format=%H
+2026-05-08T12:39:10.1361833Z b48be95936b5101ecc4f3c9819f3dfb12000921e

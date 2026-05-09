@@ -1,0 +1,11 @@
+﻿2026-05-08T12:43:39.3103920Z ##[group]Run VER="0.1.1-rc.5"
+2026-05-08T12:43:39.3104390Z [36;1mVER="0.1.1-rc.5"[0m
+2026-05-08T12:43:39.3104660Z [36;1mmkdir -p ipa-build/Payload[0m
+2026-05-08T12:43:39.3105010Z [36;1mcp -r performancebench-mobile/build/ios/iphoneos/Runner.app ipa-build/Payload/[0m
+2026-05-08T12:43:39.3105570Z [36;1m(cd ipa-build && zip -qr "../dist/performancebench-mobile-${VER}-unsigned.ipa" Payload)[0m
+2026-05-08T12:43:39.3106080Z [36;1mrm -rf ipa-build[0m
+2026-05-08T12:43:39.3282860Z shell: /bin/bash -e {0}
+2026-05-08T12:43:39.3286180Z env:
+2026-05-08T12:43:39.3286620Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.41.9-arm64/flutter
+2026-05-08T12:43:39.3287030Z   PUB_CACHE: /Users/runner/.pub-cache
+2026-05-08T12:43:39.3287290Z ##[endgroup]

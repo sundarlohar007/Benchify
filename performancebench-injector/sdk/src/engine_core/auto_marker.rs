@@ -13,11 +13,11 @@ use crate::engine_core::marker::{begin_scene_marker, end_marker};
 pub fn on_scene_load(scene_name: &str) -> Option<String> {
     let mut marker = begin_scene_marker(scene_name);
 
-    // Scene transitions are typically instantaneous in editor,
-    // so end immediately with zero duration.
+    // End immediately — scene transitions are typically instantaneous in editor.
     // Engine wrappers may call end_scene_marker separately if needed.
-    let json = crate::engine_core::marker::marker_event_json(&marker);
     end_marker(&mut marker);
+
+    let json = crate::engine_core::marker::marker_event_json(&marker);
 
     // Push the completed marker to the transport queue.
     crate::transport::push_event_json(&json);

@@ -67,13 +67,25 @@ pub struct UnrealFrameStats {
 
 impl UnrealFrameStats {
     /// Serialize to JSON for TCP streaming.
+    /// `stat_unit_json` is validated before inlining — invalid JSON is replaced with null.
     pub fn to_json(&self) -> String {
+        // Validate stat_unit_json to prevent malformed output.
+        // If it's not valid JSON, fall back to null to avoid breaking the parser.
+        let validated_stat = if self.stat_unit_json.is_empty() {
+            "null".to_string()
+        } else {
+            match serde_json::from_str::<serde_json::Value>(&self.stat_unit_json) {
+                Ok(_) => self.stat_unit_json.clone(),
+                Err(_) => "null".to_string(),
+            }
+        };
+
         format!(
             r#"{{"engine":"unreal","rhi_frame_time_ms":{},"draw_primitive_calls":{},"gpu_frame_time_ms":{},"stat_unit_json":{}}}"#,
             self.rhi_frame_time_ms,
             self.draw_primitive_calls,
             self.gpu_frame_time_ms,
-            self.stat_unit_json,
+            validated_stat,
         )
     }
 
@@ -214,5 +226,41 @@ mod tests {
         assert!(!unity.to_json().is_empty());
         assert!(!unreal.to_json().is_empty());
         assert!(!godot.to_json().is_empty());
+
+        // All must be parseable by serde_json
+        serde_json::from_str::<serde_json::Value>(&unity.to_json())
+            .expect("Unity JSON should be valid");
+        serde_json::from_str::<serde_json::Value>(&unreal.to_json())
+            .expect("Unreal JSON should be valid");
+        serde_json::from_str::<serde_json::Value>(&godot.to_json())
+            .expect("Godot JSON should be valid");
+    }
+
+    #[test]
+    fn test_unreal_invalid_stat_unit_json_fallback() {
+        let stats = UnrealFrameStats {
+            rhi_frame_time_ms: 8.0,
+            draw_primitive_calls: 100,
+            gpu_frame_time_ms: 7.0,
+            stat_unit_json: "not valid json {{{".to_string(),
+        };
+        let json = stats.to_json();
+        let parsed: serde_json::Value = serde_json::from_str(&json)
+            .expect("Unreal JSON with invalid stat_unit should still be valid JSON");
+        assert!(parsed["stat_unit_json"].is_null());
+    }
+
+    #[test]
+    fn test_unreal_empty_stat_unit_json_fallback() {
+        let stats = UnrealFrameStats {
+            rhi_frame_time_ms: 8.0,
+            draw_primitive_calls: 100,
+            gpu_frame_time_ms: 7.0,
+            stat_unit_json: String::new(),
+        };
+        let json = stats.to_json();
+        let parsed: serde_json::Value = serde_json::from_str(&json)
+            .expect("Unreal JSON with empty stat_unit should still be valid JSON");
+        assert!(parsed["stat_unit_json"].is_null());
     }
 }

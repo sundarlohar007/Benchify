@@ -222,9 +222,14 @@ class CpuParser {
   ///
   /// Format: `pid (comm) state ppid ... utime stime ...`
   /// utime = field index 11 after state, stime = field index 12 after state.
+  ///
+  /// `comm` may legally contain spaces or parentheses — Android process names
+  /// like `(my_app(test))` are not unusual. Use `lastIndexOf(')')` so the
+  /// comm-closing paren is matched no matter how many `(` / `)` it contains.
+  /// The Rust SDK's parser already does this; the Dart side drifted.
   int? _extractPidTicks(String pidStat) {
     try {
-      final closeParen = pidStat.indexOf(')');
+      final closeParen = pidStat.lastIndexOf(')');
       if (closeParen < 0) return null;
 
       final afterComm = pidStat.substring(closeParen + 1).trim();

@@ -108,7 +108,8 @@ class _VideoPlayerWidgetState extends ConsumerState<VideoPlayerWidget> {
     final playheadSource = ref.watch(playheadSourceProvider);
 
     // If chart or scrub_bar initiated the seek, seek video position
-    if ((playheadSource == 'chart' || playheadSource == 'scrub_bar') &&
+    if ((playheadSource == PlayheadSource.chart ||
+            playheadSource == PlayheadSource.scrubBar) &&
         playheadTs != null &&
         _playerReady) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

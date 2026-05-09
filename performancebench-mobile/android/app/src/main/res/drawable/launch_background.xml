@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Pre-API-21 splash. The Flutter app ships dark-only today; using
+     `@android:color/white` here flashed the user with a white screen
+     before Flutter rendered (B-070). Match the v21 drawable's behaviour
+     by tying the background to the theme's colorBackground; inside our
+     Black.NoTitleBar theme that resolves to black. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@android:color/white" />
+    <item android:drawable="?android:colorBackground" />
 
     <!-- You can insert your own image assets here -->
     <!-- <item>

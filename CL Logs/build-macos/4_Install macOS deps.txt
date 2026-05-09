@@ -1,0 +1,13 @@
+﻿2026-05-08T12:40:02.0089650Z ##[group]Run brew install cocoapods 2>/dev/null || true
+2026-05-08T12:40:02.0090190Z [36;1mbrew install cocoapods 2>/dev/null || true[0m
+2026-05-08T12:40:02.0276360Z shell: /bin/bash -e {0}
+2026-05-08T12:40:02.0276620Z env:
+2026-05-08T12:40:02.0277030Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.41.9-arm64/flutter
+2026-05-08T12:40:02.0277430Z   PUB_CACHE: /Users/runner/.pub-cache
+2026-05-08T12:40:02.0277700Z ##[endgroup]
+2026-05-08T12:40:05.2298120Z [32m==>[0m [1mFetching downloads for: [32mcocoapods[39m[0m
+2026-05-08T12:40:10.9868510Z [32m==>[0m [1mInstalling cocoapods dependency: [32mruby[39m[0m
+2026-05-08T12:40:11.0195700Z [34m==>[0m [1mPouring ruby--4.0.3.arm64_sequoia.bottle.tar.gz[0m
+2026-05-08T12:40:21.4974460Z 🍺  /opt/homebrew/Cellar/ruby/4.0.3: 19,307 files, 61MB
+2026-05-08T12:40:21.5078190Z [34m==>[0m [1mPouring cocoapods--1.16.2_2.arm64_sequoia.bottle.tar.gz[0m
+2026-05-08T12:40:24.7562100Z 🍺  /opt/homebrew/Cellar/cocoapods/1.16.2_2: 13,729 files, 30.3MB

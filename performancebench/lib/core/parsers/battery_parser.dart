@@ -69,9 +69,13 @@ class BatteryParser {
 
       // Composite charging detection
       final anyPowered = acPowered || usbPowered || wirelessPowered || dockPowered;
-      final bool charging = (anyPowered || status == 2 || status == 5) ? true : false;
+      final bool charging = anyPowered || status == 2 || status == 5;
 
-      // Charging source: first true source
+      // Charging source: first true source. When `charging` is true via
+      // status 2/5 but no AC/USB/Wireless/Dock flag is set (some ROMs only
+      // expose status, not the per-source flags), surface `'unknown'` so
+      // consumers can distinguish "charging from unknown source" from
+      // "not charging" — both used to map to `'none'`, which was misleading.
       String chargingSource;
       if (!charging) {
         chargingSource = 'none';
@@ -84,7 +88,7 @@ class BatteryParser {
       } else if (dockPowered) {
         chargingSource = 'dock';
       } else {
-        chargingSource = 'none'; // status 2/5 but no source detected
+        chargingSource = 'unknown'; // status 2/5 but no source flag exposed
       }
 
       return BatteryResult(

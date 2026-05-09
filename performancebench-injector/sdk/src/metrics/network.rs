@@ -91,9 +91,10 @@ pub fn compute_network_deltas(prev: &[NetInterface], curr: &[NetInterface]) -> V
 
 fn classify_interface(name: &str) -> &'static str {
     let lower = name.to_lowercase();
-    if lower.starts_with("wlan") || lower.starts_with("wifi") {
+    if lower.starts_with("wlan") || lower.starts_with("wifi") || lower.starts_with("nan") {
         "wifi"
-    } else if lower.starts_with("rmnet") {
+    } else if lower.starts_with("rmnet") || lower.starts_with("ccmni")
+        || lower.starts_with("pdp") || lower.starts_with("ppp") {
         "cellular"
     } else {
         "other"
@@ -170,7 +171,11 @@ mod tests {
     #[test]
     fn test_classify_wifi_cellular_other() {
         assert_eq!(classify_interface("wlan0"), "wifi");
+        assert_eq!(classify_interface("nan0"), "wifi");
         assert_eq!(classify_interface("rmnet_data0"), "cellular");
+        assert_eq!(classify_interface("ccmni0"), "cellular");
+        assert_eq!(classify_interface("pdp0"), "cellular");
+        assert_eq!(classify_interface("ppp0"), "cellular");
         assert_eq!(classify_interface("eth0"), "other");
     }
 

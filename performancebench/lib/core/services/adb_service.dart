@@ -511,14 +511,26 @@ class AdbService implements AdbShell {
       // Non-critical
     }
 
-    // Power profile fallback for battery capacity
+    // Power profile fallback for battery DESIGN capacity. The previous
+    // implementation read `/sys/.../battery/capacity`, which is the current
+    // charge percentage (0-100) — not the design capacity in mAh. Use
+    // `charge_full_design` (µAh) and convert to mAh; fall back to
+    // `energy_full_design` / nominal voltage if charge_full_design isn't
+    // exposed. Whatever sysfs returns must NOT be the percentage file.
     if (batteryMah == null) {
       try {
-        final ppResult = await _runAdb(
-          ['-s', serial, 'shell', 'cat', '/sys/class/power_supply/battery/capacity'],
+        final cfdResult = await _runAdb(
+          ['-s', serial, 'shell', 'cat', '/sys/class/power_supply/battery/charge_full_design'],
         );
-        if (ppResult != null) {
-          batteryMah = int.tryParse((ppResult.stdout as String).trim());
+        if (cfdResult != null) {
+          final uAh = int.tryParse((cfdResult.stdout as String).trim());
+          // Sysfs convention: charge_full_design is in µAh; sanity-cap to
+          // 50,000,000 µAh = 50 Ah to reject garbage like "100" (which
+          // would be the capacity-percent file leaking through on misconfigured
+          // ROMs).
+          if (uAh != null && uAh > 100_000 && uAh < 50_000_000) {
+            batteryMah = (uAh / 1000).round();
+          }
         }
       } catch (_) {}
     }
@@ -681,13 +693,13 @@ class AdbService implements AdbShell {
         if (m != null) targetSdk = int.tryParse(m.group(1)!);
       }
 
-      // minSdk
+      // minSdk — the previous implementation gated this with an unrelated
+      // `compileSdkVersionCodename` check that prevented matching when the
+      // line in question contained that token (which it never does, but the
+      // gate was still wrong-shaped). Match minSdkVersion directly.
       if (minSdk == null) {
-        final m = RegExp(r'compileSdkVersionCodename=.*').firstMatch(trimmed);
-        if (m == null) {
-          final m2 = RegExp(r'minSdkVersion=(\d+)').firstMatch(trimmed);
-          if (m2 != null) minSdk = int.tryParse(m2.group(1)!);
-        }
+        final m = RegExp(r'minSdkVersion=(\d+)').firstMatch(trimmed);
+        if (m != null) minSdk = int.tryParse(m.group(1)!);
       }
 
       // permissions

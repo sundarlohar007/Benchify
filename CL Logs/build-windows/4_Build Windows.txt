@@ -1,0 +1,65 @@
+﻿2026-05-08T12:40:57.6326078Z ##[group]Run flutter build windows --release
+2026-05-08T12:40:57.6326461Z [36;1mflutter build windows --release[0m
+2026-05-08T12:40:57.6529467Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-05-08T12:40:57.6529866Z env:
+2026-05-08T12:40:57.6530252Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-08T12:40:57.6530748Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-08T12:40:57.6531076Z ##[endgroup]
+2026-05-08T12:41:09.4512015Z Building flutter tool... 
+2026-05-08T12:41:09.4550323Z Running pub upgrade... 
+2026-05-08T12:41:09.4882654Z Resolving dependencies...
+2026-05-08T12:41:10.1646289Z Downloading packages...
+2026-05-08T12:41:24.8997907Z Got dependencies.
+2026-05-08T12:41:41.4566116Z Resolving dependencies...
+2026-05-08T12:41:42.4791923Z Downloading packages...
+2026-05-08T12:42:00.3975387Z   csv 6.0.0 (8.0.0 available)
+2026-05-08T12:42:00.3976036Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-08T12:42:00.3976523Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-08T12:42:00.3977378Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-08T12:42:00.3977902Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-08T12:42:00.3978467Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-08T12:42:00.3979143Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-08T12:42:00.3980141Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-08T12:42:00.3980823Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-08T12:42:00.3981422Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-08T12:42:00.3981920Z   go_router 13.2.5 (17.2.3 available)
+2026-05-08T12:42:00.3982254Z   js 0.6.7 (0.7.2 available)
+2026-05-08T12:42:00.3982534Z   matcher 0.12.19 (0.12.20 available)
+2026-05-08T12:42:00.3982869Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-08T12:42:00.3983211Z   meta 1.17.0 (1.18.2 available)
+2026-05-08T12:42:00.3983522Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-08T12:42:00.3984151Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-08T12:42:00.3984747Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-08T12:42:00.3985354Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-08T12:42:00.3985668Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-08T12:42:00.3986024Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-08T12:42:00.3986338Z   test_api 0.7.10 (0.7.12 available)
+2026-05-08T12:42:00.3986668Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-08T12:42:00.3986975Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-08T12:42:00.3987304Z   win32 5.15.0 (6.2.0 available)
+2026-05-08T12:42:00.3987612Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-08T12:42:00.3987913Z   xml 6.6.1 (7.0.1 available)
+2026-05-08T12:42:00.3988226Z Got dependencies!
+2026-05-08T12:42:00.3988568Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-08T12:42:00.3989039Z Try `flutter pub outdated` for more information.
+2026-05-08T12:42:24.2085082Z Building Windows application...                                 
+2026-05-08T12:42:24.2095142Z CMake Warning (dev) at flutter/ephemeral/.plugin_symlinks/media_kit_libs_windows_video/windows/CMakeLists.txt:90 (add_custom_command):
+2026-05-08T12:42:24.2097131Z   Exactly one of PRE_BUILD, PRE_LINK, or POST_BUILD must be given.  Assuming
+2026-05-08T12:42:24.2097747Z   POST_BUILD to preserve backward compatibility.
+2026-05-08T12:42:24.2098955Z 
+2026-05-08T12:42:24.2100422Z   Policy CMP0175 is not set: add_custom_command() rejects invalid arguments.
+2026-05-08T12:42:24.2101145Z   Run "cmake --help-policy CMP0175" for policy details.  Use the cmake_policy
+2026-05-08T12:42:24.2102537Z   command to set the policy and suppress this warning.
+2026-05-08T12:42:24.2103495Z This warning is for project developers.  Use -Wno-dev to suppress it.
+2026-05-08T12:42:24.2104126Z 
+2026-05-08T12:42:24.6508394Z CMake Warning (dev) at flutter/ephemeral/.plugin_symlinks/media_kit_libs_windows_video/windows/CMakeLists.txt:126 (add_custom_command):
+2026-05-08T12:42:24.6514266Z   Exactly one of PRE_BUILD, PRE_LINK, or POST_BUILD must be given.  Assuming
+2026-05-08T12:42:24.6519098Z   POST_BUILD to preserve backward compatibility.
+2026-05-08T12:42:24.6519341Z 
+2026-05-08T12:42:24.6519552Z   Policy CMP0175 is not set: add_custom_command() rejects invalid arguments.
+2026-05-08T12:42:24.6520200Z   Run "cmake --help-policy CMP0175" for policy details.  Use the cmake_policy
+2026-05-08T12:42:24.6521177Z   command to set the policy and suppress this warning.
+2026-05-08T12:42:24.6521643Z This warning is for project developers.  Use -Wno-dev to suppress it.
+2026-05-08T12:42:24.6552745Z 
+2026-05-08T12:44:16.8728646Z Building Windows application...                                   135.4s
+2026-05-08T12:44:16.8769279Z √ Built build\windows\x64\runner\Release\performancebench.exe

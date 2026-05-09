@@ -27,15 +27,15 @@ use crate::ipc::IpcServer;
 /// Uses the `sysinfo` crate to enumerate running processes and match
 /// the executable name (case-insensitive on Windows).
 fn find_process_id(process_name: &str) -> Option<u32> {
-    use sysinfo::{ProcessExt, System, SystemExt};
+    use sysinfo::System;
 
-    let mut system = System::new_all();
-    system.refresh_all();
+    let mut system = System::new();
+    system.refresh_processes(sysinfo::ProcessesToUpdate::All);
 
     let name_lower = process_name.to_lowercase();
 
     for (pid, process) in system.processes() {
-        let exe_name = process.name().to_lowercase();
+        let exe_name = process.name().to_string_lossy().to_lowercase();
         if exe_name == name_lower || exe_name.starts_with(&name_lower) {
             return Some(pid.as_u32());
         }
@@ -68,7 +68,7 @@ pub fn run_collector(
         ))?,
     };
 
-    let dxgi_method = args.dxgi_method_enum()?;
+    let dxgi_method = args.dxgi_method_enum().map_err(|e| anyhow::anyhow!("{}", e))?;
 
     // Warn about ETW requiring admin
     if args.etw && !is_elevated() {
@@ -223,20 +223,21 @@ fn try_broadcast_line_sync(ipc: &Arc<IpcServer>, line: &str) -> Result<()> {
 }
 
 /// Check if the current process is running with elevated privileges.
+///
+/// On Windows, this is a conservative stub that always returns false.
+/// A proper implementation would use `CheckTokenMembership` via the windows crate.
+/// On non-Windows, always returns false (pcprobe targets Windows only).
 fn is_elevated() -> bool {
     #[cfg(windows)]
     {
-        // Check if running as administrator on Windows
-        use std::os::windows::ffi::OsStrExt;
-        use std::ffi::OsString;
-        // Simple heuristic: check if we can write to a protected location
-        // A more robust approach uses CheckTokenMembership but that requires winapi
-        false // Conservative: assume not elevated unless proven otherwise
+        // Conservative: assume not elevated unless proven otherwise.
+        // A robust approach uses CheckTokenMembership from the windows crate,
+        // but that's a heavy dependency for a diagnostic check.
+        false
     }
     #[cfg(not(windows))]
     {
-        // On Linux/macOS, check if running as root
-        unsafe { libc::geteuid() == 0 }
+        false
     }
 }
 

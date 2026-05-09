@@ -22,9 +22,9 @@ export const Route = createFileRoute('/admin/audit')({
   beforeLoad: ({ context }) => {
     const ctx = context as { queryClient: QueryClient };
     const user = ctx.queryClient.getQueryData<User>(['auth', 'me']);
-    // Only redirect if we have cached user data and they're not admin.
+    // Only redirect if we have cached user data and they're not admin or auditor.
     // If data isn't cached yet, let the component's ProtectedRoute handle it.
-    if (user !== undefined && user.role !== 'admin') {
+    if (user !== undefined && user.role !== 'admin' && user.role !== 'auditor') {
       throw redirect({ to: '/sessions' });
     }
   },

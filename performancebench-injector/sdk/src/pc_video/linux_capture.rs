@@ -296,9 +296,17 @@ pub fn stop_capture(mut session: LinuxCaptureSession) -> Result<Vec<crate::pc_vi
     session.is_capturing = false;
 
     if let Some(mut child) = session.ffmpeg_child.take() {
-        // Send SIGTERM for graceful ffmpeg shutdown
-        if let Err(e) = child.kill() {
-            log::warn!("Failed to kill ffmpeg process: {}", e);
+        // Send SIGTERM (not SIGKILL) so ffmpeg can finalize the chunk trailer.
+        // Child::kill() sends SIGKILL which truncates output.
+        #[cfg(target_os = "linux")]
+        {
+            let pid = child.id() as i32;
+            // SIGTERM = 15
+            unsafe { libc::kill(pid, 15); }
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            let _ = child.kill();
         }
 
         // Wait for process to exit

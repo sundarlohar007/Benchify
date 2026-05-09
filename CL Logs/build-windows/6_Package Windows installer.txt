@@ -1,0 +1,8 @@
+﻿2026-05-08T12:44:32.2370353Z ##[group]Run joncloud/makensis-action@v4
+2026-05-08T12:44:32.2370789Z with:
+2026-05-08T12:44:32.2371115Z   script-file: performancebench/windows/installer/performancebench.nsi
+2026-05-08T12:44:32.2371528Z env:
+2026-05-08T12:44:32.2371853Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-08T12:44:32.2372318Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-08T12:44:32.2372642Z ##[endgroup]
+2026-05-08T12:44:32.3128655Z Creating installer for: performancebench/windows/installer/performancebench.nsi

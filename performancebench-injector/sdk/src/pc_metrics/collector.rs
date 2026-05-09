@@ -198,35 +198,46 @@ impl PcCollector {
         }
 
         // 6. Calculate disk I/O rates (current cumulative - previous cumulative)
+        // First tick (last == 0): store baseline, return None (no rate yet).
+        // Subsequent ticks: delta >= 0 is valid (zero = idle). Negative delta
+        // (counter reset/overflow) treated as None.
         let disk_read_rate = if let Some(current) = enriched.disk_read_bytes_per_s {
-            let delta = current - self.last_disk_read;
+            let prev = self.last_disk_read;
             self.last_disk_read = current;
-            if delta > 0 { Some(delta) } else { None }
+            if prev == 0 { None } // First tick: store baseline only
+            else if current >= prev { Some(current - prev) }
+            else { None } // Counter reset
         } else {
             None
         };
         let disk_write_rate = if let Some(current) = enriched.disk_write_bytes_per_s {
-            let delta = current - self.last_disk_write;
+            let prev = self.last_disk_write;
             self.last_disk_write = current;
-            if delta > 0 { Some(delta) } else { None }
+            if prev == 0 { None }
+            else if current >= prev { Some(current - prev) }
+            else { None }
         } else {
             None
         };
         enriched.disk_read_bytes_per_s = disk_read_rate;
         enriched.disk_write_bytes_per_s = disk_write_rate;
 
-        // 7. Calculate network rates
+        // 7. Calculate network rates (same pattern as disk)
         let net_rx_rate = if let Some(current) = enriched.net_rx_bytes_per_s {
-            let delta = current - self.last_net_rx;
+            let prev = self.last_net_rx;
             self.last_net_rx = current;
-            if delta > 0 { Some(delta) } else { None }
+            if prev == 0 { None }
+            else if current >= prev { Some(current - prev) }
+            else { None }
         } else {
             None
         };
         let net_tx_rate = if let Some(current) = enriched.net_tx_bytes_per_s {
-            let delta = current - self.last_net_tx;
+            let prev = self.last_net_tx;
             self.last_net_tx = current;
-            if delta > 0 { Some(delta) } else { None }
+            if prev == 0 { None }
+            else if current >= prev { Some(current - prev) }
+            else { None }
         } else {
             None
         };

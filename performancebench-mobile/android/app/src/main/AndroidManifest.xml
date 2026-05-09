@@ -1,6 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- INTERNET permission is required at runtime — the companion app
+         talks to the user's self-hosted server over HTTP/HTTPS. Pre-fix
+         (B-065) only the debug + profile manifests carried this; the
+         release APK shipped without it and every API call failed silently
+         on a packaged build. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
-        android:label="performancebench_mobile"
+        android:label="Benchify Mobile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

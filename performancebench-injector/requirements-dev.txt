@@ -1,0 +1,3 @@
+# Dev / CI dependencies — pulls runtime deps + test tooling.
+-r requirements.txt
+pytest>=7.0

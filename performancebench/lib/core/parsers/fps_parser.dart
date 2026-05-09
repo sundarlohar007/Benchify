@@ -182,8 +182,11 @@ class FpsParser {
       prevGamma = gamma;
     }
 
+    // `fps` is always ≥ 0 here (we only divide 1000 by a positive
+    // `meanDelta` and the empty-deltas branch sets fps=0.0 directly), so
+    // the previous `fps < 0 ? 0.0 : fps` guard was dead code.
     return FpsResult(
-      fps: fps < 0 ? 0.0 : fps,
+      fps: fps,
       jankSmallCount: jankSmall,
       jankCount: jankCount,
       jankBigCount: jankBig,

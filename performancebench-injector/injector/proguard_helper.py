@@ -25,7 +25,10 @@ def parse_mapping(mapping_path: str) -> Dict[str, str]:
     current_original = ""
     current_obfuscated = ""
 
-    with open(mapping_path, "r") as f:
+    # Explicit UTF-8 (B-097): mapping.txt may contain non-ASCII source-file
+    # paths or comments; default platform encoding (CP-1252 on Windows)
+    # raises UnicodeDecodeError on those.
+    with open(mapping_path, "r", encoding="utf-8", errors="replace") as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith("#"):
@@ -110,7 +113,7 @@ def _find_smali_dirs(apk_dir: str) -> list:
 def _get_super_class(smali_path: str) -> Optional[str]:
     """Extract the super class from a smali file."""
     try:
-        with open(smali_path, "r") as f:
+        with open(smali_path, "r", encoding="utf-8", errors="replace") as f:
             for line in f:
                 line = line.strip()
                 if line.startswith(".super "):
@@ -124,7 +127,7 @@ def _get_super_class(smali_path: str) -> Optional[str]:
 def _get_class_name(smali_path: str) -> Optional[str]:
     """Extract the class name from a smali file."""
     try:
-        with open(smali_path, "r") as f:
+        with open(smali_path, "r", encoding="utf-8", errors="replace") as f:
             for line in f:
                 line = line.strip()
                 if line.startswith(".class "):
