@@ -2358,7 +2358,7 @@ Schema per entry:
 - **User-visible symptom:** If an alert rule has threshold `0` (e.g., "FPS greater than 0"), the severity ratio calculation divides by zero yielding `Infinity`. The badge renders as "CRITICAL" for every event regardless of actual severity. For negative thresholds (used with "less than" conditions), the severity is computed incorrectly as negative.
 - **Root cause:** `event.threshold > 0` guard rejects 0 and negative, but `event.threshold !== 0` is needed, plus `Math.abs()` for correct ratio with negative thresholds.
 - **Fix:** Changed to `event.threshold !== 0 ? Math.abs(event.metric_value / event.threshold) : 0`.
-- **Status:** FIXED:<pending-S18>
+- **Status:** FIXED:ce94632
 - **Related:** —
 - **Found in:** S-18
 - **Discovered:** 2026-05-09
@@ -2372,7 +2372,7 @@ Schema per entry:
 - **User-visible symptom:** Users with role `auditor` can see the "Audit" link in the sidebar (because `adminItems` defines `roles: ['admin', 'auditor']`), but clicking it redirects them to `/sessions` because `beforeLoad` only checks `role !== 'admin'`. The auditor can see the door but can't enter.
 - **Root cause:** Route guard doesn't match sidebar visibility logic. The guard was `role !== 'admin'` but should also allow `auditor`.
 - **Fix:** Changed to `user.role !== 'admin' && user.role !== 'auditor'`.
-- **Status:** FIXED:<pending-S18>
+- **Status:** FIXED:ce94632
 - **Related:** —
 - **Found in:** S-18
 - **Discovered:** 2026-05-09
@@ -2386,7 +2386,7 @@ Schema per entry:
 - **User-visible symptom:** In the session detail Issues tab, issues with severity `warning` are not displayed. They ARE counted in the overview tab's severity breakdown (line 356), so users see "Warning: 3" on overview but switching to Issues shows no warning-severity items.
 - **Root cause:** The hardcoded severity array `['critical', 'high', 'medium', 'info', 'informational']` omits `'warning'` from the filter loop.
 - **Fix:** Added `'warning'` to the severity array between `'high'` and `'medium'`.
-- **Status:** FIXED:<pending-S18>
+- **Status:** FIXED:ce94632
 - **Related:** —
 - **Found in:** S-18
 - **Discovered:** 2026-05-09
