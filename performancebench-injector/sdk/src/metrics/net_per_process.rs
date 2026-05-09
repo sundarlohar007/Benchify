@@ -16,6 +16,7 @@
 //! no cross-process data access.
 
 use std::fs;
+use std::sync::Mutex;
 
 /// Network interface statistics from /proc/self/net/dev.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -48,19 +49,25 @@ pub struct NetPerProcessResult {
     pub other_rx: u64,
 }
 
-/// PID for /proc/<pid>/net/dev reads. 0 means use self.
-static mut TRACKED_PID: u32 = 0;
+/// Internal state for per-process network delta tracking.
+struct NetState {
+    tracked_pid: u32,
+    prev_snapshot: Option<Vec<NetInterface>>,
+}
 
-/// Previous network snapshot for delta computation.
-static mut PREV_SNAPSHOT: Option<Vec<NetInterface>> = None;
+static NET_STATE: once_cell::sync::Lazy<Mutex<NetState>> =
+    once_cell::sync::Lazy::new(|| Mutex::new(NetState {
+        tracked_pid: 0,
+        prev_snapshot: None,
+    }));
 
 /// Initialize per-process network tracking for a specific PID.
 ///
 /// Use PID 0 to track the current process (/proc/self).
 pub fn init(pid: u32) {
-    unsafe {
-        TRACKED_PID = pid;
-        PREV_SNAPSHOT = None;
+    if let Ok(mut state) = NET_STATE.lock() {
+        state.tracked_pid = pid;
+        state.prev_snapshot = None;
     }
 }
 
@@ -124,9 +131,10 @@ pub fn parse_net_dev(content: &str) -> Vec<NetInterface> {
 /// - everything else -> other
 pub fn classify_interface(name: &str) -> &'static str {
     let lower = name.to_lowercase();
-    if lower.starts_with("wlan") || lower.starts_with("wifi") {
+    if lower.starts_with("wlan") || lower.starts_with("wifi") || lower.starts_with("nan") {
         "wifi"
-    } else if lower.starts_with("rmnet") {
+    } else if lower.starts_with("rmnet") || lower.starts_with("ccmni")
+        || lower.starts_with("pdp") || lower.starts_with("ppp") {
         "cellular"
     } else {
         "other"
@@ -182,9 +190,13 @@ pub fn summarize_deltas(deltas: &[NetDelta]) -> NetPerProcessResult {
 /// Computes byte deltas per interface. Classifies by interface type.
 ///
 /// On first call, stores initial snapshot and returns empty result.
-#[allow(static_mut_refs)]
 pub fn collect(pid: Option<u32>) -> NetPerProcessResult {
-    let effective_pid = pid.unwrap_or(unsafe { TRACKED_PID });
+    let mut state = match NET_STATE.lock() {
+        Ok(s) => s,
+        Err(_) => return NetPerProcessResult::default(),
+    };
+
+    let effective_pid = pid.unwrap_or(state.tracked_pid);
 
     let path = if effective_pid == 0 {
         "/proc/self/net/dev".to_string()
@@ -203,25 +215,21 @@ pub fn collect(pid: Option<u32>) -> NetPerProcessResult {
 
     let current = parse_net_dev(&content);
 
-    unsafe {
-        let prev = PREV_SNAPSHOT.take();
-        let (_deltas, result) = match prev {
-            Some(ref p) => {
-                let d = compute_deltas(p, &current);
-                let r = summarize_deltas(&d);
-                (d, r)
-            }
-            None => {
-                // First collection — no deltas yet
-                (Vec::new(), NetPerProcessResult::default())
-            }
-        };
+    let result = match state.prev_snapshot.take() {
+        Some(ref p) => {
+            let d = compute_deltas(p, &current);
+            summarize_deltas(&d)
+        }
+        None => {
+            // First collection — no deltas yet
+            NetPerProcessResult::default()
+        }
+    };
 
-        // Store current snapshot for next collection
-        PREV_SNAPSHOT = Some(current);
+    // Store current snapshot for next collection
+    state.prev_snapshot = Some(current);
 
-        result
-    }
+    result
 }
 
 #[cfg(test)]
@@ -277,6 +285,15 @@ mod tests {
     fn test_classify_other() {
         assert_eq!(classify_interface("eth0"), "other");
         assert_eq!(classify_interface("dummy0"), "other");
+    }
+
+    #[test]
+    fn test_classify_spec_prefixes() {
+        // Per UNIFIED-SPEC §5.5: nan* is WiFi, ccmni*/pdp*/ppp* are Cellular
+        assert_eq!(classify_interface("nan0"), "wifi");
+        assert_eq!(classify_interface("ccmni0"), "cellular");
+        assert_eq!(classify_interface("pdp0"), "cellular");
+        assert_eq!(classify_interface("ppp0"), "cellular");
     }
 
     #[test]

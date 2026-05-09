@@ -14,13 +14,16 @@
 use std::collections::VecDeque;
 use std::io::Write;
 use std::net::{TcpListener, TcpStream};
-use std::sync::{Mutex, atomic::{AtomicBool, Ordering}};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Mutex,
+};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use crate::models::MetricSample;
-use crate::metrics::{fps, cpu, memory, network, webview_js, net_per_process};
 #[cfg(target_os = "android")]
 use crate::metrics::gpu;
+use crate::metrics::{cpu, fps, memory, net_per_process, network, webview_js};
+use crate::models::MetricSample;
 
 static STREAMING_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SERVER_RUNNING: AtomicBool = AtomicBool::new(false);
@@ -36,6 +39,7 @@ struct MetricState {
     last_cpu_utime: u64,
     last_cpu_stime: u64,
     last_cpu_total: u64,
+    last_cpu_idle: u64,
     last_net: Vec<network::NetInterface>,
     frame_deltas: Vec<u64>,
     session_id: String,
@@ -46,6 +50,7 @@ static METRIC_STATE: once_cell::sync::Lazy<Mutex<MetricState>> = once_cell::sync
         last_cpu_utime: 0,
         last_cpu_stime: 0,
         last_cpu_total: 0,
+        last_cpu_idle: 0,
         last_net: Vec::new(),
         frame_deltas: Vec::new(),
         session_id: String::new(),
@@ -53,12 +58,16 @@ static METRIC_STATE: once_cell::sync::Lazy<Mutex<MetricState>> = once_cell::sync
 });
 
 pub fn set_session_id(id: &str) {
-    if let Ok(mut s) = METRIC_STATE.lock() { s.session_id = id.to_string(); }
+    if let Ok(mut s) = METRIC_STATE.lock() {
+        s.session_id = id.to_string();
+    }
 }
 
 /// Start TCP server on 127.0.0.1:8080. Accepts one client at a time.
 pub fn start_server() {
-    if SERVER_RUNNING.swap(true, Ordering::SeqCst) { return; }
+    if SERVER_RUNNING.swap(true, Ordering::SeqCst) {
+        return;
+    }
 
     let listener = match TcpListener::bind("127.0.0.1:8080") {
         Ok(l) => l,
@@ -102,7 +111,9 @@ fn handle_client(stream: &mut TcpStream) {
     while SERVER_RUNNING.load(Ordering::SeqCst) && STREAMING_ACTIVE.load(Ordering::SeqCst) {
         let sample = LATEST_SAMPLE.lock().ok().and_then(|s| s.clone());
         if let Some(s) = sample {
-            if !send_sample(stream, &s) { return; }
+            if !send_sample(stream, &s) {
+                return;
+            }
         }
         std::thread::sleep(Duration::from_millis(100));
     }
@@ -110,13 +121,17 @@ fn handle_client(stream: &mut TcpStream) {
 
 fn send_sample(stream: &mut TcpStream, sample: &MetricSample) -> bool {
     match serde_json::to_string(sample) {
-        Ok(json) => {
-            match stream.write_all(format!("{}\n", json).as_bytes()) {
-                Ok(_) => true,
-                Err(e) => { log::error!("Write error: {}", e); false }
+        Ok(json) => match stream.write_all(format!("{}\n", json).as_bytes()) {
+            Ok(_) => true,
+            Err(e) => {
+                log::error!("Write error: {}", e);
+                false
             }
+        },
+        Err(e) => {
+            log::error!("Serialize error: {}", e);
+            true
         }
-        Err(e) => { log::error!("Serialize error: {}", e); true }
     }
 }
 
@@ -128,9 +143,13 @@ pub fn start_metric_collection() {
     while STREAMING_ACTIVE.load(Ordering::SeqCst) {
         let sample = collect_metrics();
 
-        if let Ok(mut latest) = LATEST_SAMPLE.lock() { *latest = Some(sample.clone()); }
+        if let Ok(mut latest) = LATEST_SAMPLE.lock() {
+            *latest = Some(sample.clone());
+        }
         if let Ok(mut queue) = SAMPLE_QUEUE.lock() {
-            if queue.len() >= 60 { queue.pop_front(); }
+            if queue.len() >= 60 {
+                queue.pop_front();
+            }
             queue.push_back(sample);
         }
 
@@ -140,10 +159,20 @@ pub fn start_metric_collection() {
 
 /// Collect one MetricSample with all available metrics.
 fn collect_metrics() -> MetricSample {
-    let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis() as i64;
-    let session_id = METRIC_STATE.lock().map(|s| s.session_id.clone()).unwrap_or_default();
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as i64;
+    let session_id = METRIC_STATE
+        .lock()
+        .map(|s| s.session_id.clone())
+        .unwrap_or_default();
 
-    let mut sample = MetricSample { session_id, timestamp: now, ..Default::default() };
+    let mut sample = MetricSample {
+        session_id,
+        timestamp: now,
+        ..Default::default()
+    };
 
     if let Ok(mut state) = METRIC_STATE.lock() {
         // FPS from Choreographer frame deltas
@@ -155,27 +184,28 @@ fn collect_metrics() -> MetricSample {
             }
         }
 
-        // CPU from /proc/self/stat
+        // CPU from /proc/self/stat + /proc/stat
+        // Per UNIFIED-SPEC §5.2:
+        //   cpu_app_pct    = (Δpid_ticks / Δtotal_ticks) × 100
+        //   cpu_system_pct = ((Δtotal - Δidle) / Δtotal) × 100
         if let Ok(stat) = std::fs::read_to_string("/proc/self/stat") {
             let (utime, stime) = cpu::parse_proc_self_stat(&stat);
-            let ud = utime.saturating_sub(state.last_cpu_utime);
-            let sd = stime.saturating_sub(state.last_cpu_stime);
-            #[cfg(not(target_os = "windows"))]
-            {
-                let ticks = unsafe { libc::sysconf(libc::_SC_CLK_TCK) } as f64;
-                if ticks > 0.0 {
-                    sample.cpu_app_pct = cpu::compute_app_cpu_pct((ud + sd) as f64 / ticks);
-                }
-            }
+            let pid_delta = (utime + stime).saturating_sub(state.last_cpu_utime + state.last_cpu_stime);
             state.last_cpu_utime = utime;
             state.last_cpu_stime = stime;
 
             if let Ok(ps) = std::fs::read_to_string("/proc/stat") {
                 let total = cpu::parse_proc_stat_total(&ps);
-                if total > 0 && state.last_cpu_total > 0 {
-                    sample.cpu_system_pct = cpu::compute_system_cpu_pct(total.saturating_sub(state.last_cpu_total));
+                let idle = cpu::parse_idle_ticks(&ps);
+                let total_delta = total.saturating_sub(state.last_cpu_total);
+                let idle_delta = idle.saturating_sub(state.last_cpu_idle);
+
+                if state.last_cpu_total > 0 && total_delta > 0 {
+                    sample.cpu_app_pct = cpu::compute_app_cpu_pct(pid_delta, total_delta);
+                    sample.cpu_system_pct = cpu::compute_system_cpu_pct(total_delta, idle_delta);
                 }
                 state.last_cpu_total = total;
+                state.last_cpu_idle = idle;
             }
         }
 
@@ -235,7 +265,9 @@ fn collect_metrics() -> MetricSample {
                 sample.gpu_pct = gpu::parse_adreno_gpubusy(&busy);
             }
             if sample.gpu_pct.is_none() {
-                if let Ok(util) = std::fs::read_to_string("/sys/class/misc/mali0/device/utilization") {
+                if let Ok(util) =
+                    std::fs::read_to_string("/sys/class/misc/mali0/device/utilization")
+                {
                     sample.gpu_pct = gpu::parse_mali_utilization(&util);
                 }
             }
@@ -249,10 +281,14 @@ fn collect_metrics() -> MetricSample {
 }
 
 pub fn push_frame_delta(delta_ns: u64) {
-    if let Ok(mut s) = METRIC_STATE.lock() { s.frame_deltas.push(delta_ns); }
+    if let Ok(mut s) = METRIC_STATE.lock() {
+        s.frame_deltas.push(delta_ns);
+    }
 }
 
-pub fn resume_streaming() { STREAMING_ACTIVE.store(true, Ordering::SeqCst); }
+pub fn resume_streaming() {
+    STREAMING_ACTIVE.store(true, Ordering::SeqCst);
+}
 
 pub fn stop_streaming() {
     STREAMING_ACTIVE.store(false, Ordering::SeqCst);
@@ -260,7 +296,11 @@ pub fn stop_streaming() {
 }
 
 pub fn get_current_stats() -> MetricSample {
-    LATEST_SAMPLE.lock().ok().and_then(|s| s.clone()).unwrap_or_default()
+    LATEST_SAMPLE
+        .lock()
+        .ok()
+        .and_then(|s| s.clone())
+        .unwrap_or_default()
 }
 
 /// Pause metric collection without stopping the TCP server.
@@ -280,7 +320,8 @@ pub fn push_event_json(json_str: &str) {
 /// Get all buffered MetricSamples and events for EXPORT.
 /// Returns serialized MetricSample vec plus marker events.
 pub fn get_buffered_samples() -> Vec<MetricSample> {
-    SAMPLE_QUEUE.lock()
+    SAMPLE_QUEUE
+        .lock()
         .map(|q| q.iter().cloned().collect())
         .unwrap_or_default()
 }

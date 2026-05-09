@@ -25,7 +25,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | S-09  | Injector — Python core (frida, smali, manifest, resigner)   | DONE        |        8 | [slice-09](./slice-09-injector-python-core.md)  |
 | S-10  | Injector — CLI + workflows                                  | DONE        |       10 | [slice-10](./slice-10-injector-cli.md)          |
 | S-11  | Injector — SDK Rust lib (transport, jni_bridge, automation) | DONE        |       12 | [slice-11](./slice-11-injector-sdk-rust-lib.md) |
-| S-12  | Injector — SDK metrics                                      | pending     |        — |                                                 |
+| S-12  | Injector — SDK metrics                                      | DONE        |       10 | [slice-12](./slice-12-injector-sdk-metrics.md)  |
 | S-13  | Injector — engine_core + game-engine plugins                | pending     |        — |                                                 |
 | S-14  | pcprobe — Rust PC profiler binary                           | pending     |        — |                                                 |
 | S-15  | pcprobe — PC metrics modules                                | pending     |        — |                                                 |
@@ -42,11 +42,11 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | Severity | Open | Fixed | Deferred | Wontfix | Total |
 |----------|-----:|------:|---------:|--------:|------:|
 | BLOCKER  |    0 |     0 |        2 |       0 |     2 |
-| HIGH     |    0 |    11 |        6 |       0 |    17 |
-| MED      |    0 |    21 |       24 |       0 |    45 |
-| LOW      |    0 |    12 |       23 |       0 |    35 |
-| NIT      |    0 |     8 |        8 |       0 |    16 |
-| **All**  |    0 |    52 |       63 |       0 |   115 |
+| HIGH     |    0 |    14 |        6 |       0 |    20 |
+| MED      |    0 |    22 |       27 |       0 |    49 |
+| LOW      |    0 |    14 |       25 |       0 |    39 |
+| NIT      |    0 |     8 |       10 |       0 |    18 |
+| **All**  |    0 |    58 |       70 |       0 |   128 |
 
 ## Conventions
 

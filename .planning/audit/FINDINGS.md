@@ -1620,3 +1620,143 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-11
 - **Discovered:** 2026-05-09
+
+---
+
+### B-114 — `compute_app_cpu_pct` formula was wrong — used seconds instead of tick ratio
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/sdk/src/metrics/cpu.rs:50-55` + `transport.rs:190-195` (pre-fix)
+- **User-visible symptom:** `cpu_app_pct` was computed as `(Δpid_ticks / HZ) × 100` — i.e. CPU-seconds×100 per collection interval. This *coincidentally* gives roughly correct values when the collection interval is exactly 1s and total system ticks ≈ HZ, but diverges on multi-core systems, under load, or when collection lags. The spec §5.2 requires `(Δpid_ticks / Δtotal_ticks) × 100.0`.
+- **Root cause:** `compute_app_cpu_pct` took a `f64` "seconds" parameter. Transport divided `(ud + sd) / sysconf(_SC_CLK_TCK)` to get seconds, then multiplied by 100. This is dimensionally wrong — the result is "CPU-seconds per wall-second × 100", not "fraction of total CPU time × 100".
+- **Fix:** Changed `compute_app_cpu_pct(f64)` → `compute_app_cpu_pct(pid_ticks_delta: u64, total_ticks_delta: u64)`. Transport now reads `/proc/stat` first to get Δtotal, then computes the ratio per spec.
+- **Status:** FIXED:<pending-S12>
+- **Related:** B-115
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-115 — `compute_system_cpu_pct` formula was wrong — used seconds, ignored idle
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/sdk/src/metrics/cpu.rs:59-67` + `transport.rs:200-204` (pre-fix)
+- **User-visible symptom:** `cpu_system_pct` was computed as `(Δtotal / HZ) / 1.0 × 100` — the division by 1.0 was a literal no-op. The result was total CPU seconds × 100, not a percentage. The spec §5.2 line 648 requires `((Δtotal - Δidle) / Δtotal) × 100`.
+- **Root cause:** The formula never subtracted idle ticks. `parse_proc_stat_total` only returned the sum of all fields (including idle), and there was no `parse_idle_ticks` function.
+- **Fix:** Added `parse_idle_ticks()` to extract idle from /proc/stat field 4. Changed `compute_system_cpu_pct(total_delta)` → `compute_system_cpu_pct(total_delta, idle_delta)`. Transport now tracks `last_cpu_idle` and computes the correct formula.
+- **Status:** FIXED:<pending-S12>
+- **Related:** B-114
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-116 — `parse_proc_stat_total` only summed 7 of 10 fields
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/metrics/cpu.rs:38` (pre-fix)
+- **User-visible symptom:** On virtualized Android (emulators, cloud devices), `steal`, `guest`, and `guest_nice` ticks were excluded from the total. This undercounts total CPU time, making `cpu_system_pct` slightly inflated (denominator too small). On physical devices these fields are typically 0, so no impact.
+- **Root cause:** `parts[1..8]` slice stopped at field 7 (softirq). Linux /proc/stat has up to 10 numeric fields.
+- **Fix:** Changed to `parts[1..]` to sum all available numeric fields. Added test for 10-field format and backward-compat test for 7-field format.
+- **Status:** FIXED:<pending-S12>
+- **Related:** B-114, B-115
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-117 — Jank classification uses hardcoded 60Hz VSYNC, not device refresh rate
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/metrics/fps.rs:9`
+- **User-visible symptom:** On 90Hz or 120Hz devices, the jank threshold is based on 16.67ms (60Hz) instead of 11.11ms (90Hz) or 8.33ms (120Hz). This under-reports jank on high-refresh-rate displays — frames that miss the 90Hz deadline but hit the 60Hz deadline are not counted as jank.
+- **Root cause:** `const VSYNC_NS: u64 = 16_666_667` hardcoded at module level. No mechanism to pass the device's actual refresh rate from the Choreographer callback.
+- **Fix (planned):** Add a `set_display_refresh_ns(ns: u64)` function that the JNI bridge calls after reading `Display.getRefreshRate()` on init. `classify_jank` would use this dynamic value. Requires corresponding Java-side change.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-118
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-118 — Jank tier algorithm doesn't match spec (simplified thresholds vs rolling window)
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/metrics/fps.rs:45-61`
+- **User-visible symptom:** SDK jank counts differ from what the desktop Dart parser computes for the same frame data. The SDK uses fixed multipliers (2× VSYNC = small, 4× VSYNC = big). The spec §5.1 defines a 3-tier model with rolling 3-frame window and absolute thresholds (83.3ms for Jank, 125ms for Big Jank).
+- **Root cause:** SDK implemented a simpler jank model during initial development. The spec's model was finalized later and only implemented in the Dart parser.
+- **Fix (planned):** Implement the spec's 3-tier model with rolling 3-frame mean and absolute thresholds. This is a behavioral change that will alter jank counts — requires coordinated testing with the desktop side.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-117
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-119 — `static mut TRACKED_PID` and `PREV_SNAPSHOT` in net_per_process.rs — undefined behavior
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/sdk/src/metrics/net_per_process.rs:52-55` (pre-fix)
+- **User-visible symptom:** None observed in single-threaded test runs. In production, if `collect()` is called concurrently from multiple threads (e.g. multiple metric collection loops or tests), data race UB can corrupt the snapshot vector or produce garbage deltas.
+- **Root cause:** `static mut` with `#[allow(static_mut_refs)]` — the lint suppression hid the actual UB. `collect()` reads and writes the snapshot without any synchronization.
+- **Fix:** Replaced both `static mut` variables with a `Mutex<NetState>` guarded by `once_cell::sync::Lazy`. All access now goes through `NET_STATE.lock()`. Poisoned-mutex case returns default (empty result).
+- **Status:** FIXED:<pending-S12>
+- **Related:** —
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-120 — Network interface classification missing spec-required prefixes
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/metrics/network.rs:92-101` + `net_per_process.rs:125-134` (pre-fix)
+- **User-visible symptom:** On Chinese OEM devices (MediaTek chipsets), cellular traffic via `ccmni0` is classified as "other" instead of "cellular". Similarly, `nan0` (WiFi Neighborhood Aware Networking) interfaces are classified as "other" instead of "wifi". Network dashboard shows incorrect WiFi/Cellular/Other breakdown.
+- **Root cause:** UNIFIED-SPEC §5.5 lists `nan*` as WiFi; `ccmni*`, `pdp*`, `ppp*` as Cellular. Both `network.rs` and `net_per_process.rs` only checked `wlan*`/`wifi*` and `rmnet*`.
+- **Fix:** Added `nan*` to WiFi classification. Added `ccmni*`, `pdp*`, `ppp*` to Cellular classification. Applied to both modules. Added test cases for all new prefixes.
+- **Status:** FIXED:<pending-S12>
+- **Related:** —
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-121 — `memory.rs` `other_pss = VmSize - VmRSS` is misleading
+
+- **Severity:** NIT
+- **Where:** `performancebench-injector/sdk/src/metrics/memory.rs:50`
+- **User-visible symptom:** When the fallback /proc/self/status path is used (JNI `ActivityManager` unavailable), `other_pss` shows a number that represents virtual address space overhead (mapped files, reserved pages), not actual proportional memory. The number can be very large (hundreds of MB) and confuse users.
+- **Root cause:** `VmSize - VmRSS` is not semantically related to Android's `other_pss` (Ashmem, Other dev, Other mmap, Unknown). It's the gap between virtual and resident memory.
+- **Fix (planned):** Set `other_pss = 0` on the fallback path with a comment explaining the limitation. Or read `/proc/self/smaps` for actual PSS breakdown if available.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-122 — `frame_deltas.drain(0..n-60)` after FPS computation may carry over stale frames
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/transport.rs:180-182`
+- **User-visible symptom:** If the collection loop lags (takes >1s for a cycle), frames from the current cycle that weren't consumed remain in the buffer and are included in the *next* cycle's FPS calculation. This inflates the next cycle's frame count and can produce FPS readings that don't represent a true 1-second window.
+- **Root cause:** The drain keeps 60 frames regardless of how many belonged to the current second. The spec says FPS is computed over a 1-second window, but the buffer accumulates continuously.
+- **Fix (planned):** After computing FPS, drain ALL frames instead of keeping 60. The Choreographer callback pushes new frames continuously; the collection loop should consume them all each cycle, leaving the buffer empty.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-117
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
+
+---
+
+### B-123 — Duplicate `NetInterface` / `NetDelta` types in `network.rs` and `net_per_process.rs`
+
+- **Severity:** NIT
+- **Where:** `performancebench-injector/sdk/src/metrics/network.rs:10-25` + `net_per_process.rs:20-36`
+- **User-visible symptom:** None. Code duplication — both modules define identical `NetInterface` and `NetDelta` structs with identical field names. Changes to one must be mirrored in the other.
+- **Root cause:** `net_per_process` was developed as a standalone replacement for the device-wide `network` module. Both were kept to allow fallback (B-103 fix in S-11).
+- **Fix (planned):** Extract shared types into a `network_types` submodule and re-export from both.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-103
+- **Found in:** S-12
+- **Discovered:** 2026-05-09
