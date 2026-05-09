@@ -1882,7 +1882,7 @@ Schema per entry:
 - **User-visible symptom:** `cargo build` fails immediately with "no matching package named `sdk` found". pcprobe cannot compile at all.
 - **Root cause:** The SDK's Cargo.toml defines `name = "performancebench-sdk"` but pcprobe's dependency used `path = "../sdk"` without a `package` rename.
 - **Fix:** Changed to `sdk = { package = "performancebench-sdk", path = "../sdk" }`.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** B-133
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1896,7 +1896,7 @@ Schema per entry:
 - **User-visible symptom:** Even after fixing B-132, Cargo errors with "Package `performancebench-sdk` does not have feature `pc_metrics`". The SDK has no `[features]` section at all.
 - **Root cause:** The `pc_metrics` module is unconditionally compiled (`pub mod pc_metrics;` with no `#[cfg(feature=...)]`). The feature flag was aspirational but never implemented.
 - **Fix:** Removed `features = ["pc_metrics"]` from the dependency.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** B-132
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1910,7 +1910,7 @@ Schema per entry:
 - **User-visible symptom:** Compilation fails with "cannot find trait `ProcessExt` in crate `sysinfo`". sysinfo 0.31 removed these traits — methods are now inherent on `System` and `Process`.
 - **Root cause:** Code was written for sysinfo 0.29/0.30 API. The `Cargo.toml` was bumped to 0.31 without updating callsites.
 - **Fix:** Removed trait imports. Changed `System::new_all()` → `System::new()` + `refresh_processes(ProcessesToUpdate::All)`. Changed `process.name()` → `process.name().to_string_lossy()` (returns `&OsStr` in 0.31).
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** —
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1924,7 +1924,7 @@ Schema per entry:
 - **User-visible symptom:** `cargo build` fails with "can't find crate for `hostname`". `discovery.rs` calls `hostname::get()` but the crate wasn't in `[dependencies]`.
 - **Root cause:** The `hostname` dependency was used in `discovery.rs` but never added to `Cargo.toml`.
 - **Fix:** Added `hostname = "0.4"` to `[dependencies]`.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** B-136
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1938,7 +1938,7 @@ Schema per entry:
 - **User-visible symptom:** Compilation error — `Result::and_then` expects closure returning `Result`, but `.ok()` returns `Option`. The chain is type-incoherent.
 - **Root cause:** `hostname::get()` returns `Result<OsString, io::Error>`. Using `.and_then(|h| h.into_string().ok())` mixes Result and Option monads.
 - **Fix:** Changed to `.ok().and_then(|h| h.into_string().ok())` — first convert Result to Option, then chain.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** B-135
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1952,7 +1952,7 @@ Schema per entry:
 - **User-visible symptom:** Type mismatch compile error — mdns-sd 0.10 returns `flume::RecvTimeoutError`, not `std::sync::mpsc::RecvTimeoutError`.
 - **Root cause:** Code assumed stdlib channel types but mdns-sd 0.10 switched its internal channels to flume.
 - **Fix:** Changed error types to `flume::RecvTimeoutError`. Added `flume = "0.11"` to `[dependencies]`.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** B-138
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1966,7 +1966,7 @@ Schema per entry:
 - **User-visible symptom:** Compile error — `get_property` returns `Option<&TxtProperty>`, not `Option<&str>`. The `.unwrap_or("unknown")` fails type checking.
 - **Root cause:** mdns-sd 0.10 changed `get_property` to return the raw TxtProperty type instead of a string.
 - **Fix:** Changed to `get_property_val_str()` which returns `Option<&str>`.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** B-137
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1980,7 +1980,7 @@ Schema per entry:
 - **User-visible symptom:** Two compile errors: (1) `#[tokio::main]` fails — "default runtime flavor is `multi_thread`, but `rt-multi-thread` feature is disabled". (2) `tokio::time::sleep()` unresolvable — "could not find `time` in `tokio`".
 - **Root cause:** The `tokio` dependency was missing the `rt-multi-thread` and `time` features needed by `main.rs`.
 - **Fix:** Added `"rt-multi-thread"` and `"time"` to tokio features list.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** —
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -1994,7 +1994,7 @@ Schema per entry:
 - **User-visible symptom:** On Windows, unused `OsStrExt` and `OsString` imports generate warnings. On non-Windows, `libc::geteuid()` won't compile because `libc` is not a pcprobe dependency. Not a practical issue since pcprobe targets Windows, but the non-windows path is dead code that would fail to compile cross-platform.
 - **Root cause:** Placeholder code with incomplete imports. The function always returns `false` on Windows regardless.
 - **Fix:** Removed unused imports on Windows. Replaced non-windows path with `false` (pcprobe is Windows-only).
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** —
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
@@ -2008,7 +2008,7 @@ Schema per entry:
 - **User-visible symptom:** Compile error — `hostname` String is moved into the `properties` array at line 42, then borrowed at line 48 as the host argument to `ServiceInfo::new`. Use-after-move.
 - **Root cause:** The properties array takes ownership of `hostname` via move semantics. The later borrow of `hostname` is invalid.
 - **Fix:** Added `.clone()` to the properties array entry so the original `hostname` String remains available for the ServiceInfo constructor.
-- **Status:** FIXED:<pending-S14>
+- **Status:** FIXED:2afc43c
 - **Related:** B-135
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
