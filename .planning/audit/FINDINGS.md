@@ -1760,3 +1760,115 @@ Schema per entry:
 - **Related:** B-103
 - **Found in:** S-12
 - **Discovered:** 2026-05-09
+
+---
+
+### B-124 — `marker_event_json` vulnerable to JSON injection via unescaped strings
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/sdk/src/engine_core/marker.rs:98-116` (pre-fix)
+- **User-visible symptom:** If a marker name or scene name contains double quotes, backslashes, newlines, or other JSON-special characters, the emitted JSON is malformed. The desktop parser fails to parse the marker event, silently dropping it from the timeline. In a worst case, crafted scene names could inject arbitrary JSON fields.
+- **Root cause:** `format!` string interpolation was used without any JSON escaping for `marker.name` and `scene_name`.
+- **Fix:** Added `escape_json_string()` helper that escapes `"`, `\`, `\n`, `\r`, `\t`, and control characters (<0x20 as `\uXXXX`). Applied to both `name` and `scene_name` before format interpolation. Added serde round-trip test.
+- **Status:** FIXED:<pending-S13>
+- **Related:** B-126
+- **Found in:** S-13
+- **Discovered:** 2026-05-09
+
+---
+
+### B-125 — `on_scene_load` emitted JSON with `duration_ms:null` despite ending marker immediately
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/engine_core/auto_marker.rs:19-20` (pre-fix)
+- **User-visible symptom:** Scene load markers always appeared as "in-progress" (null duration) on the desktop timeline, even though `end_marker` was called immediately after. The ended state was never serialized.
+- **Root cause:** `marker_event_json(&marker)` was called BEFORE `end_marker(&mut marker)`. The serialization captured the un-ended state.
+- **Fix:** Swapped the order — `end_marker` now runs first, then `marker_event_json` serializes the completed marker with a real duration.
+- **Status:** FIXED:<pending-S13>
+- **Related:** —
+- **Found in:** S-13
+- **Discovered:** 2026-05-09
+
+---
+
+### B-126 — `UnrealFrameStats::to_json` inlines `stat_unit_json` without validation
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/engine_core/metrics.rs:70-78` (pre-fix)
+- **User-visible symptom:** If the Unreal C++ wrapper passes an empty string, bare text, or malformed JSON as `stat_unit_json`, the outer JSON structure becomes unparseable. The desktop app silently drops the entire engine metrics event for that frame.
+- **Root cause:** The `stat_unit_json` field was interpolated raw into the `format!` template without any validation. The field type is `String`, which accepts anything.
+- **Fix:** Added serde_json validation before inlining. Invalid JSON is replaced with `null`. Empty string is replaced with `null`. Added tests for both cases.
+- **Status:** FIXED:<pending-S13>
+- **Related:** B-124
+- **Found in:** S-13
+- **Discovered:** 2026-05-09
+
+---
+
+### B-127 — All auto-marker functions push to EVENT_QUEUE which is never drained
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/engine_core/auto_marker.rs:23,33,41,49,58`
+- **User-visible symptom:** Every auto-marker call pushes JSON to `EVENT_QUEUE`, but per B-105 (S-11), this queue is never consumed by the TCP transport loop. All engine-core markers are silently lost. The desktop app never receives scene load, app launch, pause, resume, or user markers from the SDK.
+- **Root cause:** `push_event_json` appends to `EVENT_QUEUE` (Vec<String>), but the transport thread only drains `SAMPLE_QUEUE`. `EVENT_QUEUE` was designed for future use but never integrated.
+- **Fix (planned):** Integrate `EVENT_QUEUE` draining into the TCP send loop alongside metric samples. Already tracked as B-105 (S-11, HIGH).
+- **Status:** DEFERRED-TO-S20 (via B-105)
+- **Related:** B-105
+- **Found in:** S-13
+- **Discovered:** 2026-05-09
+
+---
+
+### B-128 — `ScopedMarker` schema doesn't match spec `markers` DDL field names
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/engine_core/marker.rs:14-19`
+- **User-visible symptom:** The desktop parser must map `name`→`label`, `start_ms`→`started_at`, `duration_ms`→`ended_at - started_at`. Missing fields: `session_id`, `group_id`, `notes`. Not a runtime bug, but increases integration friction and risk of mapping errors.
+- **Root cause:** SDK-side marker model was designed independently from the spec's DDL. Fields are semantically equivalent but differently named.
+- **Fix (planned):** Either rename SDK fields to match spec or document the mapping in a shared schema definition. Low priority since the integration layer hasn't been built yet (v3.0 scope).
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-13
+- **Discovered:** 2026-05-09
+
+---
+
+### B-129 — `begin_marker` and `begin_scene_marker` code duplication
+
+- **Severity:** NIT
+- **Where:** `performancebench-injector/sdk/src/engine_core/marker.rs:27-76`
+- **User-visible symptom:** None. Both functions duplicate 20+ lines of identical logic (timestamp, history push, drain). Only difference is `scene_name: None` vs `Some(...)`.
+- **Root cause:** Added incrementally; never refactored to share a constructor.
+- **Fix (planned):** Extract common constructor `new_marker(name, scene_name)` and have both call it.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-13
+- **Discovered:** 2026-05-09
+
+---
+
+### B-130 — `MARKER_HISTORY.drain(0..n-10_000)` uses O(n) Vec drain
+
+- **Severity:** NIT
+- **Where:** `performancebench-injector/sdk/src/engine_core/marker.rs:45-47`
+- **User-visible symptom:** None at 10K cap. On hot paths with rapid marker creation (e.g. per-frame markers in a game engine), the O(n) memmove on every 10,001st insertion causes a microsecond-scale stall.
+- **Root cause:** Same pattern as B-102 (S-11, transport VecDeque fix). Vec front-drain is O(n).
+- **Fix (planned):** Replace `Vec<ScopedMarker>` with `VecDeque<ScopedMarker>` and use `pop_front()`. Same pattern as B-102 fix.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-102
+- **Found in:** S-13
+- **Discovered:** 2026-05-09
+
+---
+
+### B-131 — Engine metric `to_json()` uses manual `format!` instead of serde serialization
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/engine_core/metrics.rs:34-44,70-78,107-117`
+- **User-visible symptom:** If any float field is `NaN` or `Infinity` (possible from division by zero in engine stats), the JSON output contains `NaN`/`inf` tokens which are not valid JSON. Desktop parser would reject the entire event.
+- **Root cause:** `format!("{}", f64)` for NaN produces `"NaN"`, not `null`. serde_json would reject NaN or serialize as null (configurable).
+- **Fix (planned):** Derive `serde::Serialize` on all three stats structs and use `serde_json::to_string()`. This also eliminates the injection risk for string fields.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-124, B-126
+- **Found in:** S-13
+- **Discovered:** 2026-05-09

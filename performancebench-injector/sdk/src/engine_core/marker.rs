@@ -9,6 +9,27 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::sync::Mutex;
 
+/// Escape a string for safe embedding in a JSON string literal.
+/// Handles: backslash, double-quote, newline, carriage-return, tab.
+fn escape_json_string(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c if (c as u32) < 0x20 => {
+                // Other control characters: \uXXXX
+                out.push_str(&format!("\\u{:04x}", c as u32));
+            }
+            _ => out.push(c),
+        }
+    }
+    out
+}
+
 /// A scoped performance marker recording start and optional end time.
 #[derive(Debug, Clone)]
 pub struct ScopedMarker {
@@ -95,22 +116,24 @@ pub fn marker_duration_ms(marker: &ScopedMarker) -> Option<i64> {
 
 /// Serialize a marker to JSON for TCP streaming.
 /// Format: {"type":"marker","name":"...","start_ms":...,"duration_ms":...}
+/// All string fields are JSON-escaped to prevent injection.
 pub fn marker_event_json(marker: &ScopedMarker) -> String {
     let duration = marker_duration_ms(marker);
+    let escaped_name = escape_json_string(&marker.name);
     let scene_field = marker
         .scene_name
         .as_ref()
-        .map(|s| format!(r#","scene":"{}""#, s))
+        .map(|s| format!(r#","scene":"{}""#, escape_json_string(s)))
         .unwrap_or_default();
 
     match duration {
         Some(d) => format!(
             r#"{{"type":"marker","name":"{}","start_ms":{},"duration_ms":{}{}}}"#,
-            marker.name, marker.start_ts, d, scene_field
+            escaped_name, marker.start_ts, d, scene_field
         ),
         None => format!(
             r#"{{"type":"marker","name":"{}","start_ms":{},"duration_ms":null{}}}"#,
-            marker.name, marker.start_ts, scene_field
+            escaped_name, marker.start_ts, scene_field
         ),
     }
 }
@@ -222,5 +245,24 @@ mod tests {
         // Calling end_marker again should not change end_ts.
         end_marker(&mut marker);
         assert_eq!(marker.end_ts, Some(first_end));
+    }
+
+    #[test]
+    fn test_marker_json_escaping() {
+        // Names with quotes, backslashes, newlines must be escaped
+        let marker = ScopedMarker {
+            name: "boss\"fight\\n".to_string(),
+            start_ts: 1000,
+            end_ts: Some(2000),
+            scene_name: Some("Level\t1".to_string()),
+        };
+
+        let json = marker_event_json(&marker);
+        // The JSON must be parseable by serde
+        let parsed: serde_json::Value = serde_json::from_str(&json)
+            .expect("Marker JSON with special chars should be valid");
+        assert_eq!(parsed["name"], "boss\"fight\\n");
+        assert_eq!(parsed["scene"], "Level\t1");
+        assert_eq!(parsed["duration_ms"], 1000);
     }
 }
