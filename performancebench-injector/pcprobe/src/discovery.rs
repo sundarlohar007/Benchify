@@ -30,15 +30,16 @@ pub struct DiscoveredHost {
 /// the service.
 pub fn advertise_pcprobe(port: u16) -> Result<ServiceDaemon> {
     let hostname = hostname::get()
+        .ok()
         .and_then(|h| h.into_string().ok())
         .unwrap_or_else(|| "unknown".to_string());
 
-    let service_name = format!("pb-pcprobe-{}.{}", hostname, SERVICE_TYPE);
+    let service_name = format!("pb-pcprobe-{}", hostname);
 
     let properties = [
         ("port".to_string(), port.to_string()),
         ("version".to_string(), "3.0.0".to_string()),
-        ("hostname".to_string(), hostname),
+        ("hostname".to_string(), hostname.clone()),
     ];
 
     let service_info = ServiceInfo::new(
@@ -87,11 +88,11 @@ pub fn discover_hosts() -> Result<Vec<DiscoveredHost>> {
                     let address = info.get_addresses().iter().next().cloned();
                     let port = info.get_port();
                     let hostname = info
-                        .get_property("hostname")
+                        .get_property_val_str("hostname")
                         .unwrap_or("unknown")
                         .to_string();
                     let version = info
-                        .get_property("version")
+                        .get_property_val_str("version")
                         .unwrap_or("0.0.0")
                         .to_string();
 
@@ -111,8 +112,8 @@ pub fn discover_hosts() -> Result<Vec<DiscoveredHost>> {
                     // Ignore non-resolution events
                 }
             },
-            Err(std::sync::mpsc::RecvTimeoutError::Timeout) => continue,
-            Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => break,
+            Err(flume::RecvTimeoutError::Timeout) => continue,
+            Err(flume::RecvTimeoutError::Disconnected) => break,
         }
     }
 

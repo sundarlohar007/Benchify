@@ -44,7 +44,7 @@ pub struct IpcServer {
     pub port: u16,
 
     /// Connected client writers (for broadcast).
-    clients: Mutex<Vec<tokio::net::tcp::OwnedWriteHalf>>,
+    pub(crate) clients: Mutex<Vec<tokio::net::tcp::OwnedWriteHalf>>,
 
     /// Whether the probe is actively collecting.
     pub collecting: AtomicBool,
