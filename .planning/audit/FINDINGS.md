@@ -2572,3 +2572,115 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-19
 - **Discovered:** 2026-05-09
+
+---
+
+### B-182 — No root README.md in repository
+
+- **Severity:** MED
+- **Where:** Repository root `/`
+- **User-visible symptom:** Users who visit `github.com/sundarlohar007/Benchify` see no project description, no installation instructions, no quickstart guide. The GitHub page renders a blank project landing. Every sub-project has a README except the root, which is the primary entry point.
+- **Root cause:** README was never created at the monorepo root. Sub-projects have READMEs but the aggregating project does not.
+- **Fix (planned):** Create a comprehensive root README covering: project overview, component map, installation for each platform, quickstart for each flow, contributing guide link, and license badge.
+- **Status:** DEFERRED — documentation task
+- **Related:** —
+- **Found in:** S-20
+- **Discovered:** 2026-05-09
+
+---
+
+### B-183 — Version drift across components
+
+- **Severity:** MED
+- **Where:** Multiple `pubspec.yaml`, `Cargo.toml`, `package.json` files
+- **User-visible symptom:** Component versions are inconsistent: desktop `0.1.0+1`, mobile `0.1.1+2`, web `2.0.0`, SDK `0.1.0`, pcprobe `3.0.0`, Unity plugin `3.0.0`, server `0.1.0`. There's no unified versioning scheme. The release workflow tags a single version (e.g., `v0.1.0`) but bundles artifacts from components at wildly different versions.
+- **Root cause:** Each component evolved independently without a version coordination strategy. No monorepo version management tool is in use.
+- **Fix (planned):** Adopt a single semantic version for the monorepo. Use the git tag as source of truth. Update all manifests from a single `VERSION` file or CI environment variable at release time.
+- **Status:** DEFERRED — requires design decision
+- **Related:** B-180 (NSIS hardcoded version)
+- **Found in:** S-20
+- **Discovered:** 2026-05-09
+
+---
+
+### B-184 — Stale development artifacts committed to repo
+
+- **Severity:** LOW
+- **Where:** `.commit-msg-task1.txt`, `.commit-msg-temp.txt`, `Claude Resume Command.txt`, `CI_CD_AUDIT_REPORT.txt`, `CL Logs/`
+- **User-visible symptom:** Repository contains working-directory debris from AI-assisted development sessions. These files (commit message drafts, Claude resume commands, CI audit logs) are not project source code and pollute the repository for contributors.
+- **Root cause:** These files were created during development sessions and not excluded by `.gitignore`.
+- **Fix (planned):** Add `.commit-msg-*.txt`, `Claude Resume Command.txt`, `CI_CD_AUDIT_REPORT.txt`, `CL Logs/` to `.gitignore`. Remove from git tracking.
+- **Status:** DEFERRED — cleanup task
+- **Related:** —
+- **Found in:** S-20
+- **Discovered:** 2026-05-09
+
+---
+
+### B-185 — URL path parameters not encoded across all web hooks
+
+- **Severity:** MED
+- **Where:** `performancebench-web/src/hooks/useSessions.ts`, `useTeams.ts`, `useAdmin.ts`, `useAlerts.ts`
+- **User-visible symptom:** Session IDs, org IDs, user IDs, and alert rule IDs are interpolated directly into URL paths without `encodeURIComponent()`. If any ID contains URL-special characters (e.g., `/`, `?`, `#`, `%`), the API request goes to the wrong endpoint or fails silently. Only `useAudit.ts:97` correctly uses `encodeURIComponent`.
+- **Root cause:** Copy-paste pattern: ``/api/v1/sessions/${sessionId}`` used everywhere. The audit hook was written separately and happened to get it right.
+- **Fix (planned):** Create a shared `urlParam()` helper that encodes path segments. Replace all raw `${id}` interpolations across hooks.
+- **Status:** DEFERRED — cross-cutting refactor (extends B-161)
+- **Related:** B-161
+- **Found in:** S-20
+- **Discovered:** 2026-05-09
+
+---
+
+### B-186 — 93.5% CI failure rate documented in existing audit report
+
+- **Severity:** HIGH
+- **Where:** `CI_CD_AUDIT_REPORT.txt` (repository root, dated 2026-05-07)
+- **User-visible symptom:** Per the existing CI audit report: 57 of 61 workflow runs failed. Self-heal workflow can't create issues (API permission error — 25 failures). Server Rust crate has 13 compile errors. Desktop has 94 Dart analysis issues and 7 missing SPDX headers. iOS tests fail due to missing OpenSSL headers. Privacy verification fails due to missing CMake deps.
+- **Root cause:** Multiple systemic issues: missing permissions in self-heal, missing system deps in CI runners, Rust compilation errors in server crate, Dart analysis errors in desktop. These were partially addressed in prior slices (S-19 fixed workflow names, injection) but the core CI-blocking issues remain.
+- **Fix (planned):** Triage the CI audit report into prioritized batches: (1) fix self-heal permissions, (2) add SPDX headers to ios_agents, (3) fix Rust compile errors in server db crate, (4) resolve Dart analysis errors in desktop.
+- **Status:** DEFERRED — major remediation effort (~18 hours per audit report)
+- **Related:** B-177, B-178, B-179
+- **Found in:** S-20
+- **Discovered:** 2026-05-09
+
+---
+
+### B-187 — CLAUDE.md references stale project state
+
+- **Severity:** LOW
+- **Where:** `CLAUDE.md:26-27`
+- **User-visible symptom:** `CLAUDE.md` says "Current Phase: Phase 1: v1.0 External Profiling MVP (7 days, 29 requirements)". The actual project is well past Phase 1 — desktop, mobile, server, web, and plugins are all implemented. This misleads any AI or developer who reads it for project context.
+- **Root cause:** CLAUDE.md was written at project inception and never updated as phases completed.
+- **Fix (planned):** Update "Current Phase" to reflect actual state, or remove stale phase reference.
+- **Status:** DEFERRED — documentation task
+- **Related:** —
+- **Found in:** S-20
+- **Discovered:** 2026-05-09
+
+---
+
+### B-188 — No `performancebench-web` README
+
+- **Severity:** LOW
+- **Where:** `performancebench-web/`
+- **User-visible symptom:** The web dashboard has no README. Every other sub-project (desktop, mobile, injector, plugins) has one. A developer who opens `performancebench-web/` doesn't know how to: install deps, start dev server, configure API URL, or understand the component architecture.
+- **Root cause:** Web dashboard was built later and README wasn't created.
+- **Fix (planned):** Create README covering: prerequisites (Node 22, pnpm), dev setup, env variables (API base URL), component architecture, deployment instructions.
+- **Status:** DEFERRED — documentation task
+- **Related:** B-182
+- **Found in:** S-20
+- **Discovered:** 2026-05-09
+
+---
+
+### B-189 — Deferred backlog summary (104 items across S-01..S-19)
+
+- **Severity:** NIT
+- **Where:** `.planning/audit/FINDINGS.md`
+- **User-visible symptom:** This is a meta-finding documenting the deferred backlog from the entire audit. 104 issues were deferred to S-20. The highest-priority deferred items are: B-009/B-010 (BLOCKER: missing iOS/macOS SDK binaries), B-186 (HIGH: 93.5% CI failure rate), B-161/B-185 (MED: unencoded URL params across all web hooks), B-177/B-178/B-179 (MED: CI `|| true` pattern making tests non-blocking).
+- **Root cause:** Deferred items accumulate by design — the audit policy only fixes local+low-risk issues inline.
+- **Fix (planned):** Prioritize the deferred backlog into 3 tiers: (T1) BLOCKER+HIGH items — immediate next sprint. (T2) MED items — within 2 sprints. (T3) LOW+NIT items — opportunistic.
+- **Status:** BACKLOG-TRIAGE — meta-finding
+- **Related:** All B-001..B-188
+- **Found in:** S-20
+- **Discovered:** 2026-05-09

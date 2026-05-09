@@ -33,7 +33,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | S-17  | Web dashboard — data + state                                | DONE        |        8 | [slice-17](./slice-17-web-data-state.md)        |
 | S-18  | Web dashboard — UI                                          | DONE        |        8 | [slice-18](./slice-18-web-dashboard-ui.md)      |
 | S-19  | Build, packaging, CI                                        | DONE        |        8 | [slice-19](./slice-19-build-packaging-ci.md)    |
-| S-20  | Cross-cutting — golden user flows + final regression        | pending     |        — |                                                 |
+| S-20  | Cross-cutting — golden user flows + final regression        | DONE        |        8 | [slice-20](./slice-20-cross-cutting-final.md)   |
 
 ## Roll-up counters
 
@@ -42,11 +42,11 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | Severity | Open | Fixed | Deferred | Wontfix | Total |
 |----------|-----:|------:|---------:|--------:|------:|
 | BLOCKER  |    0 |     2 |        2 |       0 |     4 |
-| HIGH     |    0 |    28 |       10 |       0 |    38 |
-| MED      |    0 |    31 |       38 |       0 |    69 |
-| LOW      |    0 |    15 |       38 |       0 |    53 |
-| NIT      |    0 |     8 |       16 |       0 |    24 |
-| **All**  |    0 |    84 |      104 |       0 |   188 |
+| HIGH     |    0 |    28 |       11 |       0 |    39 |
+| MED      |    0 |    31 |       44 |       0 |    75 |
+| LOW      |    0 |    15 |       41 |       0 |    56 |
+| NIT      |    0 |     8 |       17 |       0 |    25 |
+| **All**  |    0 |    84 |      115 |       0 |   199 |
 
 ## Conventions
 
