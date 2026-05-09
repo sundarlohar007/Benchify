@@ -1310,3 +1310,145 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-09
 - **Discovered:** 2026-05-08
+
+---
+
+### B-092 — `injector_cli.inject()` references undefined `json`
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/injector_cli.py:104,109,112,122-149` (pre-fix)
+- **User-visible symptom:** Selecting the smali method on the desktop spawns the CLI; first thing the smali path tries to do is `click.echo(json.dumps({"step": "validate", ...}))` and `NameError: name 'json' is not defined` blows up immediately. The desktop's `InjectionService` reads stdout as NDJSON, sees nothing, eventually times out. Smali path was effectively dead.
+- **Root cause:** `_read_stdin_json()` did `import json as _json` *inside its function scope*. The rest of the module used a bare `json.dumps` reference that was never defined. Module-level `import json` was missing.
+- **Fix:** Top-level `import json`; dropped the in-function alias. Same edit added module-level `import shutil`, `import tempfile` for the cleanup work in B-094 / B-098.
+- **Status:** FIXED:2eeb2b3
+- **Related:** B-085
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-093 — `@click.version_option(version="1.0.0")` hardcoded
+
+- **Severity:** MED
+- **Where:** `injector_cli.py:44` (pre-fix)
+- **User-visible symptom:** `python injector_cli.py --version` prints `PerformanceBench Injector 1.0.0` while every other published artifact says `0.1.x`. Bug-report version mismatches.
+- **Root cause:** Same scaffolder hardcode as B-024 (desktop About) / B-044 (settings) / B-079 (mobile pubspec).
+- **Fix:** Bumped literal to `"0.1.1"` to match the published release line. TODO references S-19 to wire `package_info`-style auto-versioning.
+- **Status:** FIXED:2eeb2b3
+- **Related:** B-024, B-044, B-079
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-094 — `inject()` smali path leaks tracebacks instead of structured errors
+
+- **Severity:** MED
+- **Where:** `injector_cli.py:104-149` (pre-fix)
+- **User-visible symptom:** When apktool / apksigner / smali_patcher fails, the exception escaped through Click as a stderr traceback. The desktop's `InjectionService.parseStepLine` parses NDJSON from stdout and never sees a terminal `step=error` event — UI hangs on "running…" until the user manually aborts.
+- **Root cause:** No try/except wrapping the pipeline.
+- **Fix:** Wrapped the smali pipeline in `try / except / finally`:
+  - `current_step` tracks the most-recent `running` event so the catch-all emits `{"step": current_step, "status": "fail", ...}` followed by `{"step": "error", "status": "fail", "detail": "Injection aborted"}`.
+  - Re-raised so Click maps to a non-zero exit code (preserves CLI-script semantics).
+- **Status:** FIXED:2eeb2b3
+- **Related:** B-098
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-095 — `aab_converter` passes keystore password via `pass:` literal argv
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/injector/aab_converter.py:69-71`
+- **User-visible symptom:** Same shape as B-088 but for bundletool: while `bundletool build-apks --ks-pass=pass:{value}` is running, the keystore + key passwords are visible in `ps -ef` / Process Explorer.
+- **Root cause:** bundletool's pass spec mirrors apksigner's; supports `pass:` / `file:` / `stdin` (no `env:`).
+- **Fix (planned):** Write password to a `tempfile.NamedTemporaryFile(mode="w", delete=False)` with mode `0600`, pass `--ks-pass=file:/path`, then `os.unlink` after the subprocess exits. Defer to S-20 with security batch.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-088
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-096 — `--output` defaults relative to CWD
+
+- **Severity:** LOW
+- **Where:** `injector_cli.py:64-65, 287, 268`
+- **User-visible symptom:** Injected APK lands wherever the user happened to launch the CLI from; gets buried in tmp dirs when invoked from the desktop's spawn path.
+- **Root cause:** Click `default="injected.apk"` resolves at call site cwd.
+- **Fix (planned):** Resolve to `os.path.join(os.path.dirname(apk), "injected.apk")` so the output lives next to the input.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-097 — `proguard_helper` opens files without explicit encoding
+
+- **Severity:** LOW
+- **Where:** `proguard_helper.py:28, 113, 127` (pre-fix)
+- **User-visible symptom:** On Windows hosts (default `open()` encoding CP-1252), an Android project with non-ASCII source paths in `mapping.txt` would crash mapping resolution with `UnicodeDecodeError`. ProGuard de-obfuscation silently fails.
+- **Root cause:** Default platform encoding.
+- **Fix:** Three call sites updated to `open(path, "r", encoding="utf-8", errors="replace")`. `errors="replace"` keeps the parser robust against malformed bytes rather than aborting.
+- **Status:** FIXED:2eeb2b3
+- **Related:** —
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-098 — `tmpdir` from `inject()` never cleaned up
+
+- **Severity:** LOW
+- **Where:** `injector_cli.py:107` (pre-fix)
+- **User-visible symptom:** Each `inject` invocation leaves a `pb_inject_*` directory in `$TMP` containing the decompiled APK (often 50-200 MB for game APKs). Successful runs and failures both leak. Desktop users who profile dozens of builds can fill `/tmp`.
+- **Root cause:** No `shutil.rmtree` on exit path.
+- **Fix:** `try / finally` around the whole pipeline; `finally` calls `shutil.rmtree(tmpdir, ignore_errors=True)` *only* when the CLI created the dir itself (i.e. `--work-dir` not supplied). User-supplied work dirs preserved for debugging.
+- **Status:** FIXED:2eeb2b3
+- **Related:** B-094
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-099 — `pytest` in production `requirements.txt`
+
+- **Severity:** NIT
+- **Where:** `performancebench-injector/requirements.txt:3` (pre-fix)
+- **User-visible symptom:** Users following the release-notes install instruction (`pip install -r requirements.txt && python injector_cli.py --help`) pulled a test-only dep + transitive packages.
+- **Root cause:** Requirements never split between runtime and dev.
+- **Fix:** Created `requirements-dev.txt` that does `-r requirements.txt` + `pytest>=7.0`. Updated `injector-sdk-ci.yml`'s `python-tests` job to install the dev manifest. Production `requirements.txt` now carries only `click` and `lxml`.
+- **Status:** FIXED:2eeb2b3
+- **Related:** —
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-100 — `verify` subcommand declares unused `--keystore` flag
+
+- **Severity:** NIT
+- **Where:** `injector_cli.py:218`
+- **User-visible symptom:** `python injector_cli.py verify --keystore foo.jks --apk x.apk` accepts the flag but ignores it. Misleads users who think the flag binds to apksigner verify.
+- **Root cause:** Stale CLI surface from a refactor that moved the keystore concern out of verify.
+- **Fix (planned):** Drop the option. Defer to S-20 cleanup.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
+
+---
+
+### B-101 — `.gitignore` `/target/` only matched root, leaked nested cargo target dirs
+
+- **Severity:** NIT
+- **Where:** `.gitignore:2` (pre-fix)
+- **User-visible symptom:** None at runtime. Dev-side: a `git add performancebench-injector/` during the S-10 commit pulled 1400+ build-artefact files (`sdk/target/debug/...`) into the audit branch; required an amend.
+- **Root cause:** Leading-slash anchored the pattern to repo root only. Nested workspaces (e.g. `performancebench-injector/sdk/target/`) weren't covered.
+- **Fix:** Bumped to `target/` (matches every nested cargo workspace under the repo). Same commit removed the polluted files via `git rm --cached -r`.
+- **Status:** FIXED:2eeb2b3
+- **Related:** —
+- **Found in:** S-10
+- **Discovered:** 2026-05-08
