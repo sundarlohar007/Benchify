@@ -1,9 +1,0 @@
-docs(02-05): complete video recording + chart sync plan execution
-
-- ScreenrecordService with 5-min auto-chunking (V15-11)
-- VideoTab with bidirectional chart scrub sync (V15-12)
-- playheadProvider for shared video-chart state
-- 16 new tests (9 screenrecord + 7 video-chart sync)
-- Phase 2 complete (13/13 requirements, 5/5 waves)
-
-Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

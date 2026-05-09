@@ -23,3 +23,11 @@ dist/
 # IDE
 .idea/
 .vscode/
+
+# AI dev session artifacts
+.commit-msg-*.txt
+.commit-msg-temp.txt
+Claude Resume Command.txt
+CI_CD_AUDIT_REPORT.txt
+CL Logs/
+graphify-out/

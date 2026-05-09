@@ -22,6 +22,7 @@ Free, open-source mobile + desktop performance profiler — GameBench alternativ
 - `.planning/REQUIREMENTS.md` — 90 requirements across 6 phases
 - `.planning/ROADMAP.md` — phase structure, waves, dependencies
 
-## Current Phase
-Phase 1: v1.0 External Profiling MVP (7 days, 29 requirements)
-Next: `/gsd-discuss-phase 1`
+## Current State
+All 6 phases implemented. Desktop + Mobile + Server + Web + Injector + SDK + Game Engine plugins are functional.
+Audit branch `audit/v0.1.x` completed 20/20 slices with 199 findings (84 fixed).
+Next: CI stabilization sprint → first tagged release `v0.1.0`.
