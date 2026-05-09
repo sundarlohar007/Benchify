@@ -8,6 +8,7 @@ import '../../shared/theme.dart';
 import '../../core/models/device.dart';
 import '../../core/services/adb_service.dart';
 import 'device_card.dart';
+import 'package:go_router/go_router.dart';
 
 /// Provider for the list of discovered devices.
 final deviceListProvider = FutureProvider<List<Device>>((ref) async {
@@ -32,17 +33,18 @@ class _DeviceListScreenState extends ConsumerState<DeviceListScreen> {
 
   void _onSectionTap(NavSection section) {
     setState(() => _activeSection = section);
-    // Navigation is handled by GoRouter for major views;
-    // activity bar switches sidebar content within this shell.
     switch (section) {
       case NavSection.history:
-        // Navigate via GoRouter
+        context.go('/history');
         break;
       case NavSection.compare:
+        context.go('/compare');
         break;
       case NavSection.settings:
+        context.go('/settings');
         break;
       case NavSection.devices:
+        // Already on this screen
         break;
     }
   }
@@ -147,7 +149,7 @@ class _DeviceListScreenState extends ConsumerState<DeviceListScreen> {
                         device: d,
                         colors: colors,
                         onStart: () {
-                          // Navigate to app picker
+                          context.go('/app-picker/${d.id}');
                         },
                       ))
                   .toList(),
