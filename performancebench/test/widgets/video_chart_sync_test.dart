@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
-import 'dart:async';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,13 +107,13 @@ void main() {
 
       // Simulate chart tap by updating playhead to 5000ms
       container.read(playheadProvider.notifier).state = 5000;
-      container.read(playheadSourceProvider.notifier).state = 'chart';
+      container.read(playheadSourceProvider.notifier).state = PlayheadSource.chart;
 
       await tester.pump();
 
       // Verify the provider was updated
       expect(container.read(playheadProvider), 5000);
-      expect(container.read(playheadSourceProvider), 'chart');
+      expect(container.read(playheadSourceProvider), PlayheadSource.chart);
     });
 
     // ── Test 3: Shared scrub bar updates from provider ──
@@ -128,12 +128,12 @@ void main() {
 
       // Simulate scrub bar dragging to 30000ms
       container.read(playheadProvider.notifier).state = 30000;
-      container.read(playheadSourceProvider.notifier).state = 'scrub_bar';
+      container.read(playheadSourceProvider.notifier).state = PlayheadSource.scrubBar;
 
       await tester.pump();
 
       expect(container.read(playheadProvider), 30000);
-      expect(container.read(playheadSourceProvider), 'scrub_bar');
+      expect(container.read(playheadSourceProvider), PlayheadSource.scrubBar);
     });
 
     // ── Test 4: VideoTab empty state when no video ──
@@ -162,7 +162,7 @@ void main() {
     test('playheadProvider defaults to null', () {
       final container = ProviderContainer();
       expect(container.read(playheadProvider), isNull);
-      expect(container.read(playheadSourceProvider), 'none');
+      expect(container.read(playheadSourceProvider), PlayheadSource.none);
     });
 
     // ── Test 6: Playhead source transitions correctly ──
@@ -170,19 +170,19 @@ void main() {
       final container = ProviderContainer();
 
       // Initial state
-      expect(container.read(playheadSourceProvider), 'none');
+      expect(container.read(playheadSourceProvider), PlayheadSource.none);
 
       // Video scrubbed
-      container.read(playheadSourceProvider.notifier).state = 'video';
-      expect(container.read(playheadSourceProvider), 'video');
+      container.read(playheadSourceProvider.notifier).state = PlayheadSource.video;
+      expect(container.read(playheadSourceProvider), PlayheadSource.video);
 
       // Chart tapped
-      container.read(playheadSourceProvider.notifier).state = 'chart';
-      expect(container.read(playheadSourceProvider), 'chart');
+      container.read(playheadSourceProvider.notifier).state = PlayheadSource.chart;
+      expect(container.read(playheadSourceProvider), PlayheadSource.chart);
 
       // Shared scrub bar dragged
-      container.read(playheadSourceProvider.notifier).state = 'scrub_bar';
-      expect(container.read(playheadSourceProvider), 'scrub_bar');
+      container.read(playheadSourceProvider.notifier).state = PlayheadSource.scrubBar;
+      expect(container.read(playheadSourceProvider), PlayheadSource.scrubBar);
     });
 
     // ── Test 7: chunks_json with 3 chunks — data intact ──

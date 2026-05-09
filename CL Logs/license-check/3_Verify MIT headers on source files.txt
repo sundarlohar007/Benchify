@@ -1,0 +1,20 @@
+﻿2026-05-09T08:49:18.7513805Z ##[group]Run missing=0
+2026-05-09T08:49:18.7514180Z [36;1mmissing=0[0m
+2026-05-09T08:49:18.7514474Z [36;1mfor dir in lib/ test/ ios_agents/; do[0m
+2026-05-09T08:49:18.7514809Z [36;1m  if [ -d "$dir" ]; then[0m
+2026-05-09T08:49:18.7515363Z [36;1m    count=$(grep -rL "SPDX-License-Identifier: MIT" "$dir" --include="*.dart" --include="*.py" 2>/dev/null | wc -l)[0m
+2026-05-09T08:49:18.7515929Z [36;1m    if [ "$count" -gt 0 ]; then[0m
+2026-05-09T08:49:18.7516279Z [36;1m      echo "ERROR: $count files in $dir missing MIT header"[0m
+2026-05-09T08:49:18.7516834Z [36;1m      grep -rL "SPDX-License-Identifier: MIT" "$dir" --include="*.dart" --include="*.py"[0m
+2026-05-09T08:49:18.7517364Z [36;1m      missing=$((missing + count))[0m
+2026-05-09T08:49:18.7517645Z [36;1m    fi[0m
+2026-05-09T08:49:18.7517844Z [36;1m  fi[0m
+2026-05-09T08:49:18.7518044Z [36;1mdone[0m
+2026-05-09T08:49:18.7518253Z [36;1mif [ "$missing" -gt 0 ]; then[0m
+2026-05-09T08:49:18.7518602Z [36;1m  echo "FAILED: $missing file(s) missing MIT SPDX header"[0m
+2026-05-09T08:49:18.7518984Z [36;1m  exit 1[0m
+2026-05-09T08:49:18.7519192Z [36;1mfi[0m
+2026-05-09T08:49:18.7519443Z [36;1mecho "All source files have MIT SPDX headers."[0m
+2026-05-09T08:49:18.7543648Z shell: /usr/bin/bash -e {0}
+2026-05-09T08:49:18.7543979Z ##[endgroup]
+2026-05-09T08:49:18.7684869Z All source files have MIT SPDX headers.

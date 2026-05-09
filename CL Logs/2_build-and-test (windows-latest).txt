@@ -1,0 +1,867 @@
+﻿2026-05-09T08:49:09.2529814Z Current runner version: '2.334.0'
+2026-05-09T08:49:09.2558713Z ##[group]Runner Image Provisioner
+2026-05-09T08:49:09.2559827Z Hosted Compute Agent
+2026-05-09T08:49:09.2560605Z Version: 20260422.526
+2026-05-09T08:49:09.2561608Z Commit: e1a9e573f4d0838b3a7c1b07401aeb29ed3635a9
+2026-05-09T08:49:09.2562555Z Build Date: 2026-04-22T09:31:31Z
+2026-05-09T08:49:09.2563481Z Worker ID: {63f34d9b-9e4e-4369-b711-71a2defb3a25}
+2026-05-09T08:49:09.2564447Z Azure Region: westcentralus
+2026-05-09T08:49:09.2565232Z ##[endgroup]
+2026-05-09T08:49:09.2567065Z ##[group]Operating System
+2026-05-09T08:49:09.2567951Z Microsoft Windows Server 2025
+2026-05-09T08:49:09.2568671Z 10.0.26100
+2026-05-09T08:49:09.2569325Z Datacenter
+2026-05-09T08:49:09.2569976Z ##[endgroup]
+2026-05-09T08:49:09.2570974Z ##[group]Runner Image
+2026-05-09T08:49:09.2571736Z Image: windows-2025
+2026-05-09T08:49:09.2572387Z Version: 20260428.110.2
+2026-05-09T08:49:09.2574467Z Included Software: https://github.com/actions/runner-images/blob/win25/20260428.110/images/windows/Windows2025-Readme.md
+2026-05-09T08:49:09.2576822Z Image Release: https://github.com/actions/runner-images/releases/tag/win25%2F20260428.110
+2026-05-09T08:49:09.2578190Z ##[endgroup]
+2026-05-09T08:49:09.2579693Z ##[group]GITHUB_TOKEN Permissions
+2026-05-09T08:49:09.2582063Z Contents: read
+2026-05-09T08:49:09.2582936Z Metadata: read
+2026-05-09T08:49:09.2583623Z Packages: read
+2026-05-09T08:49:09.2584347Z ##[endgroup]
+2026-05-09T08:49:09.2587043Z Secret source: Actions
+2026-05-09T08:49:09.2588030Z Prepare workflow directory
+2026-05-09T08:49:09.3057088Z Prepare all required actions
+2026-05-09T08:49:09.3095606Z Getting action download info
+2026-05-09T08:49:09.6801432Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-05-09T08:49:09.7957352Z Download action repository 'subosito/flutter-action@v2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+2026-05-09T08:49:10.1803300Z Download action repository 'joncloud/makensis-action@v4' (SHA:c481d9faa93b9189844ea92c602866e7b4f7371b)
+2026-05-09T08:49:10.5495107Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-05-09T08:49:10.8857794Z Getting action download info
+2026-05-09T08:49:11.0167838Z Download action repository 'actions/cache@v5' (SHA:27d5ce7f107fe9357f9df03efb73ab90386fccae)
+2026-05-09T08:49:11.2141248Z Complete job name: build-and-test (windows-latest)
+2026-05-09T08:49:11.3616698Z ##[group]Run actions/checkout@v4
+2026-05-09T08:49:11.3618070Z with:
+2026-05-09T08:49:11.3618724Z   repository: sundarlohar007/Benchify
+2026-05-09T08:49:11.3619826Z   token: ***
+2026-05-09T08:49:11.3620455Z   ssh-strict: true
+2026-05-09T08:49:11.3621086Z   ssh-user: git
+2026-05-09T08:49:11.3621738Z   persist-credentials: true
+2026-05-09T08:49:11.3622841Z   clean: true
+2026-05-09T08:49:11.3623515Z   sparse-checkout-cone-mode: true
+2026-05-09T08:49:11.3624289Z   fetch-depth: 1
+2026-05-09T08:49:11.3624930Z   fetch-tags: false
+2026-05-09T08:49:11.3625612Z   show-progress: true
+2026-05-09T08:49:11.3626248Z   lfs: false
+2026-05-09T08:49:11.3626854Z   submodules: false
+2026-05-09T08:49:11.3627501Z   set-safe-directory: true
+2026-05-09T08:49:11.3628463Z ##[endgroup]
+2026-05-09T08:49:11.5290623Z Syncing repository: sundarlohar007/Benchify
+2026-05-09T08:49:11.5293540Z ##[group]Getting Git version info
+2026-05-09T08:49:11.5294730Z Working directory is 'D:\a\Benchify\Benchify'
+2026-05-09T08:49:11.6250544Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-05-09T08:49:11.9453222Z git version 2.54.0.windows.1
+2026-05-09T08:49:11.9512694Z ##[endgroup]
+2026-05-09T08:49:11.9536003Z Temporarily overriding HOME='D:\a\_temp\5d1d0766-6087-4078-aa24-80e6f089b7e1' before making global git config changes
+2026-05-09T08:49:11.9539188Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-09T08:49:11.9550280Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Benchify\Benchify
+2026-05-09T08:49:12.0201332Z Deleting the contents of 'D:\a\Benchify\Benchify'
+2026-05-09T08:49:12.0210473Z ##[group]Initializing the repository
+2026-05-09T08:49:12.0224076Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\Benchify\Benchify
+2026-05-09T08:49:12.0909228Z Initialized empty Git repository in D:/a/Benchify/Benchify/.git/
+2026-05-09T08:49:12.0965762Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/sundarlohar007/Benchify
+2026-05-09T08:49:12.1510206Z ##[endgroup]
+2026-05-09T08:49:12.1512222Z ##[group]Disabling automatic garbage collection
+2026-05-09T08:49:12.1520096Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-05-09T08:49:12.1891792Z ##[endgroup]
+2026-05-09T08:49:12.1893539Z ##[group]Setting up auth
+2026-05-09T08:49:12.1919813Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-05-09T08:49:12.2329148Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-05-09T08:49:13.4840604Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-09T08:49:13.5175191Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-05-09T08:49:14.0543467Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-09T08:49:14.0855499Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-05-09T08:49:14.6235855Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-05-09T08:49:14.6581942Z ##[endgroup]
+2026-05-09T08:49:14.6582618Z ##[group]Fetching the repository
+2026-05-09T08:49:14.6599035Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d2d5ce7df3ec73e09782711ed937ad8b732028ac:refs/remotes/pull/56/merge
+2026-05-09T08:49:16.6979839Z From https://github.com/sundarlohar007/Benchify
+2026-05-09T08:49:16.6983386Z  * [new ref]         d2d5ce7df3ec73e09782711ed937ad8b732028ac -> pull/56/merge
+2026-05-09T08:49:16.7261563Z ##[endgroup]
+2026-05-09T08:49:16.7262239Z ##[group]Determining the checkout info
+2026-05-09T08:49:16.7263942Z ##[endgroup]
+2026-05-09T08:49:16.7275711Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-05-09T08:49:16.7664657Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-05-09T08:49:16.7948498Z ##[group]Checking out the ref
+2026-05-09T08:49:16.7958034Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/56/merge
+2026-05-09T08:49:17.8234234Z Note: switching to 'refs/remotes/pull/56/merge'.
+2026-05-09T08:49:17.8234750Z 
+2026-05-09T08:49:17.8235030Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-05-09T08:49:17.8235900Z changes and commit them, and you can discard any commits you make in this
+2026-05-09T08:49:17.8237164Z state without impacting any branches by switching back to a branch.
+2026-05-09T08:49:17.8237574Z 
+2026-05-09T08:49:17.8237753Z If you want to create a new branch to retain commits you create, you may
+2026-05-09T08:49:17.8238269Z do so (now or later) by using -c with the switch command. Example:
+2026-05-09T08:49:17.8238501Z 
+2026-05-09T08:49:17.8238614Z   git switch -c <new-branch-name>
+2026-05-09T08:49:17.8238786Z 
+2026-05-09T08:49:17.8238885Z Or undo this operation with:
+2026-05-09T08:49:17.8239066Z 
+2026-05-09T08:49:17.8239161Z   git switch -
+2026-05-09T08:49:17.8240540Z 
+2026-05-09T08:49:17.8240749Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-05-09T08:49:17.8241044Z 
+2026-05-09T08:49:17.8241453Z HEAD is now at d2d5ce7 Merge b3e7be5ded1b3f08bb91f389ec872f39054c06f6 into ea230ef126671de67ed25512f7fe0e607ad76a24
+2026-05-09T08:49:17.8382220Z ##[endgroup]
+2026-05-09T08:49:17.9000202Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-05-09T08:49:17.9316383Z d2d5ce7df3ec73e09782711ed937ad8b732028ac
+2026-05-09T08:49:17.9880901Z ##[group]Run subosito/flutter-action@v2
+2026-05-09T08:49:17.9881227Z with:
+2026-05-09T08:49:17.9881387Z   channel: stable
+2026-05-09T08:49:17.9881569Z   architecture: X64
+2026-05-09T08:49:17.9881732Z   cache: false
+2026-05-09T08:49:17.9881931Z   pub-cache-path: default
+2026-05-09T08:49:17.9882137Z   dry-run: false
+2026-05-09T08:49:17.9882381Z   git-source: https://github.com/flutter/flutter.git
+2026-05-09T08:49:17.9882658Z ##[endgroup]
+2026-05-09T08:49:18.0101885Z ##[group]Run chmod +x "$GITHUB_ACTION_PATH/setup.sh"
+2026-05-09T08:49:18.0102295Z [36;1mchmod +x "$GITHUB_ACTION_PATH/setup.sh"[0m
+2026-05-09T08:49:18.0117646Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-05-09T08:49:18.0118030Z ##[endgroup]
+2026-05-09T08:49:18.2526619Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh -p \
+2026-05-09T08:49:18.2526979Z [36;1m$GITHUB_ACTION_PATH/setup.sh -p \[0m
+2026-05-09T08:49:18.2527249Z [36;1m  -n '' \[0m
+2026-05-09T08:49:18.2527472Z [36;1m  -f '' \[0m
+2026-05-09T08:49:18.2528071Z [36;1m  -a 'X64' \[0m
+2026-05-09T08:49:18.2528284Z [36;1m  -k '' \[0m
+2026-05-09T08:49:18.2528434Z [36;1m  -c '' \[0m
+2026-05-09T08:49:18.2528597Z [36;1m  -l '' \[0m
+2026-05-09T08:49:18.2528759Z [36;1m  -d 'default' \[0m
+2026-05-09T08:49:18.2529076Z [36;1m  -g 'https://github.com/flutter/flutter.git' \[0m
+2026-05-09T08:49:18.2529361Z [36;1m  stable[0m
+2026-05-09T08:49:18.2539621Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-05-09T08:49:18.2540005Z ##[endgroup]
+2026-05-09T08:49:21.4277575Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh \
+2026-05-09T08:49:21.4278312Z [36;1m$GITHUB_ACTION_PATH/setup.sh \[0m
+2026-05-09T08:49:21.4278561Z [36;1m  -n '3.41.9' \[0m
+2026-05-09T08:49:21.4278754Z [36;1m  -a 'x64' \[0m
+2026-05-09T08:49:21.4279039Z [36;1m  -c 'C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64' \[0m
+2026-05-09T08:49:21.4279435Z [36;1m  -d 'C:\Users\runneradmin\AppData\Local\Pub\Cache' \[0m
+2026-05-09T08:49:21.4279724Z [36;1m  stable[0m
+2026-05-09T08:49:21.4289858Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-05-09T08:49:21.4290222Z ##[endgroup]
+2026-05-09T08:49:23.8558388Z   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+2026-05-09T08:49:23.8559104Z                                  Dload  Upload  Total   Spent   Left   Speed
+2026-05-09T08:49:23.8559468Z 
+2026-05-09T08:49:24.8551083Z   0      0   0      0   0      0      0      0                              0
+2026-05-09T08:49:25.8547653Z  25  1.71G  25 441.8M   0      0 441.8M      0   00:03           00:03 442.1M
+2026-05-09T08:49:26.8543844Z  56  1.71G  56 998.6M   0      0 499.4M      0   00:03   00:01   00:02 499.5M
+2026-05-09T08:49:27.2222559Z  88  1.71G  88  1.51G   0      0 518.5M      0   00:03   00:02   00:01 518.6M
+2026-05-09T08:49:27.2223163Z 100  1.71G 100  1.71G   0      0 521.3M      0   00:03   00:03         518.6M
+2026-05-09T08:49:27.2224166Z 100  1.71G 100  1.71G   0      0 521.2M      0   00:03   00:03         518.6M
+2026-05-09T08:49:27.2225854Z 100  1.71G 100  1.71G   0      0 521.2M      0   00:03   00:03         518.6M
+2026-05-09T08:50:39.9984732Z ##[group]Run flutter pub get
+2026-05-09T08:50:39.9985067Z [36;1mflutter pub get[0m
+2026-05-09T08:50:40.0607143Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-05-09T08:50:40.0607488Z env:
+2026-05-09T08:50:40.0607768Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-09T08:50:40.0608397Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-09T08:50:40.0608682Z ##[endgroup]
+2026-05-09T08:50:50.0456777Z Building flutter tool... 
+2026-05-09T08:50:50.0492439Z Running pub upgrade... 
+2026-05-09T08:50:50.0846017Z Resolving dependencies...
+2026-05-09T08:50:50.8412321Z Downloading packages...
+2026-05-09T08:51:00.5066603Z Got dependencies.
+2026-05-09T08:51:16.6460627Z Resolving dependencies...
+2026-05-09T08:51:17.7191262Z Downloading packages...
+2026-05-09T08:51:32.2893793Z   csv 6.0.0 (8.0.0 available)
+2026-05-09T08:51:32.2894339Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-09T08:51:32.2895439Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-09T08:51:32.2895873Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-09T08:51:32.2896326Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-09T08:51:32.2896820Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-09T08:51:32.2897350Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-09T08:51:32.2898260Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-09T08:51:32.2898894Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-09T08:51:32.2899452Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-09T08:51:32.2899921Z   go_router 13.2.5 (17.2.3 available)
+2026-05-09T08:51:32.2900305Z   js 0.6.7 (0.7.2 available)
+2026-05-09T08:51:32.2900632Z   matcher 0.12.19 (0.12.20 available)
+2026-05-09T08:51:32.2901050Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-09T08:51:32.2901446Z   meta 1.17.0 (1.18.2 available)
+2026-05-09T08:51:32.2901878Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-09T08:51:32.2902341Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-09T08:51:32.2902837Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-09T08:51:32.2903351Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-09T08:51:32.2903726Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-09T08:51:32.2904223Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-09T08:51:32.2904640Z   test_api 0.7.10 (0.7.12 available)
+2026-05-09T08:51:32.2905079Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-09T08:51:32.2905504Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-09T08:51:32.2905948Z   win32 5.15.0 (6.2.0 available)
+2026-05-09T08:51:32.2906374Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-09T08:51:32.2906785Z   xml 6.6.1 (7.0.1 available)
+2026-05-09T08:51:32.2907223Z Got dependencies!
+2026-05-09T08:51:32.2907731Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-09T08:51:32.2908786Z Try `flutter pub outdated` for more information.
+2026-05-09T08:51:32.8269627Z ##[group]Run flutter analyze 2>&1 || true
+2026-05-09T08:51:32.8269977Z [36;1mflutter analyze 2>&1 || true[0m
+2026-05-09T08:51:32.8329833Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-05-09T08:51:32.8330158Z env:
+2026-05-09T08:51:32.8330454Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-09T08:51:32.8330884Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-09T08:51:32.8331162Z ##[endgroup]
+2026-05-09T08:51:33.9414188Z Resolving dependencies...
+2026-05-09T08:51:34.1739542Z Downloading packages...
+2026-05-09T08:51:36.2237552Z   csv 6.0.0 (8.0.0 available)
+2026-05-09T08:51:36.2238564Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-09T08:51:36.2239337Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-09T08:51:36.2239955Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-09T08:51:36.2240567Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-09T08:51:36.2241563Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-09T08:51:36.2247054Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-09T08:51:36.2248156Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-09T08:51:36.2256771Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-09T08:51:36.2257535Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-09T08:51:36.2258550Z   go_router 13.2.5 (17.2.3 available)
+2026-05-09T08:51:36.2259455Z   js 0.6.7 (0.7.2 available)
+2026-05-09T08:51:36.2260006Z   matcher 0.12.19 (0.12.20 available)
+2026-05-09T08:51:36.2260526Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-09T08:51:36.2261098Z   meta 1.17.0 (1.18.2 available)
+2026-05-09T08:51:36.2262138Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-09T08:51:36.2263555Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-09T08:51:36.2264285Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-09T08:51:36.2264950Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-09T08:51:36.2265558Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-09T08:51:36.2266145Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-09T08:51:36.2266749Z   test_api 0.7.10 (0.7.12 available)
+2026-05-09T08:51:36.2267306Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-09T08:51:36.2267821Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-09T08:51:36.2268453Z   win32 5.15.0 (6.2.0 available)
+2026-05-09T08:51:36.2268974Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-09T08:51:36.2269513Z   xml 6.6.1 (7.0.1 available)
+2026-05-09T08:51:36.2270021Z Got dependencies!
+2026-05-09T08:51:36.2270631Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-09T08:51:36.2271455Z Try `flutter pub outdated` for more information.
+2026-05-09T08:51:55.8364748Z Analyzing performancebench...                                   
+2026-05-09T08:51:55.8385847Z 
+2026-05-09T08:51:55.8401784Z warning - The '!' will have no effect because the receiver can't be null - lib\core\analytics\analytics_service.dart:127:56 - unnecessary_non_null_assertion
+2026-05-09T08:51:55.8403212Z warning - Unused import: '../../core/database/session_stats_dao.dart' - lib\core\analytics\detected_issues_service.dart:4:8 - unused_import
+2026-05-09T08:51:55.8405450Z warning - Unused import: '../../core/database/session_dao.dart' - lib\core\analytics\detected_issues_service.dart:5:8 - unused_import
+2026-05-09T08:51:55.8407104Z warning - Unused import: '../../core/database/detected_issue_dao.dart' - lib\core\analytics\detected_issues_service.dart:6:8 - unused_import
+2026-05-09T08:51:55.8409688Z warning - The name File is shown, but isn't used - lib\core\services\adb_service.dart:5:23 - unused_shown_name
+2026-05-09T08:51:55.8413354Z    info - The imported package 'meta' isn't a dependency of the importing package - lib\core\services\adb_service.dart:7:8 - depend_on_referenced_packages
+2026-05-09T08:51:55.8424147Z    info - The member 'runShellCommand' overrides an inherited member but isn't annotated with '@override' - lib\core\services\adb_service.dart:210:19 - annotate_overrides
+2026-05-09T08:51:55.8425980Z warning - The value of the local variable 'sink' isn't used - lib\core\services\api_service.dart:182:15 - unused_local_variable
+2026-05-09T08:51:55.8427199Z    info - Uses 'await' on an instance of 'HttpClientRequest', which is not a subtype of 'Future' - lib\core\services\api_service.dart:182:22 - await_only_futures
+2026-05-09T08:51:55.8428481Z warning - Unused import: '../models/marker.dart' - lib\core\services\export_service.dart:14:8 - unused_import
+2026-05-09T08:51:55.8429650Z warning - Unused import: '../models/marker_stats.dart' - lib\core\services\export_service.dart:15:8 - unused_import
+2026-05-09T08:51:55.8430762Z warning - Unused import: '../models/session.dart' - lib\core\services\export_service.dart:17:8 - unused_import
+2026-05-09T08:51:55.8431903Z warning - Unused import: '../models/session_stats.dart' - lib\core\services\export_service.dart:18:8 - unused_import
+2026-05-09T08:51:55.8437683Z warning - The value of the field '_db' isn't used - lib\core\services\export_service.dart:29:18 - unused_field
+2026-05-09T08:51:55.8440054Z warning - The name Directory is shown, but isn't used - lib\core\services\ios_screenrecord_service.dart:6:23 - unused_shown_name
+2026-05-09T08:51:55.8441832Z    info - The imported package 'meta' isn't a dependency of the importing package - lib\core\services\ios_screenrecord_service.dart:8:8 - depend_on_referenced_packages
+2026-05-09T08:51:55.8445121Z    info - Angle brackets will be interpreted as HTML - lib\core\services\mac_proxy_service.dart:110:31 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8448357Z    info - The imported package 'meta' isn't a dependency of the importing package - lib\core\services\screenrecord_service.dart:8:8 - depend_on_referenced_packages
+2026-05-09T08:51:55.8450563Z warning - The '!' will have no effect because the receiver can't be null - lib\core\services\screenrecord_service.dart:427:22 - unnecessary_non_null_assertion
+2026-05-09T08:51:55.8452163Z    info - Angle brackets will be interpreted as HTML - lib\core\services\sdk_stream_service.dart:37:31 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8453492Z    info - Angle brackets will be interpreted as HTML - lib\core\services\sdk_stream_service.dart:37:52 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8454885Z    info - Angle brackets will be interpreted as HTML - lib\core\services\sdk_stream_service.dart:37:63 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8456261Z    info - Angle brackets will be interpreted as HTML - lib\core\services\sdk_stream_service.dart:38:46 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8457691Z warning - The value of the local variable 'remainingSamples' isn't used - lib\core\services\session_service.dart:38:22 - unused_local_variable
+2026-05-09T08:51:55.8459616Z warning - The '!' will have no effect because the receiver can't be null - lib\core\services\session_service.dart:52:37 - unnecessary_non_null_assertion
+2026-05-09T08:51:55.8460839Z warning - The name Platform is shown, but isn't used - lib\core\services\tidevice_service.dart:6:23 - unused_shown_name
+2026-05-09T08:51:55.8461875Z    info - The imported package 'meta' isn't a dependency of the importing package - lib\core\services\tidevice_service.dart:8:8 - depend_on_referenced_packages
+2026-05-09T08:51:55.8466485Z    info - Angle brackets will be interpreted as HTML - lib\core\services\tidevice_service.dart:67:31 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8467668Z    info - Unnecessary use of multiple underscores - lib\features\active_session\active_session_screen.dart:110:39 - unnecessary_underscores
+2026-05-09T08:51:55.8468640Z    info - Unnecessary use of multiple underscores - lib\features\active_session\active_session_screen.dart:207:39 - unnecessary_underscores
+2026-05-09T08:51:55.8469672Z    info - Unnecessary use of multiple underscores - lib\features\active_session\active_session_screen.dart:230:34 - unnecessary_underscores
+2026-05-09T08:51:55.8471317Z    info - Unnecessary use of multiple underscores - lib\features\active_session\screenshots_tab.dart:179:35 - unnecessary_underscores
+2026-05-09T08:51:55.8473008Z    info - Unnecessary use of multiple underscores - lib\features\active_session\screenshots_tab.dart:179:39 - unnecessary_underscores
+2026-05-09T08:51:55.8473999Z    info - Unnecessary use of multiple underscores - lib\features\active_session\screenshots_tab.dart:232:37 - unnecessary_underscores
+2026-05-09T08:51:55.8474831Z    info - Unnecessary use of multiple underscores - lib\features\active_session\screenshots_tab.dart:232:41 - unnecessary_underscores
+2026-05-09T08:51:55.8475834Z warning - The value of the field '_collectionsLoaded' isn't used - lib\features\app_picker\app_picker_screen.dart:46:8 - unused_field
+2026-05-09T08:51:55.8477003Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:63:37 - deprecated_member_use
+2026-05-09T08:51:55.8478652Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:74:60 - deprecated_member_use
+2026-05-09T08:51:55.8479917Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:92:39 - deprecated_member_use
+2026-05-09T08:51:55.8481493Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:99:35 - deprecated_member_use
+2026-05-09T08:51:55.8483000Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:145:37 - deprecated_member_use
+2026-05-09T08:51:55.8484342Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:156:60 - deprecated_member_use
+2026-05-09T08:51:55.8485868Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:174:42 - deprecated_member_use
+2026-05-09T08:51:55.8487245Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:224:37 - deprecated_member_use
+2026-05-09T08:51:55.8488733Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:235:60 - deprecated_member_use
+2026-05-09T08:51:55.8490034Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:257:44 - deprecated_member_use
+2026-05-09T08:51:55.8491295Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:314:37 - deprecated_member_use
+2026-05-09T08:51:55.8492627Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:325:60 - deprecated_member_use
+2026-05-09T08:51:55.8494038Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:343:44 - deprecated_member_use
+2026-05-09T08:51:55.8495428Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:403:37 - deprecated_member_use
+2026-05-09T08:51:55.8496748Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:414:60 - deprecated_member_use
+2026-05-09T08:51:55.8498512Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:465:37 - deprecated_member_use
+2026-05-09T08:51:55.8499996Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_metric_charts.dart:476:60 - deprecated_member_use
+2026-05-09T08:51:55.8501163Z    info - The private field _videoSettings could be 'final' - lib\features\pc_profiling\pc_probe_screen.dart:48:19 - prefer_final_fields
+2026-05-09T08:51:55.8502336Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pc_profiling\pc_probe_screen.dart:403:41 - deprecated_member_use
+2026-05-09T08:51:55.8503709Z warning - Unused import: '../../core/models/metric_sample.dart' - lib\features\pc_profiling\pc_video_settings.dart:8:8 - unused_import
+2026-05-09T08:51:55.8504892Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\plugins\plugin_install_card.dart:70:33 - deprecated_member_use
+2026-05-09T08:51:55.8506785Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\plugins\plugin_install_card.dart:123:22 - deprecated_member_use
+2026-05-09T08:51:55.8509161Z warning - The value of the field '_loading' isn't used - lib\features\session_detail\detail_screen.dart:50:8 - unused_field
+2026-05-09T08:51:55.8510871Z warning - Unused import: 'package:flutter_riverpod/flutter_riverpod.dart' - lib\features\session_detail\issues_tab.dart:5:8 - unused_import
+2026-05-09T08:51:55.8512402Z    info - Invalid use of a private type in a public API - lib\features\session_history\history_screen.dart:62:8 - library_private_types_in_public_api
+2026-05-09T08:51:55.8513885Z warning - The value of the local variable 'ref' isn't used - lib\features\session_history\history_screen.dart:362:21 - unused_local_variable
+2026-05-09T08:51:55.8515748Z    info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\features\settings\settings_screen.dart:396:9 - deprecated_member_use
+2026-05-09T08:51:55.8518127Z    info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\settings\settings_screen.dart:563:15 - deprecated_member_use
+2026-05-09T08:51:55.8520525Z    info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\features\settings\settings_screen.dart:565:15 - deprecated_member_use
+2026-05-09T08:51:55.8522621Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\fps_histogram_chart.dart:118:40 - deprecated_member_use
+2026-05-09T08:51:55.8524715Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\fps_histogram_chart.dart:145:40 - deprecated_member_use
+2026-05-09T08:51:55.8526434Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\metric_chart.dart:339:32 - deprecated_member_use
+2026-05-09T08:51:55.8528157Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\metric_chart.dart:340:32 - deprecated_member_use
+2026-05-09T08:51:55.8529828Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\metric_chart.dart:366:41 - deprecated_member_use
+2026-05-09T08:51:55.8531574Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\metric_chart.dart:367:41 - deprecated_member_use
+2026-05-09T08:51:55.8533478Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\metric_chart.dart:388:38 - deprecated_member_use
+2026-05-09T08:51:55.8535189Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\metric_chart.dart:409:42 - deprecated_member_use
+2026-05-09T08:51:55.8536891Z    info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\shared\widgets\metric_chart.dart:658:42 - deprecated_member_use
+2026-05-09T08:51:55.8538341Z warning - Unused import: 'dart:convert' - test\core\services\automation_service_test.dart:4:8 - unused_import
+2026-05-09T08:51:55.8539831Z warning - Unused import: 'package:performancebench/core/services/ios_screenrecord_service.dart' - test\core\services\ios_screenrecord_service_test.dart:8:8 - unused_import
+2026-05-09T08:51:55.8541475Z warning - The value of the local variable 'stream' isn't used - test\core\services\mac_proxy_service_test.dart:99:15 - unused_local_variable
+2026-05-09T08:51:55.8543607Z    info - The import of 'dart:async' is unnecessary because all of the used elements are also provided by the import of 'package:flutter_test/flutter_test.dart' - test\core\services\screenrecord_service_test.dart:4:8 - unnecessary_import
+2026-05-09T08:51:55.8545610Z warning - Unused import: 'package:performancebench/core/database/video_dao.dart' - test\core\services\screenrecord_service_test.dart:8:8 - unused_import
+2026-05-09T08:51:55.8547318Z warning - Unused import: 'package:performancebench/core/models/video.dart' - test\core\services\screenrecord_service_test.dart:9:8 - unused_import
+2026-05-09T08:51:55.8548859Z warning - The value of the local variable 'testService' isn't used - test\core\services\tidevice_service_test.dart:93:13 - unused_local_variable
+2026-05-09T08:51:55.8550126Z warning - Unused import: 'dart:async' - test\features\injection\injection_service_test.dart:4:8 - unused_import
+2026-05-09T08:51:55.8551281Z warning - Unused import: 'dart:convert' - test\features\injection\injection_service_test.dart:5:8 - unused_import
+2026-05-09T08:51:55.8552371Z    info - Don't invoke 'print' in production code - test\platform\linux_smoke_test.dart:22:9 - avoid_print
+2026-05-09T08:51:55.8553634Z    info - Unnecessary braces in a string interpolation - test\platform\linux_smoke_test.dart:22:71 - unnecessary_brace_in_string_interps
+2026-05-09T08:51:55.8555192Z    info - The local variable '_markerTracker' starts with an underscore - test\unit\alert_service_test.dart:40:27 - no_leading_underscores_for_local_identifiers
+2026-05-09T08:51:55.8556793Z    info - The local variable '_breachCount' starts with an underscore - test\unit\alert_service_test.dart:41:12 - no_leading_underscores_for_local_identifiers
+2026-05-09T08:51:55.8558429Z    info - The local variable '_lastBreachLabel' starts with an underscore - test\unit\alert_service_test.dart:42:15 - no_leading_underscores_for_local_identifiers
+2026-05-09T08:51:55.8560048Z    info - The local variable '_service' starts with an underscore - test\unit\alert_service_test.dart:43:21 - no_leading_underscores_for_local_identifiers
+2026-05-09T08:51:55.8561562Z    info - The local variable '_adbService' starts with an underscore - test\unit\auto_start_test.dart:23:24 - no_leading_underscores_for_local_identifiers
+2026-05-09T08:51:55.8562968Z    info - Angle brackets will be interpreted as HTML - test\unit\cpu_parser_test.dart:7:37 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8564609Z warning - A value for optional parameter 'targetFps' isn't ever given - test\unit\detected_issues_service_test.dart:56:8 - unused_element_parameter
+2026-05-09T08:51:55.8565772Z warning - Dead code - test\unit\detected_issues_service_test.dart:336:7 - dead_code
+2026-05-09T08:51:55.8566975Z warning - Unused import: 'package:performancebench/core/models/metric_sample.dart' - test\unit\export_service_test.dart:7:8 - unused_import
+2026-05-09T08:51:55.8569037Z    info - The local variable '_makeSamples' starts with an underscore - test\unit\region_stats_test.dart:15:22 - no_leading_underscores_for_local_identifiers
+2026-05-09T08:51:55.8570495Z    info - Angle brackets will be interpreted as HTML - test\unit\ring_buffer_test.dart:8:68 - unintended_html_in_doc_comment
+2026-05-09T08:51:55.8571839Z warning - The value of the local variable 'deviceName' isn't used - test\unit\session_search_test.dart:31:11 - unused_local_variable
+2026-05-09T08:51:55.8573215Z warning - The value of the local variable 'deviceModel' isn't used - test\unit\session_search_test.dart:32:11 - unused_local_variable
+2026-05-09T08:51:55.8574507Z warning - The value of the local variable 'deviceChipset' isn't used - test\unit\session_search_test.dart:33:11 - unused_local_variable
+2026-05-09T08:51:55.8575647Z warning - Unused import: 'package:flutter/material.dart' - test\widget_test.dart:4:8 - unused_import
+2026-05-09T08:51:55.8576600Z warning - Unused import: 'dart:async' - test\widgets\video_chart_sync_test.dart:4:8 - unused_import
+2026-05-09T08:51:55.8577932Z   error - A value of type 'String' can't be assigned to a variable of type 'PlayheadSource' - test\widgets\video_chart_sync_test.dart:110:63 - invalid_assignment
+2026-05-09T08:51:55.8579522Z   error - A value of type 'String' can't be assigned to a variable of type 'PlayheadSource' - test\widgets\video_chart_sync_test.dart:131:63 - invalid_assignment
+2026-05-09T08:51:55.8581605Z   error - A value of type 'String' can't be assigned to a variable of type 'PlayheadSource' - test\widgets\video_chart_sync_test.dart:176:63 - invalid_assignment
+2026-05-09T08:51:55.8583480Z   error - A value of type 'String' can't be assigned to a variable of type 'PlayheadSource' - test\widgets\video_chart_sync_test.dart:180:63 - invalid_assignment
+2026-05-09T08:51:55.8585049Z   error - A value of type 'String' can't be assigned to a variable of type 'PlayheadSource' - test\widgets\video_chart_sync_test.dart:184:63 - invalid_assignment
+2026-05-09T08:51:55.8585905Z 
+2026-05-09T08:51:56.0700501Z [31;1m106 issues found. (ran in 18.8s)[0m
+2026-05-09T08:51:56.2138906Z ##[group]Run flutter test --concurrency=1
+2026-05-09T08:51:56.2139355Z [36;1mflutter test --concurrency=1[0m
+2026-05-09T08:51:56.2196472Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-05-09T08:51:56.2196804Z env:
+2026-05-09T08:51:56.2197165Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-09T08:51:56.2197643Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-09T08:51:56.2197990Z ##[endgroup]
+2026-05-09T08:51:57.2874507Z Resolving dependencies...
+2026-05-09T08:51:57.5207004Z Downloading packages...
+2026-05-09T08:51:59.5459334Z   csv 6.0.0 (8.0.0 available)
+2026-05-09T08:51:59.5460245Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-09T08:51:59.5460900Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-09T08:51:59.5461529Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-09T08:51:59.5462142Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-09T08:51:59.5462948Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-09T08:51:59.5463601Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-09T08:51:59.5464352Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-09T08:51:59.5465089Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-09T08:51:59.5465655Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-09T08:51:59.5466218Z   go_router 13.2.5 (17.2.3 available)
+2026-05-09T08:51:59.5466771Z   js 0.6.7 (0.7.2 available)
+2026-05-09T08:51:59.5467288Z   matcher 0.12.19 (0.12.20 available)
+2026-05-09T08:51:59.5467825Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-09T08:51:59.5468358Z   meta 1.17.0 (1.18.2 available)
+2026-05-09T08:51:59.5469211Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-09T08:51:59.5469817Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-09T08:51:59.5470493Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-09T08:51:59.5471176Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-09T08:51:59.5471757Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-09T08:51:59.5472350Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-09T08:51:59.5472877Z   test_api 0.7.10 (0.7.12 available)
+2026-05-09T08:51:59.5473437Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-09T08:51:59.5473958Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-09T08:51:59.5474532Z   win32 5.15.0 (6.2.0 available)
+2026-05-09T08:51:59.5475138Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-09T08:51:59.5475672Z   xml 6.6.1 (7.0.1 available)
+2026-05-09T08:51:59.5476156Z Got dependencies!
+2026-05-09T08:51:59.5476770Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-09T08:51:59.5477500Z Try `flutter pub outdated` for more information.
+2026-05-09T08:52:04.1810121Z 
+2026-05-09T08:52:12.1737309Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService supportedActions lists all 7 broadcast actions
+2026-05-09T08:52:12.1778280Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService sendCommand constructs am broadcast with correct action
+2026-05-09T08:52:12.1805813Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService sendCommand rejects unsupported action
+2026-05-09T08:52:12.1833650Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService sendCommand returns null when ADB command fails
+2026-05-09T08:52:12.1861021Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService sendCommand parses response from ADB output
+2026-05-09T08:52:12.1889905Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService addMarker sends MARKER command with correct payload
+2026-05-09T08:52:12.1922110Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService startSession sends START_SESSION command
+2026-05-09T08:52:12.1946081Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService stopSession sends STOP_SESSION command
+2026-05-09T08:52:12.1974619Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService screenshot sends SCREENSHOT command with label
+2026-05-09T08:52:12.1998873Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService export sends EXPORT command
+2026-05-09T08:52:12.2021231Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/automation_service_test.dart: AutomationService sendCommand validates device serial
+2026-05-09T08:52:13.3406742Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService checkPlatform throws StateError on non-macOS
+2026-05-09T08:52:13.3439019Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService checkPlatform does not throw on macOS
+2026-05-09T08:52:13.3467194Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService spawnSubprocess constructs correct arguments
+2026-05-09T08:52:13.3497467Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService quality and fps arguments match configuration
+2026-05-09T08:52:13.3529455Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService parses chunk_start JSON line correctly
+2026-05-09T08:52:13.3555788Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService parses recording_started JSON line
+2026-05-09T08:52:13.3598160Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService Video model has h264 codec, mp4 container, hasAudio=0
+2026-05-09T08:52:13.3628862Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService skips malformed JSON lines without throwing
+2026-05-09T08:52:13.3653419Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService records chunk_error events
+2026-05-09T08:52:13.3678524Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/ios_screenrecord_service_test.dart: IosScreenrecordService isRecording transitions through lifecycle
+2026-05-09T08:52:14.1846346Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyInfo constructs with required host
+2026-05-09T08:52:14.1873636Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyInfo constructs with all fields
+2026-05-09T08:52:14.1898597Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyInfo baseUri returns correct HTTP URI
+2026-05-09T08:52:14.1921685Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyInfo baseUri with custom port
+2026-05-09T08:52:14.1944647Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService isSupported returns true on all platforms
+2026-05-09T08:52:14.1976128Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService discoverProxies returns empty list (mDNS not available in test)
+2026-05-09T08:52:14.2006742Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService configure sets proxy info
+2026-05-09T08:52:14.2038468Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService discoverDevices returns empty when no proxy configured
+2026-05-09T08:52:14.2062364Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService listApps returns empty when no proxy configured
+2026-05-09T08:52:14.2101063Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService start throws StateError when no proxy configured
+2026-05-09T08:52:14.2150776Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService start creates broadcast stream when proxy configured
+2026-05-09T08:52:14.2194663Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService stop is safe to call multiple times
+2026-05-09T08:52:14.2220447Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService MacProxyService configure can be called multiple times (overwrites)
+2026-05-09T08:52:14.2259896Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService Mac proxy MetricSample mapping full Mac proxy JSON maps all MetricSample fields
+2026-05-09T08:52:14.2284143Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService Mac proxy MetricSample mapping null wifi maps to null wifiActive
+2026-05-09T08:52:14.2307750Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/mac_proxy_service_test.dart: MacProxyService Mac proxy MetricSample mapping null optional fields are preserved
+2026-05-09T08:52:15.0693594Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService start() spawns screenrecord with correct arguments
+2026-05-09T08:52:15.0729441Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService auto-chunking creates chunk_002 after first chunk scheduled
+2026-05-09T08:52:17.0890541Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService stop() pulls all chunks from device and returns Video
+2026-05-09T08:52:19.0968143Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService Video metadata has correct dimensions, codec, bitrate
+2026-05-09T08:52:21.1050641Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService isRecording returns correct state through lifecycle
+2026-05-09T08:52:23.1124466Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService chunks_json contains array with correct chunk metadata
+2026-05-09T08:52:23.1155859Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService start() when already recording returns false
+2026-05-09T08:52:23.1183446Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService stop() when not recording returns null
+2026-05-09T08:52:23.1209893Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/screenrecord_service_test.dart: ScreenrecordService start() when ADB shell fails → returns false
+2026-05-09T08:52:23.9748796Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/sdk_stream_service_test.dart: SdkStreamService creates service instance
+2026-05-09T08:52:25.0002005Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/sdk_stream_service_test.dart: SdkStreamService connect returns a Stream<MetricSample>
+2026-05-09T08:52:25.0036712Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/sdk_stream_service_test.dart: SdkStreamService MetricSample.fromMap parses correct snake_case field names
+2026-05-09T08:52:25.0064678Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/sdk_stream_service_test.dart: SdkStreamService handles missing optional fields gracefully
+2026-05-09T08:52:25.0098395Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/sdk_stream_service_test.dart: SdkStreamService service is initially not connected
+2026-05-09T08:52:25.7846690Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService isSupported returns true on all platforms
+2026-05-09T08:52:25.7886312Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService discoverDevices returns list of IosDevice from tidevice JSON
+2026-05-09T08:52:25.8188130Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService start creates a broadcast Stream<MetricSample>
+2026-05-09T08:52:25.8270578Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService onLine parses valid tidevice JSON into MetricSample
+2026-05-09T08:52:25.8322700Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService onLine emits MetricSample with fps, cpuAppPct, memoryPssKb, batteryPct
+2026-05-09T08:52:25.8354972Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService tidevice MetricSample has null for GPU, thermal, battery current/mV/temp
+2026-05-09T08:52:25.8407924Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService onLine silently skips malformed JSON
+2026-05-09T08:52:25.8582903Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService stop cleans up controller and sets stopped flag
+2026-05-09T08:52:25.8675106Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService double stop does not throw
+2026-05-09T08:52:25.8704943Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService error JSON from collector calls stop gracefully
+2026-05-09T08:52:25.8734884Z ✅ D:/a/Benchify/Benchify/performancebench/test/core/services/tidevice_service_test.dart: TideviceService stopped status JSON from collector calls stop gracefully
+2026-05-09T08:52:26.9360044Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Color Logic 60 FPS shows green
+2026-05-09T08:52:26.9398506Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Color Logic 55 FPS shows yellow (boundary)
+2026-05-09T08:52:26.9424824Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Color Logic 30-55 FPS shows yellow
+2026-05-09T08:52:26.9450136Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Color Logic 29 FPS shows red (boundary)
+2026-05-09T08:52:26.9477315Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Color Logic below 30 FPS shows red
+2026-05-09T08:52:26.9501932Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Color Logic color constants match Android java values
+2026-05-09T08:52:26.9535381Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Detail Panel Data rolling stats compute correctly
+2026-05-09T08:52:26.9562331Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/fps_overlay_test.dart: FPS Overlay Detail Panel Data single sample stats
+2026-05-09T08:52:31.5301783Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/frida_injector_test.dart: Frida card is not disabled and hides keystore form when selected
+2026-05-09T08:52:31.8348767Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/frida_injector_test.dart: Smali card shows keystore form when selected
+2026-05-09T08:52:31.8419194Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/frida_injector_test.dart: InjectionService Frida support buildInjectArgs omits keystore args for frida method
+2026-05-09T08:52:31.8446299Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/frida_injector_test.dart: InjectionService Frida support buildInjectArgs includes keystore args for smali method
+2026-05-09T08:52:33.5071439Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_screen_test.dart: InjectionScreen renders drag-drop zone
+2026-05-09T08:52:33.5787881Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_screen_test.dart: InjectionScreen renders injection method selector
+2026-05-09T08:52:33.6285182Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_screen_test.dart: InjectionScreen renders keystore configuration expandable section
+2026-05-09T08:52:33.6775069Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_screen_test.dart: InjectionScreen renders inject button
+2026-05-09T08:52:33.7247589Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_screen_test.dart: InjectionScreen renders verification progress section
+2026-05-09T08:52:33.7478086Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_screen_test.dart: InjectionMethodCard renders with title and subtitle
+2026-05-09T08:52:33.7719056Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_screen_test.dart: InjectionMethodCard shows selected state with check icon
+2026-05-09T08:52:34.6213749Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_service_test.dart: InjectionService constructs correct CLI args from keystore config
+2026-05-09T08:52:34.6240907Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_service_test.dart: InjectionService constructs CLI args without optional fields
+2026-05-09T08:52:34.6267067Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_service_test.dart: InjectionService InjectionStep enum has all expected values
+2026-05-09T08:52:34.6313169Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_service_test.dart: InjectionService parses JSON status lines correctly
+2026-05-09T08:52:34.6342948Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/injection_service_test.dart: InjectionService handles malformed JSON gracefully
+2026-05-09T08:52:35.5277583Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/keystore_config_test.dart: KeystoreConfig creates from constructor
+2026-05-09T08:52:35.5304482Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/keystore_config_test.dart: KeystoreConfig toJson produces correct map
+2026-05-09T08:52:35.5343401Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/keystore_config_test.dart: KeystoreConfig fromJson parses correctly
+2026-05-09T08:52:35.5352409Z ✅ D:/a/Benchify/Benchify/performancebench/test/features/injection/keystore_config_test.dart: KeystoreConfig fromJson handles missing fields gracefully
+2026-05-09T08:52:36.3977648Z ❎ D:/a/Benchify/Benchify/performancebench/test/integration/adb_integration_test.dart: ADB Integration 30s Android session produces 28+ non-null FPS samples (skipped)
+2026-05-09T08:52:36.3982295Z ❎ D:/a/Benchify/Benchify/performancebench/test/integration/adb_integration_test.dart: ADB Integration all samples have battery_pct non-null (skipped)
+2026-05-09T08:52:36.3983833Z ❎ D:/a/Benchify/Benchify/performancebench/test/integration/adb_integration_test.dart: ADB Integration cpu_app_pct non-null after first sample (skipped)
+2026-05-09T08:52:36.3984935Z ❎ D:/a/Benchify/Benchify/performancebench/test/integration/adb_integration_test.dart: ADB Integration memory_pss_kb non-null in all samples (skipped)
+2026-05-09T08:52:37.1067605Z ❎ D:/a/Benchify/Benchify/performancebench/test/integration/ios_integration_test.dart: iOS Integration 60s iOS session produces fps, cpu, mem, battery non-null (skipped)
+2026-05-09T08:52:37.1069971Z ❎ D:/a/Benchify/Benchify/performancebench/test/integration/ios_integration_test.dart: iOS Integration battery_ma null for iPhone 8+ (skipped)
+2026-05-09T08:52:37.9268622Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/platform/linux_smoke_test.dart: Linux Smoke Test App can start without crash
+2026-05-09T08:52:37.9269962Z [linux_smoke_test] Skipping — requires real device (CI=true)
+2026-05-09T08:52:37.9270664Z ##[endgroup]
+2026-05-09T08:52:37.9305021Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/platform/linux_smoke_test.dart: Linux Smoke Test ADB is available on PATH
+2026-05-09T08:52:37.9306106Z [linux_smoke_test] Skipping — requires real device (CI=true)
+2026-05-09T08:52:37.9307387Z ##[endgroup]
+2026-05-09T08:52:37.9331378Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/platform/linux_smoke_test.dart: Linux Smoke Test ADB device discovery works
+2026-05-09T08:52:37.9332161Z [linux_smoke_test] Skipping — requires real device (CI=true)
+2026-05-09T08:52:37.9333202Z ##[endgroup]
+2026-05-09T08:52:37.9361544Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/platform/linux_smoke_test.dart: Linux Smoke Test Can discover at least one Android device/emulator
+2026-05-09T08:52:37.9362851Z [linux_smoke_test] Skipping — requires real device (CI=true)
+2026-05-09T08:52:37.9363525Z ##[endgroup]
+2026-05-09T08:52:38.6732339Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: FPS threshold breach when last 10 samples all below 30
+2026-05-09T08:52:38.6757371Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: FPS no breach when samples mixed above and below threshold
+2026-05-09T08:52:38.6780481Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: FPS no breach when insufficient window (only 5 samples)
+2026-05-09T08:52:38.6808096Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: CPU threshold breach when last 5 samples all above 85%
+2026-05-09T08:52:38.6830680Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: CPU no breach when one sample in window is below threshold
+2026-05-09T08:52:38.6856569Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: Memory threshold breach when growth exceeds 100MB over 30 samples
+2026-05-09T08:52:38.6881468Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: Memory no breach when growth is less than 100MB
+2026-05-09T08:52:38.6905586Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: No checks when all thresholds disabled
+2026-05-09T08:52:38.6930707Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: Only one breach per sustained period, not per sample
+2026-05-09T08:52:38.6958773Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: Auto-marker created with label "Alert: FPS < 30" at breach timestamp
+2026-05-09T08:52:38.6985026Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: Second breach after recovery creates a new marker
+2026-05-09T08:52:38.7018464Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/alert_service_test.dart: updateConfig changes threshold values correctly
+2026-05-09T08:52:39.4256433Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: Valid ActivityManager START line parses package name correctly
+2026-05-09T08:52:39.4290942Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: Non-START ActivityManager line returns null
+2026-05-09T08:52:39.4319825Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: START line for non-watched package does not trigger auto-start
+2026-05-09T08:52:39.4344942Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: START line for watched package is parsed for auto-start signal
+2026-05-09T08:52:39.4370755Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: Malformed logcat line returns null without crash
+2026-05-09T08:52:39.4397377Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: Same app launch on two devices produces two separate events
+2026-05-09T08:52:39.4428265Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: LogcatStartEvent extracts timestamp from logcat line
+2026-05-09T08:52:39.4452228Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: System package starts are filtered by package name validation
+2026-05-09T08:52:39.4476084Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: Package names with underscores and numbers parse correctly
+2026-05-09T08:52:39.4500351Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/auto_start_test.dart: Multi-subdomain package names parse correctly
+2026-05-09T08:52:40.2288904Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing level: 87 extracts battery_pct=87
+2026-05-09T08:52:40.2319648Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing temperature: 312 extracts battery_temp_c=31.2
+2026-05-09T08:52:40.2344926Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing voltage: 3850 extracts battery_mv=3850.0
+2026-05-09T08:52:40.2372982Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing AC powered: true => charging=true, charging_source="ac"
+2026-05-09T08:52:40.2403812Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing USB powered: true, wireless=false => charging_source="usb"
+2026-05-09T08:52:40.2431038Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing Wireless powered: true => charging_source="wireless"
+2026-05-09T08:52:40.2457173Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing status: 5 (Full) => charging=true
+2026-05-09T08:52:40.2487070Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing status: 2 (Charging) => charging=true
+2026-05-09T08:52:40.2514813Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser dumpsys battery parsing status: 3 (Discharging), all powered: false => charging=false
+2026-05-09T08:52:40.2553204Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser sysfs current_now parsing current_now=-540000 => battery_ma=540.0 (absolute value)
+2026-05-09T08:52:40.2580911Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser sysfs current_now parsing missing current_now file => null, no exception
+2026-05-09T08:52:40.2618870Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser sysfs current_now parsing malformed current_now returns null
+2026-05-09T08:52:40.2646254Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser sysfs voltage_now parsing voltage_now=3850000 => battery_mv=3850.0
+2026-05-09T08:52:40.2674528Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser sysfs voltage_now parsing missing voltage_now file => null, no exception
+2026-05-09T08:52:40.2703543Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser WiFi state parsing connectivity output with WIFI type => wifi_active=true
+2026-05-09T08:52:40.2728650Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser WiFi state parsing connectivity with MOBILE type => wifi_active=false
+2026-05-09T08:52:40.2754283Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser WiFi state parsing fallback: "Wi-Fi is enabled" => wifi_active=true
+2026-05-09T08:52:40.2780333Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser WiFi state parsing fallback: "Wi-Fi is disabled" => wifi_active=false
+2026-05-09T08:52:40.2808923Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser WiFi state parsing neither connectivity nor wifi parse succeeds => null
+2026-05-09T08:52:40.2834074Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser null/malformed input null dumpsys battery returns all null
+2026-05-09T08:52:40.2863060Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/battery_parser_test.dart: BatteryParser null/malformed input empty dumpsys battery returns all null
+2026-05-09T08:52:41.0071842Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/comparison_analytics_test.dart: ComparisonAnalytics FPS median regression: 60→54 is regression (-10%)
+2026-05-09T08:52:41.0094794Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/comparison_analytics_test.dart: ComparisonAnalytics CPU avg increase: 20→25 is regression (+25%)
+2026-05-09T08:52:41.0123634Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/comparison_analytics_test.dart: ComparisonAnalytics Stability decrease: 90→85 is regression (-5.6%)
+2026-05-09T08:52:41.7758929Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser first sample / null handling first sample returns null for all CPU pct fields
+2026-05-09T08:52:41.7782367Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser first sample / null handling null pidStat returns null for cpu fields
+2026-05-09T08:52:41.7802984Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser first sample / null handling null procStat returns null for cpu fields
+2026-05-09T08:52:41.7824691Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser first sample / null handling malformed input returns null without throwing
+2026-05-09T08:52:41.7858061Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser cpu_app_pct computation delta_pid_ticks=500, delta_total_ticks=1000 => cpu_app_pct=50.0
+2026-05-09T08:52:41.7891291Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser cpu_app_pct computation cpu_app_pct clamped to [0, 100]
+2026-05-09T08:52:41.7914459Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser cpu_system_pct computation system pct computed correctly from delta idle
+2026-05-09T08:52:41.7949561Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser core frequency normalization cores 0,1 online@500MHz, 2,3 offline, max=2GHz => cpu_norm=6.25% at 50% cpu
+2026-05-09T08:52:41.7972743Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser core frequency normalization all cores online at max freq => normalized equals raw cpu
+2026-05-09T08:52:41.7994287Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/cpu_parser_test.dart: CpuParser core frequency normalization sysfs glob parse fails => core fields null, normalized null
+2026-05-09T08:52:42.6162404Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService LOW_FPS fires when fps_median = 25 (below 30 threshold)
+2026-05-09T08:52:42.6187610Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService LOW_FPS does NOT fire when fps_median = 55 (above threshold)
+2026-05-09T08:52:42.6211704Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService HIGH_VARIABILITY fires when variability_index = 12 (above 10)
+2026-05-09T08:52:42.6237042Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService MEMORY_TRENDING_UP fires when slope > 100 KB/min and duration >= 5 min
+2026-05-09T08:52:42.6260675Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService MEMORY_TRENDING_UP does NOT fire when session < 5 min even with slope > 100
+2026-05-09T08:52:42.6284115Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService HIGH_CPU fires when cpu_avg_pct_freq_norm = 85 (above 80)
+2026-05-09T08:52:42.6308723Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService HIGH_CPU does NOT fire when cpu_avg_pct_freq_norm = 75 (below 80)
+2026-05-09T08:52:42.6334867Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService BATTERY_DRAIN_HIGH fires when drain > 30 %/hr
+2026-05-09T08:52:42.6358808Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService THERMAL_THROTTLING fires when thermal_peak >= 1 (LIGHT throttling)
+2026-05-09T08:52:42.6382628Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService BIG_JANK_SPIKE fires when > 5 big janks/min
+2026-05-09T08:52:42.6408374Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService BIG_JANK_SPIKE does NOT fire when <= 5 big janks/min
+2026-05-09T08:52:42.6439184Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService LOW_STABILITY fires when fps_stability = 55 (< 60)
+2026-05-09T08:52:42.6466791Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService CELLULAR_HEAVY_USE fires when cellular total > 50 MB
+2026-05-09T08:52:42.6486486Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService Empty session stats → ZERO rules fire (no false positives)
+2026-05-09T08:52:42.6530616Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService FPS_REGRESSION fires when current fps 20% below 5-session baseline
+2026-05-09T08:52:42.6554757Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService FPS_REGRESSION skipped when < 3 prior sessions
+2026-05-09T08:52:42.6587217Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService LAUNCH_TIME_INCREASE fires when > 20% increase from baseline
+2026-05-09T08:52:42.6612035Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService LAUNCH_TIME_INCREASE does NOT fire when < 20% increase
+2026-05-09T08:52:42.6635456Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService MEMORY_LEAK_SUSPECTED fires when slope > 500 KB/min and session >= 10 min
+2026-05-09T08:52:42.6660534Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService MEMORY_LEAK_SUSPECTED does NOT fire when slope > 500 but session < 10 min
+2026-05-09T08:52:42.6682167Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService Feature flag disabled returns empty list
+2026-05-09T08:52:42.6702655Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService Feature flag default (null) returns empty list
+2026-05-09T08:52:42.6724391Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/detected_issues_service_test.dart: DetectedIssuesService No session_stats found returns empty list
+2026-05-09T08:52:43.4062163Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser empty string returns null for both fields
+2026-05-09T08:52:43.4084514Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser null/empty input returns null for both fields
+2026-05-09T08:52:43.4117061Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser sda line: first call returns null (no prior sample)
+2026-05-09T08:52:43.4151998Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser sda line: second call with read +200 sectors, write +100 over 1.0s
+2026-05-09T08:52:43.4175701Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser mmcblk0 line selected: computes correct delta KB/s
+2026-05-09T08:52:43.4197113Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser vda line selected when sda and mmcblk0 absent
+2026-05-09T08:52:43.4218774Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser two consecutive parse calls compute correct KB/s delta
+2026-05-09T08:52:43.4239670Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser no matching disk device (sda/mmcblk0/vda) returns null
+2026-05-09T08:52:43.4262774Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser malformed line with wrong field count returns null
+2026-05-09T08:52:43.4294506Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser non-numeric sector values returns null
+2026-05-09T08:52:43.4316586Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/disk_io_parser_test.dart: DiskIoParser reset() clears internal state so next call is first sample
+2026-05-09T08:52:44.4459902Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/export_service_test.dart: ExportService JSON empty session produces valid JSON with empty samples array
+2026-05-09T08:52:44.4506484Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/export_service_test.dart: ExportService JSON JSON with 3 samples has 3 elements with fps field
+2026-05-09T08:52:44.4529468Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/export_service_test.dart: ExportService CSV CSV column count matches MetricSample fields, header row present
+2026-05-09T08:52:44.4557619Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/export_service_test.dart: ExportService CSV CSV first data row matches first sample fps value
+2026-05-09T08:52:45.2875300Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics empty list returns all zeros
+2026-05-09T08:52:45.2945493Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics one percent low: 99x60fps + 1x5fps => 1% low ~5.0
+2026-05-09T08:52:45.2972395Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics p95 frame time: 5x30fps + 95x60fps => p95 ~33.3ms
+2026-05-09T08:52:45.2998894Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics stability: all 60fps => 100% stable
+2026-05-09T08:52:45.3024149Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics histogram: 58, 59, 62 => 5fps buckets correct
+2026-05-09T08:52:45.3047671Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics min and max from [20, 30, 60]
+2026-05-09T08:52:45.3071876Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics variability index: all 60fps => 0.0
+2026-05-09T08:52:45.3094502Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_analytics_test.dart: FpsAnalytics variability index: [60, 30, 60, 30, 60] => ~30.0
+2026-05-09T08:52:46.0645171Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser null and empty input null input returns null for all fields
+2026-05-09T08:52:46.0678686Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser null and empty input empty string input returns fps=0.0, all jank counts=0
+2026-05-09T08:52:46.0700643Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser null and empty input fewer than 3 lines returns fps=0.0
+2026-05-09T08:52:46.0747672Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser FPS computation 10 valid frames averaging 16.67ms returns fps within +/-2% of 60.0
+2026-05-09T08:52:46.0768527Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser FPS computation no valid frames returns fps=0.0
+2026-05-09T08:52:46.0789893Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser 3-tier jank classification frame delta of 130ms triggers big_jank, jank, and small_jank
+2026-05-09T08:52:46.0811438Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser 3-tier jank classification frame delta of 90ms triggers jank and small_jank but NOT big_jank
+2026-05-09T08:52:46.0835229Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser 3-tier jank classification frame delta of 20ms on 60Hz triggers small_jank only
+2026-05-09T08:52:46.0863144Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser 3-tier jank classification frame delta of 150ms excluded by outlier filter (>=150ms for jank)
+2026-05-09T08:52:46.0884261Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser frame ratio jank model (gamma=L/R) frame ratio changes 1->2->1->2 over 4 deltas produces jank_ratio_count=3
+2026-05-09T08:52:46.0912979Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser frametimes JSON frametimes_json contains valid delta values as JSON array
+2026-05-09T08:52:46.0946387Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/fps_parser_test.dart: FpsParser edge cases malformed numeric values are skipped gracefully
+2026-05-09T08:52:46.8168201Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser Adreno path Adreno output "4823 10000" => gpu_pct=48.23
+2026-05-09T08:52:46.8192349Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser Adreno path Adreno output with extra whitespace
+2026-05-09T08:52:46.8215623Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser Adreno path Adreno output with only one number returns null
+2026-05-09T08:52:46.8238319Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser Mali path Mali utilization integer 75 => gpu_pct=75.0
+2026-05-09T08:52:46.8259625Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser Mali path Mali utilization with whitespace
+2026-05-09T08:52:46.8279747Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser Mali path Mali utilization out of range clamped
+2026-05-09T08:52:46.8303398Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser parseAny (auto-detect) detects Adreno format
+2026-05-09T08:52:46.8324411Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser parseAny (auto-detect) detects Mali format
+2026-05-09T08:52:46.8359552Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser parseAny (auto-detect) all paths fail => null, no crash
+2026-05-09T08:52:46.8382653Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/gpu_parser_test.dart: GpuParser parseAny (auto-detect) null input => null
+2026-05-09T08:52:47.6520494Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser PSS total extraction TOTAL PSS line extracts memory_pss_kb correctly
+2026-05-09T08:52:47.6546152Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser subsection extraction Native Heap PSS extracted correctly
+2026-05-09T08:52:47.6569546Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser subsection extraction EGL + GL mtrack summed for graphics
+2026-05-09T08:52:47.6594613Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser subsection extraction Code subsection sums all 6 mmap families
+2026-05-09T08:52:47.6619483Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser subsection extraction Java Heap PSS extracted correctly
+2026-05-09T08:52:47.6644677Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser subsection extraction Stack PSS extracted correctly
+2026-05-09T08:52:47.6669065Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser null handling null input returns all fields null
+2026-05-09T08:52:47.6690076Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser null handling empty output returns all fields null
+2026-05-09T08:52:47.6715687Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/memory_parser_test.dart: MemoryParser Android 6 format Dalvik Heap used when Java Heap not present (Android 6-)
+2026-05-09T08:52:48.6125751Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/migration_v2_test.dart: Schema migration v2 v2 upgrade creates 4 new tables (collections, detected_issues, videos, region_stats)
+2026-05-09T08:52:48.6516813Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/migration_v2_test.dart: Schema migration v2 collections table has correct columns
+2026-05-09T08:52:48.6517468Z *** sqflite warning ***
+2026-05-09T08:52:48.6517603Z 
+2026-05-09T08:52:48.6517701Z You are changing sqflite default factory.
+2026-05-09T08:52:48.6518055Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:48.6519058Z will have this factory as the default for all operations.
+2026-05-09T08:52:48.6519396Z 
+2026-05-09T08:52:48.6520145Z *** sqflite warning ***
+2026-05-09T08:52:48.6521104Z 
+2026-05-09T08:52:48.6522501Z ##[endgroup]
+2026-05-09T08:52:48.6804792Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/migration_v2_test.dart: Schema migration v2 detected_issues table has correct columns
+2026-05-09T08:52:48.6805455Z *** sqflite warning ***
+2026-05-09T08:52:48.6805588Z 
+2026-05-09T08:52:48.6805681Z You are changing sqflite default factory.
+2026-05-09T08:52:48.6806035Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:48.6806924Z will have this factory as the default for all operations.
+2026-05-09T08:52:48.6807558Z 
+2026-05-09T08:52:48.6807691Z *** sqflite warning ***
+2026-05-09T08:52:48.6807898Z 
+2026-05-09T08:52:48.6808237Z ##[endgroup]
+2026-05-09T08:52:48.7097750Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/migration_v2_test.dart: Schema migration v2 videos table has correct columns per spec
+2026-05-09T08:52:48.7098709Z *** sqflite warning ***
+2026-05-09T08:52:48.7098882Z 
+2026-05-09T08:52:48.7099006Z You are changing sqflite default factory.
+2026-05-09T08:52:48.7100259Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:48.7101191Z will have this factory as the default for all operations.
+2026-05-09T08:52:48.7101533Z 
+2026-05-09T08:52:48.7101648Z *** sqflite warning ***
+2026-05-09T08:52:48.7101824Z 
+2026-05-09T08:52:48.7102163Z ##[endgroup]
+2026-05-09T08:52:48.7386722Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/migration_v2_test.dart: Schema migration v2 sessions table has has_video column after migration
+2026-05-09T08:52:48.7387400Z *** sqflite warning ***
+2026-05-09T08:52:48.7387528Z 
+2026-05-09T08:52:48.7387629Z You are changing sqflite default factory.
+2026-05-09T08:52:48.7388249Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:48.7388616Z will have this factory as the default for all operations.
+2026-05-09T08:52:48.7389242Z 
+2026-05-09T08:52:48.7389422Z *** sqflite warning ***
+2026-05-09T08:52:48.7389659Z 
+2026-05-09T08:52:48.7389996Z ##[endgroup]
+2026-05-09T08:52:48.7658629Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/migration_v2_test.dart: Schema migration v2 required indexes exist after v2 migration
+2026-05-09T08:52:48.7660158Z *** sqflite warning ***
+2026-05-09T08:52:48.7660383Z 
+2026-05-09T08:52:48.7660486Z You are changing sqflite default factory.
+2026-05-09T08:52:48.7661141Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:48.7661530Z will have this factory as the default for all operations.
+2026-05-09T08:52:48.7661742Z 
+2026-05-09T08:52:48.7661819Z *** sqflite warning ***
+2026-05-09T08:52:48.7661939Z 
+2026-05-09T08:52:48.7662179Z ##[endgroup]
+2026-05-09T08:52:48.8090079Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/migration_v2_test.dart: Schema migration v2 collection row round-trips correctly
+2026-05-09T08:52:48.8090717Z *** sqflite warning ***
+2026-05-09T08:52:48.8090856Z 
+2026-05-09T08:52:48.8090950Z You are changing sqflite default factory.
+2026-05-09T08:52:48.8091284Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:48.8091650Z will have this factory as the default for all operations.
+2026-05-09T08:52:48.8091866Z 
+2026-05-09T08:52:48.8091936Z *** sqflite warning ***
+2026-05-09T08:52:48.8092048Z 
+2026-05-09T08:52:48.8092262Z ##[endgroup]
+2026-05-09T08:52:49.9010759Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/network_parser_test.dart: NetworkParser interface classification two interfaces classified correctly: wlan0->WiFi, rmnet0->Cellular
+2026-05-09T08:52:49.9034477Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/network_parser_test.dart: NetworkParser interface classification loopback (lo) excluded from all totals
+2026-05-09T08:52:49.9056321Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/network_parser_test.dart: NetworkParser interface classification WiFi off (no wlan*) => net_wifi_* = 0 cumulative, not null
+2026-05-09T08:52:49.9078941Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/network_parser_test.dart: NetworkParser interface classification other interfaces classified as "other"
+2026-05-09T08:52:49.9099651Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/network_parser_test.dart: NetworkParser null/malformed input null input returns all null
+2026-05-09T08:52:49.9121110Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/network_parser_test.dart: NetworkParser null/malformed input empty input returns all null
+2026-05-09T08:52:50.7136372Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/region_stats_test.dart: Region stats computation empty samples list returns null for all computed fields, 0 for durationMs
+2026-05-09T08:52:50.7190366Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/region_stats_test.dart: Region stats computation 10 FPS samples [60,60,60,30,30,30,60,60,60,60] produce correct fps stats
+2026-05-09T08:52:50.7219415Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/region_stats_test.dart: Region stats computation CPU avg matches manual average of cpuAppPct values
+2026-05-09T08:52:50.7242835Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/region_stats_test.dart: Region stats computation Memory peak matches max of memoryPssKb values
+2026-05-09T08:52:50.7281477Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/region_stats_test.dart: Region stats computation 100 sample region stats match manual computation within tolerance
+2026-05-09T08:52:50.7303714Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/region_stats_test.dart: Region stats computation MetricChart onDragSelection callback signature accepts (startIndex, endIndex)
+2026-05-09T08:52:50.7327154Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/region_stats_test.dart: Region stats computation blue overlay uses semi-transparent blue color
+2026-05-09T08:52:51.5545293Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/ring_buffer_test.dart: Ring buffer (300 sample cap) starts empty
+2026-05-09T08:52:51.5575836Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/ring_buffer_test.dart: Ring buffer (300 sample cap) adds 100 entries without eviction
+2026-05-09T08:52:51.5607203Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/ring_buffer_test.dart: Ring buffer (300 sample cap) caps at 300 entries, evicts oldest on overflow
+2026-05-09T08:52:51.5630320Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/ring_buffer_test.dart: Ring buffer (300 sample cap) oldest sample is the 51st added after adding 350 (first 50 evicted)
+2026-05-09T08:52:51.5651869Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/ring_buffer_test.dart: Ring buffer (300 sample cap) newest sample is the 350th added after adding 350
+2026-05-09T08:52:52.4085033Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: searchSessions returns sessions matching app_package, app_name, or title
+2026-05-09T08:52:52.4197408Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: searchSessions with empty string returns all sessions
+2026-05-09T08:52:52.4198232Z *** sqflite warning ***
+2026-05-09T08:52:52.4198408Z 
+2026-05-09T08:52:52.4198534Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4199234Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4199676Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4200291Z 
+2026-05-09T08:52:52.4200395Z *** sqflite warning ***
+2026-05-09T08:52:52.4200536Z 
+2026-05-09T08:52:52.4200779Z ##[endgroup]
+2026-05-09T08:52:52.4315302Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: filterByTag returns sessions where tags field contains tag
+2026-05-09T08:52:52.4315977Z *** sqflite warning ***
+2026-05-09T08:52:52.4316151Z 
+2026-05-09T08:52:52.4316311Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4317597Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4318157Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4318437Z 
+2026-05-09T08:52:52.4318518Z *** sqflite warning ***
+2026-05-09T08:52:52.4318665Z 
+2026-05-09T08:52:52.4318919Z ##[endgroup]
+2026-05-09T08:52:52.4448118Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: filterByDevice returns sessions where device name matches
+2026-05-09T08:52:52.4448745Z *** sqflite warning ***
+2026-05-09T08:52:52.4448925Z 
+2026-05-09T08:52:52.4449031Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4449411Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4450521Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4450886Z 
+2026-05-09T08:52:52.4451011Z *** sqflite warning ***
+2026-05-09T08:52:52.4451242Z 
+2026-05-09T08:52:52.4451615Z ##[endgroup]
+2026-05-09T08:52:52.4563261Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: filterByChipset returns sessions where device chipset matches
+2026-05-09T08:52:52.4563905Z *** sqflite warning ***
+2026-05-09T08:52:52.4564054Z 
+2026-05-09T08:52:52.4564162Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4564578Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4565779Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4566238Z 
+2026-05-09T08:52:52.4566327Z *** sqflite warning ***
+2026-05-09T08:52:52.4566507Z 
+2026-05-09T08:52:52.4566750Z ##[endgroup]
+2026-05-09T08:52:52.4646802Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: filterByProject returns sessions with matching project_id
+2026-05-09T08:52:52.4647777Z *** sqflite warning ***
+2026-05-09T08:52:52.4648266Z 
+2026-05-09T08:52:52.4649510Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4650097Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4650967Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4651360Z 
+2026-05-09T08:52:52.4651471Z *** sqflite warning ***
+2026-05-09T08:52:52.4651684Z 
+2026-05-09T08:52:52.4652053Z ##[endgroup]
+2026-05-09T08:52:52.4776614Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: Combined filter: tag + device + app returns intersection
+2026-05-09T08:52:52.4777466Z *** sqflite warning ***
+2026-05-09T08:52:52.4777612Z 
+2026-05-09T08:52:52.4778477Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4779375Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4779999Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4780371Z 
+2026-05-09T08:52:52.4780479Z *** sqflite warning ***
+2026-05-09T08:52:52.4780709Z 
+2026-05-09T08:52:52.4781102Z ##[endgroup]
+2026-05-09T08:52:52.4892639Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: Collection CRUD: insert, getById, update, delete
+2026-05-09T08:52:52.4893253Z *** sqflite warning ***
+2026-05-09T08:52:52.4893827Z 
+2026-05-09T08:52:52.4894042Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4894999Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4895482Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4895745Z 
+2026-05-09T08:52:52.4895833Z *** sqflite warning ***
+2026-05-09T08:52:52.4895976Z 
+2026-05-09T08:52:52.4896229Z ##[endgroup]
+2026-05-09T08:52:52.4986732Z ##[group]✅ D:/a/Benchify/Benchify/performancebench/test/unit/session_search_test.dart: Assign session to collection and query by collection
+2026-05-09T08:52:52.4987595Z *** sqflite warning ***
+2026-05-09T08:52:52.4987789Z 
+2026-05-09T08:52:52.4987942Z You are changing sqflite default factory.
+2026-05-09T08:52:52.4988525Z Be aware of the potential side effects. Any library using sqflite
+2026-05-09T08:52:52.4989166Z will have this factory as the default for all operations.
+2026-05-09T08:52:52.4989517Z 
+2026-05-09T08:52:52.4989622Z *** sqflite warning ***
+2026-05-09T08:52:52.4989802Z 
+2026-05-09T08:52:52.4990101Z ##[endgroup]
+2026-05-09T08:52:53.3041488Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser dumpsys thermalservice Status: normal maps to thermal_status=0
+2026-05-09T08:52:53.3064099Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser dumpsys thermalservice Status: critical maps to thermal_status=3
+2026-05-09T08:52:53.3085848Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser dumpsys thermalservice Status: fair maps to thermal_status=1
+2026-05-09T08:52:53.3106845Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser dumpsys thermalservice Status: serious maps to thermal_status=2
+2026-05-09T08:52:53.3129890Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser getprop fallback sys.thermal.state=0 maps to thermal_status=0
+2026-05-09T08:52:53.3153387Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser getprop fallback sys.thermal.state=3 maps to thermal_status=3
+2026-05-09T08:52:53.3175281Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser null/malformed input null output returns null thermal_status
+2026-05-09T08:52:53.3197989Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser null/malformed input empty output returns null
+2026-05-09T08:52:53.3218238Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser null/malformed input unrecognized status returns null
+2026-05-09T08:52:53.3239658Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser null/malformed input null getprop returns null
+2026-05-09T08:52:53.3271251Z ✅ D:/a/Benchify/Benchify/performancebench/test/unit/thermal_parser_test.dart: ThermalParser null/malformed input malformed getprop returns null
+2026-05-09T08:52:53.4183376Z test/widgets/video_chart_sync_test.dart:110:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.4185189Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.4187193Z       container.read(playheadSourceProvider.notifier).state = 'chart';
+2026-05-09T08:52:53.4187844Z                                                               ^
+2026-05-09T08:52:53.4188814Z test/widgets/video_chart_sync_test.dart:131:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.4190760Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.4192023Z       container.read(playheadSourceProvider.notifier).state = 'scrub_bar';
+2026-05-09T08:52:53.4192634Z                                                               ^
+2026-05-09T08:52:53.4193558Z test/widgets/video_chart_sync_test.dart:176:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.4195116Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.4196328Z       container.read(playheadSourceProvider.notifier).state = 'video';
+2026-05-09T08:52:53.4196898Z                                                               ^
+2026-05-09T08:52:53.4197731Z test/widgets/video_chart_sync_test.dart:180:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.4199269Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.4200485Z       container.read(playheadSourceProvider.notifier).state = 'chart';
+2026-05-09T08:52:53.4201074Z                                                               ^
+2026-05-09T08:52:53.4202065Z test/widgets/video_chart_sync_test.dart:184:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.4203705Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.4204981Z       container.read(playheadSourceProvider.notifier).state = 'scrub_bar';
+2026-05-09T08:52:53.4205632Z                                                               ^
+2026-05-09T08:52:53.6893248Z ##[group]❌ loading D:/a/Benchify/Benchify/performancebench/test/widgets/video_chart_sync_test.dart (failed)
+2026-05-09T08:52:53.6900497Z Failed to load "D:/a/Benchify/Benchify/performancebench/test/widgets/video_chart_sync_test.dart":
+2026-05-09T08:52:53.6902473Z Compilation failed for testPath=D:/a/Benchify/Benchify/performancebench/test/widgets/video_chart_sync_test.dart: test/widgets/video_chart_sync_test.dart:110:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.6905038Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.6906282Z       container.read(playheadSourceProvider.notifier).state = 'chart';
+2026-05-09T08:52:53.6906878Z                                                               ^
+2026-05-09T08:52:53.6907829Z test/widgets/video_chart_sync_test.dart:131:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.6909695Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.6910911Z       container.read(playheadSourceProvider.notifier).state = 'scrub_bar';
+2026-05-09T08:52:53.6911531Z                                                               ^
+2026-05-09T08:52:53.6912450Z test/widgets/video_chart_sync_test.dart:176:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.6914185Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.6915399Z       container.read(playheadSourceProvider.notifier).state = 'video';
+2026-05-09T08:52:53.6915984Z                                                               ^
+2026-05-09T08:52:53.6916884Z test/widgets/video_chart_sync_test.dart:180:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.6918414Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.6919599Z       container.read(playheadSourceProvider.notifier).state = 'chart';
+2026-05-09T08:52:53.6920162Z                                                               ^
+2026-05-09T08:52:53.6921074Z test/widgets/video_chart_sync_test.dart:184:63: Error: A value of type 'String' can't be assigned to a variable of type 'PlayheadSource'.
+2026-05-09T08:52:53.6922854Z  - 'PlayheadSource' is from 'package:performancebench/shared/providers/playhead_provider.dart' ('lib/shared/providers/playhead_provider.dart').
+2026-05-09T08:52:53.6923947Z       container.read(playheadSourceProvider.notifier).state = 'scrub_bar';
+2026-05-09T08:52:53.6924367Z                                                               ^
+2026-05-09T08:52:53.6924634Z .
+2026-05-09T08:52:53.6924723Z 
+2026-05-09T08:52:53.6924976Z ##[endgroup]
+2026-05-09T08:52:57.1873665Z ✅ D:/a/Benchify/Benchify/performancebench/test/widget_test.dart: App renders without crashing
+2026-05-09T08:52:57.2160323Z 
+2026-05-09T08:52:57.2185936Z ##[error]273 tests passed, 1 failed, 6 skipped.
+2026-05-09T08:52:57.3860895Z ##[error]Process completed with exit code 1.
+2026-05-09T08:52:57.4169521Z Post job cleanup.
+2026-05-09T08:52:57.4410788Z Post job cleanup.
+2026-05-09T08:52:57.6441427Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-05-09T08:52:57.6757763Z git version 2.54.0.windows.1
+2026-05-09T08:52:57.6839157Z Temporarily overriding HOME='D:\a\_temp\4c4558f4-9f83-4693-97d5-4f1aae24c089' before making global git config changes
+2026-05-09T08:52:57.6840066Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-09T08:52:57.6854824Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\Benchify\Benchify
+2026-05-09T08:52:57.7189346Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-05-09T08:52:57.7530976Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-05-09T08:52:58.3029121Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-09T08:52:58.3279588Z http.https://github.com/.extraheader
+2026-05-09T08:52:58.3327233Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-05-09T08:52:58.3622647Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-05-09T08:52:58.8731287Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-09T08:52:58.9020545Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-05-09T08:52:59.4427107Z Cleaning up orphan processes
+2026-05-09T08:52:59.4462868Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
