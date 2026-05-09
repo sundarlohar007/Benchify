@@ -2237,3 +2237,114 @@ Schema per entry:
 - **Found in:** S-16
 - **Discovered:** 2026-05-09
 
+---
+
+### B-158 — `apiFetch` throws on 204 No Content (DELETE responses)
+
+- **Severity:** HIGH
+- **Where:** `performancebench-web/src/lib/api.ts:29` (pre-fix)
+- **User-visible symptom:** Deleting a session, alert rule, org, project, or member via the dashboard throws a JSON parse error ("Unexpected end of JSON input") even though the server returns 204 success. Users see a generic error toast and think the delete failed.
+- **Root cause:** `res.json()` called unconditionally on all successful responses. HTTP 204 has no body, so `json()` throws.
+- **Fix:** Added check: if `status === 204` or `content-length === '0'`, return `undefined` instead of parsing JSON.
+- **Status:** FIXED:<pending-S17>
+- **Related:** —
+- **Found in:** S-17
+- **Discovered:** 2026-05-09
+
+---
+
+### B-159 — WebSocket reconnects on intentional close (stale session leak)
+
+- **Severity:** HIGH
+- **Where:** `performancebench-web/src/hooks/useWebSocket.ts:37-46` (pre-fix)
+- **User-visible symptom:** When navigating away from a live session page, the cleanup calls `ws.close()`, but the `onclose` handler schedules a reconnect to the *old* session. This creates ghost WebSocket connections that accumulate in the background, consuming server resources and potentially showing stale data if the user returns.
+- **Root cause:** No distinction between intentional close (cleanup) and server-initiated close (network drop). The `onclose` handler always schedules reconnection.
+- **Fix:** Added `intentionalCloseRef` flag. Set to `true` before cleanup close, checked in `onclose` to skip reconnect. Reset to `false` at the start of each `connect()`.
+- **Status:** FIXED:<pending-S17>
+- **Related:** —
+- **Found in:** S-17
+- **Discovered:** 2026-05-09
+
+---
+
+### B-160 — `api.download` error path tries `res.json()` on non-JSON errors
+
+- **Severity:** MED
+- **Where:** `performancebench-web/src/lib/api.ts:48`
+- **User-visible symptom:** When a file download fails with a non-JSON error response (e.g., HTML 502 from nginx proxy, or plain text 500), the `.json().catch(() => ({}))` silently swallows the real error. The user sees "Unknown" error code and a generic status text instead of the actual problem.
+- **Root cause:** The download error handler assumes server errors are always JSON, but binary/file endpoints often return HTML or plain text errors.
+- **Fix (planned):** Try `res.text()` first, then attempt JSON parse. Fall back to raw text as the error message.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-158
+- **Found in:** S-17
+- **Discovered:** 2026-05-09
+
+---
+
+### B-161 — `useDeleteSession` doesn't URL-encode sessionId
+
+- **Severity:** LOW
+- **Where:** `performancebench-web/src/hooks/useSessions.ts:216`
+- **User-visible symptom:** If a session ID contains characters like `/`, `#`, or `?` (unlikely but possible from external API integrations), the URL path breaks. The DELETE request hits a wrong endpoint or returns 404.
+- **Root cause:** Template literal interpolation `${sessionId}` doesn't encode special chars. Same pattern exists in `useAdmin.ts`, `useTeams.ts`, `useAlerts.ts`, `useAudit.ts`.
+- **Fix (planned):** Use `encodeURIComponent(sessionId)` in all URL path interpolations with user-supplied IDs.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-17
+- **Discovered:** 2026-05-09
+
+---
+
+### B-162 — `LoginResponse.refreshToken` is received but never stored
+
+- **Severity:** MED
+- **Where:** `performancebench-web/src/hooks/useAuth.ts:17-18`
+- **User-visible symptom:** After login, the server returns a `refreshToken` string but `useLogin` only invalidates the auth query — it never stores the refresh token. If the access cookie expires, there's no way to silently refresh it, forcing the user to re-login.
+- **Root cause:** The `onSuccess` callback in `useLogin` ignores the response data and only calls `invalidateQueries`.
+- **Fix (planned):** Either store `refreshToken` in secure httpOnly cookie (server-side) or in memory (client-side) for automatic token refresh. If the server already sets cookies on login, remove `refreshToken` from the response type to avoid confusion.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-17
+- **Discovered:** 2026-05-09
+
+---
+
+### B-163 — `formatKB` produces confusing sub-KB display
+
+- **Severity:** LOW
+- **Where:** `performancebench-web/src/lib/utils.ts:51-62`
+- **User-visible symptom:** `formatKB(0.5)` returns "512.0 B" instead of "0.5 KB". Since the function is named `formatKB` and takes KB values, users expect KB-scale output. The conversion to bytes then back up to display units is surprising for fractional KB values.
+- **Root cause:** The function multiplies by 1024 to convert to bytes, then divides back. For values < 1 KB, it drops down to bytes display.
+- **Fix (planned):** If input is already in KB, start the unit ladder at KB (index 1) instead of bytes. Or rename to `formatBytes` and update callers to pass bytes.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-17
+- **Discovered:** 2026-05-09
+
+---
+
+### B-164 — `computeTrendSummary` returns null for exactly 1 data point
+
+- **Severity:** LOW
+- **Where:** `performancebench-web/src/hooks/useTrends.ts:110`
+- **User-visible symptom:** If a user has only one profiling session, the trends page shows "No trend data" instead of displaying the single data point with a "flat" trend indicator. This makes it look like data is missing.
+- **Root cause:** `values.length < 2` check returns null for a single valid point. The function needs at least 2 points for trend direction, but it should still return summary stats (avg/min/max) for 1 point.
+- **Fix (planned):** Return summary with `trend: 'flat'` and `changePct: 0` for single-point data. Only return null for 0 valid points.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-17
+- **Discovered:** 2026-05-09
+
+---
+
+### B-165 — `document.getElementById('root')!` — non-null assertion on DOM
+
+- **Severity:** NIT
+- **Where:** `performancebench-web/src/main.tsx:30`
+- **User-visible symptom:** If `index.html` is modified and the `#root` div is removed, the app crashes with an unhelpful `Cannot read properties of null` error instead of a clear message.
+- **Root cause:** Non-null assertion `!` bypasses the null check.
+- **Fix (planned):** Use `?? throw new Error("Missing #root element in index.html")` pattern or a guard.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-17
+- **Discovered:** 2026-05-09

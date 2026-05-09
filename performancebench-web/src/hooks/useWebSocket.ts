@@ -11,11 +11,13 @@ export function useWebSocket(sessionId: string | null) {
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const listenersRef = useRef<Set<SampleListener>>(new Set());
   const retryCountRef = useRef(0);
+  const intentionalCloseRef = useRef(false);
 
   const connect = useCallback(() => {
     if (!sessionId) return;
     if (retryCountRef.current >= MAX_RETRIES) return;
 
+    intentionalCloseRef.current = false;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/ws/live/${sessionId}`;
     const ws = new WebSocket(wsUrl);
@@ -35,6 +37,8 @@ export function useWebSocket(sessionId: string | null) {
     };
 
     ws.onclose = () => {
+      // Don't reconnect if close was intentional (cleanup/sessionId change)
+      if (intentionalCloseRef.current) return;
       if (retryCountRef.current < MAX_RETRIES) {
         const delay = Math.min(
           BASE_DELAY_MS * Math.pow(2, retryCountRef.current),
@@ -56,6 +60,7 @@ export function useWebSocket(sessionId: string | null) {
     retryCountRef.current = 0;
     connect();
     return () => {
+      intentionalCloseRef.current = true;
       wsRef.current?.close();
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
