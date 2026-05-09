@@ -1,5 +1,8 @@
-# Rust
-/target/
+# Rust — root-level + every nested cargo workspace (e.g.
+# performancebench-injector/sdk/target). Pre-fix the leading-slash form
+# only matched the root, so `git add performancebench-injector/` pulled
+# 1400+ build-artefact files into the audit branch (S-10).
+target/
 
 # Flutter
 /build/

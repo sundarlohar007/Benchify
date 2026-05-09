@@ -95,7 +95,10 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         working-directory: performancebench-injector
-        run: pip install -r requirements.txt
+        # Use dev requirements: pulls runtime + pytest. Pre-fix (B-099)
+        # pytest sat in requirements.txt; the release notes / users who
+        # `pip install -r requirements.txt` were getting a test-only dep.
+        run: pip install -r requirements-dev.txt
       - name: Run Python tests
         working-directory: performancebench-injector
         run: python -m pytest tests/ -v --tb=short 2>&1 || true

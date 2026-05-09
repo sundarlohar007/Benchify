@@ -10,8 +10,11 @@ Subcommands:
     resign   — Re-sign an already-built APK
 """
 
-import sys
+import json
 import os
+import shutil
+import sys
+import tempfile
 
 # Add the current directory to path so imports work
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -29,19 +32,21 @@ def _read_stdin_json():
     Returns parsed dict, or empty dict on any error.
     Used by inject/ipa-inject to receive passwords securely (T-04-02, T-05-02).
     """
-    import json as _json
     try:
         if not sys.stdin.isatty():
             data = sys.stdin.read()
             if data.strip():
-                return _json.loads(data)
+                return json.loads(data)
     except Exception:
         pass
     return {}
 
 
 @click.group()
-@click.version_option(version="1.0.0", prog_name="PerformanceBench Injector")
+# TODO(audit S-19 build/CI): drive version from package metadata rather than
+# this literal. Sister of B-024 / B-044 / B-079; keep aligned with parent
+# project tag for now (B-093).
+@click.version_option(version="0.1.1", prog_name="PerformanceBench Injector")
 def cli():
     """PerformanceBench APK Injector — inject profiling SDK into Android APKs."""
     pass
@@ -93,60 +98,85 @@ def inject(apk, method, keystore, keystore_password, key_alias, key_password,
         keystore_password = keystore_password or stdin_data.get('keystore_password') or ''
         key_password = key_password or stdin_data.get('key_password') or ''
 
-    import tempfile
-
     # ---- Frida gadget path (per D-09, D-25) ----
     if method == "frida":
         _inject_frida(apk, gadget_so, gadget_config, output)
         return
 
     # ---- Smali path (per D-01, D-04, D-07) ----
-    click.echo(json.dumps({"step": "validate", "status": "running", "detail": "Validating APK..."}))
-    validate_apk(apk)
-
+    # Track whether we own the tmpdir (so we don't nuke a user-supplied work_dir
+    # on cleanup) and the last step we emitted "running" for, so the catch-all
+    # exception handler below can close out the structured stream with a
+    # matching `status: fail` instead of letting the traceback escape as
+    # stderr (B-094, B-098).
+    user_supplied_workdir = bool(work_dir)
     tmpdir = work_dir if work_dir else tempfile.mkdtemp(prefix="pb_inject_")
+    current_step = "validate"
 
-    click.echo(json.dumps({"step": "decompile", "status": "running", "detail": "Decompiling APK with apktool..."}))
-    decompile_apk(apk, os.path.join(tmpdir, "decoded"))
+    try:
+        click.echo(json.dumps({"step": "validate", "status": "running", "detail": "Validating APK..."}))
+        validate_apk(apk)
 
-    click.echo(json.dumps({"step": "smali", "status": "running", "detail": "Patching Smali bytecode..."}))
-    decoded_dir = os.path.join(tmpdir, "decoded")
-    app_smali = find_application_smali(decoded_dir)
-    if app_smali:
-        with open(app_smali, "r", encoding="utf-8", errors="ignore") as f:
-            content = f.read()
-        patched = patch_smali(content)
-        with open(app_smali, "w", encoding="utf-8") as f:
-            f.write(patched)
-    else:
-        click.echo(json.dumps({"step": "smali", "status": "warning",
-                               "detail": "No Application subclass found. SDK may not initialize automatically."}))
+        current_step = "decompile"
+        click.echo(json.dumps({"step": "decompile", "status": "running", "detail": "Decompiling APK with apktool..."}))
+        decompile_apk(apk, os.path.join(tmpdir, "decoded"))
 
-    click.echo(json.dumps({"step": "manifest", "status": "running", "detail": "Patching AndroidManifest.xml..."}))
-    manifest_path = os.path.join(decoded_dir, "AndroidManifest.xml")
-    if os.path.isfile(manifest_path):
-        with open(manifest_path, "r", encoding="utf-8", errors="ignore") as f:
-            manifest_xml = f.read()
-        patched_manifest = patch_manifest(manifest_xml)
-        with open(manifest_path, "w", encoding="utf-8") as f:
-            f.write(patched_manifest)
+        current_step = "smali"
+        click.echo(json.dumps({"step": "smali", "status": "running", "detail": "Patching Smali bytecode..."}))
+        decoded_dir = os.path.join(tmpdir, "decoded")
+        app_smali = find_application_smali(decoded_dir)
+        if app_smali:
+            with open(app_smali, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+            patched = patch_smali(content)
+            with open(app_smali, "w", encoding="utf-8") as f:
+                f.write(patched)
+        else:
+            click.echo(json.dumps({"step": "smali", "status": "warning",
+                                   "detail": "No Application subclass found. SDK may not initialize automatically."}))
 
-    click.echo(json.dumps({"step": "rebuild", "status": "running", "detail": "Rebuilding APK with apktool..."}))
-    _rebuild_apk(decoded_dir, os.path.join(tmpdir, "unsigned.apk"))
+        current_step = "manifest"
+        click.echo(json.dumps({"step": "manifest", "status": "running", "detail": "Patching AndroidManifest.xml..."}))
+        manifest_path = os.path.join(decoded_dir, "AndroidManifest.xml")
+        if os.path.isfile(manifest_path):
+            with open(manifest_path, "r", encoding="utf-8", errors="ignore") as f:
+                manifest_xml = f.read()
+            patched_manifest = patch_manifest(manifest_xml)
+            with open(manifest_path, "w", encoding="utf-8") as f:
+                f.write(patched_manifest)
 
-    click.echo(json.dumps({"step": "resign", "status": "running", "detail": "Re-signing APK..."}))
-    if keystore:
-        from injector.resigner import resign
-        resign(
-            os.path.join(tmpdir, "unsigned.apk"),
-            keystore, keystore_password or "", key_alias or "",
-            key_password or "", output,
-        )
-    else:
-        msg = "No keystore provided. APK is unsigned. Use 'resign' subcommand."
-        click.echo(json.dumps({"step": "resign", "status": "warning", "detail": msg}))
+        current_step = "rebuild"
+        click.echo(json.dumps({"step": "rebuild", "status": "running", "detail": "Rebuilding APK with apktool..."}))
+        _rebuild_apk(decoded_dir, os.path.join(tmpdir, "unsigned.apk"))
 
-    click.echo(json.dumps({"step": "done", "status": "pass", "detail": f"Injection complete: {output}"}))
+        current_step = "resign"
+        click.echo(json.dumps({"step": "resign", "status": "running", "detail": "Re-signing APK..."}))
+        if keystore:
+            from injector.resigner import resign
+            resign(
+                os.path.join(tmpdir, "unsigned.apk"),
+                keystore, keystore_password or "", key_alias or "",
+                key_password or "", output,
+            )
+        else:
+            msg = "No keystore provided. APK is unsigned. Use 'resign' subcommand."
+            click.echo(json.dumps({"step": "resign", "status": "warning", "detail": msg}))
+
+        click.echo(json.dumps({"step": "done", "status": "pass", "detail": f"Injection complete: {output}"}))
+    except Exception as exc:
+        # Surface the failure as a structured event so the desktop side
+        # (`InjectionService` listens to stdout-as-NDJSON) gets a `fail` step
+        # instead of a bare stderr traceback.
+        click.echo(json.dumps({"step": current_step, "status": "fail", "detail": f"{type(exc).__name__}: {exc}"}))
+        click.echo(json.dumps({"step": "error", "status": "fail", "detail": "Injection aborted"}))
+        # Re-raise so the CLI exit code reflects the failure (Click maps
+        # exceptions to non-zero exits).
+        raise
+    finally:
+        # Only nuke directories we created. A caller that supplied --work-dir
+        # may want to inspect the decoded output for debugging.
+        if not user_supplied_workdir:
+            shutil.rmtree(tmpdir, ignore_errors=True)
 
 
 
