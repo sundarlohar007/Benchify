@@ -29,7 +29,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | S-13  | Injector — engine_core + game-engine plugins                | DONE        |        8 | [slice-13](./slice-13-injector-engine-core.md)  |
 | S-14  | pcprobe — Rust PC profiler binary                           | DONE        |       10 | [slice-14](./slice-14-pcprobe-binary.md)        |
 | S-15  | pcprobe — PC metrics modules                                | DONE        |        8 | [slice-15](./slice-15-pcprobe-pc-metrics.md)    |
-| S-16  | pcprobe — PC video capture                                  | pending     |        — |                                                 |
+| S-16  | pcprobe — PC video capture                                  | DONE        |        8 | [slice-16](./slice-16-pcprobe-pc-video.md)      |
 | S-17  | Web dashboard — data + state                                | pending     |        — |                                                 |
 | S-18  | Web dashboard — UI                                          | pending     |        — |                                                 |
 | S-19  | Build, packaging, CI                                        | pending     |        — |                                                 |
@@ -42,11 +42,11 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | Severity | Open | Fixed | Deferred | Wontfix | Total |
 |----------|-----:|------:|---------:|--------:|------:|
 | BLOCKER  |    0 |     2 |        2 |       0 |     4 |
-| HIGH     |    0 |    22 |        8 |       0 |    30 |
-| MED      |    0 |    28 |       30 |       0 |    58 |
-| LOW      |    0 |    14 |       28 |       0 |    42 |
-| NIT      |    0 |     8 |       12 |       0 |    20 |
-| **All**  |    0 |    74 |       80 |       0 |   154 |
+| HIGH     |    0 |    23 |       10 |       0 |    33 |
+| MED      |    0 |    29 |       30 |       0 |    59 |
+| LOW      |    0 |    14 |       32 |       0 |    46 |
+| NIT      |    0 |     8 |       13 |       0 |    21 |
+| **All**  |    0 |    76 |       87 |       0 |   163 |
 
 ## Conventions
 

@@ -2124,3 +2124,116 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-15
 - **Discovered:** 2026-05-09
+
+---
+
+### B-150 — `stop_capture` sends SIGKILL instead of SIGTERM to ffmpeg
+
+- **Severity:** HIGH
+- **Where:** `sdk/src/pc_video/linux_capture.rs:300` (pre-fix)
+- **User-visible symptom:** On Linux, stopping video capture produces corrupt/unplayable final chunk because `Child::kill()` sends SIGKILL. ffmpeg never gets a chance to write the container trailer (moov atom). The chunk file is a truncated raw H.264 stream.
+- **Root cause:** `Child::kill()` in Rust sends SIGKILL on Unix. The comment says "Send SIGTERM for graceful ffmpeg shutdown" but the code uses `.kill()`, not SIGTERM.
+- **Fix:** Use `libc::kill(pid, 15)` (SIGTERM) on Linux to allow ffmpeg to finalize. Non-Linux targets keep `.kill()` as fallback.
+- **Status:** FIXED:<pending-S16>
+- **Related:** —
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
+---
+
+### B-151 — ffmpeg concat error message has no diagnostic detail
+
+- **Severity:** MED
+- **Where:** `sdk/src/pc_video/mod.rs:159-174` (pre-fix)
+- **User-visible symptom:** When ffmpeg concat fails, users see only "ffmpeg concat failed with exit code: Some(1)" with no hint about what went wrong (missing codec, corrupt input, permission error, etc.).
+- **Root cause:** `.status()` discards stderr. The error path only reports the exit code.
+- **Fix:** Changed to `.output()` with `stderr(Stdio::piped())`. Error message now includes up to 500 chars of ffmpeg stderr.
+- **Status:** FIXED:<pending-S16>
+- **Related:** —
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
+---
+
+### B-152 — `libc` crate not in Cargo.toml (Linux compilation error)
+
+- **Severity:** HIGH
+- **Where:** `sdk/src/pc_video/linux_capture.rs:283-288`
+- **User-visible symptom:** On Linux, `cargo build` fails with unresolved `libc::setpriority` and (after B-150 fix) `libc::kill`. The `libc` crate is used in `#[cfg(target_os = "linux")]` blocks but is not listed in `sdk/Cargo.toml` dependencies.
+- **Root cause:** FFI code references `libc::` symbols but the dependency is missing.
+- **Fix (planned):** Add `libc = "0.2"` to `[dependencies]` in `sdk/Cargo.toml` with `target.'cfg(target_os = "linux")'.dependencies` gating.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-150
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
+---
+
+### B-153 — `open_next_chunk` has no double-call guard
+
+- **Severity:** LOW
+- **Where:** `sdk/src/pc_video/chunk_manager.rs:84-86`
+- **User-visible symptom:** If `open_next_chunk` is called twice without calling `on_chunk_complete` between, `current_index` advances and the previous chunk is silently unrecorded. Chunk metadata array has a gap. The concat output file would skip content.
+- **Root cause:** No state check or assertion ensuring the previous chunk was completed before opening a new one.
+- **Fix (planned):** Add an `is_chunk_open: bool` flag. Assert/error on double-open without completion.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
+---
+
+### B-154 — `recording_overhead_estimate_pct` hardcoded to 5.0
+
+- **Severity:** LOW
+- **Where:** `sdk/src/pc_video/mod.rs:233`
+- **User-visible symptom:** Dashboard always shows "Recording Overhead: 5.0%" regardless of actual system load. The spec §32.12 says overhead should be measured dynamically from CPU delta during recording.
+- **Root cause:** Placeholder value never replaced with actual measurement.
+- **Fix (planned):** Measure CPU % before and during recording, compute delta, store as actual overhead.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
+---
+
+### B-155 — Linux capture tests mutate global env vars (unsound in parallel)
+
+- **Severity:** LOW
+- **Where:** `sdk/src/pc_video/linux_capture.rs:413, 444, 458, 472`
+- **User-visible symptom:** Tests that call `std::env::set_var` / `std::env::remove_var` can cause data races when run with `--test-threads > 1`. On Rust ≥ 1.66 this is deprecated and may trigger a warning. Currently masked by `--test-threads=1`.
+- **Root cause:** Global state mutation in tests without synchronization. Each test manipulates `XDG_SESSION_TYPE`, `DISPLAY`, `WAYLAND_DISPLAY`.
+- **Fix (planned):** Refactor `detect_display_server()` to accept an env-reading closure/trait for testability, or use a test serialization mutex.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
+---
+
+### B-156 — `concat_chunks_to_mp4` silently uses wrong path for non-UTF-8 dirs
+
+- **Severity:** LOW
+- **Where:** `sdk/src/pc_video/mod.rs:163`
+- **User-visible symptom:** If the output directory path contains non-UTF-8 characters (possible on some Linux configs), `list_path.to_str().unwrap_or("concat_list.txt")` falls back to a hardcoded filename. ffmpeg then can't find the concat list and fails with a misleading "No such file" error.
+- **Root cause:** `to_str()` returns `None` for non-UTF-8 paths. The `unwrap_or` fallback is a bare filename without any directory prefix.
+- **Fix (planned):** Use `to_string_lossy()` or convert path via OsStr directly.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
+---
+
+### B-157 — Unused import `std::path::Path` in windows_capture.rs
+
+- **Severity:** NIT
+- **Where:** `sdk/src/pc_video/windows_capture.rs:19`
+- **User-visible symptom:** Compiler warning on every build.
+- **Root cause:** Import was likely used during development but the code that used it was removed/refactored.
+- **Fix (planned):** Remove the unused import.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-16
+- **Discovered:** 2026-05-09
+
