@@ -1,25 +1,31 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2024 PerformanceBench Contributors
 #
-# Tag-triggered release workflow. Builds desktop installers (Windows/macOS/Linux),
-# mobile apps (Android APK + iOS unsigned IPA), and game-engine SDK plugins
-# (Unity/Unreal/Godot) plus the Python injector tool. Uploads everything to a
-# GitHub Release named after the tag.
+# Autonomous release workflow. Triggers on every push to main, auto-increments
+# the patch version (e.g., v0.1.0 → v0.1.1 → v0.1.2), builds all platform
+# artifacts, and publishes a GitHub Release.
 #
-# Usage:
-#   git tag v0.1.0 && git push --tags
-#   OR: Actions → Release → Run workflow → enter "v0.1.0"
+# Also supports:
+#   - Manual tag push:  git tag v1.0.0 && git push --tags
+#   - Manual dispatch:  Actions → Release → Run workflow → enter "v1.0.0"
 
 name: Release
 
 on:
   push:
+    branches: [main]
     tags: ['v*']
+    paths-ignore:
+      - '**.md'
+      - '.planning/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'docs/**'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to release (e.g., v0.1.0)'
-        required: true
+        description: 'Tag to release (e.g., v0.1.0). Leave empty to auto-increment.'
+        required: false
         type: string
 
 permissions:
@@ -32,14 +38,36 @@ jobs:
       version: ${{ steps.set.outputs.version }}
       tag: ${{ steps.set.outputs.tag }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - id: set
         env:
           INPUT_TAG: ${{ inputs.tag }}
         run: |
           if [ -n "${INPUT_TAG}" ]; then
             TAG="${INPUT_TAG}"
-          else
+          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
+          else
+            # Auto-increment: find latest vX.Y.Z tag, bump patch
+            LATEST=$(git tag --list 'v*' --sort=-version:refname | head -1)
+            if [ -z "$LATEST" ]; then
+              TAG="v0.1.0"
+            else
+              BASE="${LATEST%%[-+]*}"
+              MAJOR=$(echo "$BASE" | sed 's/v//' | cut -d. -f1)
+              MINOR=$(echo "$BASE" | cut -d. -f2)
+              PATCH=$(echo "$BASE" | cut -d. -f3)
+              PATCH=$((PATCH + 1))
+              TAG="v${MAJOR}.${MINOR}.${PATCH}"
+            fi
+            echo "Auto-incremented: ${LATEST:-none} → $TAG"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Auto-release $TAG"
+            git push origin "$TAG"
           fi
           VERSION="${TAG#v}"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"

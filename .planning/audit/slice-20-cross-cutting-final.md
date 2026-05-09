@@ -22,21 +22,27 @@ Cross-boundary audit tracing golden user flows across all 19 prior slices. No ne
 ## Key themes
 
 ### 1. Missing root README (B-182)
+
 The GitHub landing page has no README. This is the #1 first-impression issue for any new contributor or user visiting the repo.
 
 ### 2. Version chaos across components (B-183)
+
 Desktop `0.1.0`, mobile `0.1.1`, web `2.0.0`, pcprobe `3.0.0`, Unity `3.0.0`, SDK `0.1.0`. No unified versioning. The release workflow bundles artifacts from components at wildly different versions under a single tag.
 
 ### 3. Repository pollution (B-184)
+
 AI development artifacts (`.commit-msg-temp.txt`, `Claude Resume Command.txt`, `CL Logs/`) are committed to the repo.
 
 ### 4. Systemic URL encoding gap (B-185)
+
 All web hooks except `useAudit` use raw string interpolation for URL path params. This is the cross-cutting view of B-161 discovered in S-17.
 
 ### 5. CI pipeline is 93.5% broken (B-186)
+
 The existing `CI_CD_AUDIT_REPORT.txt` documents 57/61 failed runs. Self-heal can't create issues, server can't compile, desktop has 94 Dart analysis issues. This was partially addressed in S-19 but the core blockers remain.
 
 ### 6. Deferred backlog triage (B-189)
+
 104 deferred items need prioritization into T1 (BLOCKER/HIGH), T2 (MED), T3 (LOW/NIT) for the next sprint.
 
 ## Findings
