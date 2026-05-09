@@ -31,3 +31,11 @@ Claude Resume Command.txt
 CI_CD_AUDIT_REPORT.txt
 CL Logs/
 graphify-out/
+
+# Release binaries (downloaded artifacts)
+*.exe
+*.apk
+*.ipa
+*.dmg
+*.pkg
+*.AppImage
