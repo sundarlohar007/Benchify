@@ -2022,7 +2022,7 @@ Schema per entry:
 - **User-visible symptom:** First profiling sample shows a disk I/O spike equal to the lifetime cumulative bytes, not the actual rate. Subsequent ticks silently drop zero-delta (idle) periods as `None`.
 - **Root cause:** Rate = `current - last_disk_read`. On first tick `last_disk_read = 0`, so the entire cumulative value becomes the "rate". Additionally, `if delta > 0` discards legitimate zero-delta idle periods.
 - **Fix:** First tick (prev == 0) returns `None` (baseline only). Subsequent ticks: `current >= prev` → `Some(current - prev)` (allowing zero). Negative deltas (counter reset) → `None`.
-- **Status:** FIXED:<pending-S15>
+- **Status:** FIXED:ada27cf
 - **Related:** B-143
 - **Found in:** S-15
 - **Discovered:** 2026-05-09
@@ -2036,7 +2036,7 @@ Schema per entry:
 - **User-visible symptom:** Same as B-142 but for network RX/TX bytes. First tick emits cumulative value as "rate".
 - **Root cause:** Identical pattern to B-142.
 - **Fix:** Same pattern fix as B-142.
-- **Status:** FIXED:<pending-S15>
+- **Status:** FIXED:ada27cf
 - **Related:** B-142
 - **Found in:** S-15
 - **Discovered:** 2026-05-09
@@ -2050,7 +2050,7 @@ Schema per entry:
 - **User-visible symptom:** A process named `foo(1)` generates counter path `\Process(foo(1))\% Processor Time` which is syntactically invalid — PDH treats `(` and `)` as delimiters. This could cause PDH to return data for a different process instance or fail silently.
 - **Root cause:** `validate_process_name` only blocked `\ / \0` but not PDH metacharacters `( ) * # %`.
 - **Fix:** Added `( ) * # %` to the blocked character set with clear per-character error messages.
-- **Status:** FIXED:<pending-S15>
+- **Status:** FIXED:ada27cf
 - **Related:** —
 - **Found in:** S-15
 - **Discovered:** 2026-05-09
