@@ -1630,7 +1630,7 @@ Schema per entry:
 - **User-visible symptom:** `cpu_app_pct` was computed as `(Δpid_ticks / HZ) × 100` — i.e. CPU-seconds×100 per collection interval. This *coincidentally* gives roughly correct values when the collection interval is exactly 1s and total system ticks ≈ HZ, but diverges on multi-core systems, under load, or when collection lags. The spec §5.2 requires `(Δpid_ticks / Δtotal_ticks) × 100.0`.
 - **Root cause:** `compute_app_cpu_pct` took a `f64` "seconds" parameter. Transport divided `(ud + sd) / sysconf(_SC_CLK_TCK)` to get seconds, then multiplied by 100. This is dimensionally wrong — the result is "CPU-seconds per wall-second × 100", not "fraction of total CPU time × 100".
 - **Fix:** Changed `compute_app_cpu_pct(f64)` → `compute_app_cpu_pct(pid_ticks_delta: u64, total_ticks_delta: u64)`. Transport now reads `/proc/stat` first to get Δtotal, then computes the ratio per spec.
-- **Status:** FIXED:<pending-S12>
+- **Status:** FIXED:562eaf5
 - **Related:** B-115
 - **Found in:** S-12
 - **Discovered:** 2026-05-09
@@ -1644,7 +1644,7 @@ Schema per entry:
 - **User-visible symptom:** `cpu_system_pct` was computed as `(Δtotal / HZ) / 1.0 × 100` — the division by 1.0 was a literal no-op. The result was total CPU seconds × 100, not a percentage. The spec §5.2 line 648 requires `((Δtotal - Δidle) / Δtotal) × 100`.
 - **Root cause:** The formula never subtracted idle ticks. `parse_proc_stat_total` only returned the sum of all fields (including idle), and there was no `parse_idle_ticks` function.
 - **Fix:** Added `parse_idle_ticks()` to extract idle from /proc/stat field 4. Changed `compute_system_cpu_pct(total_delta)` → `compute_system_cpu_pct(total_delta, idle_delta)`. Transport now tracks `last_cpu_idle` and computes the correct formula.
-- **Status:** FIXED:<pending-S12>
+- **Status:** FIXED:562eaf5
 - **Related:** B-114
 - **Found in:** S-12
 - **Discovered:** 2026-05-09
@@ -1658,7 +1658,7 @@ Schema per entry:
 - **User-visible symptom:** On virtualized Android (emulators, cloud devices), `steal`, `guest`, and `guest_nice` ticks were excluded from the total. This undercounts total CPU time, making `cpu_system_pct` slightly inflated (denominator too small). On physical devices these fields are typically 0, so no impact.
 - **Root cause:** `parts[1..8]` slice stopped at field 7 (softirq). Linux /proc/stat has up to 10 numeric fields.
 - **Fix:** Changed to `parts[1..]` to sum all available numeric fields. Added test for 10-field format and backward-compat test for 7-field format.
-- **Status:** FIXED:<pending-S12>
+- **Status:** FIXED:562eaf5
 - **Related:** B-114, B-115
 - **Found in:** S-12
 - **Discovered:** 2026-05-09
@@ -1700,7 +1700,7 @@ Schema per entry:
 - **User-visible symptom:** None observed in single-threaded test runs. In production, if `collect()` is called concurrently from multiple threads (e.g. multiple metric collection loops or tests), data race UB can corrupt the snapshot vector or produce garbage deltas.
 - **Root cause:** `static mut` with `#[allow(static_mut_refs)]` — the lint suppression hid the actual UB. `collect()` reads and writes the snapshot without any synchronization.
 - **Fix:** Replaced both `static mut` variables with a `Mutex<NetState>` guarded by `once_cell::sync::Lazy`. All access now goes through `NET_STATE.lock()`. Poisoned-mutex case returns default (empty result).
-- **Status:** FIXED:<pending-S12>
+- **Status:** FIXED:562eaf5
 - **Related:** —
 - **Found in:** S-12
 - **Discovered:** 2026-05-09
@@ -1714,7 +1714,7 @@ Schema per entry:
 - **User-visible symptom:** On Chinese OEM devices (MediaTek chipsets), cellular traffic via `ccmni0` is classified as "other" instead of "cellular". Similarly, `nan0` (WiFi Neighborhood Aware Networking) interfaces are classified as "other" instead of "wifi". Network dashboard shows incorrect WiFi/Cellular/Other breakdown.
 - **Root cause:** UNIFIED-SPEC §5.5 lists `nan*` as WiFi; `ccmni*`, `pdp*`, `ppp*` as Cellular. Both `network.rs` and `net_per_process.rs` only checked `wlan*`/`wifi*` and `rmnet*`.
 - **Fix:** Added `nan*` to WiFi classification. Added `ccmni*`, `pdp*`, `ppp*` to Cellular classification. Applied to both modules. Added test cases for all new prefixes.
-- **Status:** FIXED:<pending-S12>
+- **Status:** FIXED:562eaf5
 - **Related:** —
 - **Found in:** S-12
 - **Discovered:** 2026-05-09
