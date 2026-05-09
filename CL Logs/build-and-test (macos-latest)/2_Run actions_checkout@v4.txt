@@ -1,0 +1,72 @@
+﻿2026-05-09T08:49:11.4153310Z ##[group]Run actions/checkout@v4
+2026-05-09T08:49:11.4154070Z with:
+2026-05-09T08:49:11.4154560Z   repository: sundarlohar007/Benchify
+2026-05-09T08:49:11.4155370Z   token: ***
+2026-05-09T08:49:11.4155840Z   ssh-strict: true
+2026-05-09T08:49:11.4156310Z   ssh-user: git
+2026-05-09T08:49:11.4156770Z   persist-credentials: true
+2026-05-09T08:49:11.4157290Z   clean: true
+2026-05-09T08:49:11.4157750Z   sparse-checkout-cone-mode: true
+2026-05-09T08:49:11.4158280Z   fetch-depth: 1
+2026-05-09T08:49:11.4158730Z   fetch-tags: false
+2026-05-09T08:49:11.4159180Z   show-progress: true
+2026-05-09T08:49:11.4159670Z   lfs: false
+2026-05-09T08:49:11.4160090Z   submodules: false
+2026-05-09T08:49:11.4160560Z   set-safe-directory: true
+2026-05-09T08:49:11.4161140Z ##[endgroup]
+2026-05-09T08:49:11.7223130Z Syncing repository: sundarlohar007/Benchify
+2026-05-09T08:49:11.7224990Z ##[group]Getting Git version info
+2026-05-09T08:49:11.7225760Z Working directory is '/Users/runner/work/Benchify/Benchify'
+2026-05-09T08:49:11.7227440Z [command]/opt/homebrew/bin/git version
+2026-05-09T08:49:11.7793190Z git version 2.54.0
+2026-05-09T08:49:11.7838120Z ##[endgroup]
+2026-05-09T08:49:11.7845030Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/6ff53a00-774e-4ad5-ac94-ecca407c10e1/.gitconfig'
+2026-05-09T08:49:11.7847300Z Temporarily overriding HOME='/Users/runner/work/_temp/6ff53a00-774e-4ad5-ac94-ecca407c10e1' before making global git config changes
+2026-05-09T08:49:11.7850000Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-09T08:49:11.7851430Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/Benchify/Benchify
+2026-05-09T08:49:11.7916780Z Deleting the contents of '/Users/runner/work/Benchify/Benchify'
+2026-05-09T08:49:11.7919080Z ##[group]Initializing the repository
+2026-05-09T08:49:11.7923120Z [command]/opt/homebrew/bin/git init /Users/runner/work/Benchify/Benchify
+2026-05-09T08:49:11.8091970Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-09T08:49:11.8094150Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-09T08:49:11.8095280Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-09T08:49:11.8096160Z hint: call:
+2026-05-09T08:49:11.8096620Z hint:
+2026-05-09T08:49:11.8097220Z hint: 	git config --global init.defaultBranch <name>
+2026-05-09T08:49:11.8097900Z hint:
+2026-05-09T08:49:11.8098540Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-09T08:49:11.8099570Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-09T08:49:11.8100450Z hint:
+2026-05-09T08:49:11.8100910Z hint: 	git branch -m <name>
+2026-05-09T08:49:11.8101460Z hint:
+2026-05-09T08:49:11.8102160Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-09T08:49:11.8103280Z Initialized empty Git repository in /Users/runner/work/Benchify/Benchify/.git/
+2026-05-09T08:49:11.8105350Z [command]/opt/homebrew/bin/git remote add origin https://github.com/sundarlohar007/Benchify
+2026-05-09T08:49:11.8160900Z ##[endgroup]
+2026-05-09T08:49:11.8162430Z ##[group]Disabling automatic garbage collection
+2026-05-09T08:49:11.8163490Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-05-09T08:49:11.8214770Z ##[endgroup]
+2026-05-09T08:49:11.8215640Z ##[group]Setting up auth
+2026-05-09T08:49:11.8219290Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-09T08:49:11.8264700Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-09T08:49:11.8896910Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-09T08:49:11.8944580Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-09T08:49:12.0119780Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-09T08:49:12.0145630Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-09T08:49:12.0948390Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-09T08:49:12.1006490Z ##[endgroup]
+2026-05-09T08:49:12.1007630Z ##[group]Fetching the repository
+2026-05-09T08:49:12.1011910Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d2d5ce7df3ec73e09782711ed937ad8b732028ac:refs/remotes/pull/56/merge
+2026-05-09T08:49:13.5701880Z From https://github.com/sundarlohar007/Benchify
+2026-05-09T08:49:13.5702750Z  * [new ref]         d2d5ce7df3ec73e09782711ed937ad8b732028ac -> pull/56/merge
+2026-05-09T08:49:13.5781180Z ##[endgroup]
+2026-05-09T08:49:13.5782080Z ##[group]Determining the checkout info
+2026-05-09T08:49:13.5782520Z ##[endgroup]
+2026-05-09T08:49:13.5784510Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-05-09T08:49:13.5852420Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-09T08:49:13.5906320Z ##[group]Checking out the ref
+2026-05-09T08:49:13.5908870Z [command]/opt/homebrew/bin/git checkout --progress --force refs/remotes/pull/56/merge
+2026-05-09T08:49:14.0137960Z HEAD is now at d2d5ce7 Merge b3e7be5ded1b3f08bb91f389ec872f39054c06f6 into ea230ef126671de67ed25512f7fe0e607ad76a24
+2026-05-09T08:49:14.0156990Z ##[endgroup]
+2026-05-09T08:49:14.0243300Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-05-09T08:49:14.0305530Z d2d5ce7df3ec73e09782711ed937ad8b732028ac

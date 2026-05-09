@@ -1,0 +1,12 @@
+﻿2026-05-09T08:49:12.3914731Z ##[group]Run bad_urls=$(grep -rn "http://\|https://" lib/ --include="*.dart" | grep -v "github.com" | grep -v "localhost" | grep -v "127.0.0.1" | grep -v "SPDX" | grep -v "pub.dev" || true)
+2026-05-09T08:49:12.3916005Z [36;1mbad_urls=$(grep -rn "http://\|https://" lib/ --include="*.dart" | grep -v "github.com" | grep -v "localhost" | grep -v "127.0.0.1" | grep -v "SPDX" | grep -v "pub.dev" || true)[0m
+2026-05-09T08:49:12.3916738Z [36;1mif [ -n "$bad_urls" ]; then[0m
+2026-05-09T08:49:12.3917084Z [36;1m  echo "ERROR: Unauthorized URLs found in source:"[0m
+2026-05-09T08:49:12.3917446Z [36;1m  echo "$bad_urls"[0m
+2026-05-09T08:49:12.3917690Z [36;1m  exit 1[0m
+2026-05-09T08:49:12.3917903Z [36;1mfi[0m
+2026-05-09T08:49:12.3918161Z [36;1mecho "URL allow-list check passed."[0m
+2026-05-09T08:49:12.3942749Z shell: /usr/bin/bash -e {0}
+2026-05-09T08:49:12.3943069Z ##[endgroup]
+2026-05-09T08:49:12.4022112Z grep: lib/: No such file or directory
+2026-05-09T08:49:12.4038563Z URL allow-list check passed.

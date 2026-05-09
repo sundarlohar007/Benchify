@@ -1,0 +1,155 @@
+﻿2026-05-09T08:49:15.6858245Z Current runner version: '2.334.0'
+2026-05-09T08:49:15.6880748Z ##[group]Runner Image Provisioner
+2026-05-09T08:49:15.6881828Z Hosted Compute Agent
+2026-05-09T08:49:15.6882400Z Version: 20260213.493
+2026-05-09T08:49:15.6882955Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-05-09T08:49:15.6883679Z Build Date: 2026-02-13T00:28:41Z
+2026-05-09T08:49:15.6884370Z Worker ID: {9668e382-c091-4dc7-a120-4ad477e629a0}
+2026-05-09T08:49:15.6885034Z Azure Region: westus
+2026-05-09T08:49:15.6885587Z ##[endgroup]
+2026-05-09T08:49:15.6886971Z ##[group]Operating System
+2026-05-09T08:49:15.6887579Z Ubuntu
+2026-05-09T08:49:15.6887990Z 24.04.4
+2026-05-09T08:49:15.6888531Z LTS
+2026-05-09T08:49:15.6888949Z ##[endgroup]
+2026-05-09T08:49:15.6889455Z ##[group]Runner Image
+2026-05-09T08:49:15.6890062Z Image: ubuntu-24.04
+2026-05-09T08:49:15.6890526Z Version: 20260413.86.1
+2026-05-09T08:49:15.6891942Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+2026-05-09T08:49:15.6893401Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+2026-05-09T08:49:15.6894261Z ##[endgroup]
+2026-05-09T08:49:15.6895365Z ##[group]GITHUB_TOKEN Permissions
+2026-05-09T08:49:15.6897139Z Contents: read
+2026-05-09T08:49:15.6897775Z Metadata: read
+2026-05-09T08:49:15.6898242Z Packages: read
+2026-05-09T08:49:15.6898765Z ##[endgroup]
+2026-05-09T08:49:15.6900726Z Secret source: Actions
+2026-05-09T08:49:15.6901738Z Prepare workflow directory
+2026-05-09T08:49:15.7232934Z Prepare all required actions
+2026-05-09T08:49:15.7271602Z Getting action download info
+2026-05-09T08:49:16.1369517Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-05-09T08:49:16.3519184Z Complete job name: license-check
+2026-05-09T08:49:16.4217269Z ##[group]Run actions/checkout@v4
+2026-05-09T08:49:16.4218165Z with:
+2026-05-09T08:49:16.4218569Z   repository: sundarlohar007/Benchify
+2026-05-09T08:49:16.4219225Z   token: ***
+2026-05-09T08:49:16.4219618Z   ssh-strict: true
+2026-05-09T08:49:16.4220226Z   ssh-user: git
+2026-05-09T08:49:16.4220740Z   persist-credentials: true
+2026-05-09T08:49:16.4221528Z   clean: true
+2026-05-09T08:49:16.4222045Z   sparse-checkout-cone-mode: true
+2026-05-09T08:49:16.4222525Z   fetch-depth: 1
+2026-05-09T08:49:16.4222897Z   fetch-tags: false
+2026-05-09T08:49:16.4223284Z   show-progress: true
+2026-05-09T08:49:16.4223670Z   lfs: false
+2026-05-09T08:49:16.4224021Z   submodules: false
+2026-05-09T08:49:16.4224413Z   set-safe-directory: true
+2026-05-09T08:49:16.4225128Z ##[endgroup]
+2026-05-09T08:49:16.5317709Z Syncing repository: sundarlohar007/Benchify
+2026-05-09T08:49:16.5320158Z ##[group]Getting Git version info
+2026-05-09T08:49:16.5321576Z Working directory is '/home/runner/work/Benchify/Benchify'
+2026-05-09T08:49:16.5323165Z [command]/usr/bin/git version
+2026-05-09T08:49:16.5375309Z git version 2.53.0
+2026-05-09T08:49:16.5401776Z ##[endgroup]
+2026-05-09T08:49:16.5416598Z Temporarily overriding HOME='/home/runner/work/_temp/68693013-b9e9-49f1-a082-255a625a0789' before making global git config changes
+2026-05-09T08:49:16.5418012Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-09T08:49:16.5422114Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Benchify/Benchify
+2026-05-09T08:49:16.5451987Z Deleting the contents of '/home/runner/work/Benchify/Benchify'
+2026-05-09T08:49:16.5455426Z ##[group]Initializing the repository
+2026-05-09T08:49:16.5459158Z [command]/usr/bin/git init /home/runner/work/Benchify/Benchify
+2026-05-09T08:49:16.5558560Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-09T08:49:16.5560438Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-09T08:49:16.5561819Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-09T08:49:16.5562526Z hint: call:
+2026-05-09T08:49:16.5562891Z hint:
+2026-05-09T08:49:16.5563361Z hint: 	git config --global init.defaultBranch <name>
+2026-05-09T08:49:16.5564160Z hint:
+2026-05-09T08:49:16.5564697Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-09T08:49:16.5566066Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-09T08:49:16.5567198Z hint:
+2026-05-09T08:49:16.5567793Z hint: 	git branch -m <name>
+2026-05-09T08:49:16.5568475Z hint:
+2026-05-09T08:49:16.5569357Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-09T08:49:16.5570283Z Initialized empty Git repository in /home/runner/work/Benchify/Benchify/.git/
+2026-05-09T08:49:16.5572886Z [command]/usr/bin/git remote add origin https://github.com/sundarlohar007/Benchify
+2026-05-09T08:49:16.5600290Z ##[endgroup]
+2026-05-09T08:49:16.5601665Z ##[group]Disabling automatic garbage collection
+2026-05-09T08:49:16.5604521Z [command]/usr/bin/git config --local gc.auto 0
+2026-05-09T08:49:16.5631451Z ##[endgroup]
+2026-05-09T08:49:16.5632490Z ##[group]Setting up auth
+2026-05-09T08:49:16.5637944Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-09T08:49:16.5666763Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-09T08:49:16.5948681Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-09T08:49:16.5976563Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-09T08:49:16.6185898Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-09T08:49:16.6222522Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-09T08:49:16.6437617Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-09T08:49:16.6470311Z ##[endgroup]
+2026-05-09T08:49:16.6471967Z ##[group]Fetching the repository
+2026-05-09T08:49:16.6479954Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d2d5ce7df3ec73e09782711ed937ad8b732028ac:refs/remotes/pull/56/merge
+2026-05-09T08:49:18.3050703Z From https://github.com/sundarlohar007/Benchify
+2026-05-09T08:49:18.3054535Z  * [new ref]         d2d5ce7df3ec73e09782711ed937ad8b732028ac -> pull/56/merge
+2026-05-09T08:49:18.3080509Z ##[endgroup]
+2026-05-09T08:49:18.3082095Z ##[group]Determining the checkout info
+2026-05-09T08:49:18.3083561Z ##[endgroup]
+2026-05-09T08:49:18.3087939Z [command]/usr/bin/git sparse-checkout disable
+2026-05-09T08:49:18.3126421Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-09T08:49:18.3153305Z ##[group]Checking out the ref
+2026-05-09T08:49:18.3157472Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/56/merge
+2026-05-09T08:49:18.7247055Z Note: switching to 'refs/remotes/pull/56/merge'.
+2026-05-09T08:49:18.7247668Z 
+2026-05-09T08:49:18.7248054Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-05-09T08:49:18.7248850Z changes and commit them, and you can discard any commits you make in this
+2026-05-09T08:49:18.7249593Z state without impacting any branches by switching back to a branch.
+2026-05-09T08:49:18.7250056Z 
+2026-05-09T08:49:18.7250381Z If you want to create a new branch to retain commits you create, you may
+2026-05-09T08:49:18.7251374Z do so (now or later) by using -c with the switch command. Example:
+2026-05-09T08:49:18.7251723Z 
+2026-05-09T08:49:18.7251870Z   git switch -c <new-branch-name>
+2026-05-09T08:49:18.7252145Z 
+2026-05-09T08:49:18.7252306Z Or undo this operation with:
+2026-05-09T08:49:18.7252537Z 
+2026-05-09T08:49:18.7252653Z   git switch -
+2026-05-09T08:49:18.7252836Z 
+2026-05-09T08:49:18.7253165Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-05-09T08:49:18.7253823Z 
+2026-05-09T08:49:18.7254283Z HEAD is now at d2d5ce7 Merge b3e7be5ded1b3f08bb91f389ec872f39054c06f6 into ea230ef126671de67ed25512f7fe0e607ad76a24
+2026-05-09T08:49:18.7271294Z ##[endgroup]
+2026-05-09T08:49:18.7308187Z [command]/usr/bin/git log -1 --format=%H
+2026-05-09T08:49:18.7329303Z d2d5ce7df3ec73e09782711ed937ad8b732028ac
+2026-05-09T08:49:18.7513827Z ##[group]Run missing=0
+2026-05-09T08:49:18.7514185Z [36;1mmissing=0[0m
+2026-05-09T08:49:18.7514478Z [36;1mfor dir in lib/ test/ ios_agents/; do[0m
+2026-05-09T08:49:18.7514813Z [36;1m  if [ -d "$dir" ]; then[0m
+2026-05-09T08:49:18.7515367Z [36;1m    count=$(grep -rL "SPDX-License-Identifier: MIT" "$dir" --include="*.dart" --include="*.py" 2>/dev/null | wc -l)[0m
+2026-05-09T08:49:18.7515932Z [36;1m    if [ "$count" -gt 0 ]; then[0m
+2026-05-09T08:49:18.7516282Z [36;1m      echo "ERROR: $count files in $dir missing MIT header"[0m
+2026-05-09T08:49:18.7516838Z [36;1m      grep -rL "SPDX-License-Identifier: MIT" "$dir" --include="*.dart" --include="*.py"[0m
+2026-05-09T08:49:18.7517368Z [36;1m      missing=$((missing + count))[0m
+2026-05-09T08:49:18.7517649Z [36;1m    fi[0m
+2026-05-09T08:49:18.7517847Z [36;1m  fi[0m
+2026-05-09T08:49:18.7518046Z [36;1mdone[0m
+2026-05-09T08:49:18.7518256Z [36;1mif [ "$missing" -gt 0 ]; then[0m
+2026-05-09T08:49:18.7518645Z [36;1m  echo "FAILED: $missing file(s) missing MIT SPDX header"[0m
+2026-05-09T08:49:18.7518987Z [36;1m  exit 1[0m
+2026-05-09T08:49:18.7519195Z [36;1mfi[0m
+2026-05-09T08:49:18.7519447Z [36;1mecho "All source files have MIT SPDX headers."[0m
+2026-05-09T08:49:18.7543670Z shell: /usr/bin/bash -e {0}
+2026-05-09T08:49:18.7543983Z ##[endgroup]
+2026-05-09T08:49:18.7684897Z All source files have MIT SPDX headers.
+2026-05-09T08:49:18.7783861Z Post job cleanup.
+2026-05-09T08:49:18.8744362Z [command]/usr/bin/git version
+2026-05-09T08:49:18.8779647Z git version 2.53.0
+2026-05-09T08:49:18.8830688Z Temporarily overriding HOME='/home/runner/work/_temp/2759b72b-9439-49fd-98de-c9d5455b983a' before making global git config changes
+2026-05-09T08:49:18.8832430Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-09T08:49:18.8837246Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Benchify/Benchify
+2026-05-09T08:49:18.8870462Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-09T08:49:18.8901355Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-09T08:49:18.9120163Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-09T08:49:18.9140132Z http.https://github.com/.extraheader
+2026-05-09T08:49:18.9152105Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-05-09T08:49:18.9180135Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-09T08:49:18.9393659Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-09T08:49:18.9423500Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-09T08:49:18.9736955Z Cleaning up orphan processes
+2026-05-09T08:49:19.0107442Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
