@@ -2012,3 +2012,115 @@ Schema per entry:
 - **Related:** B-135
 - **Found in:** S-14
 - **Discovered:** 2026-05-09
+
+---
+
+### B-142 — Disk I/O rate calculation emits cumulative value on first tick
+
+- **Severity:** MED
+- **Where:** `sdk/src/pc_metrics/collector.rs:200-216` (pre-fix)
+- **User-visible symptom:** First profiling sample shows a disk I/O spike equal to the lifetime cumulative bytes, not the actual rate. Subsequent ticks silently drop zero-delta (idle) periods as `None`.
+- **Root cause:** Rate = `current - last_disk_read`. On first tick `last_disk_read = 0`, so the entire cumulative value becomes the "rate". Additionally, `if delta > 0` discards legitimate zero-delta idle periods.
+- **Fix:** First tick (prev == 0) returns `None` (baseline only). Subsequent ticks: `current >= prev` → `Some(current - prev)` (allowing zero). Negative deltas (counter reset) → `None`.
+- **Status:** FIXED:<pending-S15>
+- **Related:** B-143
+- **Found in:** S-15
+- **Discovered:** 2026-05-09
+
+---
+
+### B-143 — Network rate calculation has same first-tick / zero-delta bug
+
+- **Severity:** MED
+- **Where:** `sdk/src/pc_metrics/collector.rs:218-234` (pre-fix)
+- **User-visible symptom:** Same as B-142 but for network RX/TX bytes. First tick emits cumulative value as "rate".
+- **Root cause:** Identical pattern to B-142.
+- **Fix:** Same pattern fix as B-142.
+- **Status:** FIXED:<pending-S15>
+- **Related:** B-142
+- **Found in:** S-15
+- **Discovered:** 2026-05-09
+
+---
+
+### B-144 — PDH process name validation allows parentheses (PDH injection)
+
+- **Severity:** HIGH
+- **Where:** `sdk/src/pc_metrics/pdh.rs:171-183` (pre-fix)
+- **User-visible symptom:** A process named `foo(1)` generates counter path `\Process(foo(1))\% Processor Time` which is syntactically invalid — PDH treats `(` and `)` as delimiters. This could cause PDH to return data for a different process instance or fail silently.
+- **Root cause:** `validate_process_name` only blocked `\ / \0` but not PDH metacharacters `( ) * # %`.
+- **Fix:** Added `( ) * # %` to the blocked character set with clear per-character error messages.
+- **Status:** FIXED:<pending-S15>
+- **Related:** —
+- **Found in:** S-15
+- **Discovered:** 2026-05-09
+
+---
+
+### B-145 — `page_faults_per_s` in memory.rs is cumulative count, not rate
+
+- **Severity:** MED
+- **Where:** `sdk/src/pc_metrics/memory.rs:135`
+- **User-visible symptom:** `page_faults_per_s` field suggests a per-second rate but contains the lifetime `page_fault_count` from `PROCESS_MEMORY_COUNTERS_EX`. The collector never computes a delta or divides by time, so the value grows monotonically instead of reflecting current fault rate.
+- **Root cause:** Raw `page_fault_count` (u32) is cast to f64 and stored directly. No delta/rate computation exists.
+- **Fix (planned):** Track `last_page_faults` in PcCollector and compute `(current - previous)` per tick, matching the disk/network pattern. Or rename the field to `page_fault_count_total` to reflect reality.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-142
+- **Found in:** S-15
+- **Discovered:** 2026-05-09
+
+---
+
+### B-146 — Thread CPU % is always 0.0 (QueryThreadCycleTime not used for delta)
+
+- **Severity:** MED
+- **Where:** `sdk/src/pc_metrics/cpu.rs:184-199`
+- **User-visible symptom:** Dashboard shows `"cpu_pct": 0.0` for every thread in the per-thread CPU breakdown. Users see no thread-level CPU data despite it being a key profiling feature.
+- **Root cause:** `collect_cpu` reads `QueryThreadCycleTime` but returns a hardcoded `0.0` because delta computation (current_cycles - previous_cycles) / total_cycles requires storing previous values. The comment says "real % computed by collector" but no collector code does this.
+- **Fix (planned):** Add a `HashMap<u32, u64>` of `(tid → last_cycle_time)` to PcCollector and compute the delta between ticks to derive actual CPU %.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-15
+- **Discovered:** 2026-05-09
+
+---
+
+### B-147 — `get_cpu_frequency_mhz()` shells out to deprecated `wmic` command
+
+- **Severity:** LOW
+- **Where:** `sdk/src/pc_metrics/cpu.rs:107-123`
+- **User-visible symptom:** On Windows 11 22H2+ where `wmic` is removed, CPU frequency is always `None`. No fallback to the documented registry key approach (`HKLM\HARDWARE\...\~MHz`).
+- **Root cause:** The function uses `wmic cpu get MaxClockSpeed` which was deprecated in Windows 10 21H1 and removed from newer Windows 11 images. The doc comment describes a registry approach but the code doesn't implement it.
+- **Fix (planned):** Use `RegOpenKeyExW`/`RegQueryValueExW` for `HKLM\HARDWARE\DESCRIPTION\System\CentralProcessor\0\~MHz` (REG_DWORD). This is fast, reliable, and zero-dep.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-15
+- **Discovered:** 2026-05-09
+
+---
+
+### B-148 — ETW `EventTraceProperties.wnode.buffer_size` too small (heap corruption)
+
+- **Severity:** HIGH
+- **Where:** `sdk/src/pc_metrics/etw.rs:160-188`
+- **User-visible symptom:** `StartTraceW` writes the session name string past the end of the `EventTraceProperties` struct. This corrupts heap memory. In practice, the session usually fails with error code 87 (ERROR_INVALID_PARAMETER) because the buffer is undersized, so ETW silently falls back. But on some configurations this can cause a crash.
+- **Root cause:** `buffer_size` in `wnode` must account for the struct **plus** appended session name and log file name strings. The code sets it to `size_of::<EventTraceProperties>()` only. Per MSDN, it must be `size_of::<EVENT_TRACE_PROPERTIES>() + 2 * MAX_NAME_SIZE` (where MAX_NAME_SIZE is typically 1024 bytes for session name).
+- **Fix (planned):** Allocate a `Vec<u8>` of size `size_of::<EventTraceProperties>() + session_name_wide_bytes + null_terminator`, cast to `*mut EventTraceProperties`, set `wnode.buffer_size` to the full buffer size, and copy the session name at `logger_name_offset`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-15
+- **Discovered:** 2026-05-09
+
+---
+
+### B-149 — DXGI `inject_dx_hook` returns DLL path address as ring buffer handle
+
+- **Severity:** HIGH
+- **Where:** `sdk/src/pc_metrics/dxgi.rs:337-340`
+- **User-visible symptom:** After injection, `read_frame_deltas` reads from the VirtualAllocEx'd DLL path string memory, interpreting UTF-16 characters as QPC timestamps. This produces garbage frame times → garbage FPS values. In practice, DXGI injection falls back to PresentMon (Method B) because the hook DLL file doesn't exist, so this code path is never reached in the current build.
+- **Root cause:** The code returns `SharedMemoryHandle { base_address: remote_mem }` but `remote_mem` points to the LoadLibraryW path string, not the ring buffer. The actual ring buffer is created by the injected DLL and communicated via a named shared memory section — this infrastructure doesn't exist yet.
+- **Fix (planned):** Once the hook DLL is built (Plan 05-04), use a named shared memory section (`CreateFileMapping` / `MapViewOfFile`) with an agreed-upon name like `Local\pb-pcprobe-ring-{pid}` instead of returning the path buffer address.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-15
+- **Discovered:** 2026-05-09

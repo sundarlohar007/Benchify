@@ -175,9 +175,19 @@ pub fn validate_process_name(name: &str) -> Result<(), String> {
     if name.len() > 64 {
         return Err("Process name must not exceed 64 characters".to_string());
     }
-    // PDH counter paths use process name; filter out path traversal chars
-    if name.contains('\\') || name.contains('/') || name.contains('\0') {
-        return Err(format!("Invalid characters in process name: '{}'", name));
+    // PDH counter paths use process name inside `\Process(name)\...`.
+    // Reject path traversal chars AND PDH metacharacters:
+    //   \ / NUL  — path traversal
+    //   ( ) — counter path delimiters (would break nesting)
+    //   * # % — PDH wildcards
+    let blocked = ['\\', '/', '\0', '(', ')', '*', '#', '%'];
+    for ch in blocked {
+        if name.contains(ch) {
+            return Err(format!(
+                "Invalid character '{}' in process name: '{}'",
+                ch, name
+            ));
+        }
     }
     Ok(())
 }

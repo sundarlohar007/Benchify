@@ -28,7 +28,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | S-12  | Injector — SDK metrics                                      | DONE        |       10 | [slice-12](./slice-12-injector-sdk-metrics.md)  |
 | S-13  | Injector — engine_core + game-engine plugins                | DONE        |        8 | [slice-13](./slice-13-injector-engine-core.md)  |
 | S-14  | pcprobe — Rust PC profiler binary                           | DONE        |       10 | [slice-14](./slice-14-pcprobe-binary.md)        |
-| S-15  | pcprobe — PC metrics modules                                | pending     |        — |                                                 |
+| S-15  | pcprobe — PC metrics modules                                | DONE        |        8 | [slice-15](./slice-15-pcprobe-pc-metrics.md)    |
 | S-16  | pcprobe — PC video capture                                  | pending     |        — |                                                 |
 | S-17  | Web dashboard — data + state                                | pending     |        — |                                                 |
 | S-18  | Web dashboard — UI                                          | pending     |        — |                                                 |
@@ -42,11 +42,11 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | Severity | Open | Fixed | Deferred | Wontfix | Total |
 |----------|-----:|------:|---------:|--------:|------:|
 | BLOCKER  |    0 |     2 |        2 |       0 |     4 |
-| HIGH     |    0 |    21 |        6 |       0 |    27 |
-| MED      |    0 |    26 |       28 |       0 |    54 |
-| LOW      |    0 |    14 |       27 |       0 |    41 |
+| HIGH     |    0 |    22 |        8 |       0 |    30 |
+| MED      |    0 |    28 |       30 |       0 |    58 |
+| LOW      |    0 |    14 |       28 |       0 |    42 |
 | NIT      |    0 |     8 |       12 |       0 |    20 |
-| **All**  |    0 |    71 |       75 |       0 |   146 |
+| **All**  |    0 |    74 |       80 |       0 |   154 |
 
 ## Conventions
 
