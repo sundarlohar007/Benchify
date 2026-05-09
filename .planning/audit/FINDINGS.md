@@ -1462,7 +1462,7 @@ Schema per entry:
 - **User-visible symptom:** None until sustained load; every metric tick past 60 samples does an O(60) memmove instead of O(1) dequeue.
 - **Root cause:** `Vec` used as a ring buffer; `remove(0)` shifts all elements down.
 - **Fix:** Replaced `Vec<MetricSample>` with `VecDeque<MetricSample>`; `remove(0)` → `pop_front()`, `push` → `push_back()`. `get_buffered_samples` collects into a Vec for the return type.
-- **Status:** FIXED:<pending-S11>
+- **Status:** FIXED:4332fda
 - **Related:** —
 - **Found in:** S-11
 - **Discovered:** 2026-05-09
@@ -1476,7 +1476,7 @@ Schema per entry:
 - **User-visible symptom:** SDK always reports *device-wide* network counters even when per-process data (D-16) was available. Dashboard shows aggregate traffic instead of the profiled app's traffic — wildly misleading on devices with background downloads or streaming.
 - **Root cause:** `net_per_process::collect()` fills `net_tx_bytes` et al., then the device-wide `network::parse_net_dev` block unconditionally overwrites the same fields from the device-wide counters.
 - **Fix:** Track `has_per_process_net` flag; only fall through to device-wide when the per-process module returned zeros. Device-wide delta baseline (`last_net`) always updated regardless so it stays fresh for fallback.
-- **Status:** FIXED:<pending-S11>
+- **Status:** FIXED:4332fda
 - **Related:** —
 - **Found in:** S-11
 - **Discovered:** 2026-05-09
@@ -1518,7 +1518,7 @@ Schema per entry:
 - **User-visible symptom:** None currently — the SDK doesn't call back into Java. But the refs that were meant to enable future overlay updates / ContentResolver queries are freed immediately, making any future Java-callback path crash with a stale reference.
 - **Root cause:** `let _ctx = env.new_global_ref(context).ok();` creates a GlobalRef local that is dropped at end-of-scope. The JNI global ref table entry is released, and the Rust side has no handle to the Context or FpsOverlayView.
 - **Fix:** Store the `GlobalRef` pair in a process-wide `Lazy<Mutex<Option<(GlobalRef, GlobalRef)>>>`. Added `#[allow(unused_mut)]` to suppress the host-build warning for `mut env` (needed on Android only).
-- **Status:** FIXED:<pending-S11>
+- **Status:** FIXED:4332fda
 - **Related:** —
 - **Found in:** S-11
 - **Discovered:** 2026-05-09
@@ -1546,7 +1546,7 @@ Schema per entry:
 - **User-visible symptom:** JSON stream emits the same GPU memory value under two keys (`gpu_mem_kb` and `pc_gpu_dedicated_mem_kb`). Dart-side merge logic may double-count or display a confusing "GPU Memory" and "PC GPU Dedicated Memory" that show identical numbers.
 - **Root cause:** `from_pc_snapshot` mapped `snapshot.gpu_dedicated_mem_kb` to both fields — the generic mobile-era `gpu_mem_kb` and the PC-specific `pc_gpu_dedicated_mem_kb`.
 - **Fix:** Removed the `gpu_mem_kb` assignment for PC snapshots; the PC-specific field carries the data. Generic `gpu_mem_kb` left as `None` (default) for PC builds.
-- **Status:** FIXED:<pending-S11>
+- **Status:** FIXED:4332fda
 - **Related:** —
 - **Found in:** S-11
 - **Discovered:** 2026-05-09
@@ -1574,7 +1574,7 @@ Schema per entry:
 - **User-visible symptom:** An attacker sending `START_SESSION` with `session_id: "../../system/etc/passwd"` then `SCREENSHOT` would write to `/sdcard/benchify/../../system/etc/passwd_screenshot.png` — i.e. `/system/etc/passwd_screenshot.png` (if permissions allow). On rooted devices or permissive SELinux, this is a file-write-anywhere primitive.
 - **Root cause:** `session_id` and `label` used directly in `format!("/sdcard/benchify/{}_{}.png", ...)` with no sanitization.
 - **Fix:** Added `sanitize_path_component()` that strips all chars except `[a-zA-Z0-9_-.]`. Applied to both `session_id` and `label` in SCREENSHOT and EXPORT handlers.
-- **Status:** FIXED:<pending-S11>
+- **Status:** FIXED:4332fda
 - **Related:** B-111, B-089
 - **Found in:** S-11
 - **Discovered:** 2026-05-09
@@ -1588,7 +1588,7 @@ Schema per entry:
 - **User-visible symptom:** Same shape as B-110 but for JSON export files.
 - **Root cause:** Same unsanitized `session_id` in `format!("/sdcard/benchify/{}_export.json", ...)`.
 - **Fix:** Shared `sanitize_path_component()` applied.
-- **Status:** FIXED:<pending-S11>
+- **Status:** FIXED:4332fda
 - **Related:** B-110, B-089
 - **Found in:** S-11
 - **Discovered:** 2026-05-09
