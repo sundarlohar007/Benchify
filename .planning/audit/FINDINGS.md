@@ -1770,7 +1770,7 @@ Schema per entry:
 - **User-visible symptom:** If a marker name or scene name contains double quotes, backslashes, newlines, or other JSON-special characters, the emitted JSON is malformed. The desktop parser fails to parse the marker event, silently dropping it from the timeline. In a worst case, crafted scene names could inject arbitrary JSON fields.
 - **Root cause:** `format!` string interpolation was used without any JSON escaping for `marker.name` and `scene_name`.
 - **Fix:** Added `escape_json_string()` helper that escapes `"`, `\`, `\n`, `\r`, `\t`, and control characters (<0x20 as `\uXXXX`). Applied to both `name` and `scene_name` before format interpolation. Added serde round-trip test.
-- **Status:** FIXED:<pending-S13>
+- **Status:** FIXED:213f6ee
 - **Related:** B-126
 - **Found in:** S-13
 - **Discovered:** 2026-05-09
@@ -1784,7 +1784,7 @@ Schema per entry:
 - **User-visible symptom:** Scene load markers always appeared as "in-progress" (null duration) on the desktop timeline, even though `end_marker` was called immediately after. The ended state was never serialized.
 - **Root cause:** `marker_event_json(&marker)` was called BEFORE `end_marker(&mut marker)`. The serialization captured the un-ended state.
 - **Fix:** Swapped the order — `end_marker` now runs first, then `marker_event_json` serializes the completed marker with a real duration.
-- **Status:** FIXED:<pending-S13>
+- **Status:** FIXED:213f6ee
 - **Related:** —
 - **Found in:** S-13
 - **Discovered:** 2026-05-09
@@ -1798,7 +1798,7 @@ Schema per entry:
 - **User-visible symptom:** If the Unreal C++ wrapper passes an empty string, bare text, or malformed JSON as `stat_unit_json`, the outer JSON structure becomes unparseable. The desktop app silently drops the entire engine metrics event for that frame.
 - **Root cause:** The `stat_unit_json` field was interpolated raw into the `format!` template without any validation. The field type is `String`, which accepts anything.
 - **Fix:** Added serde_json validation before inlining. Invalid JSON is replaced with `null`. Empty string is replaced with `null`. Added tests for both cases.
-- **Status:** FIXED:<pending-S13>
+- **Status:** FIXED:213f6ee
 - **Related:** B-124
 - **Found in:** S-13
 - **Discovered:** 2026-05-09
