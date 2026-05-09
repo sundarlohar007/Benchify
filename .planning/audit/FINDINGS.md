@@ -1195,3 +1195,118 @@ Schema per entry:
 - **Related:** B-081, B-082
 - **Found in:** S-08
 - **Discovered:** 2026-05-08
+
+---
+
+### B-084 — Frida path produces unsignable APK
+
+- **Severity:** BLOCKER
+- **Where:** `performancebench-injector/frida/gadget_injector.py:132-232`, `injector/frida_injector.py:31-91`
+- **User-visible symptom:** End user picks the Frida injection path on the desktop ("no keystore needed"), CLI prints `step=done status=ok`, output APK lands on disk. User pushes it to a stock-Android phone via `adb install` → install fails with `INSTALL_PARSE_FAILED_NO_CERTIFICATES` / `INSTALL_FAILED_INVALID_APK`. On rooted devices with signature checks bypassed it works; on regular devices it doesn't.
+- **Root cause:** `inject_frida_gadget` rebuilds the APK ZIP with new entries (`lib/<abi>/libgadget.so`, `libgadget.config.so`). The original V1 signatures (`META-INF/MANIFEST.MF`, `META-INF/CERT.SF`) sign per-entry digests, and the V2 signing block in the original APK signs the whole ZIP layout. Adding files breaks both. The docstring says "leaves original signature intact" but technically the *bytes* of the META-INF dir are intact while the *validity* is destroyed.
+- **Fix (planned):** Three options, decision pinned to S-20 alongside B-016 / B-014 UI-gate work:
+  1. Document Frida path as rooted-device-only; gate the desktop UI to require an explicit "I have a rooted device" toggle.
+  2. After gadget injection, run a re-sign step with a project-bundled debug key (defeats the "no keystore" promise but produces an installable APK).
+  3. Drop the Frida-into-APK path entirely; tell users to use `frida-server` + USB attach instead, no APK modification.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-016, B-085
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
+
+---
+
+### B-085 — `apk_decompiler` default `-s` flag skips smali
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/injector/apk_decompiler.py:104-108` (pre-fix)
+- **User-visible symptom:** Smali path injector ships `step=done status=ok` but the output APK is byte-identical to the input (after re-sign metadata changes). User installs it, opens app, sees no SDK behavior, no metrics on desktop. Looks like the SDK injection is broken in some unrelated layer.
+- **Root cause:** Default branch did `cmd.append("-s")`, which is apktool's flag for *skipping smali decoding*. The author confused `-s` (skip sources / smali) with `--no-res` (skip resources). Net effect of the default `decompile_apk(apk, dir)` call: no `.smali` files in the output → `find_application_smali` returns `None` → smali_patcher silently skipped → resigner runs over an unmodified-classes APK → "ok".
+- **Fix:** Removed the wrong else branch. Smali always decoded. `no_res=True` still opt-in for callers that only need the manifest (skips resources for speed; smali still decoded).
+- **Status:** FIXED:655d8b5
+- **Related:** —
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
+
+---
+
+### B-086 — `smali_patcher` doesn't bump `.locals` count
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/injector/smali_patcher.py:83-135`
+- **User-visible symptom:** On APKs whose Application class has a small `.locals` count (especially `.locals 0` or `.locals 1`), the injected SDK init smali (`v0`) is invalid — the ART verifier rejects the dex at install or at first use, depending on Android version. Crash mode: app fails to launch, logcat shows `VerifyError: vmregister out of range` or similar.
+- **Root cause:** `patch_oncreate_method` inserts `const-string v0, "performancebench"` and `invoke-static {v0}, ...` without re-reading or updating the `.locals N` directive at the top of the method. Smali requires `.locals` to declare the number of register slots.
+- **Fix (planned):** Parse `.locals N` from the method header; if `N < 1`, rewrite to `.locals max(N, 1)` (we need v0). Couples to the same parser pass needed for B-087.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-087
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
+
+---
+
+### B-087 — Smali fallback hardcodes `Landroid/app/Application;` superclass
+
+- **Severity:** HIGH
+- **Where:** `smali_patcher.py:181-196` (the synthetic-onCreate fallback)
+- **User-visible symptom:** When the user's Application class has no explicit `onCreate()`, the patcher synthesizes one with `invoke-super {p0}, Landroid/app/Application;->onCreate()V`. If the actual class extends `androidx/multidex/MultiDexApplication` or a custom base class, this calls the wrong super → MultiDex init never runs / custom init skipped → app crashes on cold start (e.g. `ClassNotFoundException` for classes that should have been MultiDex-loaded).
+- **Root cause:** Hardcoded super-class string. The `.super` directive at the top of every smali file carries the real value; the fallback just doesn't read it.
+- **Fix (planned):** Read the `.super L...;` from the file header and substitute it into the synthesized `invoke-super`. Couples to B-086.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-086
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
+
+---
+
+### B-088 — `resigner` passes keystore passwords via `pass:` literal CLI args
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/injector/resigner.py:44-52` (pre-fix)
+- **User-visible symptom:** While `apksigner sign` is running, the keystore password and key password are visible in `ps -ef` output (Linux/macOS) or Process Explorer / WMI Win32_Process (Windows) to any user / process on the host. Comment in `injection_service.dart` and the resigner docstring claim "T-04-02: Keystore passwords passed via stdin"; the actual code did not.
+- **Root cause:** Code used `--ks-pass pass:{value}` and `--key-pass pass:{value}` literal forms. apksigner supports `pass:VALUE`, `file:PATH`, `env:VAR`, and stdin; only `pass:VALUE` leaks into argv.
+- **Fix:** Switched to `--ks-pass env:PB_KS_PASS --key-pass env:PB_KEY_PASS`. Subprocess `env=` carries the password values; `os.environ` left untouched. Test rewritten to assert no `pass:` substring + correct env vars set.
+- **Status:** FIXED:655d8b5
+- **Related:** —
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
+
+---
+
+### B-089 — `BenchifyBroadcastReceiver` exported with no permission
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/injector/manifest_patcher.py:139-146`
+- **User-visible symptom:** Any installed app on the device can send `Intent("com.benchify.COMMAND")` to a Benchify-injected target and trigger `nativeHandleCommand`. Privilege escalation surface for malicious apps if the SDK ever adds destructive commands.
+- **Root cause:** `<receiver android:exported="true">` with no `android:permission=…` and no `<permission protectionLevel="signature">` block. Anything goes.
+- **Fix (planned):** Add a `<permission android:name="dev.benchify.permission.COMMAND" android:protectionLevel="signature"/>` and tag the receiver with `android:permission="dev.benchify.permission.COMMAND"`. Only apps signed with the same key can drive automation — the desktop's debug-resigned target IS that, so the CI flow stays unbroken.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
+
+---
+
+### B-090 — `find_application_smali` reads only first 4096 bytes
+
+- **Severity:** LOW
+- **Where:** `smali_patcher.py:60`
+- **User-visible symptom:** On large smali files where the `.super Landroid/app/Application;` line falls beyond byte 4096 (rare but possible with extensive annotations / comments at top), the Application class isn't recognized → injection skipped silently. Same end-user symptom as B-085 but path-dependent.
+- **Root cause:** Defensive 4 KB cap on file read for performance.
+- **Fix (planned):** Increase to 64 KB, or stream line-by-line and short-circuit when `.super` is found.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
+
+---
+
+### B-091 — `verify_smali_patch` does a full apktool decompile
+
+- **Severity:** LOW
+- **Where:** `injector/verifier.py:63-108`
+- **User-visible symptom:** `injector_cli.py verify` step takes 30-60 s for typical APKs because it runs full `apktool d` just to grep for `SdkLoader.init`.
+- **Root cause:** Easiest path during early implementation; never optimised.
+- **Fix (planned):** Replace with direct ZIP extraction of `classes*.dex` + a streaming text search. Or stash a marker file (`META-INF/benchify-injected.txt`) during injection and check for it in verify; falling back to the full decompile when the marker is missing.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-09
+- **Discovered:** 2026-05-08
