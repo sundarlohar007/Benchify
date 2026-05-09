@@ -2246,7 +2246,7 @@ Schema per entry:
 - **User-visible symptom:** Deleting a session, alert rule, org, project, or member via the dashboard throws a JSON parse error ("Unexpected end of JSON input") even though the server returns 204 success. Users see a generic error toast and think the delete failed.
 - **Root cause:** `res.json()` called unconditionally on all successful responses. HTTP 204 has no body, so `json()` throws.
 - **Fix:** Added check: if `status === 204` or `content-length === '0'`, return `undefined` instead of parsing JSON.
-- **Status:** FIXED:<pending-S17>
+- **Status:** FIXED:f029b48
 - **Related:** —
 - **Found in:** S-17
 - **Discovered:** 2026-05-09
@@ -2260,7 +2260,7 @@ Schema per entry:
 - **User-visible symptom:** When navigating away from a live session page, the cleanup calls `ws.close()`, but the `onclose` handler schedules a reconnect to the *old* session. This creates ghost WebSocket connections that accumulate in the background, consuming server resources and potentially showing stale data if the user returns.
 - **Root cause:** No distinction between intentional close (cleanup) and server-initiated close (network drop). The `onclose` handler always schedules reconnection.
 - **Fix:** Added `intentionalCloseRef` flag. Set to `true` before cleanup close, checked in `onclose` to skip reconnect. Reset to `false` at the start of each `connect()`.
-- **Status:** FIXED:<pending-S17>
+- **Status:** FIXED:f029b48
 - **Related:** —
 - **Found in:** S-17
 - **Discovered:** 2026-05-09
