@@ -31,7 +31,7 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | S-15  | pcprobe — PC metrics modules                                | DONE        |        8 | [slice-15](./slice-15-pcprobe-pc-metrics.md)    |
 | S-16  | pcprobe — PC video capture                                  | DONE        |        8 | [slice-16](./slice-16-pcprobe-pc-video.md)      |
 | S-17  | Web dashboard — data + state                                | DONE        |        8 | [slice-17](./slice-17-web-data-state.md)        |
-| S-18  | Web dashboard — UI                                          | pending     |        — |                                                 |
+| S-18  | Web dashboard — UI                                          | DONE        |        8 | [slice-18](./slice-18-web-dashboard-ui.md)      |
 | S-19  | Build, packaging, CI                                        | pending     |        — |                                                 |
 | S-20  | Cross-cutting — golden user flows + final regression        | pending     |        — |                                                 |
 
@@ -42,11 +42,11 @@ Every bug surfaced gets a stable ID in [`FINDINGS.md`](./FINDINGS.md). Cross-sli
 | Severity | Open | Fixed | Deferred | Wontfix | Total |
 |----------|-----:|------:|---------:|--------:|------:|
 | BLOCKER  |    0 |     2 |        2 |       0 |     4 |
-| HIGH     |    0 |    25 |       10 |       0 |    35 |
-| MED      |    0 |    29 |       32 |       0 |    61 |
-| LOW      |    0 |    14 |       35 |       0 |    49 |
-| NIT      |    0 |     8 |       14 |       0 |    22 |
-| **All**  |    0 |    78 |       93 |       0 |   171 |
+| HIGH     |    0 |    27 |       10 |       0 |    37 |
+| MED      |    0 |    30 |       34 |       0 |    64 |
+| LOW      |    0 |    14 |       38 |       0 |    52 |
+| NIT      |    0 |     8 |       15 |       0 |    23 |
+| **All**  |    0 |    81 |       99 |       0 |   180 |
 
 ## Conventions
 

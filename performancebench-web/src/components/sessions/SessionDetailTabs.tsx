@@ -578,7 +578,7 @@ export function SessionDetailTabs({ session }: Props) {
           ) : (
             <>
               {/* Group by severity */}
-              {(['critical', 'high', 'medium', 'info', 'informational'] as const).map(
+              {(['critical', 'high', 'warning', 'medium', 'info', 'informational'] as const).map(
                 (severity) => {
                   const group = issues.filter((i) => i.severity === severity);
                   if (group.length === 0) return null;

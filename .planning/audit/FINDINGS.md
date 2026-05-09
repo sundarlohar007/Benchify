@@ -2348,3 +2348,115 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-17
 - **Discovered:** 2026-05-09
+
+---
+
+### B-166 — Alert event severity divides by zero threshold
+
+- **Severity:** HIGH
+- **Where:** `performancebench-web/src/routes/alerts.tsx:157-160` (pre-fix)
+- **User-visible symptom:** If an alert rule has threshold `0` (e.g., "FPS greater than 0"), the severity ratio calculation divides by zero yielding `Infinity`. The badge renders as "CRITICAL" for every event regardless of actual severity. For negative thresholds (used with "less than" conditions), the severity is computed incorrectly as negative.
+- **Root cause:** `event.threshold > 0` guard rejects 0 and negative, but `event.threshold !== 0` is needed, plus `Math.abs()` for correct ratio with negative thresholds.
+- **Fix:** Changed to `event.threshold !== 0 ? Math.abs(event.metric_value / event.threshold) : 0`.
+- **Status:** FIXED:<pending-S18>
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
+
+---
+
+### B-167 — Audit page `beforeLoad` blocks auditor role
+
+- **Severity:** HIGH
+- **Where:** `performancebench-web/src/routes/admin/audit.tsx:27` (pre-fix)
+- **User-visible symptom:** Users with role `auditor` can see the "Audit" link in the sidebar (because `adminItems` defines `roles: ['admin', 'auditor']`), but clicking it redirects them to `/sessions` because `beforeLoad` only checks `role !== 'admin'`. The auditor can see the door but can't enter.
+- **Root cause:** Route guard doesn't match sidebar visibility logic. The guard was `role !== 'admin'` but should also allow `auditor`.
+- **Fix:** Changed to `user.role !== 'admin' && user.role !== 'auditor'`.
+- **Status:** FIXED:<pending-S18>
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
+
+---
+
+### B-168 — Issues tab drops 'warning' severity issues
+
+- **Severity:** MED
+- **Where:** `performancebench-web/src/components/sessions/SessionDetailTabs.tsx:581` (pre-fix)
+- **User-visible symptom:** In the session detail Issues tab, issues with severity `warning` are not displayed. They ARE counted in the overview tab's severity breakdown (line 356), so users see "Warning: 3" on overview but switching to Issues shows no warning-severity items.
+- **Root cause:** The hardcoded severity array `['critical', 'high', 'medium', 'info', 'informational']` omits `'warning'` from the filter loop.
+- **Fix:** Added `'warning'` to the severity array between `'high'` and `'medium'`.
+- **Status:** FIXED:<pending-S18>
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
+
+---
+
+### B-169 — Export callbacks use non-null assertion on nullable `session`
+
+- **Severity:** MED
+- **Where:** `performancebench-web/src/routes/sessions/$sessionId.tsx:31,36`
+- **User-visible symptom:** During the loading state, `exportJSON` and `exportCSV` are created with `session!`. If React batches a click event during the loading-to-loaded transition, calling either export crashes with "Cannot read properties of null".
+- **Root cause:** `useCallback` is defined unconditionally before the loading/error guards at line 66. The `session!` assertion bypasses TypeScript's null safety.
+- **Fix (planned):** Move callbacks inside the loaded block, or guard with `if (!session) return` inside the callback body.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
+
+---
+
+### B-170 — LiveChart ring buffer uses O(n) array shift
+
+- **Severity:** LOW
+- **Where:** `performancebench-web/src/components/charts/LiveChart.tsx:134`
+- **User-visible symptom:** Every incoming sample at 1Hz causes `dataset.data.shift()` which re-indexes 300 array elements. On low-power devices, this micro-stutter is visible as chart jank, especially when multiple charts (6 metrics × 1 chart each) all shift simultaneously.
+- **Root cause:** Array `shift()` is O(n). Should use a circular buffer index or pre-allocated array.
+- **Fix (planned):** Replace with circular buffer pattern: maintain a write index and use `dataset.data[writeIndex % maxPoints] = newPoint` with sorted iteration.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
+
+---
+
+### B-171 — CSV header row not escaped
+
+- **Severity:** LOW
+- **Where:** `performancebench-web/src/routes/sessions/$sessionId.tsx:405`
+- **User-visible symptom:** If a MetricSample field name contains special characters (comma, newline), the CSV header is malformed. Column count mismatch makes the entire CSV unreadable in Excel.
+- **Root cause:** `keys.join(',')` doesn't pass through `escapeCsvValue`. Only data rows are escaped.
+- **Fix (planned):** Use `keys.map(escapeCsvValue).join(',')`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
+
+---
+
+### B-172 — Jira modal has no Escape key handler
+
+- **Severity:** LOW
+- **Where:** `performancebench-web/src/routes/sessions/$sessionId.tsx:230-262`
+- **User-visible symptom:** Users can't press Escape to dismiss the Jira issue creation modal. They must click the close button. Standard UX convention on web modals is Escape to close.
+- **Root cause:** No `onKeyDown` handler or `useEffect` for keydown event.
+- **Fix (planned):** Add `useEffect(() => { const h = (e) => e.key === 'Escape' && onClose(); document.addEventListener('keydown', h); return () => document.removeEventListener('keydown', h); }, [])`.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
+
+---
+
+### B-173 — Chart.js registered twice (LiveChart + TrendChart)
+
+- **Severity:** NIT
+- **Where:** `performancebench-web/src/components/charts/LiveChart.tsx:17-27` and `TrendChart.tsx:17-27`
+- **User-visible symptom:** No visible issue, but `ChartJS.register()` is called with identical arguments in both files. This is a code-hygiene issue — should be a single shared registration in a chart config module.
+- **Root cause:** Copy-paste between components. Each independently registers Chart.js plugins.
+- **Fix (planned):** Extract Chart.js registration to a shared `lib/chartSetup.ts` and import from both components.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-18
+- **Discovered:** 2026-05-09
