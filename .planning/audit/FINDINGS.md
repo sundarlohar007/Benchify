@@ -2134,7 +2134,7 @@ Schema per entry:
 - **User-visible symptom:** On Linux, stopping video capture produces corrupt/unplayable final chunk because `Child::kill()` sends SIGKILL. ffmpeg never gets a chance to write the container trailer (moov atom). The chunk file is a truncated raw H.264 stream.
 - **Root cause:** `Child::kill()` in Rust sends SIGKILL on Unix. The comment says "Send SIGTERM for graceful ffmpeg shutdown" but the code uses `.kill()`, not SIGTERM.
 - **Fix:** Use `libc::kill(pid, 15)` (SIGTERM) on Linux to allow ffmpeg to finalize. Non-Linux targets keep `.kill()` as fallback.
-- **Status:** FIXED:<pending-S16>
+- **Status:** FIXED:8822afb
 - **Related:** —
 - **Found in:** S-16
 - **Discovered:** 2026-05-09
@@ -2148,7 +2148,7 @@ Schema per entry:
 - **User-visible symptom:** When ffmpeg concat fails, users see only "ffmpeg concat failed with exit code: Some(1)" with no hint about what went wrong (missing codec, corrupt input, permission error, etc.).
 - **Root cause:** `.status()` discards stderr. The error path only reports the exit code.
 - **Fix:** Changed to `.output()` with `stderr(Stdio::piped())`. Error message now includes up to 500 chars of ffmpeg stderr.
-- **Status:** FIXED:<pending-S16>
+- **Status:** FIXED:8822afb
 - **Related:** —
 - **Found in:** S-16
 - **Discovered:** 2026-05-09
