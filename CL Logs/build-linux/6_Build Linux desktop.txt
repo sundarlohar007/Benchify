@@ -1,0 +1,1511 @@
+﻿2026-05-08T12:42:41.2260792Z ##[group]Run flutter pub get
+2026-05-08T12:42:41.2261052Z [36;1mflutter pub get[0m
+2026-05-08T12:42:41.2261242Z [36;1mflutter build linux --release[0m
+2026-05-08T12:42:41.2261458Z [36;1mbash linux/build_appimage.sh[0m
+2026-05-08T12:42:41.2279494Z shell: /usr/bin/bash -e {0}
+2026-05-08T12:42:41.2279680Z env:
+2026-05-08T12:42:41.2279898Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.41.9-x64/flutter
+2026-05-08T12:42:41.2280182Z   PUB_CACHE: /home/runner/.pub-cache
+2026-05-08T12:42:41.2280451Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+2026-05-08T12:42:41.2280790Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+2026-05-08T12:42:41.2281058Z   VERSION: 0.1.1-rc.5
+2026-05-08T12:42:41.2281223Z ##[endgroup]
+2026-05-08T12:42:45.1719580Z Resolving dependencies...
+2026-05-08T12:42:45.7973748Z Downloading packages...
+2026-05-08T12:42:50.6704520Z   csv 6.0.0 (8.0.0 available)
+2026-05-08T12:42:50.6704959Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-08T12:42:50.6705351Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-08T12:42:50.6705656Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-08T12:42:50.6705999Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-08T12:42:50.6706390Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-08T12:42:50.6706788Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-08T12:42:50.6707389Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-08T12:42:50.6707846Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-08T12:42:50.6708238Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-08T12:42:50.6708597Z   go_router 13.2.5 (17.2.3 available)
+2026-05-08T12:42:50.6708880Z   js 0.6.7 (0.7.2 available)
+2026-05-08T12:42:50.6709144Z   matcher 0.12.19 (0.12.20 available)
+2026-05-08T12:42:50.6709437Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-08T12:42:50.6709728Z   meta 1.17.0 (1.18.2 available)
+2026-05-08T12:42:50.6710018Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-08T12:42:50.6710358Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-08T12:42:50.6710751Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-08T12:42:50.6711132Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-08T12:42:50.6711424Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-08T12:42:50.6711737Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-08T12:42:50.6712029Z   test_api 0.7.10 (0.7.12 available)
+2026-05-08T12:42:50.6712316Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-08T12:42:50.6712600Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-08T12:42:50.6712888Z   win32 5.15.0 (6.2.0 available)
+2026-05-08T12:42:50.6713158Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-08T12:42:50.6713733Z   xml 6.6.1 (7.0.1 available)
+2026-05-08T12:42:50.6714013Z Got dependencies!
+2026-05-08T12:42:50.6714394Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-08T12:42:50.6714881Z Try `flutter pub outdated` for more information.
+2026-05-08T12:42:51.6865009Z Resolving dependencies...
+2026-05-08T12:42:51.8195928Z Downloading packages...
+2026-05-08T12:42:53.4013261Z   csv 6.0.0 (8.0.0 available)
+2026-05-08T12:42:53.4013673Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-08T12:42:53.4013967Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-08T12:42:53.4014271Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-08T12:42:53.4014564Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-08T12:42:53.4014796Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-08T12:42:53.4015039Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-08T12:42:53.4015314Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-08T12:42:53.4015591Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-08T12:42:53.4015854Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-08T12:42:53.4016073Z   go_router 13.2.5 (17.2.3 available)
+2026-05-08T12:42:53.4016255Z   js 0.6.7 (0.7.2 available)
+2026-05-08T12:42:53.4016710Z   matcher 0.12.19 (0.12.20 available)
+2026-05-08T12:42:53.4016891Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-08T12:42:53.4017621Z   meta 1.17.0 (1.18.2 available)
+2026-05-08T12:42:53.4017832Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-08T12:42:53.4018044Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-08T12:42:53.4018294Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-08T12:42:53.4018527Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-08T12:42:53.4018716Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-08T12:42:53.4018906Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-08T12:42:53.4019084Z   test_api 0.7.10 (0.7.12 available)
+2026-05-08T12:42:53.4019269Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-08T12:42:53.4019456Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-08T12:42:53.4019637Z   win32 5.15.0 (6.2.0 available)
+2026-05-08T12:42:53.4019805Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-08T12:42:53.4019986Z   xml 6.6.1 (7.0.1 available)
+2026-05-08T12:42:53.4020160Z Got dependencies!
+2026-05-08T12:42:53.4020615Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-08T12:42:53.4021086Z Try `flutter pub outdated` for more information.
+2026-05-08T12:43:33.6116143Z Building Linux application...                                   
+2026-05-08T12:43:33.6136901Z ✓ Built build/linux/x64/release/bundle/performancebench
+2026-05-08T12:43:33.6262006Z ==> Building Flutter Linux release...
+2026-05-08T12:43:33.7767750Z Resolving dependencies...
+2026-05-08T12:43:33.9133146Z Downloading packages...
+2026-05-08T12:43:35.4933724Z   csv 6.0.0 (8.0.0 available)
+2026-05-08T12:43:35.4934141Z   file_picker 8.3.7 (11.0.2 available)
+2026-05-08T12:43:35.4934528Z   fl_chart 0.67.0 (1.2.0 available)
+2026-05-08T12:43:35.4946260Z   flutter_riverpod 2.6.1 (3.3.1 available)
+2026-05-08T12:43:35.4946681Z   flutter_secure_storage 9.2.4 (10.1.0 available)
+2026-05-08T12:43:35.4947318Z   flutter_secure_storage_linux 1.2.3 (3.0.0 available)
+2026-05-08T12:43:35.4947691Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+2026-05-08T12:43:35.4948062Z   flutter_secure_storage_platform_interface 1.1.2 (2.0.1 available)
+2026-05-08T12:43:35.4948452Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+2026-05-08T12:43:35.4948807Z   flutter_secure_storage_windows 3.1.2 (4.1.0 available)
+2026-05-08T12:43:35.4949112Z   go_router 13.2.5 (17.2.3 available)
+2026-05-08T12:43:35.4949366Z   js 0.6.7 (0.7.2 available)
+2026-05-08T12:43:35.4949601Z   matcher 0.12.19 (0.12.20 available)
+2026-05-08T12:43:35.4949846Z   media_kit_video 1.3.1 (2.0.1 available)
+2026-05-08T12:43:35.4950106Z   meta 1.17.0 (1.18.2 available)
+2026-05-08T12:43:35.4950366Z   native_toolchain_c 0.17.6 (0.18.0 available)
+2026-05-08T12:43:35.4950931Z   package_info_plus 9.0.1 (10.1.0 available)
+2026-05-08T12:43:35.4951277Z   package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+2026-05-08T12:43:35.4951623Z   riverpod 2.6.1 (3.2.1 available)
+2026-05-08T12:43:35.4951876Z   screen_retriever 0.1.9 (0.2.0 available)
+2026-05-08T12:43:35.4952140Z   sqflite_common 2.5.6+1 (2.5.7 available)
+2026-05-08T12:43:35.4952402Z   test_api 0.7.10 (0.7.12 available)
+2026-05-08T12:43:35.4952654Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-08T12:43:35.4952915Z   wakelock_plus 1.5.2 (1.6.0 available)
+2026-05-08T12:43:35.4953166Z   win32 5.15.0 (6.2.0 available)
+2026-05-08T12:43:35.4953427Z   window_manager 0.3.9 (0.5.1 available)
+2026-05-08T12:43:35.4953684Z   xml 6.6.1 (7.0.1 available)
+2026-05-08T12:43:35.4953912Z Got dependencies!
+2026-05-08T12:43:35.4954231Z 27 packages have newer versions incompatible with dependency constraints.
+2026-05-08T12:43:35.4954658Z Try `flutter pub outdated` for more information.
+2026-05-08T12:43:38.3522862Z Building Linux application...                                   
+2026-05-08T12:43:38.3544332Z ✓ Built build/linux/x64/release/bundle/performancebench
+2026-05-08T12:43:38.3650267Z ==> Downloading linuxdeploy...
+2026-05-08T12:43:38.8052748Z ==> Creating AppImage...
+2026-05-08T12:43:38.9479003Z linuxdeploy version 1-alpha (git commit ID 3fdc95e), GitHub actions build 352 built on 2026-05-01 03:27:54 UTC
+2026-05-08T12:43:39.0558125Z 
+2026-05-08T12:43:39.0558664Z -- Creating basic AppDir structure -- 
+2026-05-08T12:43:39.0558962Z Creating directory AppDir/usr/bin/ 
+2026-05-08T12:43:39.0559172Z Creating directory AppDir/usr/lib/ 
+2026-05-08T12:43:39.0559445Z Creating directory AppDir/usr/share/applications/ 
+2026-05-08T12:43:39.0559802Z Creating directory AppDir/usr/share/icons/hicolor/ 
+2026-05-08T12:43:39.0560146Z Creating directory AppDir/usr/share/pixmaps/ 
+2026-05-08T12:43:39.0560521Z Creating directory AppDir/usr/share/icons/hicolor/16x16/apps/ 
+2026-05-08T12:43:39.0560952Z Creating directory AppDir/usr/share/icons/hicolor/32x32/apps/ 
+2026-05-08T12:43:39.0561566Z Creating directory AppDir/usr/share/icons/hicolor/64x64/apps/ 
+2026-05-08T12:43:39.0562317Z Creating directory AppDir/usr/share/icons/hicolor/128x128/apps/ 
+2026-05-08T12:43:39.0562800Z Creating directory AppDir/usr/share/icons/hicolor/256x256/apps/ 
+2026-05-08T12:43:39.0563306Z Creating directory AppDir/usr/share/icons/hicolor/scalable/apps/ 
+2026-05-08T12:43:39.0563613Z 
+2026-05-08T12:43:39.0563789Z -- Deploying dependencies for existing files in AppDir -- 
+2026-05-08T12:43:39.0564078Z 
+2026-05-08T12:43:39.0564180Z -- Deploying executables -- 
+2026-05-08T12:43:39.0564482Z Deploying executable AppDir/performancebench 
+2026-05-08T12:43:39.1503804Z WARNING: Could not find copyright files for file AppDir/performancebench using dpkg-query 
+2026-05-08T12:43:39.1504446Z Deploying dependencies for ELF file AppDir/performancebench 
+2026-05-08T12:43:39.1695720Z Deploying shared library /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libflutter_secure_storage_linux_plugin.so
+2026-05-08T12:43:39.2732950Z WARNING: Could not find copyright files for file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libflutter_secure_storage_linux_plugin.so using dpkg-query 
+2026-05-08T12:43:39.2733849Z Deploying shared library /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libmedia_kit_libs_linux_plugin.so
+2026-05-08T12:43:39.3724899Z WARNING: Could not find copyright files for file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libmedia_kit_libs_linux_plugin.so using dpkg-query 
+2026-05-08T12:43:39.3726218Z Deploying shared library /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libmedia_kit_video_plugin.so
+2026-05-08T12:43:39.4682612Z WARNING: Could not find copyright files for file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libmedia_kit_video_plugin.so using dpkg-query 
+2026-05-08T12:43:39.4683433Z Deploying shared library /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libscreen_retriever_plugin.so
+2026-05-08T12:43:39.5649269Z WARNING: Could not find copyright files for file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libscreen_retriever_plugin.so using dpkg-query 
+2026-05-08T12:43:39.5650097Z Deploying shared library /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libvolume_controller_plugin.so
+2026-05-08T12:43:39.6638617Z WARNING: Could not find copyright files for file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libvolume_controller_plugin.so using dpkg-query 
+2026-05-08T12:43:39.6639441Z Deploying shared library /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libwindow_manager_plugin.so
+2026-05-08T12:43:39.7641184Z WARNING: Could not find copyright files for file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libwindow_manager_plugin.so using dpkg-query 
+2026-05-08T12:43:39.7641992Z Deploying shared library /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libflutter_linux_gtk.so
+2026-05-08T12:43:39.8634253Z WARNING: Could not find copyright files for file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libflutter_linux_gtk.so using dpkg-query 
+2026-05-08T12:43:39.8634993Z Deploying shared library /lib/x86_64-linux-gnu/libgtk-3.so.0
+2026-05-08T12:43:40.0124071Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgtk-3.so.0 
+2026-05-08T12:43:40.0124523Z Deploying shared library /lib/x86_64-linux-gnu/libgdk-3.so.0
+2026-05-08T12:43:40.1068100Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgdk-3.so.0 
+2026-05-08T12:43:40.1068750Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libz.so.1 
+2026-05-08T12:43:40.1069400Z Deploying shared library /lib/x86_64-linux-gnu/libpangocairo-1.0.so.0
+2026-05-08T12:43:40.1999881Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 
+2026-05-08T12:43:40.2000376Z Deploying shared library /lib/x86_64-linux-gnu/libpango-1.0.so.0
+2026-05-08T12:43:40.2893550Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpango-1.0.so.0 
+2026-05-08T12:43:40.2894100Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libharfbuzz.so.0 
+2026-05-08T12:43:40.2894603Z Deploying shared library /lib/x86_64-linux-gnu/libatk-1.0.so.0
+2026-05-08T12:43:40.3821566Z Deploying copyright files for file /lib/x86_64-linux-gnu/libatk-1.0.so.0 
+2026-05-08T12:43:40.3822033Z Deploying shared library /lib/x86_64-linux-gnu/libcairo-gobject.so.2
+2026-05-08T12:43:40.4780215Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcairo-gobject.so.2 
+2026-05-08T12:43:40.4780850Z Deploying shared library /lib/x86_64-linux-gnu/libcairo.so.2
+2026-05-08T12:43:40.6289710Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcairo.so.2 
+2026-05-08T12:43:40.6290319Z Deploying shared library /lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0
+2026-05-08T12:43:40.7313070Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 
+2026-05-08T12:43:40.7313769Z Deploying shared library /lib/x86_64-linux-gnu/libgio-2.0.so.0
+2026-05-08T12:43:40.8340716Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgio-2.0.so.0 
+2026-05-08T12:43:40.8341447Z Deploying shared library /lib/x86_64-linux-gnu/libgobject-2.0.so.0
+2026-05-08T12:43:40.9328816Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgobject-2.0.so.0 
+2026-05-08T12:43:40.9329316Z Deploying shared library /lib/x86_64-linux-gnu/libglib-2.0.so.0
+2026-05-08T12:43:41.0332329Z Deploying copyright files for file /lib/x86_64-linux-gnu/libglib-2.0.so.0 
+2026-05-08T12:43:41.0333033Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libstdc++.so.6 
+2026-05-08T12:43:41.0333744Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libm.so.6 
+2026-05-08T12:43:41.0334410Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libgcc_s.so.1 
+2026-05-08T12:43:41.0334771Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libc.so.6 
+2026-05-08T12:43:41.0335091Z Deploying shared library /lib/x86_64-linux-gnu/libsecret-1.so.0
+2026-05-08T12:43:41.1416067Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsecret-1.so.0 
+2026-05-08T12:43:41.1416660Z Deploying shared library /lib/x86_64-linux-gnu/libmpv.so.2
+2026-05-08T12:43:41.2526161Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmpv.so.2 
+2026-05-08T12:43:41.2526786Z Deploying shared library /lib/x86_64-linux-gnu/libepoxy.so.0
+2026-05-08T12:43:41.3608209Z Deploying copyright files for file /lib/x86_64-linux-gnu/libepoxy.so.0 
+2026-05-08T12:43:41.3608892Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libasound.so.2 
+2026-05-08T12:43:41.3609474Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libdl.so.2 
+2026-05-08T12:43:41.3610244Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libfontconfig.so.1 
+2026-05-08T12:43:41.3610845Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libpthread.so.0 
+2026-05-08T12:43:41.3611219Z Deploying shared library /lib/x86_64-linux-gnu/libgmodule-2.0.so.0
+2026-05-08T12:43:41.4666763Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgmodule-2.0.so.0 
+2026-05-08T12:43:41.4667537Z Deploying shared library /lib/x86_64-linux-gnu/libpangoft2-1.0.so.0
+2026-05-08T12:43:41.6210780Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 
+2026-05-08T12:43:41.6211605Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libfribidi.so.0 
+2026-05-08T12:43:41.6211959Z Deploying shared library /lib/x86_64-linux-gnu/libXi.so.6
+2026-05-08T12:43:41.7750296Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXi.so.6 
+2026-05-08T12:43:41.7750929Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libX11.so.6 
+2026-05-08T12:43:41.7751487Z Deploying shared library /lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0
+2026-05-08T12:43:41.8845868Z Deploying copyright files for file /lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 
+2026-05-08T12:43:41.8846358Z Deploying shared library /lib/x86_64-linux-gnu/libXfixes.so.3
+2026-05-08T12:43:41.9918680Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXfixes.so.3 
+2026-05-08T12:43:41.9919144Z Deploying shared library /lib/x86_64-linux-gnu/libxkbcommon.so.0
+2026-05-08T12:43:42.0985214Z Deploying copyright files for file /lib/x86_64-linux-gnu/libxkbcommon.so.0 
+2026-05-08T12:43:42.0985779Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libwayland-client.so.0 
+2026-05-08T12:43:42.0986195Z Deploying shared library /lib/x86_64-linux-gnu/libwayland-cursor.so.0
+2026-05-08T12:43:42.2080361Z Deploying copyright files for file /lib/x86_64-linux-gnu/libwayland-cursor.so.0 
+2026-05-08T12:43:42.2081049Z Deploying shared library /lib/x86_64-linux-gnu/libwayland-egl.so.1
+2026-05-08T12:43:42.3102723Z Deploying copyright files for file /lib/x86_64-linux-gnu/libwayland-egl.so.1 
+2026-05-08T12:43:42.3103328Z Deploying shared library /lib/x86_64-linux-gnu/libXext.so.6
+2026-05-08T12:43:42.4084234Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXext.so.6 
+2026-05-08T12:43:42.4084869Z Deploying shared library /lib/x86_64-linux-gnu/libXcursor.so.1
+2026-05-08T12:43:42.5048674Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXcursor.so.1 
+2026-05-08T12:43:42.5049297Z Deploying shared library /lib/x86_64-linux-gnu/libXdamage.so.1
+2026-05-08T12:43:42.5977912Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXdamage.so.1 
+2026-05-08T12:43:42.5978582Z Deploying shared library /lib/x86_64-linux-gnu/libXcomposite.so.1
+2026-05-08T12:43:42.9064895Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXcomposite.so.1 
+2026-05-08T12:43:42.9065517Z Deploying shared library /lib/x86_64-linux-gnu/libXrandr.so.2
+2026-05-08T12:43:43.0007240Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXrandr.so.2 
+2026-05-08T12:43:43.0007862Z Deploying shared library /lib/x86_64-linux-gnu/libXinerama.so.1
+2026-05-08T12:43:43.0963820Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXinerama.so.1 
+2026-05-08T12:43:43.0964869Z Deploying shared library /lib/x86_64-linux-gnu/libthai.so.0
+2026-05-08T12:43:43.1917367Z Deploying copyright files for file /lib/x86_64-linux-gnu/libthai.so.0 
+2026-05-08T12:43:43.1917888Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libfreetype.so.6 
+2026-05-08T12:43:43.1918298Z Deploying shared library /lib/x86_64-linux-gnu/libgraphite2.so.3
+2026-05-08T12:43:43.3299903Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgraphite2.so.3 
+2026-05-08T12:43:43.3300356Z Deploying shared library /lib/x86_64-linux-gnu/libpng16.so.16
+2026-05-08T12:43:43.4223513Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpng16.so.16 
+2026-05-08T12:43:43.4224149Z Deploying shared library /lib/x86_64-linux-gnu/libXrender.so.1
+2026-05-08T12:43:43.5241210Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXrender.so.1 
+2026-05-08T12:43:43.5241876Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libxcb.so.1 
+2026-05-08T12:43:43.5242532Z Deploying shared library /lib/x86_64-linux-gnu/libxcb-render.so.0
+2026-05-08T12:43:43.6175438Z Deploying copyright files for file /lib/x86_64-linux-gnu/libxcb-render.so.0 
+2026-05-08T12:43:43.6176091Z Deploying shared library /lib/x86_64-linux-gnu/libxcb-shm.so.0
+2026-05-08T12:43:43.7081105Z Deploying copyright files for file /lib/x86_64-linux-gnu/libxcb-shm.so.0 
+2026-05-08T12:43:43.7082132Z Deploying shared library /lib/x86_64-linux-gnu/libpixman-1.so.0
+2026-05-08T12:43:43.8074937Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpixman-1.so.0 
+2026-05-08T12:43:43.8075533Z Deploying shared library /lib/x86_64-linux-gnu/libjpeg.so.8
+2026-05-08T12:43:43.9061892Z Deploying copyright files for file /lib/x86_64-linux-gnu/libjpeg.so.8 
+2026-05-08T12:43:43.9062479Z Deploying shared library /lib/x86_64-linux-gnu/libmount.so.1
+2026-05-08T12:43:44.0038561Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmount.so.1 
+2026-05-08T12:43:44.0039169Z Deploying shared library /lib/x86_64-linux-gnu/libselinux.so.1
+2026-05-08T12:43:44.0996822Z Deploying copyright files for file /lib/x86_64-linux-gnu/libselinux.so.1 
+2026-05-08T12:43:44.0997595Z Deploying shared library /lib/x86_64-linux-gnu/libffi.so.8
+2026-05-08T12:43:44.2023430Z Deploying copyright files for file /lib/x86_64-linux-gnu/libffi.so.8 
+2026-05-08T12:43:44.2024054Z Deploying shared library /lib/x86_64-linux-gnu/libpcre2-8.so.0
+2026-05-08T12:43:44.2998590Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpcre2-8.so.0 
+2026-05-08T12:43:44.2999215Z Deploying shared library /lib/x86_64-linux-gnu/libgcrypt.so.20
+2026-05-08T12:43:44.3947646Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgcrypt.so.20 
+2026-05-08T12:43:44.3948276Z Deploying shared library /lib/x86_64-linux-gnu/libass.so.9
+2026-05-08T12:43:44.5390916Z Deploying copyright files for file /lib/x86_64-linux-gnu/libass.so.9 
+2026-05-08T12:43:44.5391379Z Deploying shared library /lib/x86_64-linux-gnu/libavcodec.so.60
+2026-05-08T12:43:44.6836383Z Deploying copyright files for file /lib/x86_64-linux-gnu/libavcodec.so.60 
+2026-05-08T12:43:44.6837227Z Deploying shared library /lib/x86_64-linux-gnu/libavfilter.so.9
+2026-05-08T12:43:44.7797885Z Deploying copyright files for file /lib/x86_64-linux-gnu/libavfilter.so.9 
+2026-05-08T12:43:44.7798364Z Deploying shared library /lib/x86_64-linux-gnu/libavformat.so.60
+2026-05-08T12:43:44.9269102Z Deploying copyright files for file /lib/x86_64-linux-gnu/libavformat.so.60 
+2026-05-08T12:43:44.9269675Z Deploying shared library /lib/x86_64-linux-gnu/libavutil.so.58
+2026-05-08T12:43:45.0238457Z Deploying copyright files for file /lib/x86_64-linux-gnu/libavutil.so.58 
+2026-05-08T12:43:45.0239013Z Deploying shared library /lib/x86_64-linux-gnu/libplacebo.so.338
+2026-05-08T12:43:45.1645282Z Deploying copyright files for file /lib/x86_64-linux-gnu/libplacebo.so.338 
+2026-05-08T12:43:45.1645835Z Deploying shared library /lib/x86_64-linux-gnu/libswresample.so.4
+2026-05-08T12:43:45.3005847Z Deploying copyright files for file /lib/x86_64-linux-gnu/libswresample.so.4 
+2026-05-08T12:43:45.3006767Z Deploying shared library /lib/x86_64-linux-gnu/libswscale.so.7
+2026-05-08T12:43:45.3893795Z Deploying copyright files for file /lib/x86_64-linux-gnu/libswscale.so.7 
+2026-05-08T12:43:45.3894265Z Deploying shared library /lib/x86_64-linux-gnu/libcdio_paranoia.so.2
+2026-05-08T12:43:45.4889066Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcdio_paranoia.so.2 
+2026-05-08T12:43:45.4889699Z Deploying shared library /lib/x86_64-linux-gnu/libcdio_cdda.so.2
+2026-05-08T12:43:45.6382879Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcdio_cdda.so.2 
+2026-05-08T12:43:45.6383484Z Deploying shared library /lib/x86_64-linux-gnu/libcdio.so.19
+2026-05-08T12:43:45.7312161Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcdio.so.19 
+2026-05-08T12:43:45.7312789Z Deploying shared library /lib/x86_64-linux-gnu/libdvdnav.so.4
+2026-05-08T12:43:45.8215343Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdvdnav.so.4 
+2026-05-08T12:43:45.8215923Z Deploying shared library /lib/x86_64-linux-gnu/libmujs.so.3
+2026-05-08T12:43:45.9134544Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmujs.so.3 
+2026-05-08T12:43:45.9135131Z Deploying shared library /lib/x86_64-linux-gnu/liblcms2.so.2
+2026-05-08T12:43:45.9980387Z Deploying copyright files for file /lib/x86_64-linux-gnu/liblcms2.so.2 
+2026-05-08T12:43:45.9981425Z Deploying shared library /lib/x86_64-linux-gnu/libarchive.so.13
+2026-05-08T12:43:46.0850254Z Deploying copyright files for file /lib/x86_64-linux-gnu/libarchive.so.13 
+2026-05-08T12:43:46.0850873Z Deploying shared library /lib/x86_64-linux-gnu/libavdevice.so.60
+2026-05-08T12:43:46.1691635Z Deploying copyright files for file /lib/x86_64-linux-gnu/libavdevice.so.60 
+2026-05-08T12:43:46.1692263Z Deploying shared library /lib/x86_64-linux-gnu/libbluray.so.2
+2026-05-08T12:43:46.3063762Z Deploying copyright files for file /lib/x86_64-linux-gnu/libbluray.so.2 
+2026-05-08T12:43:46.3064363Z Deploying shared library /lib/x86_64-linux-gnu/liblua5.2.so.0
+2026-05-08T12:43:46.3961375Z Deploying copyright files for file /lib/x86_64-linux-gnu/liblua5.2.so.0 
+2026-05-08T12:43:46.3961972Z Deploying shared library /lib/x86_64-linux-gnu/librubberband.so.2
+2026-05-08T12:43:46.4948160Z Deploying copyright files for file /lib/x86_64-linux-gnu/librubberband.so.2 
+2026-05-08T12:43:46.4948809Z Deploying shared library /lib/x86_64-linux-gnu/libSDL2-2.0.so.0
+2026-05-08T12:43:46.5851143Z Deploying copyright files for file /lib/x86_64-linux-gnu/libSDL2-2.0.so.0 
+2026-05-08T12:43:46.5851751Z Deploying shared library /lib/x86_64-linux-gnu/libuchardet.so.0
+2026-05-08T12:43:46.6816100Z Deploying copyright files for file /lib/x86_64-linux-gnu/libuchardet.so.0 
+2026-05-08T12:43:46.6816711Z Deploying shared library /lib/x86_64-linux-gnu/libzimg.so.2
+2026-05-08T12:43:46.7706478Z Deploying copyright files for file /lib/x86_64-linux-gnu/libzimg.so.2 
+2026-05-08T12:43:46.7707337Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libjack.so.0 
+2026-05-08T12:43:46.7707937Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libpipewire-0.3.so.0 
+2026-05-08T12:43:46.7708676Z Deploying shared library /lib/x86_64-linux-gnu/libpulse.so.0
+2026-05-08T12:43:46.8599603Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpulse.so.0 
+2026-05-08T12:43:46.8600233Z Deploying shared library /lib/x86_64-linux-gnu/libcaca.so.0
+2026-05-08T12:43:46.9512465Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcaca.so.0 
+2026-05-08T12:43:46.9513130Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libdrm.so.2 
+2026-05-08T12:43:46.9513686Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libgbm.so.1 
+2026-05-08T12:43:46.9514322Z Deploying shared library /lib/x86_64-linux-gnu/libsixel.so.1
+2026-05-08T12:43:47.0483924Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsixel.so.1 
+2026-05-08T12:43:47.0484501Z Deploying shared library /lib/x86_64-linux-gnu/libXss.so.1
+2026-05-08T12:43:47.1528057Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXss.so.1 
+2026-05-08T12:43:47.1528960Z Deploying shared library /lib/x86_64-linux-gnu/libXpresent.so.1
+2026-05-08T12:43:47.2965774Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXpresent.so.1 
+2026-05-08T12:43:47.2966357Z Deploying shared library /lib/x86_64-linux-gnu/libXv.so.1
+2026-05-08T12:43:47.3898814Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXv.so.1 
+2026-05-08T12:43:47.3899503Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libEGL.so.1 
+2026-05-08T12:43:47.3899991Z Deploying shared library /lib/x86_64-linux-gnu/libvulkan.so.1
+2026-05-08T12:43:47.4894956Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvulkan.so.1 
+2026-05-08T12:43:47.4895500Z Deploying shared library /lib/x86_64-linux-gnu/libva-drm.so.2
+2026-05-08T12:43:47.5781325Z Deploying copyright files for file /lib/x86_64-linux-gnu/libva-drm.so.2 
+2026-05-08T12:43:47.5781758Z Deploying shared library /lib/x86_64-linux-gnu/libva.so.2
+2026-05-08T12:43:47.6655237Z Deploying copyright files for file /lib/x86_64-linux-gnu/libva.so.2 
+2026-05-08T12:43:47.6655839Z Deploying shared library /lib/x86_64-linux-gnu/libva-wayland.so.2
+2026-05-08T12:43:47.7592164Z Deploying copyright files for file /lib/x86_64-linux-gnu/libva-wayland.so.2 
+2026-05-08T12:43:47.7593587Z Deploying shared library /lib/x86_64-linux-gnu/libva-x11.so.2
+2026-05-08T12:43:47.8578143Z Deploying copyright files for file /lib/x86_64-linux-gnu/libva-x11.so.2 
+2026-05-08T12:43:47.8578761Z Deploying shared library /lib/x86_64-linux-gnu/libvdpau.so.1
+2026-05-08T12:43:47.9575117Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvdpau.so.1 
+2026-05-08T12:43:47.9575793Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libexpat.so.1 
+2026-05-08T12:43:47.9576315Z Deploying shared library /lib/x86_64-linux-gnu/libatspi.so.0
+2026-05-08T12:43:48.0527489Z Deploying copyright files for file /lib/x86_64-linux-gnu/libatspi.so.0 
+2026-05-08T12:43:48.0528226Z Deploying shared library /lib/x86_64-linux-gnu/libdbus-1.so.3
+2026-05-08T12:43:48.1438797Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdbus-1.so.3 
+2026-05-08T12:43:48.1439434Z Deploying shared library /lib/x86_64-linux-gnu/libdatrie.so.1
+2026-05-08T12:43:48.2443523Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdatrie.so.1 
+2026-05-08T12:43:48.2444195Z Deploying shared library /lib/x86_64-linux-gnu/libbz2.so.1.0
+2026-05-08T12:43:48.3875653Z Deploying copyright files for file /lib/x86_64-linux-gnu/libbz2.so.1.0 
+2026-05-08T12:43:48.3876320Z Deploying shared library /lib/x86_64-linux-gnu/libbrotlidec.so.1
+2026-05-08T12:43:48.4781305Z Deploying copyright files for file /lib/x86_64-linux-gnu/libbrotlidec.so.1 
+2026-05-08T12:43:48.4781875Z Deploying shared library /lib/x86_64-linux-gnu/libXau.so.6
+2026-05-08T12:43:48.7395804Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXau.so.6 
+2026-05-08T12:43:48.7396554Z Deploying shared library /lib/x86_64-linux-gnu/libXdmcp.so.6
+2026-05-08T12:43:48.8387911Z Deploying copyright files for file /lib/x86_64-linux-gnu/libXdmcp.so.6 
+2026-05-08T12:43:48.8388393Z Deploying shared library /lib/x86_64-linux-gnu/libblkid.so.1
+2026-05-08T12:43:48.9886266Z Deploying copyright files for file /lib/x86_64-linux-gnu/libblkid.so.1 
+2026-05-08T12:43:48.9887174Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libgpg-error.so.0 
+2026-05-08T12:43:48.9887691Z Deploying shared library /lib/x86_64-linux-gnu/libunibreak.so.5
+2026-05-08T12:43:49.0811914Z Deploying copyright files for file /lib/x86_64-linux-gnu/libunibreak.so.5 
+2026-05-08T12:43:49.0812549Z Deploying shared library /lib/x86_64-linux-gnu/libvpx.so.9
+2026-05-08T12:43:49.2360834Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvpx.so.9 
+2026-05-08T12:43:49.2361758Z Deploying shared library /lib/x86_64-linux-gnu/libwebpmux.so.3
+2026-05-08T12:43:49.4024701Z Deploying copyright files for file /lib/x86_64-linux-gnu/libwebpmux.so.3 
+2026-05-08T12:43:49.4025181Z Deploying shared library /lib/x86_64-linux-gnu/liblzma.so.5
+2026-05-08T12:43:49.4982301Z Deploying copyright files for file /lib/x86_64-linux-gnu/liblzma.so.5 
+2026-05-08T12:43:49.4982740Z Deploying shared library /lib/x86_64-linux-gnu/libdav1d.so.7
+2026-05-08T12:43:49.5937228Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdav1d.so.7 
+2026-05-08T12:43:49.5937719Z Deploying shared library /lib/x86_64-linux-gnu/librsvg-2.so.2
+2026-05-08T12:43:49.6870003Z Deploying copyright files for file /lib/x86_64-linux-gnu/librsvg-2.so.2 
+2026-05-08T12:43:49.6870442Z Deploying shared library /lib/x86_64-linux-gnu/libzvbi.so.0
+2026-05-08T12:43:49.7811249Z Deploying copyright files for file /lib/x86_64-linux-gnu/libzvbi.so.0 
+2026-05-08T12:43:49.7811875Z Deploying shared library /lib/x86_64-linux-gnu/libsnappy.so.1
+2026-05-08T12:43:49.9314488Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsnappy.so.1 
+2026-05-08T12:43:49.9314963Z Deploying shared library /lib/x86_64-linux-gnu/libaom.so.3
+2026-05-08T12:43:50.1428652Z Deploying copyright files for file /lib/x86_64-linux-gnu/libaom.so.3 
+2026-05-08T12:43:50.1429129Z Deploying shared library /lib/x86_64-linux-gnu/libcodec2.so.1.2
+2026-05-08T12:43:50.2374253Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcodec2.so.1.2 
+2026-05-08T12:43:50.2374849Z Deploying shared library /lib/x86_64-linux-gnu/libgsm.so.1
+2026-05-08T12:43:50.3337327Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgsm.so.1 
+2026-05-08T12:43:50.3337870Z Deploying shared library /lib/x86_64-linux-gnu/libjxl.so.0.7
+2026-05-08T12:43:50.4287301Z Deploying copyright files for file /lib/x86_64-linux-gnu/libjxl.so.0.7 
+2026-05-08T12:43:50.4287976Z Deploying shared library /lib/x86_64-linux-gnu/libjxl_threads.so.0.7
+2026-05-08T12:43:50.5752220Z Deploying copyright files for file /lib/x86_64-linux-gnu/libjxl_threads.so.0.7 
+2026-05-08T12:43:50.5752692Z Deploying shared library /lib/x86_64-linux-gnu/libmp3lame.so.0
+2026-05-08T12:43:50.7196398Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmp3lame.so.0 
+2026-05-08T12:43:50.7196899Z Deploying shared library /lib/x86_64-linux-gnu/libopenjp2.so.7
+2026-05-08T12:43:50.8139426Z Deploying copyright files for file /lib/x86_64-linux-gnu/libopenjp2.so.7 
+2026-05-08T12:43:50.8139882Z Deploying shared library /lib/x86_64-linux-gnu/libopus.so.0
+2026-05-08T12:43:50.9108753Z Deploying copyright files for file /lib/x86_64-linux-gnu/libopus.so.0 
+2026-05-08T12:43:50.9109344Z Deploying shared library /lib/x86_64-linux-gnu/librav1e.so.0
+2026-05-08T12:43:51.0046586Z Deploying copyright files for file /lib/x86_64-linux-gnu/librav1e.so.0 
+2026-05-08T12:43:51.0047344Z Deploying shared library /lib/x86_64-linux-gnu/libshine.so.3
+2026-05-08T12:43:51.1532190Z Deploying copyright files for file /lib/x86_64-linux-gnu/libshine.so.3 
+2026-05-08T12:43:51.1532969Z Deploying shared library /lib/x86_64-linux-gnu/libspeex.so.1
+2026-05-08T12:43:51.2460842Z Deploying copyright files for file /lib/x86_64-linux-gnu/libspeex.so.1 
+2026-05-08T12:43:51.2461455Z Deploying shared library /lib/x86_64-linux-gnu/libSvtAv1Enc.so.1
+2026-05-08T12:43:51.3853065Z Deploying copyright files for file /lib/x86_64-linux-gnu/libSvtAv1Enc.so.1 
+2026-05-08T12:43:51.3853744Z Deploying shared library /lib/x86_64-linux-gnu/libtheoraenc.so.1
+2026-05-08T12:43:51.5255859Z Deploying copyright files for file /lib/x86_64-linux-gnu/libtheoraenc.so.1 
+2026-05-08T12:43:51.5256554Z Deploying shared library /lib/x86_64-linux-gnu/libtheoradec.so.1
+2026-05-08T12:43:51.6193929Z Deploying copyright files for file /lib/x86_64-linux-gnu/libtheoradec.so.1 
+2026-05-08T12:43:51.6194543Z Deploying shared library /lib/x86_64-linux-gnu/libtwolame.so.0
+2026-05-08T12:43:51.7116222Z Deploying copyright files for file /lib/x86_64-linux-gnu/libtwolame.so.0 
+2026-05-08T12:43:51.7116808Z Deploying shared library /lib/x86_64-linux-gnu/libvorbis.so.0
+2026-05-08T12:43:51.8130744Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvorbis.so.0 
+2026-05-08T12:43:51.8131299Z Deploying shared library /lib/x86_64-linux-gnu/libvorbisenc.so.2
+2026-05-08T12:43:51.9127308Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvorbisenc.so.2 
+2026-05-08T12:43:51.9127782Z Deploying shared library /lib/x86_64-linux-gnu/libwebp.so.7
+2026-05-08T12:43:52.0080759Z Deploying copyright files for file /lib/x86_64-linux-gnu/libwebp.so.7 
+2026-05-08T12:43:52.0081307Z Deploying shared library /lib/x86_64-linux-gnu/libx264.so.164
+2026-05-08T12:43:52.1509334Z Deploying copyright files for file /lib/x86_64-linux-gnu/libx264.so.164 
+2026-05-08T12:43:52.1509959Z Deploying shared library /lib/x86_64-linux-gnu/libx265.so.199
+2026-05-08T12:43:52.2908124Z Deploying copyright files for file /lib/x86_64-linux-gnu/libx265.so.199 
+2026-05-08T12:43:52.2908744Z Deploying shared library /lib/x86_64-linux-gnu/libxvidcore.so.4
+2026-05-08T12:43:52.3888154Z Deploying copyright files for file /lib/x86_64-linux-gnu/libxvidcore.so.4 
+2026-05-08T12:43:52.3888733Z Deploying shared library /lib/x86_64-linux-gnu/libvpl.so.2
+2026-05-08T12:43:52.5267895Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvpl.so.2 
+2026-05-08T12:43:52.5268568Z Deploying shared library /lib/x86_64-linux-gnu/libpostproc.so.57
+2026-05-08T12:43:52.6726757Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpostproc.so.57 
+2026-05-08T12:43:52.6727638Z Deploying shared library /lib/x86_64-linux-gnu/libpocketsphinx.so.3
+2026-05-08T12:43:52.7691386Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpocketsphinx.so.3 
+2026-05-08T12:43:52.7692015Z Deploying shared library /lib/x86_64-linux-gnu/libsphinxbase.so.3
+2026-05-08T12:43:52.8623442Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsphinxbase.so.3 
+2026-05-08T12:43:52.8624038Z Deploying shared library /lib/x86_64-linux-gnu/libbs2b.so.0
+2026-05-08T12:43:52.9623370Z Deploying copyright files for file /lib/x86_64-linux-gnu/libbs2b.so.0 
+2026-05-08T12:43:52.9623969Z Deploying shared library /lib/x86_64-linux-gnu/liblilv-0.so.0
+2026-05-08T12:43:53.0636985Z Deploying copyright files for file /lib/x86_64-linux-gnu/liblilv-0.so.0 
+2026-05-08T12:43:53.0637837Z Deploying shared library /lib/x86_64-linux-gnu/libmysofa.so.1
+2026-05-08T12:43:53.1611003Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmysofa.so.1 
+2026-05-08T12:43:53.1611650Z Deploying shared library /lib/x86_64-linux-gnu/libflite_cmu_us_awb.so.1
+2026-05-08T12:43:53.3051669Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite_cmu_us_awb.so.1 
+2026-05-08T12:43:53.3052362Z Deploying shared library /lib/x86_64-linux-gnu/libflite_cmu_us_kal.so.1
+2026-05-08T12:43:53.4036272Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite_cmu_us_kal.so.1 
+2026-05-08T12:43:53.4036945Z Deploying shared library /lib/x86_64-linux-gnu/libflite_cmu_us_kal16.so.1
+2026-05-08T12:43:53.5021773Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite_cmu_us_kal16.so.1 
+2026-05-08T12:43:53.5022438Z Deploying shared library /lib/x86_64-linux-gnu/libflite_cmu_us_rms.so.1
+2026-05-08T12:43:53.6068386Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite_cmu_us_rms.so.1 
+2026-05-08T12:43:53.6069161Z Deploying shared library /lib/x86_64-linux-gnu/libflite_cmu_us_slt.so.1
+2026-05-08T12:43:53.6993359Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite_cmu_us_slt.so.1 
+2026-05-08T12:43:53.6993966Z Deploying shared library /lib/x86_64-linux-gnu/libflite.so.1
+2026-05-08T12:43:53.7937698Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite.so.1 
+2026-05-08T12:43:53.7938311Z Deploying shared library /lib/x86_64-linux-gnu/libvidstab.so.1.1
+2026-05-08T12:43:53.8879179Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvidstab.so.1.1 
+2026-05-08T12:43:53.8879770Z Deploying shared library /lib/x86_64-linux-gnu/libzmq.so.5
+2026-05-08T12:43:53.9924191Z Deploying copyright files for file /lib/x86_64-linux-gnu/libzmq.so.5 
+2026-05-08T12:43:53.9924805Z Deploying shared library /lib/x86_64-linux-gnu/libOpenCL.so.1
+2026-05-08T12:43:54.0870480Z Deploying copyright files for file /lib/x86_64-linux-gnu/libOpenCL.so.1 
+2026-05-08T12:43:54.0871099Z Deploying shared library /lib/x86_64-linux-gnu/libxml2.so.2
+2026-05-08T12:43:54.1915788Z Deploying copyright files for file /lib/x86_64-linux-gnu/libxml2.so.2 
+2026-05-08T12:43:54.1916399Z Deploying shared library /lib/x86_64-linux-gnu/libgme.so.0
+2026-05-08T12:43:54.2914595Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgme.so.0 
+2026-05-08T12:43:54.2915213Z Deploying shared library /lib/x86_64-linux-gnu/libopenmpt.so.0
+2026-05-08T12:43:54.3878026Z Deploying copyright files for file /lib/x86_64-linux-gnu/libopenmpt.so.0 
+2026-05-08T12:43:54.3878705Z Deploying shared library /lib/x86_64-linux-gnu/libchromaprint.so.1
+2026-05-08T12:43:54.4865028Z Deploying copyright files for file /lib/x86_64-linux-gnu/libchromaprint.so.1 
+2026-05-08T12:43:54.4865558Z Deploying shared library /lib/x86_64-linux-gnu/libgnutls.so.30
+2026-05-08T12:43:54.5835758Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgnutls.so.30 
+2026-05-08T12:43:54.5836367Z Deploying shared library /lib/x86_64-linux-gnu/librabbitmq.so.4
+2026-05-08T12:43:54.6809188Z Deploying copyright files for file /lib/x86_64-linux-gnu/librabbitmq.so.4 
+2026-05-08T12:43:54.6809788Z Deploying shared library /lib/x86_64-linux-gnu/librist.so.4
+2026-05-08T12:43:54.7768172Z Deploying copyright files for file /lib/x86_64-linux-gnu/librist.so.4 
+2026-05-08T12:43:54.7769194Z Deploying shared library /lib/x86_64-linux-gnu/libsrt-gnutls.so.1.5
+2026-05-08T12:43:54.8792622Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsrt-gnutls.so.1.5 
+2026-05-08T12:43:54.8793245Z Deploying shared library /lib/x86_64-linux-gnu/libssh-gcrypt.so.4
+2026-05-08T12:43:54.9766720Z Deploying copyright files for file /lib/x86_64-linux-gnu/libssh-gcrypt.so.4 
+2026-05-08T12:43:54.9767492Z Deploying shared library /lib/x86_64-linux-gnu/libsoxr.so.0
+2026-05-08T12:43:55.0762172Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsoxr.so.0 
+2026-05-08T12:43:55.0762623Z Deploying shared library /lib/x86_64-linux-gnu/libdvdread.so.8
+2026-05-08T12:43:55.1830843Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdvdread.so.8 
+2026-05-08T12:43:55.1831481Z Deploying shared library /lib/x86_64-linux-gnu/libnettle.so.8
+2026-05-08T12:43:55.2942806Z Deploying copyright files for file /lib/x86_64-linux-gnu/libnettle.so.8 
+2026-05-08T12:43:55.2943461Z Deploying shared library /lib/x86_64-linux-gnu/libacl.so.1
+2026-05-08T12:43:55.3988415Z Deploying copyright files for file /lib/x86_64-linux-gnu/libacl.so.1 
+2026-05-08T12:43:55.3989012Z Deploying shared library /lib/x86_64-linux-gnu/libzstd.so.1
+2026-05-08T12:43:55.5482341Z Deploying copyright files for file /lib/x86_64-linux-gnu/libzstd.so.1 
+2026-05-08T12:43:55.5482779Z Deploying shared library /lib/x86_64-linux-gnu/liblz4.so.1
+2026-05-08T12:43:55.6400233Z Deploying copyright files for file /lib/x86_64-linux-gnu/liblz4.so.1 
+2026-05-08T12:43:55.6400865Z Deploying shared library /lib/x86_64-linux-gnu/libraw1394.so.11
+2026-05-08T12:43:55.7805834Z Deploying copyright files for file /lib/x86_64-linux-gnu/libraw1394.so.11 
+2026-05-08T12:43:55.7806467Z Deploying shared library /lib/x86_64-linux-gnu/libavc1394.so.0
+2026-05-08T12:43:55.8701689Z Deploying copyright files for file /lib/x86_64-linux-gnu/libavc1394.so.0 
+2026-05-08T12:43:55.8702315Z Deploying shared library /lib/x86_64-linux-gnu/librom1394.so.0
+2026-05-08T12:43:55.9596216Z Deploying copyright files for file /lib/x86_64-linux-gnu/librom1394.so.0 
+2026-05-08T12:43:55.9596824Z Deploying shared library /lib/x86_64-linux-gnu/libiec61883.so.0
+2026-05-08T12:43:56.0528642Z Deploying copyright files for file /lib/x86_64-linux-gnu/libiec61883.so.0 
+2026-05-08T12:43:56.0529277Z Deploying shared library /lib/x86_64-linux-gnu/libopenal.so.1
+2026-05-08T12:43:56.1459784Z Deploying copyright files for file /lib/x86_64-linux-gnu/libopenal.so.1 
+2026-05-08T12:43:56.1460406Z Deploying shared library /lib/x86_64-linux-gnu/libxcb-shape.so.0
+2026-05-08T12:43:56.2943014Z Deploying copyright files for file /lib/x86_64-linux-gnu/libxcb-shape.so.0 
+2026-05-08T12:43:56.2943680Z Deploying shared library /lib/x86_64-linux-gnu/libxcb-xfixes.so.0
+2026-05-08T12:43:56.4385648Z Deploying copyright files for file /lib/x86_64-linux-gnu/libxcb-xfixes.so.0 
+2026-05-08T12:43:56.4386348Z Deploying shared library /lib/x86_64-linux-gnu/libdc1394.so.25
+2026-05-08T12:43:56.5760066Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdc1394.so.25 
+2026-05-08T12:43:56.5760798Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libGL.so.1 
+2026-05-08T12:43:56.5761190Z Deploying shared library /lib/x86_64-linux-gnu/libudfread.so.0
+2026-05-08T12:43:56.7133434Z Deploying copyright files for file /lib/x86_64-linux-gnu/libudfread.so.0 
+2026-05-08T12:43:56.7133882Z Deploying shared library /lib/x86_64-linux-gnu/libfftw3.so.3
+2026-05-08T12:43:56.7997951Z Deploying copyright files for file /lib/x86_64-linux-gnu/libfftw3.so.3 
+2026-05-08T12:43:56.7998440Z Deploying shared library /lib/x86_64-linux-gnu/libsamplerate.so.0
+2026-05-08T12:43:56.8932048Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsamplerate.so.0 
+2026-05-08T12:43:56.8932709Z Deploying shared library /lib/x86_64-linux-gnu/libdecor-0.so.0
+2026-05-08T12:43:56.9947555Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdecor-0.so.0 
+2026-05-08T12:43:56.9948150Z Deploying shared library /lib/x86_64-linux-gnu/libdb-5.3.so
+2026-05-08T12:43:57.0860200Z Deploying copyright files for file /lib/x86_64-linux-gnu/libdb-5.3.so 
+2026-05-08T12:43:57.0860874Z Deploying shared library /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-16.1.so
+2026-05-08T12:43:57.1867286Z Deploying copyright files for file /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-16.1.so 
+2026-05-08T12:43:57.1867803Z Deploying shared library /lib/x86_64-linux-gnu/libslang.so.2
+2026-05-08T12:43:57.2853968Z Deploying copyright files for file /lib/x86_64-linux-gnu/libslang.so.2 
+2026-05-08T12:43:57.2854593Z Deploying shared library /lib/x86_64-linux-gnu/libncursesw.so.6
+2026-05-08T12:43:57.3868265Z Deploying copyright files for file /lib/x86_64-linux-gnu/libncursesw.so.6 
+2026-05-08T12:43:57.3868929Z Deploying shared library /lib/x86_64-linux-gnu/libtinfo.so.6
+2026-05-08T12:43:57.4796067Z Deploying copyright files for file /lib/x86_64-linux-gnu/libtinfo.so.6 
+2026-05-08T12:43:57.4796780Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libGLdispatch.so.0 
+2026-05-08T12:43:57.4800870Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libX11-xcb.so.1 
+2026-05-08T12:43:57.4801563Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libxcb-dri3.so.0 
+2026-05-08T12:43:57.4801931Z Deploying shared library /lib/x86_64-linux-gnu/libsystemd.so.0
+2026-05-08T12:43:57.6297841Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsystemd.so.0 
+2026-05-08T12:43:57.6298505Z Deploying shared library /lib/x86_64-linux-gnu/libbrotlicommon.so.1
+2026-05-08T12:43:57.7259600Z Deploying copyright files for file /lib/x86_64-linux-gnu/libbrotlicommon.so.1 
+2026-05-08T12:43:57.7260097Z Deploying shared library /lib/x86_64-linux-gnu/libbsd.so.0
+2026-05-08T12:43:57.9186413Z Deploying copyright files for file /lib/x86_64-linux-gnu/libbsd.so.0 
+2026-05-08T12:43:57.9186982Z Deploying shared library /lib/x86_64-linux-gnu/libhwy.so.1
+2026-05-08T12:43:58.0633767Z Deploying copyright files for file /lib/x86_64-linux-gnu/libhwy.so.1 
+2026-05-08T12:43:58.0634251Z Deploying shared library /lib/x86_64-linux-gnu/libbrotlienc.so.1
+2026-05-08T12:43:58.1987957Z Deploying copyright files for file /lib/x86_64-linux-gnu/libbrotlienc.so.1 
+2026-05-08T12:43:58.1988410Z Deploying shared library /lib/x86_64-linux-gnu/libogg.so.0
+2026-05-08T12:43:58.2970430Z Deploying copyright files for file /lib/x86_64-linux-gnu/libogg.so.0 
+2026-05-08T12:43:58.2970967Z Deploying shared library /lib/x86_64-linux-gnu/libsharpyuv.so.0
+2026-05-08T12:43:58.3938621Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsharpyuv.so.0 
+2026-05-08T12:43:58.3939397Z Deploying shared library /lib/x86_64-linux-gnu/libnuma.so.1
+2026-05-08T12:43:58.4886884Z Deploying copyright files for file /lib/x86_64-linux-gnu/libnuma.so.1 
+2026-05-08T12:43:58.4888021Z Deploying shared library /lib/x86_64-linux-gnu/libblas.so.3
+2026-05-08T12:43:58.5874610Z Deploying copyright files for file /lib/x86_64-linux-gnu/libblas.so.3 
+2026-05-08T12:43:58.5875203Z Deploying shared library /lib/x86_64-linux-gnu/liblapack.so.3
+2026-05-08T12:43:58.6818988Z Deploying copyright files for file /lib/x86_64-linux-gnu/liblapack.so.3 
+2026-05-08T12:43:58.6819614Z Deploying shared library /lib/x86_64-linux-gnu/libserd-0.so.0
+2026-05-08T12:43:58.8267780Z Deploying copyright files for file /lib/x86_64-linux-gnu/libserd-0.so.0 
+2026-05-08T12:43:58.8268404Z Deploying shared library /lib/x86_64-linux-gnu/libsord-0.so.0
+2026-05-08T12:43:58.9183393Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsord-0.so.0 
+2026-05-08T12:43:58.9183992Z Deploying shared library /lib/x86_64-linux-gnu/libsratom-0.so.0
+2026-05-08T12:43:59.0144366Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsratom-0.so.0 
+2026-05-08T12:43:59.0144991Z Deploying shared library /lib/x86_64-linux-gnu/libzix-0.so.0
+2026-05-08T12:43:59.1058849Z Deploying copyright files for file /lib/x86_64-linux-gnu/libzix-0.so.0 
+2026-05-08T12:43:59.1059499Z Deploying shared library /lib/x86_64-linux-gnu/libflite_usenglish.so.1
+2026-05-08T12:43:59.2429116Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite_usenglish.so.1 
+2026-05-08T12:43:59.2429676Z Deploying shared library /lib/x86_64-linux-gnu/libflite_cmulex.so.1
+2026-05-08T12:43:59.3454183Z Deploying copyright files for file /lib/x86_64-linux-gnu/libflite_cmulex.so.1 
+2026-05-08T12:43:59.3454808Z Deploying shared library /lib/x86_64-linux-gnu/libgomp.so.1
+2026-05-08T12:43:59.4410952Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgomp.so.1 
+2026-05-08T12:43:59.4411590Z Deploying shared library /lib/x86_64-linux-gnu/libsodium.so.23
+2026-05-08T12:43:59.5473844Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsodium.so.23 
+2026-05-08T12:43:59.5474453Z Deploying shared library /lib/x86_64-linux-gnu/libpgm-5.3.so.0
+2026-05-08T12:43:59.6444230Z Deploying copyright files for file /lib/x86_64-linux-gnu/libpgm-5.3.so.0 
+2026-05-08T12:43:59.6444819Z Deploying shared library /lib/x86_64-linux-gnu/libnorm.so.1
+2026-05-08T12:43:59.7942526Z Deploying copyright files for file /lib/x86_64-linux-gnu/libnorm.so.1 
+2026-05-08T12:43:59.7943205Z Deploying shared library /lib/x86_64-linux-gnu/libgssapi_krb5.so.2
+2026-05-08T12:43:59.8945568Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgssapi_krb5.so.2 
+2026-05-08T12:43:59.8946201Z Deploying shared library /lib/x86_64-linux-gnu/libicuuc.so.74
+2026-05-08T12:43:59.9877989Z Deploying copyright files for file /lib/x86_64-linux-gnu/libicuuc.so.74 
+2026-05-08T12:43:59.9878608Z Deploying shared library /lib/x86_64-linux-gnu/libmpg123.so.0
+2026-05-08T12:44:00.0863807Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmpg123.so.0 
+2026-05-08T12:44:00.0864411Z Deploying shared library /lib/x86_64-linux-gnu/libvorbisfile.so.3
+2026-05-08T12:44:00.1893705Z Deploying copyright files for file /lib/x86_64-linux-gnu/libvorbisfile.so.3 
+2026-05-08T12:44:00.1894353Z Deploying shared library /lib/x86_64-linux-gnu/libp11-kit.so.0
+2026-05-08T12:44:00.2823061Z Deploying copyright files for file /lib/x86_64-linux-gnu/libp11-kit.so.0 
+2026-05-08T12:44:00.2823702Z Deploying shared library /lib/x86_64-linux-gnu/libidn2.so.0
+2026-05-08T12:44:00.3788225Z Deploying copyright files for file /lib/x86_64-linux-gnu/libidn2.so.0 
+2026-05-08T12:44:00.3788871Z Deploying shared library /lib/x86_64-linux-gnu/libunistring.so.5
+2026-05-08T12:44:00.4789865Z Deploying copyright files for file /lib/x86_64-linux-gnu/libunistring.so.5 
+2026-05-08T12:44:00.4790475Z Deploying shared library /lib/x86_64-linux-gnu/libtasn1.so.6
+2026-05-08T12:44:00.5703335Z Deploying copyright files for file /lib/x86_64-linux-gnu/libtasn1.so.6 
+2026-05-08T12:44:00.5703965Z Deploying shared library /lib/x86_64-linux-gnu/libhogweed.so.6
+2026-05-08T12:44:00.7110409Z Deploying copyright files for file /lib/x86_64-linux-gnu/libhogweed.so.6 
+2026-05-08T12:44:00.7111222Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libgmp.so.10 
+2026-05-08T12:44:00.7111574Z Deploying shared library /lib/x86_64-linux-gnu/libssl.so.3
+2026-05-08T12:44:00.7976046Z Deploying copyright files for file /lib/x86_64-linux-gnu/libssl.so.3 
+2026-05-08T12:44:00.7976691Z Deploying shared library /lib/x86_64-linux-gnu/libcrypto.so.3
+2026-05-08T12:44:00.8818230Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcrypto.so.3 
+2026-05-08T12:44:00.8818743Z Deploying shared library /lib/x86_64-linux-gnu/libmbedcrypto.so.7
+2026-05-08T12:44:01.0164065Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmbedcrypto.so.7 
+2026-05-08T12:44:01.0164571Z Deploying shared library /lib/x86_64-linux-gnu/libcjson.so.1
+2026-05-08T12:44:01.1525943Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcjson.so.1 
+2026-05-08T12:44:01.1526543Z Deploying shared library /lib/x86_64-linux-gnu/libsndio.so.7
+2026-05-08T12:44:01.2877846Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsndio.so.7 
+2026-05-08T12:44:01.2878482Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libusb-1.0.so.0 
+2026-05-08T12:44:01.2879111Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libGLX.so.0 
+2026-05-08T12:44:01.2879987Z Deploying shared library /lib/x86_64-linux-gnu/libsndfile.so.1
+2026-05-08T12:44:01.3734654Z Deploying copyright files for file /lib/x86_64-linux-gnu/libsndfile.so.1 
+2026-05-08T12:44:01.3735258Z Deploying shared library /lib/x86_64-linux-gnu/libasyncns.so.0
+2026-05-08T12:44:01.5091462Z Deploying copyright files for file /lib/x86_64-linux-gnu/libasyncns.so.0 
+2026-05-08T12:44:01.5092105Z Deploying shared library /lib/x86_64-linux-gnu/libapparmor.so.1
+2026-05-08T12:44:01.6476153Z Deploying copyright files for file /lib/x86_64-linux-gnu/libapparmor.so.1 
+2026-05-08T12:44:01.6476609Z Deploying shared library /lib/x86_64-linux-gnu/libcap.so.2
+2026-05-08T12:44:01.7339553Z Deploying copyright files for file /lib/x86_64-linux-gnu/libcap.so.2 
+2026-05-08T12:44:01.7340187Z Deploying shared library /lib/x86_64-linux-gnu/libmd.so.0
+2026-05-08T12:44:02.0155501Z Deploying copyright files for file /lib/x86_64-linux-gnu/libmd.so.0 
+2026-05-08T12:44:02.0156197Z Deploying shared library /lib/x86_64-linux-gnu/libgfortran.so.5
+2026-05-08T12:44:02.1001638Z Deploying copyright files for file /lib/x86_64-linux-gnu/libgfortran.so.5 
+2026-05-08T12:44:02.1002236Z Deploying shared library /lib/x86_64-linux-gnu/libkrb5.so.3
+2026-05-08T12:44:02.1839715Z Deploying copyright files for file /lib/x86_64-linux-gnu/libkrb5.so.3 
+2026-05-08T12:44:02.1840319Z Deploying shared library /lib/x86_64-linux-gnu/libk5crypto.so.3
+2026-05-08T12:44:02.3168144Z Deploying copyright files for file /lib/x86_64-linux-gnu/libk5crypto.so.3 
+2026-05-08T12:44:02.3168757Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libcom_err.so.2 
+2026-05-08T12:44:02.3169125Z Deploying shared library /lib/x86_64-linux-gnu/libkrb5support.so.0
+2026-05-08T12:44:02.4528959Z Deploying copyright files for file /lib/x86_64-linux-gnu/libkrb5support.so.0 
+2026-05-08T12:44:02.4529572Z Deploying shared library /lib/x86_64-linux-gnu/libicudata.so.74
+2026-05-08T12:44:02.5364850Z Deploying copyright files for file /lib/x86_64-linux-gnu/libicudata.so.74 
+2026-05-08T12:44:02.5365485Z Deploying shared library /lib/x86_64-linux-gnu/libudev.so.1
+2026-05-08T12:44:02.6707826Z Deploying copyright files for file /lib/x86_64-linux-gnu/libudev.so.1 
+2026-05-08T12:44:02.6708452Z Deploying shared library /lib/x86_64-linux-gnu/libFLAC.so.12
+2026-05-08T12:44:02.7549486Z Deploying copyright files for file /lib/x86_64-linux-gnu/libFLAC.so.12 
+2026-05-08T12:44:02.7550279Z Deploying shared library /lib/x86_64-linux-gnu/libkeyutils.so.1
+2026-05-08T12:44:02.8390075Z Deploying copyright files for file /lib/x86_64-linux-gnu/libkeyutils.so.1 
+2026-05-08T12:44:02.8390744Z Skipping deployment of blacklisted library /lib/x86_64-linux-gnu/libresolv.so.2 
+2026-05-08T12:44:02.8391093Z 
+2026-05-08T12:44:02.8391542Z -- Copying files into AppDir -- 
+2026-05-08T12:44:02.8393916Z Copying file AppDir/performancebench to AppDir/usr/bin/performancebench 
+2026-05-08T12:44:02.8395137Z Copying file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libflutter_linux_gtk.so to AppDir/usr/lib/libflutter_linux_gtk.so 
+2026-05-08T12:44:02.8497636Z Copying file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libflutter_secure_storage_linux_plugin.so to AppDir/usr/lib/libflutter_secure_storage_linux_plugin.so 
+2026-05-08T12:44:02.8499072Z Copying file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libmedia_kit_libs_linux_plugin.so to AppDir/usr/lib/libmedia_kit_libs_linux_plugin.so 
+2026-05-08T12:44:02.8500348Z Copying file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libmedia_kit_video_plugin.so to AppDir/usr/lib/libmedia_kit_video_plugin.so 
+2026-05-08T12:44:02.8501598Z Copying file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libscreen_retriever_plugin.so to AppDir/usr/lib/libscreen_retriever_plugin.so 
+2026-05-08T12:44:02.8502909Z Copying file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libvolume_controller_plugin.so to AppDir/usr/lib/libvolume_controller_plugin.so 
+2026-05-08T12:44:02.8504561Z Copying file /home/runner/work/Benchify/Benchify/performancebench/AppDir/lib/libwindow_manager_plugin.so to AppDir/usr/lib/libwindow_manager_plugin.so 
+2026-05-08T12:44:02.8505512Z Copying file /lib/x86_64-linux-gnu/libFLAC.so.12 to AppDir/usr/lib/libFLAC.so.12 
+2026-05-08T12:44:02.8506139Z Copying file /lib/x86_64-linux-gnu/libOpenCL.so.1 to AppDir/usr/lib/libOpenCL.so.1 
+2026-05-08T12:44:02.8506773Z Copying file /lib/x86_64-linux-gnu/libSDL2-2.0.so.0 to AppDir/usr/lib/libSDL2-2.0.so.0 
+2026-05-08T12:44:02.8509762Z Copying file /lib/x86_64-linux-gnu/libSvtAv1Enc.so.1 to AppDir/usr/lib/libSvtAv1Enc.so.1 
+2026-05-08T12:44:02.8526809Z Copying file /lib/x86_64-linux-gnu/libXau.so.6 to AppDir/usr/lib/libXau.so.6 
+2026-05-08T12:44:02.8527572Z Copying file /lib/x86_64-linux-gnu/libXcomposite.so.1 to AppDir/usr/lib/libXcomposite.so.1 
+2026-05-08T12:44:02.8528236Z Copying file /lib/x86_64-linux-gnu/libXcursor.so.1 to AppDir/usr/lib/libXcursor.so.1 
+2026-05-08T12:44:02.8528853Z Copying file /lib/x86_64-linux-gnu/libXdamage.so.1 to AppDir/usr/lib/libXdamage.so.1 
+2026-05-08T12:44:02.8529465Z Copying file /lib/x86_64-linux-gnu/libXdmcp.so.6 to AppDir/usr/lib/libXdmcp.so.6 
+2026-05-08T12:44:02.8530043Z Copying file /lib/x86_64-linux-gnu/libXext.so.6 to AppDir/usr/lib/libXext.so.6 
+2026-05-08T12:44:02.8530623Z Copying file /lib/x86_64-linux-gnu/libXfixes.so.3 to AppDir/usr/lib/libXfixes.so.3 
+2026-05-08T12:44:02.8531198Z Copying file /lib/x86_64-linux-gnu/libXi.so.6 to AppDir/usr/lib/libXi.so.6 
+2026-05-08T12:44:02.8531793Z Copying file /lib/x86_64-linux-gnu/libXinerama.so.1 to AppDir/usr/lib/libXinerama.so.1 
+2026-05-08T12:44:02.8532427Z Copying file /lib/x86_64-linux-gnu/libXpresent.so.1 to AppDir/usr/lib/libXpresent.so.1 
+2026-05-08T12:44:02.8533048Z Copying file /lib/x86_64-linux-gnu/libXrandr.so.2 to AppDir/usr/lib/libXrandr.so.2 
+2026-05-08T12:44:02.8533659Z Copying file /lib/x86_64-linux-gnu/libXrender.so.1 to AppDir/usr/lib/libXrender.so.1 
+2026-05-08T12:44:02.8534235Z Copying file /lib/x86_64-linux-gnu/libXss.so.1 to AppDir/usr/lib/libXss.so.1 
+2026-05-08T12:44:02.8534779Z Copying file /lib/x86_64-linux-gnu/libXv.so.1 to AppDir/usr/lib/libXv.so.1 
+2026-05-08T12:44:02.8535302Z Copying file /lib/x86_64-linux-gnu/libacl.so.1 to AppDir/usr/lib/libacl.so.1 
+2026-05-08T12:44:02.8535851Z Copying file /lib/x86_64-linux-gnu/libaom.so.3 to AppDir/usr/lib/libaom.so.3 
+2026-05-08T12:44:02.8549287Z Copying file /lib/x86_64-linux-gnu/libapparmor.so.1 to AppDir/usr/lib/libapparmor.so.1 
+2026-05-08T12:44:02.8549956Z Copying file /lib/x86_64-linux-gnu/libarchive.so.13 to AppDir/usr/lib/libarchive.so.13 
+2026-05-08T12:44:02.8552709Z Copying file /lib/x86_64-linux-gnu/libass.so.9 to AppDir/usr/lib/libass.so.9 
+2026-05-08T12:44:02.8553831Z Copying file /lib/x86_64-linux-gnu/libasyncns.so.0 to AppDir/usr/lib/libasyncns.so.0 
+2026-05-08T12:44:02.8554655Z Copying file /lib/x86_64-linux-gnu/libatk-1.0.so.0 to AppDir/usr/lib/libatk-1.0.so.0 
+2026-05-08T12:44:02.8555505Z Copying file /lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0 to AppDir/usr/lib/libatk-bridge-2.0.so.0 
+2026-05-08T12:44:02.8556652Z Copying file /lib/x86_64-linux-gnu/libatspi.so.0 to AppDir/usr/lib/libatspi.so.0 
+2026-05-08T12:44:02.8558008Z Copying file /lib/x86_64-linux-gnu/libavc1394.so.0 to AppDir/usr/lib/libavc1394.so.0 
+2026-05-08T12:44:02.8558641Z Copying file /lib/x86_64-linux-gnu/libavcodec.so.60 to AppDir/usr/lib/libavcodec.so.60 
+2026-05-08T12:44:02.8597373Z Copying file /lib/x86_64-linux-gnu/libavdevice.so.60 to AppDir/usr/lib/libavdevice.so.60 
+2026-05-08T12:44:02.8598215Z Copying file /lib/x86_64-linux-gnu/libavfilter.so.9 to AppDir/usr/lib/libavfilter.so.9 
+2026-05-08T12:44:02.8630030Z Copying file /lib/x86_64-linux-gnu/libavformat.so.60 to AppDir/usr/lib/libavformat.so.60 
+2026-05-08T12:44:02.8637400Z Copying file /lib/x86_64-linux-gnu/libavutil.so.58 to AppDir/usr/lib/libavutil.so.58 
+2026-05-08T12:44:02.8640656Z Copying file /lib/x86_64-linux-gnu/libblas.so.3 to AppDir/usr/lib/libblas.so.3 
+2026-05-08T12:44:02.8643118Z Copying file /lib/x86_64-linux-gnu/libblkid.so.1 to AppDir/usr/lib/libblkid.so.1 
+2026-05-08T12:44:02.8644191Z Copying file /lib/x86_64-linux-gnu/libbluray.so.2 to AppDir/usr/lib/libbluray.so.2 
+2026-05-08T12:44:02.8646006Z Copying file /lib/x86_64-linux-gnu/libbrotlicommon.so.1 to AppDir/usr/lib/libbrotlicommon.so.1 
+2026-05-08T12:44:02.8646724Z Copying file /lib/x86_64-linux-gnu/libbrotlidec.so.1 to AppDir/usr/lib/libbrotlidec.so.1 
+2026-05-08T12:44:02.8647510Z Copying file /lib/x86_64-linux-gnu/libbrotlienc.so.1 to AppDir/usr/lib/libbrotlienc.so.1 
+2026-05-08T12:44:02.8649978Z Copying file /lib/x86_64-linux-gnu/libbs2b.so.0 to AppDir/usr/lib/libbs2b.so.0 
+2026-05-08T12:44:02.8650551Z Copying file /lib/x86_64-linux-gnu/libbsd.so.0 to AppDir/usr/lib/libbsd.so.0 
+2026-05-08T12:44:02.8651143Z Copying file /lib/x86_64-linux-gnu/libbz2.so.1.0 to AppDir/usr/lib/libbz2.so.1.0 
+2026-05-08T12:44:02.8651923Z Copying file /lib/x86_64-linux-gnu/libcaca.so.0 to AppDir/usr/lib/libcaca.so.0 
+2026-05-08T12:44:02.8654780Z Copying file /lib/x86_64-linux-gnu/libcairo-gobject.so.2 to AppDir/usr/lib/libcairo-gobject.so.2 
+2026-05-08T12:44:02.8655480Z Copying file /lib/x86_64-linux-gnu/libcairo.so.2 to AppDir/usr/lib/libcairo.so.2 
+2026-05-08T12:44:02.8659345Z Copying file /lib/x86_64-linux-gnu/libcap.so.2 to AppDir/usr/lib/libcap.so.2 
+2026-05-08T12:44:02.8659922Z Copying file /lib/x86_64-linux-gnu/libcdio.so.19 to AppDir/usr/lib/libcdio.so.19 
+2026-05-08T12:44:02.8660893Z Copying file /lib/x86_64-linux-gnu/libcdio_cdda.so.2 to AppDir/usr/lib/libcdio_cdda.so.2 
+2026-05-08T12:44:02.8661584Z Copying file /lib/x86_64-linux-gnu/libcdio_paranoia.so.2 to AppDir/usr/lib/libcdio_paranoia.so.2 
+2026-05-08T12:44:02.8662298Z Copying file /lib/x86_64-linux-gnu/libchromaprint.so.1 to AppDir/usr/lib/libchromaprint.so.1 
+2026-05-08T12:44:02.8662954Z Copying file /lib/x86_64-linux-gnu/libcjson.so.1 to AppDir/usr/lib/libcjson.so.1 
+2026-05-08T12:44:02.8663574Z Copying file /lib/x86_64-linux-gnu/libcodec2.so.1.2 to AppDir/usr/lib/libcodec2.so.1.2 
+2026-05-08T12:44:02.8702779Z Copying file /lib/x86_64-linux-gnu/libcrypto.so.3 to AppDir/usr/lib/libcrypto.so.3 
+2026-05-08T12:44:02.8715902Z Copying file /lib/x86_64-linux-gnu/libdatrie.so.1 to AppDir/usr/lib/libdatrie.so.1 
+2026-05-08T12:44:02.8716533Z Copying file /lib/x86_64-linux-gnu/libdav1d.so.7 to AppDir/usr/lib/libdav1d.so.7 
+2026-05-08T12:44:02.8721319Z Copying file /lib/x86_64-linux-gnu/libdb-5.3.so to AppDir/usr/lib/libdb-5.3.so 
+2026-05-08T12:44:02.8726985Z Copying file /lib/x86_64-linux-gnu/libdbus-1.so.3 to AppDir/usr/lib/libdbus-1.so.3 
+2026-05-08T12:44:02.8728830Z Copying file /lib/x86_64-linux-gnu/libdc1394.so.25 to AppDir/usr/lib/libdc1394.so.25 
+2026-05-08T12:44:02.8729915Z Copying file /lib/x86_64-linux-gnu/libdecor-0.so.0 to AppDir/usr/lib/libdecor-0.so.0 
+2026-05-08T12:44:02.8730717Z Copying file /lib/x86_64-linux-gnu/libdvdnav.so.4 to AppDir/usr/lib/libdvdnav.so.4 
+2026-05-08T12:44:02.8731344Z Copying file /lib/x86_64-linux-gnu/libdvdread.so.8 to AppDir/usr/lib/libdvdread.so.8 
+2026-05-08T12:44:02.8732264Z Copying file /lib/x86_64-linux-gnu/libepoxy.so.0 to AppDir/usr/lib/libepoxy.so.0 
+2026-05-08T12:44:02.8735959Z Copying file /lib/x86_64-linux-gnu/libffi.so.8 to AppDir/usr/lib/libffi.so.8 
+2026-05-08T12:44:02.8736528Z Copying file /lib/x86_64-linux-gnu/libfftw3.so.3 to AppDir/usr/lib/libfftw3.so.3 
+2026-05-08T12:44:02.8742836Z Copying file /lib/x86_64-linux-gnu/libflite.so.1 to AppDir/usr/lib/libflite.so.1 
+2026-05-08T12:44:02.8743966Z Copying file /lib/x86_64-linux-gnu/libflite_cmu_us_awb.so.1 to AppDir/usr/lib/libflite_cmu_us_awb.so.1 
+2026-05-08T12:44:02.8754562Z Copying file /lib/x86_64-linux-gnu/libflite_cmu_us_kal.so.1 to AppDir/usr/lib/libflite_cmu_us_kal.so.1 
+2026-05-08T12:44:02.8758809Z Copying file /lib/x86_64-linux-gnu/libflite_cmu_us_kal16.so.1 to AppDir/usr/lib/libflite_cmu_us_kal16.so.1 
+2026-05-08T12:44:02.8768985Z Copying file /lib/x86_64-linux-gnu/libflite_cmu_us_rms.so.1 to AppDir/usr/lib/libflite_cmu_us_rms.so.1 
+2026-05-08T12:44:02.8781784Z Copying file /lib/x86_64-linux-gnu/libflite_cmu_us_slt.so.1 to AppDir/usr/lib/libflite_cmu_us_slt.so.1 
+2026-05-08T12:44:02.8792021Z Copying file /lib/x86_64-linux-gnu/libflite_cmulex.so.1 to AppDir/usr/lib/libflite_cmulex.so.1 
+2026-05-08T12:44:02.8794272Z Copying file /lib/x86_64-linux-gnu/libflite_usenglish.so.1 to AppDir/usr/lib/libflite_usenglish.so.1 
+2026-05-08T12:44:02.8795091Z Copying file /lib/x86_64-linux-gnu/libgcrypt.so.20 to AppDir/usr/lib/libgcrypt.so.20 
+2026-05-08T12:44:02.8799242Z Copying file /lib/x86_64-linux-gnu/libgdk-3.so.0 to AppDir/usr/lib/libgdk-3.so.0 
+2026-05-08T12:44:02.8802560Z Copying file /lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0 to AppDir/usr/lib/libgdk_pixbuf-2.0.so.0 
+2026-05-08T12:44:02.8803538Z Copying file /lib/x86_64-linux-gnu/libgfortran.so.5 to AppDir/usr/lib/libgfortran.so.5 
+2026-05-08T12:44:02.8812228Z Copying file /lib/x86_64-linux-gnu/libgio-2.0.so.0 to AppDir/usr/lib/libgio-2.0.so.0 
+2026-05-08T12:44:02.8818977Z Copying file /lib/x86_64-linux-gnu/libglib-2.0.so.0 to AppDir/usr/lib/libglib-2.0.so.0 
+2026-05-08T12:44:02.8823370Z Copying file /lib/x86_64-linux-gnu/libgme.so.0 to AppDir/usr/lib/libgme.so.0 
+2026-05-08T12:44:02.8824694Z Copying file /lib/x86_64-linux-gnu/libgmodule-2.0.so.0 to AppDir/usr/lib/libgmodule-2.0.so.0 
+2026-05-08T12:44:02.8825404Z Copying file /lib/x86_64-linux-gnu/libgnutls.so.30 to AppDir/usr/lib/libgnutls.so.30 
+2026-05-08T12:44:02.8831279Z Copying file /lib/x86_64-linux-gnu/libgobject-2.0.so.0 to AppDir/usr/lib/libgobject-2.0.so.0 
+2026-05-08T12:44:02.8833136Z Copying file /lib/x86_64-linux-gnu/libgomp.so.1 to AppDir/usr/lib/libgomp.so.1 
+2026-05-08T12:44:02.8834732Z Copying file /lib/x86_64-linux-gnu/libgraphite2.so.3 to AppDir/usr/lib/libgraphite2.so.3 
+2026-05-08T12:44:02.8835576Z Copying file /lib/x86_64-linux-gnu/libgsm.so.1 to AppDir/usr/lib/libgsm.so.1 
+2026-05-08T12:44:02.8836406Z Copying file /lib/x86_64-linux-gnu/libgssapi_krb5.so.2 to AppDir/usr/lib/libgssapi_krb5.so.2 
+2026-05-08T12:44:02.8838129Z Copying file /lib/x86_64-linux-gnu/libgtk-3.so.0 to AppDir/usr/lib/libgtk-3.so.0 
+2026-05-08T12:44:02.8858207Z Copying file /lib/x86_64-linux-gnu/libhogweed.so.6 to AppDir/usr/lib/libhogweed.so.6 
+2026-05-08T12:44:02.8859343Z Copying file /lib/x86_64-linux-gnu/libhwy.so.1 to AppDir/usr/lib/libhwy.so.1 
+2026-05-08T12:44:02.8860087Z Copying file /lib/x86_64-linux-gnu/libicudata.so.74 to AppDir/usr/lib/libicudata.so.74 
+2026-05-08T12:44:02.8943471Z Copying file /lib/x86_64-linux-gnu/libicuuc.so.74 to AppDir/usr/lib/libicuuc.so.74 
+2026-05-08T12:44:02.8949586Z Copying file /lib/x86_64-linux-gnu/libidn2.so.0 to AppDir/usr/lib/libidn2.so.0 
+2026-05-08T12:44:02.8950513Z Copying file /lib/x86_64-linux-gnu/libiec61883.so.0 to AppDir/usr/lib/libiec61883.so.0 
+2026-05-08T12:44:02.8951153Z Copying file /lib/x86_64-linux-gnu/libjpeg.so.8 to AppDir/usr/lib/libjpeg.so.8 
+2026-05-08T12:44:02.8953425Z Copying file /lib/x86_64-linux-gnu/libjxl.so.0.7 to AppDir/usr/lib/libjxl.so.0.7 
+2026-05-08T12:44:02.8962769Z Copying file /lib/x86_64-linux-gnu/libjxl_threads.so.0.7 to AppDir/usr/lib/libjxl_threads.so.0.7 
+2026-05-08T12:44:02.8963478Z Copying file /lib/x86_64-linux-gnu/libk5crypto.so.3 to AppDir/usr/lib/libk5crypto.so.3 
+2026-05-08T12:44:02.8964302Z Copying file /lib/x86_64-linux-gnu/libkeyutils.so.1 to AppDir/usr/lib/libkeyutils.so.1 
+2026-05-08T12:44:02.8964909Z Copying file /lib/x86_64-linux-gnu/libkrb5.so.3 to AppDir/usr/lib/libkrb5.so.3 
+2026-05-08T12:44:02.8968250Z Copying file /lib/x86_64-linux-gnu/libkrb5support.so.0 to AppDir/usr/lib/libkrb5support.so.0 
+2026-05-08T12:44:02.8968925Z Copying file /lib/x86_64-linux-gnu/liblapack.so.3 to AppDir/usr/lib/liblapack.so.3 
+2026-05-08T12:44:02.8986365Z Copying file /lib/x86_64-linux-gnu/liblcms2.so.2 to AppDir/usr/lib/liblcms2.so.2 
+2026-05-08T12:44:02.8988078Z Copying file /lib/x86_64-linux-gnu/liblilv-0.so.0 to AppDir/usr/lib/liblilv-0.so.0 
+2026-05-08T12:44:02.8988860Z Copying file /lib/x86_64-linux-gnu/liblua5.2.so.0 to AppDir/usr/lib/liblua5.2.so.0 
+2026-05-08T12:44:02.8989973Z Copying file /lib/x86_64-linux-gnu/liblz4.so.1 to AppDir/usr/lib/liblz4.so.1 
+2026-05-08T12:44:02.8990999Z Copying file /lib/x86_64-linux-gnu/liblzma.so.5 to AppDir/usr/lib/liblzma.so.5 
+2026-05-08T12:44:02.8992179Z Copying file /lib/x86_64-linux-gnu/libmbedcrypto.so.7 to AppDir/usr/lib/libmbedcrypto.so.7 
+2026-05-08T12:44:02.8994268Z Copying file /lib/x86_64-linux-gnu/libmd.so.0 to AppDir/usr/lib/libmd.so.0 
+2026-05-08T12:44:02.8994841Z Copying file /lib/x86_64-linux-gnu/libmount.so.1 to AppDir/usr/lib/libmount.so.1 
+2026-05-08T12:44:02.8996496Z Copying file /lib/x86_64-linux-gnu/libmp3lame.so.0 to AppDir/usr/lib/libmp3lame.so.0 
+2026-05-08T12:44:02.8997898Z Copying file /lib/x86_64-linux-gnu/libmpg123.so.0 to AppDir/usr/lib/libmpg123.so.0 
+2026-05-08T12:44:02.8999749Z Copying file /lib/x86_64-linux-gnu/libmpv.so.2 to AppDir/usr/lib/libmpv.so.2 
+2026-05-08T12:44:02.9007537Z Copying file /lib/x86_64-linux-gnu/libmujs.so.3 to AppDir/usr/lib/libmujs.so.3 
+2026-05-08T12:44:02.9008982Z Copying file /lib/x86_64-linux-gnu/libmysofa.so.1 to AppDir/usr/lib/libmysofa.so.1 
+2026-05-08T12:44:02.9009906Z Copying file /lib/x86_64-linux-gnu/libncursesw.so.6 to AppDir/usr/lib/libncursesw.so.6 
+2026-05-08T12:44:02.9011035Z Copying file /lib/x86_64-linux-gnu/libnettle.so.8 to AppDir/usr/lib/libnettle.so.8 
+2026-05-08T12:44:02.9012943Z Copying file /lib/x86_64-linux-gnu/libnorm.so.1 to AppDir/usr/lib/libnorm.so.1 
+2026-05-08T12:44:02.9014680Z Copying file /lib/x86_64-linux-gnu/libnuma.so.1 to AppDir/usr/lib/libnuma.so.1 
+2026-05-08T12:44:02.9015250Z Copying file /lib/x86_64-linux-gnu/libogg.so.0 to AppDir/usr/lib/libogg.so.0 
+2026-05-08T12:44:02.9015853Z Copying file /lib/x86_64-linux-gnu/libopenal.so.1 to AppDir/usr/lib/libopenal.so.1 
+2026-05-08T12:44:02.9019418Z Copying file /lib/x86_64-linux-gnu/libopenjp2.so.7 to AppDir/usr/lib/libopenjp2.so.7 
+2026-05-08T12:44:02.9020961Z Copying file /lib/x86_64-linux-gnu/libopenmpt.so.0 to AppDir/usr/lib/libopenmpt.so.0 
+2026-05-08T12:44:02.9025175Z Copying file /lib/x86_64-linux-gnu/libopus.so.0 to AppDir/usr/lib/libopus.so.0 
+2026-05-08T12:44:02.9026771Z Copying file /lib/x86_64-linux-gnu/libp11-kit.so.0 to AppDir/usr/lib/libp11-kit.so.0 
+2026-05-08T12:44:02.9031587Z Copying file /lib/x86_64-linux-gnu/libpango-1.0.so.0 to AppDir/usr/lib/libpango-1.0.so.0 
+2026-05-08T12:44:02.9033329Z Copying file /lib/x86_64-linux-gnu/libpangocairo-1.0.so.0 to AppDir/usr/lib/libpangocairo-1.0.so.0 
+2026-05-08T12:44:02.9033869Z Copying file /lib/x86_64-linux-gnu/libpangoft2-1.0.so.0 to AppDir/usr/lib/libpangoft2-1.0.so.0 
+2026-05-08T12:44:02.9034712Z Copying file /lib/x86_64-linux-gnu/libpcre2-8.so.0 to AppDir/usr/lib/libpcre2-8.so.0 
+2026-05-08T12:44:02.9036892Z Copying file /lib/x86_64-linux-gnu/libpgm-5.3.so.0 to AppDir/usr/lib/libpgm-5.3.so.0 
+2026-05-08T12:44:02.9038380Z Copying file /lib/x86_64-linux-gnu/libpixman-1.so.0 to AppDir/usr/lib/libpixman-1.so.0 
+2026-05-08T12:44:02.9040744Z Copying file /lib/x86_64-linux-gnu/libplacebo.so.338 to AppDir/usr/lib/libplacebo.so.338 
+2026-05-08T12:44:02.9061492Z Copying file /lib/x86_64-linux-gnu/libpng16.so.16 to AppDir/usr/lib/libpng16.so.16 
+2026-05-08T12:44:02.9062638Z Copying file /lib/x86_64-linux-gnu/libpocketsphinx.so.3 to AppDir/usr/lib/libpocketsphinx.so.3 
+2026-05-08T12:44:02.9064035Z Copying file /lib/x86_64-linux-gnu/libpostproc.so.57 to AppDir/usr/lib/libpostproc.so.57 
+2026-05-08T12:44:02.9064659Z Copying file /lib/x86_64-linux-gnu/libpulse.so.0 to AppDir/usr/lib/libpulse.so.0 
+2026-05-08T12:44:02.9066244Z Copying file /lib/x86_64-linux-gnu/librabbitmq.so.4 to AppDir/usr/lib/librabbitmq.so.4 
+2026-05-08T12:44:02.9066861Z Copying file /lib/x86_64-linux-gnu/librav1e.so.0 to AppDir/usr/lib/librav1e.so.0 
+2026-05-08T12:44:02.9075103Z Copying file /lib/x86_64-linux-gnu/libraw1394.so.11 to AppDir/usr/lib/libraw1394.so.11 
+2026-05-08T12:44:02.9075820Z Copying file /lib/x86_64-linux-gnu/librist.so.4 to AppDir/usr/lib/librist.so.4 
+2026-05-08T12:44:02.9076837Z Copying file /lib/x86_64-linux-gnu/librom1394.so.0 to AppDir/usr/lib/librom1394.so.0 
+2026-05-08T12:44:02.9077577Z Copying file /lib/x86_64-linux-gnu/librsvg-2.so.2 to AppDir/usr/lib/librsvg-2.so.2 
+2026-05-08T12:44:02.9094166Z Copying file /lib/x86_64-linux-gnu/librubberband.so.2 to AppDir/usr/lib/librubberband.so.2 
+2026-05-08T12:44:02.9095508Z Copying file /lib/x86_64-linux-gnu/libsamplerate.so.0 to AppDir/usr/lib/libsamplerate.so.0 
+2026-05-08T12:44:02.9100053Z Copying file /lib/x86_64-linux-gnu/libsecret-1.so.0 to AppDir/usr/lib/libsecret-1.so.0 
+2026-05-08T12:44:02.9101717Z Copying file /lib/x86_64-linux-gnu/libselinux.so.1 to AppDir/usr/lib/libselinux.so.1 
+2026-05-08T12:44:02.9102750Z Copying file /lib/x86_64-linux-gnu/libserd-0.so.0 to AppDir/usr/lib/libserd-0.so.0 
+2026-05-08T12:44:02.9103627Z Copying file /lib/x86_64-linux-gnu/libsharpyuv.so.0 to AppDir/usr/lib/libsharpyuv.so.0 
+2026-05-08T12:44:02.9104254Z Copying file /lib/x86_64-linux-gnu/libshine.so.3 to AppDir/usr/lib/libshine.so.3 
+2026-05-08T12:44:02.9104872Z Copying file /lib/x86_64-linux-gnu/libsixel.so.1 to AppDir/usr/lib/libsixel.so.1 
+2026-05-08T12:44:02.9106844Z Copying file /lib/x86_64-linux-gnu/libslang.so.2 to AppDir/usr/lib/libslang.so.2 
+2026-05-08T12:44:02.9112901Z Copying file /lib/x86_64-linux-gnu/libsnappy.so.1 to AppDir/usr/lib/libsnappy.so.1 
+2026-05-08T12:44:02.9113535Z Copying file /lib/x86_64-linux-gnu/libsndfile.so.1 to AppDir/usr/lib/libsndfile.so.1 
+2026-05-08T12:44:02.9115655Z Copying file /lib/x86_64-linux-gnu/libsndio.so.7 to AppDir/usr/lib/libsndio.so.7 
+2026-05-08T12:44:02.9116265Z Copying file /lib/x86_64-linux-gnu/libsodium.so.23 to AppDir/usr/lib/libsodium.so.23 
+2026-05-08T12:44:02.9118207Z Copying file /lib/x86_64-linux-gnu/libsord-0.so.0 to AppDir/usr/lib/libsord-0.so.0 
+2026-05-08T12:44:02.9119450Z Copying file /lib/x86_64-linux-gnu/libsoxr.so.0 to AppDir/usr/lib/libsoxr.so.0 
+2026-05-08T12:44:02.9120610Z Copying file /lib/x86_64-linux-gnu/libspeex.so.1 to AppDir/usr/lib/libspeex.so.1 
+2026-05-08T12:44:02.9121552Z Copying file /lib/x86_64-linux-gnu/libsphinxbase.so.3 to AppDir/usr/lib/libsphinxbase.so.3 
+2026-05-08T12:44:02.9122865Z Copying file /lib/x86_64-linux-gnu/libsratom-0.so.0 to AppDir/usr/lib/libsratom-0.so.0 
+2026-05-08T12:44:02.9123610Z Copying file /lib/x86_64-linux-gnu/libsrt-gnutls.so.1.5 to AppDir/usr/lib/libsrt-gnutls.so.1.5 
+2026-05-08T12:44:02.9126532Z Copying file /lib/x86_64-linux-gnu/libssh-gcrypt.so.4 to AppDir/usr/lib/libssh-gcrypt.so.4 
+2026-05-08T12:44:02.9128743Z Copying file /lib/x86_64-linux-gnu/libssl.so.3 to AppDir/usr/lib/libssl.so.3 
+2026-05-08T12:44:02.9131681Z Copying file /lib/x86_64-linux-gnu/libswresample.so.4 to AppDir/usr/lib/libswresample.so.4 
+2026-05-08T12:44:02.9132451Z Copying file /lib/x86_64-linux-gnu/libswscale.so.7 to AppDir/usr/lib/libswscale.so.7 
+2026-05-08T12:44:02.9134869Z Copying file /lib/x86_64-linux-gnu/libsystemd.so.0 to AppDir/usr/lib/libsystemd.so.0 
+2026-05-08T12:44:02.9138090Z Copying file /lib/x86_64-linux-gnu/libtasn1.so.6 to AppDir/usr/lib/libtasn1.so.6 
+2026-05-08T12:44:02.9138691Z Copying file /lib/x86_64-linux-gnu/libthai.so.0 to AppDir/usr/lib/libthai.so.0 
+2026-05-08T12:44:02.9139451Z Copying file /lib/x86_64-linux-gnu/libtheoradec.so.1 to AppDir/usr/lib/libtheoradec.so.1 
+2026-05-08T12:44:02.9140338Z Copying file /lib/x86_64-linux-gnu/libtheoraenc.so.1 to AppDir/usr/lib/libtheoraenc.so.1 
+2026-05-08T12:44:02.9141542Z Copying file /lib/x86_64-linux-gnu/libtinfo.so.6 to AppDir/usr/lib/libtinfo.so.6 
+2026-05-08T12:44:02.9142675Z Copying file /lib/x86_64-linux-gnu/libtwolame.so.0 to AppDir/usr/lib/libtwolame.so.0 
+2026-05-08T12:44:02.9143577Z Copying file /lib/x86_64-linux-gnu/libuchardet.so.0 to AppDir/usr/lib/libuchardet.so.0 
+2026-05-08T12:44:02.9144690Z Copying file /lib/x86_64-linux-gnu/libudev.so.1 to AppDir/usr/lib/libudev.so.1 
+2026-05-08T12:44:02.9145839Z Copying file /lib/x86_64-linux-gnu/libudfread.so.0 to AppDir/usr/lib/libudfread.so.0 
+2026-05-08T12:44:02.9146495Z Copying file /lib/x86_64-linux-gnu/libunibreak.so.5 to AppDir/usr/lib/libunibreak.so.5 
+2026-05-08T12:44:02.9147551Z Copying file /lib/x86_64-linux-gnu/libunistring.so.5 to AppDir/usr/lib/libunistring.so.5 
+2026-05-08T12:44:02.9152635Z Copying file /lib/x86_64-linux-gnu/libva-drm.so.2 to AppDir/usr/lib/libva-drm.so.2 
+2026-05-08T12:44:02.9153455Z Copying file /lib/x86_64-linux-gnu/libva-wayland.so.2 to AppDir/usr/lib/libva-wayland.so.2 
+2026-05-08T12:44:02.9154097Z Copying file /lib/x86_64-linux-gnu/libva-x11.so.2 to AppDir/usr/lib/libva-x11.so.2 
+2026-05-08T12:44:02.9154671Z Copying file /lib/x86_64-linux-gnu/libva.so.2 to AppDir/usr/lib/libva.so.2 
+2026-05-08T12:44:02.9155421Z Copying file /lib/x86_64-linux-gnu/libvdpau.so.1 to AppDir/usr/lib/libvdpau.so.1 
+2026-05-08T12:44:02.9156055Z Copying file /lib/x86_64-linux-gnu/libvidstab.so.1.1 to AppDir/usr/lib/libvidstab.so.1.1 
+2026-05-08T12:44:02.9156765Z Copying file /lib/x86_64-linux-gnu/libvorbis.so.0 to AppDir/usr/lib/libvorbis.so.0 
+2026-05-08T12:44:02.9157990Z Copying file /lib/x86_64-linux-gnu/libvorbisenc.so.2 to AppDir/usr/lib/libvorbisenc.so.2 
+2026-05-08T12:44:02.9160639Z Copying file /lib/x86_64-linux-gnu/libvorbisfile.so.3 to AppDir/usr/lib/libvorbisfile.so.3 
+2026-05-08T12:44:02.9161296Z Copying file /lib/x86_64-linux-gnu/libvpl.so.2 to AppDir/usr/lib/libvpl.so.2 
+2026-05-08T12:44:02.9162216Z Copying file /lib/x86_64-linux-gnu/libvpx.so.9 to AppDir/usr/lib/libvpx.so.9 
+2026-05-08T12:44:02.9171077Z Copying file /lib/x86_64-linux-gnu/libvulkan.so.1 to AppDir/usr/lib/libvulkan.so.1 
+2026-05-08T12:44:02.9173183Z Copying file /lib/x86_64-linux-gnu/libwayland-cursor.so.0 to AppDir/usr/lib/libwayland-cursor.so.0 
+2026-05-08T12:44:02.9173935Z Copying file /lib/x86_64-linux-gnu/libwayland-egl.so.1 to AppDir/usr/lib/libwayland-egl.so.1 
+2026-05-08T12:44:02.9174690Z Copying file /lib/x86_64-linux-gnu/libwebp.so.7 to AppDir/usr/lib/libwebp.so.7 
+2026-05-08T12:44:02.9176530Z Copying file /lib/x86_64-linux-gnu/libwebpmux.so.3 to AppDir/usr/lib/libwebpmux.so.3 
+2026-05-08T12:44:02.9177655Z Copying file /lib/x86_64-linux-gnu/libx264.so.164 to AppDir/usr/lib/libx264.so.164 
+2026-05-08T12:44:02.9182616Z Copying file /lib/x86_64-linux-gnu/libx265.so.199 to AppDir/usr/lib/libx265.so.199 
+2026-05-08T12:44:02.9220847Z Copying file /lib/x86_64-linux-gnu/libxcb-render.so.0 to AppDir/usr/lib/libxcb-render.so.0 
+2026-05-08T12:44:02.9234979Z Copying file /lib/x86_64-linux-gnu/libxcb-shape.so.0 to AppDir/usr/lib/libxcb-shape.so.0 
+2026-05-08T12:44:02.9235760Z Copying file /lib/x86_64-linux-gnu/libxcb-shm.so.0 to AppDir/usr/lib/libxcb-shm.so.0 
+2026-05-08T12:44:02.9236451Z Copying file /lib/x86_64-linux-gnu/libxcb-xfixes.so.0 to AppDir/usr/lib/libxcb-xfixes.so.0 
+2026-05-08T12:44:02.9237288Z Copying file /lib/x86_64-linux-gnu/libxkbcommon.so.0 to AppDir/usr/lib/libxkbcommon.so.0 
+2026-05-08T12:44:02.9237918Z Copying file /lib/x86_64-linux-gnu/libxml2.so.2 to AppDir/usr/lib/libxml2.so.2 
+2026-05-08T12:44:02.9238536Z Copying file /lib/x86_64-linux-gnu/libxvidcore.so.4 to AppDir/usr/lib/libxvidcore.so.4 
+2026-05-08T12:44:02.9239331Z Copying file /lib/x86_64-linux-gnu/libzimg.so.2 to AppDir/usr/lib/libzimg.so.2 
+2026-05-08T12:44:02.9239914Z Copying file /lib/x86_64-linux-gnu/libzix-0.so.0 to AppDir/usr/lib/libzix-0.so.0 
+2026-05-08T12:44:02.9240485Z Copying file /lib/x86_64-linux-gnu/libzmq.so.5 to AppDir/usr/lib/libzmq.so.5 
+2026-05-08T12:44:02.9241049Z Copying file /lib/x86_64-linux-gnu/libzstd.so.1 to AppDir/usr/lib/libzstd.so.1 
+2026-05-08T12:44:02.9242870Z Copying file /lib/x86_64-linux-gnu/libzvbi.so.0 to AppDir/usr/lib/libzvbi.so.0 
+2026-05-08T12:44:02.9245157Z Copying file /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-16.1.so to AppDir/usr/lib/libpulsecommon-16.1.so 
+2026-05-08T12:44:02.9247199Z Copying file /usr/share/doc/libacl1/copyright to AppDir/usr/share/doc/libacl1/copyright 
+2026-05-08T12:44:02.9282325Z Copying file /usr/share/doc/libaom3/copyright to AppDir/usr/share/doc/libaom3/copyright 
+2026-05-08T12:44:02.9313808Z Copying file /usr/share/doc/libapparmor1/copyright to AppDir/usr/share/doc/libapparmor1/copyright 
+2026-05-08T12:44:02.9342399Z Copying file /usr/share/doc/libarchive13t64/copyright to AppDir/usr/share/doc/libarchive13t64/copyright 
+2026-05-08T12:44:02.9470486Z Copying file /usr/share/doc/libass9/copyright to AppDir/usr/share/doc/libass9/copyright 
+2026-05-08T12:44:02.9471407Z Copying file /usr/share/doc/libasyncns0/copyright to AppDir/usr/share/doc/libasyncns0/copyright 
+2026-05-08T12:44:02.9472245Z Copying file /usr/share/doc/libatk-bridge2.0-0t64/copyright to AppDir/usr/share/doc/libatk-bridge2.0-0t64/copyright 
+2026-05-08T12:44:02.9501394Z Copying file /usr/share/doc/libatk1.0-0t64/copyright to AppDir/usr/share/doc/libatk1.0-0t64/copyright 
+2026-05-08T12:44:02.9531478Z Copying file /usr/share/doc/libatspi2.0-0t64/copyright to AppDir/usr/share/doc/libatspi2.0-0t64/copyright 
+2026-05-08T12:44:02.9535085Z Copying file /usr/share/doc/libavc1394-0/copyright to AppDir/usr/share/doc/libavc1394-0/copyright 
+2026-05-08T12:44:02.9535871Z Copying file /usr/share/doc/libavcodec60/copyright to AppDir/usr/share/doc/libavcodec60/copyright 
+2026-05-08T12:44:02.9536681Z Copying file /usr/share/doc/libavdevice60/copyright to AppDir/usr/share/doc/libavdevice60/copyright 
+2026-05-08T12:44:02.9537784Z Copying file /usr/share/doc/libavfilter9/copyright to AppDir/usr/share/doc/libavfilter9/copyright 
+2026-05-08T12:44:02.9538735Z Copying file /usr/share/doc/libavformat60/copyright to AppDir/usr/share/doc/libavformat60/copyright 
+2026-05-08T12:44:02.9539680Z Copying file /usr/share/doc/libavutil58/copyright to AppDir/usr/share/doc/libavutil58/copyright 
+2026-05-08T12:44:02.9540645Z Copying file /usr/share/doc/libblas3/copyright to AppDir/usr/share/doc/libblas3/copyright 
+2026-05-08T12:44:02.9541455Z Copying file /usr/share/doc/libblkid1/copyright to AppDir/usr/share/doc/libblkid1/copyright 
+2026-05-08T12:44:02.9572973Z Copying file /usr/share/doc/libbluray2/copyright to AppDir/usr/share/doc/libbluray2/copyright 
+2026-05-08T12:44:02.9573728Z Copying file /usr/share/doc/libbrotli1/copyright to AppDir/usr/share/doc/libbrotli1/copyright 
+2026-05-08T12:44:02.9602728Z Copying file /usr/share/doc/libbs2b0/copyright to AppDir/usr/share/doc/libbs2b0/copyright 
+2026-05-08T12:44:02.9603427Z Copying file /usr/share/doc/libbsd0/copyright to AppDir/usr/share/doc/libbsd0/copyright 
+2026-05-08T12:44:02.9634617Z Copying file /usr/share/doc/libbz2-1.0/copyright to AppDir/usr/share/doc/libbz2-1.0/copyright 
+2026-05-08T12:44:02.9637501Z Copying file /usr/share/doc/libcaca0/copyright to AppDir/usr/share/doc/libcaca0/copyright 
+2026-05-08T12:44:02.9638320Z Copying file /usr/share/doc/libcairo-gobject2/copyright to AppDir/usr/share/doc/libcairo-gobject2/copyright 
+2026-05-08T12:44:02.9669531Z Copying file /usr/share/doc/libcairo2/copyright to AppDir/usr/share/doc/libcairo2/copyright 
+2026-05-08T12:44:02.9699337Z Copying file /usr/share/doc/libcap2/copyright to AppDir/usr/share/doc/libcap2/copyright 
+2026-05-08T12:44:02.9730565Z Copying file /usr/share/doc/libcdio-cdda2t64/copyright to AppDir/usr/share/doc/libcdio-cdda2t64/copyright 
+2026-05-08T12:44:02.9731676Z Copying file /usr/share/doc/libcdio-paranoia2t64/copyright to AppDir/usr/share/doc/libcdio-paranoia2t64/copyright 
+2026-05-08T12:44:02.9732541Z Copying file /usr/share/doc/libcdio19t64/copyright to AppDir/usr/share/doc/libcdio19t64/copyright 
+2026-05-08T12:44:02.9733421Z Copying file /usr/share/doc/libchromaprint1/copyright to AppDir/usr/share/doc/libchromaprint1/copyright 
+2026-05-08T12:44:02.9734290Z Copying file /usr/share/doc/libcjson1/copyright to AppDir/usr/share/doc/libcjson1/copyright 
+2026-05-08T12:44:02.9735026Z Copying file /usr/share/doc/libcodec2-1.2/copyright to AppDir/usr/share/doc/libcodec2-1.2/copyright 
+2026-05-08T12:44:02.9735724Z Copying file /usr/share/doc/libdatrie1/copyright to AppDir/usr/share/doc/libdatrie1/copyright 
+2026-05-08T12:44:02.9763653Z Copying file /usr/share/doc/libdav1d7/copyright to AppDir/usr/share/doc/libdav1d7/copyright 
+2026-05-08T12:44:02.9764372Z Copying file /usr/share/doc/libdb5.3t64/copyright to AppDir/usr/share/doc/libdb5.3t64/copyright 
+2026-05-08T12:44:02.9767686Z Copying file /usr/share/doc/libdbus-1-3/copyright to AppDir/usr/share/doc/libdbus-1-3/copyright 
+2026-05-08T12:44:02.9796811Z Copying file /usr/share/doc/libdc1394-25/copyright to AppDir/usr/share/doc/libdc1394-25/copyright 
+2026-05-08T12:44:02.9797903Z Copying file /usr/share/doc/libdecor-0-0/copyright to AppDir/usr/share/doc/libdecor-0-0/copyright 
+2026-05-08T12:44:02.9798639Z Copying file /usr/share/doc/libdvdnav4/copyright to AppDir/usr/share/doc/libdvdnav4/copyright 
+2026-05-08T12:44:02.9799410Z Copying file /usr/share/doc/libdvdread8t64/copyright to AppDir/usr/share/doc/libdvdread8t64/copyright 
+2026-05-08T12:44:02.9800160Z Copying file /usr/share/doc/libepoxy0/copyright to AppDir/usr/share/doc/libepoxy0/copyright 
+2026-05-08T12:44:02.9803660Z Copying file /usr/share/doc/libffi8/copyright to AppDir/usr/share/doc/libffi8/copyright 
+2026-05-08T12:44:02.9835349Z Copying file /usr/share/doc/libfftw3-double3/copyright to AppDir/usr/share/doc/libfftw3-double3/copyright 
+2026-05-08T12:44:02.9838155Z Copying file /usr/share/doc/libflac12t64/copyright to AppDir/usr/share/doc/libflac12t64/copyright 
+2026-05-08T12:44:02.9838899Z Copying file /usr/share/doc/libflite1/copyright to AppDir/usr/share/doc/libflite1/copyright 
+2026-05-08T12:44:02.9839793Z Copying file /usr/share/doc/libgcrypt20/copyright to AppDir/usr/share/doc/libgcrypt20/copyright 
+2026-05-08T12:44:02.9870597Z Copying file /usr/share/doc/libgdk-pixbuf-2.0-0/copyright to AppDir/usr/share/doc/libgdk-pixbuf-2.0-0/copyright 
+2026-05-08T12:44:02.9899900Z Copying file /usr/share/doc/libgfortran5/copyright to AppDir/usr/share/doc/libgfortran5/copyright 
+2026-05-08T12:44:02.9931521Z Copying file /usr/share/doc/libglib2.0-0t64/copyright to AppDir/usr/share/doc/libglib2.0-0t64/copyright 
+2026-05-08T12:44:03.0154087Z Copying file /usr/share/doc/libgme0/copyright to AppDir/usr/share/doc/libgme0/copyright 
+2026-05-08T12:44:03.0154903Z Copying file /usr/share/doc/libgnutls30t64/copyright to AppDir/usr/share/doc/libgnutls30t64/copyright 
+2026-05-08T12:44:03.0186064Z Copying file /usr/share/doc/libgomp1/copyright to AppDir/usr/share/doc/libgomp1/copyright 
+2026-05-08T12:44:03.0186899Z Copying file /usr/share/doc/libgraphite2-3/copyright to AppDir/usr/share/doc/libgraphite2-3/copyright 
+2026-05-08T12:44:03.0216894Z Copying file /usr/share/doc/libgsm1/copyright to AppDir/usr/share/doc/libgsm1/copyright 
+2026-05-08T12:44:03.0217863Z Copying file /usr/share/doc/libgssapi-krb5-2/copyright to AppDir/usr/share/doc/libgssapi-krb5-2/copyright 
+2026-05-08T12:44:03.0247504Z Copying file /usr/share/doc/libgtk-3-0t64/copyright to AppDir/usr/share/doc/libgtk-3-0t64/copyright 
+2026-05-08T12:44:03.0388098Z Copying file /usr/share/doc/libhogweed6t64/copyright to AppDir/usr/share/doc/libhogweed6t64/copyright 
+2026-05-08T12:44:03.0392131Z Copying file /usr/share/doc/libhwy1t64/copyright to AppDir/usr/share/doc/libhwy1t64/copyright 
+2026-05-08T12:44:03.0392985Z Copying file /usr/share/doc/libicu74/copyright to AppDir/usr/share/doc/libicu74/copyright 
+2026-05-08T12:44:03.0395907Z Copying file /usr/share/doc/libidn2-0/copyright to AppDir/usr/share/doc/libidn2-0/copyright 
+2026-05-08T12:44:03.0399035Z Copying file /usr/share/doc/libiec61883-0/copyright to AppDir/usr/share/doc/libiec61883-0/copyright 
+2026-05-08T12:44:03.0399870Z Copying file /usr/share/doc/libjpeg-turbo8/copyright to AppDir/usr/share/doc/libjpeg-turbo8/copyright 
+2026-05-08T12:44:03.0403836Z Copying file /usr/share/doc/libjxl0.7/copyright to AppDir/usr/share/doc/libjxl0.7/copyright 
+2026-05-08T12:44:03.0404601Z Copying file /usr/share/doc/libk5crypto3/copyright to AppDir/usr/share/doc/libk5crypto3/copyright 
+2026-05-08T12:44:03.0439292Z Copying file /usr/share/doc/libkeyutils1/copyright to AppDir/usr/share/doc/libkeyutils1/copyright 
+2026-05-08T12:44:03.0470608Z Copying file /usr/share/doc/libkrb5-3/copyright to AppDir/usr/share/doc/libkrb5-3/copyright 
+2026-05-08T12:44:03.0503306Z Copying file /usr/share/doc/libkrb5support0/copyright to AppDir/usr/share/doc/libkrb5support0/copyright 
+2026-05-08T12:44:03.0507947Z Copying file /usr/share/doc/liblapack3/copyright to AppDir/usr/share/doc/liblapack3/copyright 
+2026-05-08T12:44:03.0508737Z Copying file /usr/share/doc/liblcms2-2/copyright to AppDir/usr/share/doc/liblcms2-2/copyright 
+2026-05-08T12:44:03.0509654Z Copying file /usr/share/doc/liblilv-0-0/copyright to AppDir/usr/share/doc/liblilv-0-0/copyright 
+2026-05-08T12:44:03.0510394Z Copying file /usr/share/doc/liblua5.2-0/copyright to AppDir/usr/share/doc/liblua5.2-0/copyright 
+2026-05-08T12:44:03.0511106Z Copying file /usr/share/doc/liblz4-1/copyright to AppDir/usr/share/doc/liblz4-1/copyright 
+2026-05-08T12:44:03.0543706Z Copying file /usr/share/doc/liblzma5/copyright to AppDir/usr/share/doc/liblzma5/copyright 
+2026-05-08T12:44:03.0571040Z Copying file /usr/share/doc/libmbedcrypto7t64/copyright to AppDir/usr/share/doc/libmbedcrypto7t64/copyright 
+2026-05-08T12:44:03.0571841Z Copying file /usr/share/doc/libmd0/copyright to AppDir/usr/share/doc/libmd0/copyright 
+2026-05-08T12:44:03.0575040Z Copying file /usr/share/doc/libmount1/copyright to AppDir/usr/share/doc/libmount1/copyright 
+2026-05-08T12:44:03.0578164Z Copying file /usr/share/doc/libmp3lame0/copyright to AppDir/usr/share/doc/libmp3lame0/copyright 
+2026-05-08T12:44:03.0578982Z Copying file /usr/share/doc/libmpg123-0t64/copyright to AppDir/usr/share/doc/libmpg123-0t64/copyright 
+2026-05-08T12:44:03.0579755Z Copying file /usr/share/doc/libmpv2/copyright to AppDir/usr/share/doc/libmpv2/copyright 
+2026-05-08T12:44:03.0580702Z Copying file /usr/share/doc/libmujs3/copyright to AppDir/usr/share/doc/libmujs3/copyright 
+2026-05-08T12:44:03.0581567Z Copying file /usr/share/doc/libmysofa1/copyright to AppDir/usr/share/doc/libmysofa1/copyright 
+2026-05-08T12:44:03.0582610Z Copying file /usr/share/doc/libncursesw6/copyright to AppDir/usr/share/doc/libncursesw6/copyright 
+2026-05-08T12:44:03.0612019Z Copying file /usr/share/doc/libnettle8t64/copyright to AppDir/usr/share/doc/libnettle8t64/copyright 
+2026-05-08T12:44:03.0615295Z Copying file /usr/share/doc/libnorm1t64/copyright to AppDir/usr/share/doc/libnorm1t64/copyright 
+2026-05-08T12:44:03.0644926Z Copying file /usr/share/doc/libnuma1/copyright to AppDir/usr/share/doc/libnuma1/copyright 
+2026-05-08T12:44:03.0751390Z Copying file /usr/share/doc/libogg0/copyright to AppDir/usr/share/doc/libogg0/copyright 
+2026-05-08T12:44:03.0754725Z Copying file /usr/share/doc/libopenal1/copyright to AppDir/usr/share/doc/libopenal1/copyright 
+2026-05-08T12:44:03.0755547Z Copying file /usr/share/doc/libopenjp2-7/copyright to AppDir/usr/share/doc/libopenjp2-7/copyright 
+2026-05-08T12:44:03.0785054Z Copying file /usr/share/doc/libopenmpt0t64/copyright to AppDir/usr/share/doc/libopenmpt0t64/copyright 
+2026-05-08T12:44:03.0785862Z Copying file /usr/share/doc/libopus0/copyright to AppDir/usr/share/doc/libopus0/copyright 
+2026-05-08T12:44:03.0786607Z Copying file /usr/share/doc/libp11-kit0/copyright to AppDir/usr/share/doc/libp11-kit0/copyright 
+2026-05-08T12:44:03.0790773Z Copying file /usr/share/doc/libpango-1.0-0/copyright to AppDir/usr/share/doc/libpango-1.0-0/copyright 
+2026-05-08T12:44:03.0794054Z Copying file /usr/share/doc/libpangocairo-1.0-0/copyright to AppDir/usr/share/doc/libpangocairo-1.0-0/copyright 
+2026-05-08T12:44:03.0823224Z Copying file /usr/share/doc/libpangoft2-1.0-0/copyright to AppDir/usr/share/doc/libpangoft2-1.0-0/copyright 
+2026-05-08T12:44:03.0851309Z Copying file /usr/share/doc/libpcre2-8-0/copyright to AppDir/usr/share/doc/libpcre2-8-0/copyright 
+2026-05-08T12:44:03.0885462Z Copying file /usr/share/doc/libpgm-5.3-0t64/copyright to AppDir/usr/share/doc/libpgm-5.3-0t64/copyright 
+2026-05-08T12:44:03.0913864Z Copying file /usr/share/doc/libpixman-1-0/copyright to AppDir/usr/share/doc/libpixman-1-0/copyright 
+2026-05-08T12:44:03.0942533Z Copying file /usr/share/doc/libplacebo338/copyright to AppDir/usr/share/doc/libplacebo338/copyright 
+2026-05-08T12:44:03.0943388Z Copying file /usr/share/doc/libpng16-16t64/copyright to AppDir/usr/share/doc/libpng16-16t64/copyright 
+2026-05-08T12:44:03.0944235Z Copying file /usr/share/doc/libpocketsphinx3/copyright to AppDir/usr/share/doc/libpocketsphinx3/copyright 
+2026-05-08T12:44:03.0945059Z Copying file /usr/share/doc/libpostproc57/copyright to AppDir/usr/share/doc/libpostproc57/copyright 
+2026-05-08T12:44:03.0945841Z Copying file /usr/share/doc/libpulse0/copyright to AppDir/usr/share/doc/libpulse0/copyright 
+2026-05-08T12:44:03.0946785Z Copying file /usr/share/doc/librabbitmq4/copyright to AppDir/usr/share/doc/librabbitmq4/copyright 
+2026-05-08T12:44:03.0949971Z Copying file /usr/share/doc/librav1e0/copyright to AppDir/usr/share/doc/librav1e0/copyright 
+2026-05-08T12:44:03.0950816Z Copying file /usr/share/doc/libraw1394-11/copyright to AppDir/usr/share/doc/libraw1394-11/copyright 
+2026-05-08T12:44:03.0951695Z Copying file /usr/share/doc/librist4/copyright to AppDir/usr/share/doc/librist4/copyright 
+2026-05-08T12:44:03.0952583Z Copying file /usr/share/doc/librsvg2-2/copyright to AppDir/usr/share/doc/librsvg2-2/copyright 
+2026-05-08T12:44:03.0953602Z Copying file /usr/share/doc/librubberband2/copyright to AppDir/usr/share/doc/librubberband2/copyright 
+2026-05-08T12:44:03.0954545Z Copying file /usr/share/doc/libsamplerate0/copyright to AppDir/usr/share/doc/libsamplerate0/copyright 
+2026-05-08T12:44:03.0955431Z Copying file /usr/share/doc/libsdl2-2.0-0/copyright to AppDir/usr/share/doc/libsdl2-2.0-0/copyright 
+2026-05-08T12:44:03.0956426Z Copying file /usr/share/doc/libsecret-1-0/copyright to AppDir/usr/share/doc/libsecret-1-0/copyright 
+2026-05-08T12:44:03.0957449Z Copying file /usr/share/doc/libselinux1/copyright to AppDir/usr/share/doc/libselinux1/copyright 
+2026-05-08T12:44:03.0960474Z Copying file /usr/share/doc/libserd-0-0/copyright to AppDir/usr/share/doc/libserd-0-0/copyright 
+2026-05-08T12:44:03.0961256Z Copying file /usr/share/doc/libsharpyuv0/copyright to AppDir/usr/share/doc/libsharpyuv0/copyright 
+2026-05-08T12:44:03.0965052Z Copying file /usr/share/doc/libshine3/copyright to AppDir/usr/share/doc/libshine3/copyright 
+2026-05-08T12:44:03.0965789Z Copying file /usr/share/doc/libsixel1/copyright to AppDir/usr/share/doc/libsixel1/copyright 
+2026-05-08T12:44:03.0966691Z Copying file /usr/share/doc/libslang2/copyright to AppDir/usr/share/doc/libslang2/copyright 
+2026-05-08T12:44:03.1985072Z Copying file /usr/share/doc/libsnappy1v5/copyright to AppDir/usr/share/doc/libsnappy1v5/copyright 
+2026-05-08T12:44:03.2015088Z Copying file /usr/share/doc/libsndfile1/copyright to AppDir/usr/share/doc/libsndfile1/copyright 
+2026-05-08T12:44:03.2015874Z Copying file /usr/share/doc/libsndio7.0/copyright to AppDir/usr/share/doc/libsndio7.0/copyright 
+2026-05-08T12:44:03.2016649Z Copying file /usr/share/doc/libsodium23/copyright to AppDir/usr/share/doc/libsodium23/copyright 
+2026-05-08T12:44:03.2052456Z Copying file /usr/share/doc/libsord-0-0/copyright to AppDir/usr/share/doc/libsord-0-0/copyright 
+2026-05-08T12:44:03.2053135Z Copying file /usr/share/doc/libsoxr0/copyright to AppDir/usr/share/doc/libsoxr0/copyright 
+2026-05-08T12:44:03.2053791Z Copying file /usr/share/doc/libspeex1/copyright to AppDir/usr/share/doc/libspeex1/copyright 
+2026-05-08T12:44:03.2054762Z Copying file /usr/share/doc/libsphinxbase3t64/copyright to AppDir/usr/share/doc/libsphinxbase3t64/copyright 
+2026-05-08T12:44:03.2055721Z Copying file /usr/share/doc/libsratom-0-0/copyright to AppDir/usr/share/doc/libsratom-0-0/copyright 
+2026-05-08T12:44:03.2056580Z Copying file /usr/share/doc/libsrt1.5-gnutls/copyright to AppDir/usr/share/doc/libsrt1.5-gnutls/copyright 
+2026-05-08T12:44:03.2057699Z Copying file /usr/share/doc/libssh-gcrypt-4/copyright to AppDir/usr/share/doc/libssh-gcrypt-4/copyright 
+2026-05-08T12:44:03.2058642Z Copying file /usr/share/doc/libssl3t64/copyright to AppDir/usr/share/doc/libssl3t64/copyright 
+2026-05-08T12:44:03.2090556Z Copying file /usr/share/doc/libsvtav1enc1d1/copyright to AppDir/usr/share/doc/libsvtav1enc1d1/copyright 
+2026-05-08T12:44:03.2091283Z Copying file /usr/share/doc/libswresample4/copyright to AppDir/usr/share/doc/libswresample4/copyright 
+2026-05-08T12:44:03.2092290Z Copying file /usr/share/doc/libswscale7/copyright to AppDir/usr/share/doc/libswscale7/copyright 
+2026-05-08T12:44:03.2093330Z Copying file /usr/share/doc/libsystemd0/copyright to AppDir/usr/share/doc/libsystemd0/copyright 
+2026-05-08T12:44:03.2097375Z Copying file /usr/share/doc/libtasn1-6/copyright to AppDir/usr/share/doc/libtasn1-6/copyright 
+2026-05-08T12:44:03.2129007Z Copying file /usr/share/doc/libthai0/copyright to AppDir/usr/share/doc/libthai0/copyright 
+2026-05-08T12:44:03.2131680Z Copying file /usr/share/doc/libtheora0/copyright to AppDir/usr/share/doc/libtheora0/copyright 
+2026-05-08T12:44:03.2132376Z Copying file /usr/share/doc/libtinfo6/copyright to AppDir/usr/share/doc/libtinfo6/copyright 
+2026-05-08T12:44:03.2133390Z Copying file /usr/share/doc/libtwolame0/copyright to AppDir/usr/share/doc/libtwolame0/copyright 
+2026-05-08T12:44:03.2134421Z Copying file /usr/share/doc/libuchardet0/copyright to AppDir/usr/share/doc/libuchardet0/copyright 
+2026-05-08T12:44:03.2246776Z Copying file /usr/share/doc/libudev1/copyright to AppDir/usr/share/doc/libudev1/copyright 
+2026-05-08T12:44:03.2280777Z Copying file /usr/share/doc/libudfread0/copyright to AppDir/usr/share/doc/libudfread0/copyright 
+2026-05-08T12:44:03.2281612Z Copying file /usr/share/doc/libunibreak5/copyright to AppDir/usr/share/doc/libunibreak5/copyright 
+2026-05-08T12:44:03.2282457Z Copying file /usr/share/doc/libunistring5/copyright to AppDir/usr/share/doc/libunistring5/copyright 
+2026-05-08T12:44:03.2313397Z Copying file /usr/share/doc/libva-drm2/copyright to AppDir/usr/share/doc/libva-drm2/copyright 
+2026-05-08T12:44:03.2314217Z Copying file /usr/share/doc/libva-wayland2/copyright to AppDir/usr/share/doc/libva-wayland2/copyright 
+2026-05-08T12:44:03.2314994Z Copying file /usr/share/doc/libva-x11-2/copyright to AppDir/usr/share/doc/libva-x11-2/copyright 
+2026-05-08T12:44:03.2315716Z Copying file /usr/share/doc/libva2/copyright to AppDir/usr/share/doc/libva2/copyright 
+2026-05-08T12:44:03.2316586Z Copying file /usr/share/doc/libvdpau1/copyright to AppDir/usr/share/doc/libvdpau1/copyright 
+2026-05-08T12:44:03.2317699Z Copying file /usr/share/doc/libvidstab1.1/copyright to AppDir/usr/share/doc/libvidstab1.1/copyright 
+2026-05-08T12:44:03.2318603Z Copying file /usr/share/doc/libvorbis0a/copyright to AppDir/usr/share/doc/libvorbis0a/copyright 
+2026-05-08T12:44:03.2350747Z Copying file /usr/share/doc/libvorbisenc2/copyright to AppDir/usr/share/doc/libvorbisenc2/copyright 
+2026-05-08T12:44:03.2351636Z Copying file /usr/share/doc/libvorbisfile3/copyright to AppDir/usr/share/doc/libvorbisfile3/copyright 
+2026-05-08T12:44:03.2383112Z Copying file /usr/share/doc/libvpl2/copyright to AppDir/usr/share/doc/libvpl2/copyright 
+2026-05-08T12:44:03.2384724Z Copying file /usr/share/doc/libvpx9/copyright to AppDir/usr/share/doc/libvpx9/copyright 
+2026-05-08T12:44:03.2385881Z Copying file /usr/share/doc/libvulkan1/copyright to AppDir/usr/share/doc/libvulkan1/copyright 
+2026-05-08T12:44:03.2389501Z Copying file /usr/share/doc/libwayland-cursor0/copyright to AppDir/usr/share/doc/libwayland-cursor0/copyright 
+2026-05-08T12:44:03.2392405Z Copying file /usr/share/doc/libwayland-egl1/copyright to AppDir/usr/share/doc/libwayland-egl1/copyright 
+2026-05-08T12:44:03.2422953Z Copying file /usr/share/doc/libwebp7/copyright to AppDir/usr/share/doc/libwebp7/copyright 
+2026-05-08T12:44:03.2426494Z Copying file /usr/share/doc/libwebpmux3/copyright to AppDir/usr/share/doc/libwebpmux3/copyright 
+2026-05-08T12:44:03.2430121Z Copying file /usr/share/doc/libx264-164/copyright to AppDir/usr/share/doc/libx264-164/copyright 
+2026-05-08T12:44:03.2430899Z Copying file /usr/share/doc/libx265-199/copyright to AppDir/usr/share/doc/libx265-199/copyright 
+2026-05-08T12:44:03.2431883Z Copying file /usr/share/doc/libxau6/copyright to AppDir/usr/share/doc/libxau6/copyright 
+2026-05-08T12:44:03.2463950Z Copying file /usr/share/doc/libxcb-render0/copyright to AppDir/usr/share/doc/libxcb-render0/copyright 
+2026-05-08T12:44:03.2467994Z Copying file /usr/share/doc/libxcb-shape0/copyright to AppDir/usr/share/doc/libxcb-shape0/copyright 
+2026-05-08T12:44:03.2468805Z Copying file /usr/share/doc/libxcb-shm0/copyright to AppDir/usr/share/doc/libxcb-shm0/copyright 
+2026-05-08T12:44:03.2472570Z Copying file /usr/share/doc/libxcb-xfixes0/copyright to AppDir/usr/share/doc/libxcb-xfixes0/copyright 
+2026-05-08T12:44:03.2475457Z Copying file /usr/share/doc/libxcomposite1/copyright to AppDir/usr/share/doc/libxcomposite1/copyright 
+2026-05-08T12:44:03.2478672Z Copying file /usr/share/doc/libxcursor1/copyright to AppDir/usr/share/doc/libxcursor1/copyright 
+2026-05-08T12:44:03.2482217Z Copying file /usr/share/doc/libxdamage1/copyright to AppDir/usr/share/doc/libxdamage1/copyright 
+2026-05-08T12:44:03.2485910Z Copying file /usr/share/doc/libxdmcp6/copyright to AppDir/usr/share/doc/libxdmcp6/copyright 
+2026-05-08T12:44:03.2515278Z Copying file /usr/share/doc/libxext6/copyright to AppDir/usr/share/doc/libxext6/copyright 
+2026-05-08T12:44:03.2550407Z Copying file /usr/share/doc/libxfixes3/copyright to AppDir/usr/share/doc/libxfixes3/copyright 
+2026-05-08T12:44:03.2553102Z Copying file /usr/share/doc/libxi6/copyright to AppDir/usr/share/doc/libxi6/copyright 
+2026-05-08T12:44:03.2580195Z Copying file /usr/share/doc/libxinerama1/copyright to AppDir/usr/share/doc/libxinerama1/copyright 
+2026-05-08T12:44:03.2582926Z Copying file /usr/share/doc/libxkbcommon0/copyright to AppDir/usr/share/doc/libxkbcommon0/copyright 
+2026-05-08T12:44:03.2615631Z Copying file /usr/share/doc/libxml2/copyright to AppDir/usr/share/doc/libxml2/copyright 
+2026-05-08T12:44:03.2618152Z Copying file /usr/share/doc/libxpresent1/copyright to AppDir/usr/share/doc/libxpresent1/copyright 
+2026-05-08T12:44:03.2618931Z Copying file /usr/share/doc/libxrandr2/copyright to AppDir/usr/share/doc/libxrandr2/copyright 
+2026-05-08T12:44:03.2623696Z Copying file /usr/share/doc/libxrender1/copyright to AppDir/usr/share/doc/libxrender1/copyright 
+2026-05-08T12:44:03.2627336Z Copying file /usr/share/doc/libxss1/copyright to AppDir/usr/share/doc/libxss1/copyright 
+2026-05-08T12:44:03.2630244Z Copying file /usr/share/doc/libxv1/copyright to AppDir/usr/share/doc/libxv1/copyright 
+2026-05-08T12:44:03.2631042Z Copying file /usr/share/doc/libxvidcore4/copyright to AppDir/usr/share/doc/libxvidcore4/copyright 
+2026-05-08T12:44:03.2631969Z Copying file /usr/share/doc/libzimg2/copyright to AppDir/usr/share/doc/libzimg2/copyright 
+2026-05-08T12:44:03.2632878Z Copying file /usr/share/doc/libzix-0-0/copyright to AppDir/usr/share/doc/libzix-0-0/copyright 
+2026-05-08T12:44:03.2633782Z Copying file /usr/share/doc/libzmq5/copyright to AppDir/usr/share/doc/libzmq5/copyright 
+2026-05-08T12:44:03.2665619Z Copying file /usr/share/doc/libzstd1/copyright to AppDir/usr/share/doc/libzstd1/copyright 
+2026-05-08T12:44:03.2698078Z Copying file /usr/share/doc/libzvbi0t64/copyright to AppDir/usr/share/doc/libzvbi0t64/copyright 
+2026-05-08T12:44:03.2698910Z Copying file /usr/share/doc/ocl-icd-libopencl1/copyright to AppDir/usr/share/doc/ocl-icd-libopencl1/copyright 
+2026-05-08T12:44:03.2715781Z WARNING: Not calling strip on binary AppDir/usr/bin/performancebench: rpath starts with $ 
+2026-05-08T12:44:03.2727589Z Calling strip on library AppDir/usr/lib/libFLAC.so.12 
+2026-05-08T12:44:03.2754370Z Calling strip on library AppDir/usr/lib/libOpenCL.so.1 
+2026-05-08T12:44:03.2786621Z Calling strip on library AppDir/usr/lib/libSDL2-2.0.so.0 
+2026-05-08T12:44:03.2839962Z Calling strip on library AppDir/usr/lib/libSvtAv1Enc.so.1 
+2026-05-08T12:44:03.3437870Z Calling strip on library AppDir/usr/lib/libXau.so.6 
+2026-05-08T12:44:03.3460644Z Calling strip on library AppDir/usr/lib/libXcomposite.so.1 
+2026-05-08T12:44:03.3482633Z Calling strip on library AppDir/usr/lib/libXcursor.so.1 
+2026-05-08T12:44:03.3504081Z Calling strip on library AppDir/usr/lib/libXdamage.so.1 
+2026-05-08T12:44:03.3525682Z Calling strip on library AppDir/usr/lib/libXdmcp.so.6 
+2026-05-08T12:44:03.3548819Z Calling strip on library AppDir/usr/lib/libXext.so.6 
+2026-05-08T12:44:03.3571855Z Calling strip on library AppDir/usr/lib/libXfixes.so.3 
+2026-05-08T12:44:03.3594011Z Calling strip on library AppDir/usr/lib/libXi.so.6 
+2026-05-08T12:44:03.3617236Z Calling strip on library AppDir/usr/lib/libXinerama.so.1 
+2026-05-08T12:44:03.3638624Z Calling strip on library AppDir/usr/lib/libXpresent.so.1 
+2026-05-08T12:44:03.3659880Z Calling strip on library AppDir/usr/lib/libXrandr.so.2 
+2026-05-08T12:44:03.3681402Z Calling strip on library AppDir/usr/lib/libXrender.so.1 
+2026-05-08T12:44:03.3702808Z Calling strip on library AppDir/usr/lib/libXss.so.1 
+2026-05-08T12:44:03.3724000Z Calling strip on library AppDir/usr/lib/libXv.so.1 
+2026-05-08T12:44:03.3745481Z Calling strip on library AppDir/usr/lib/libacl.so.1 
+2026-05-08T12:44:03.3777776Z Calling strip on library AppDir/usr/lib/libaom.so.3 
+2026-05-08T12:44:03.4136853Z Calling strip on library AppDir/usr/lib/libapparmor.so.1 
+2026-05-08T12:44:03.4164017Z Calling strip on library AppDir/usr/lib/libarchive.so.13 
+2026-05-08T12:44:03.4194240Z Calling strip on library AppDir/usr/lib/libass.so.9 
+2026-05-08T12:44:03.4217650Z Calling strip on library AppDir/usr/lib/libasyncns.so.0 
+2026-05-08T12:44:03.4239680Z Calling strip on library AppDir/usr/lib/libatk-1.0.so.0 
+2026-05-08T12:44:03.4264669Z Calling strip on library AppDir/usr/lib/libatk-bridge-2.0.so.0 
+2026-05-08T12:44:03.4289101Z Calling strip on library AppDir/usr/lib/libatspi.so.0 
+2026-05-08T12:44:03.4312764Z Calling strip on library AppDir/usr/lib/libavc1394.so.0 
+2026-05-08T12:44:03.4362413Z Calling strip on library AppDir/usr/lib/libavcodec.so.60 
+2026-05-08T12:44:03.5479776Z Calling strip on library AppDir/usr/lib/libavdevice.so.60 
+2026-05-08T12:44:03.5533570Z Calling strip on library AppDir/usr/lib/libavfilter.so.9 
+2026-05-08T12:44:03.6664402Z Calling strip on library AppDir/usr/lib/libavformat.so.60 
+2026-05-08T12:44:03.6711755Z Calling strip on library AppDir/usr/lib/libavutil.so.58 
+2026-05-08T12:44:03.6745903Z Calling strip on library AppDir/usr/lib/libblas.so.3 
+2026-05-08T12:44:03.6775104Z Calling strip on library AppDir/usr/lib/libblkid.so.1 
+2026-05-08T12:44:03.6800823Z Calling strip on library AppDir/usr/lib/libbluray.so.2 
+2026-05-08T12:44:03.6827228Z Calling strip on library AppDir/usr/lib/libbrotlicommon.so.1 
+2026-05-08T12:44:03.6849837Z Calling strip on library AppDir/usr/lib/libbrotlidec.so.1 
+2026-05-08T12:44:03.6874320Z Calling strip on library AppDir/usr/lib/libbrotlienc.so.1 
+2026-05-08T12:44:03.6900276Z Calling strip on library AppDir/usr/lib/libbs2b.so.0 
+2026-05-08T12:44:03.6922109Z Calling strip on library AppDir/usr/lib/libbsd.so.0 
+2026-05-08T12:44:03.6945421Z Calling strip on library AppDir/usr/lib/libbz2.so.1.0 
+2026-05-08T12:44:03.6971226Z Calling strip on library AppDir/usr/lib/libcaca.so.0 
+2026-05-08T12:44:03.6999445Z Calling strip on library AppDir/usr/lib/libcairo-gobject.so.2 
+2026-05-08T12:44:03.7027365Z Calling strip on library AppDir/usr/lib/libcairo.so.2 
+2026-05-08T12:44:03.7057872Z Calling strip on library AppDir/usr/lib/libcap.so.2 
+2026-05-08T12:44:03.7080140Z Calling strip on library AppDir/usr/lib/libcdio.so.19 
+2026-05-08T12:44:03.7102460Z Calling strip on library AppDir/usr/lib/libcdio_cdda.so.2 
+2026-05-08T12:44:03.7124228Z Calling strip on library AppDir/usr/lib/libcdio_paranoia.so.2 
+2026-05-08T12:44:03.7145605Z Calling strip on library AppDir/usr/lib/libchromaprint.so.1 
+2026-05-08T12:44:03.7166905Z Calling strip on library AppDir/usr/lib/libcjson.so.1 
+2026-05-08T12:44:03.7218451Z Calling strip on library AppDir/usr/lib/libcodec2.so.1.2 
+2026-05-08T12:44:03.8641076Z Calling strip on library AppDir/usr/lib/libcrypto.so.3 
+2026-05-08T12:44:03.8693724Z Calling strip on library AppDir/usr/lib/libdatrie.so.1 
+2026-05-08T12:44:03.8724541Z Calling strip on library AppDir/usr/lib/libdav1d.so.7 
+2026-05-08T12:44:03.8768123Z Calling strip on library AppDir/usr/lib/libdb-5.3.so 
+2026-05-08T12:44:03.8803913Z Calling strip on library AppDir/usr/lib/libdbus-1.so.3 
+2026-05-08T12:44:03.8829413Z Calling strip on library AppDir/usr/lib/libdc1394.so.25 
+2026-05-08T12:44:03.8852768Z Calling strip on library AppDir/usr/lib/libdecor-0.so.0 
+2026-05-08T12:44:03.8874277Z Calling strip on library AppDir/usr/lib/libdvdnav.so.4 
+2026-05-08T12:44:03.8896362Z Calling strip on library AppDir/usr/lib/libdvdread.so.8 
+2026-05-08T12:44:03.8924171Z Calling strip on library AppDir/usr/lib/libepoxy.so.0 
+2026-05-08T12:44:03.8954312Z Calling strip on library AppDir/usr/lib/libffi.so.8 
+2026-05-08T12:44:03.8985722Z Calling strip on library AppDir/usr/lib/libfftw3.so.3 
+2026-05-08T12:44:03.9022167Z Calling strip on library AppDir/usr/lib/libflite.so.1 
+2026-05-08T12:44:03.9056164Z Calling strip on library AppDir/usr/lib/libflite_cmu_us_awb.so.1 
+2026-05-08T12:44:04.0644935Z Calling strip on library AppDir/usr/lib/libflite_cmu_us_kal.so.1 
+2026-05-08T12:44:04.0690778Z Calling strip on library AppDir/usr/lib/libflite_cmu_us_kal16.so.1 
+2026-05-08T12:44:04.0749942Z Calling strip on library AppDir/usr/lib/libflite_cmu_us_rms.so.1 
+2026-05-08T12:44:04.0819594Z Calling strip on library AppDir/usr/lib/libflite_cmu_us_slt.so.1 
+2026-05-08T12:44:04.0868181Z Calling strip on library AppDir/usr/lib/libflite_cmulex.so.1 
+2026-05-08T12:44:04.0895465Z Calling strip on library AppDir/usr/lib/libflite_usenglish.so.1 
+2026-05-08T12:44:04.0982133Z WARNING: Not calling strip on binary AppDir/usr/lib/libflutter_linux_gtk.so: rpath starts with $ 
+2026-05-08T12:44:04.0994553Z Calling strip on library AppDir/usr/lib/libflutter_secure_storage_linux_plugin.so 
+2026-05-08T12:44:04.1028522Z Calling strip on library AppDir/usr/lib/libgcrypt.so.20 
+2026-05-08T12:44:04.1064965Z Calling strip on library AppDir/usr/lib/libgdk-3.so.0 
+2026-05-08T12:44:04.1095638Z Calling strip on library AppDir/usr/lib/libgdk_pixbuf-2.0.so.0 
+2026-05-08T12:44:04.1127807Z Calling strip on library AppDir/usr/lib/libgfortran.so.5 
+2026-05-08T12:44:04.1183004Z Calling strip on library AppDir/usr/lib/libgio-2.0.so.0 
+2026-05-08T12:44:04.2444535Z Calling strip on library AppDir/usr/lib/libglib-2.0.so.0 
+2026-05-08T12:44:04.2479525Z Calling strip on library AppDir/usr/lib/libgme.so.0 
+2026-05-08T12:44:04.2504524Z Calling strip on library AppDir/usr/lib/libgmodule-2.0.so.0 
+2026-05-08T12:44:04.2535475Z Calling strip on library AppDir/usr/lib/libgnutls.so.30 
+2026-05-08T12:44:04.2572240Z Calling strip on library AppDir/usr/lib/libgobject-2.0.so.0 
+2026-05-08T12:44:04.2598619Z Calling strip on library AppDir/usr/lib/libgomp.so.1 
+2026-05-08T12:44:04.2623169Z Calling strip on library AppDir/usr/lib/libgraphite2.so.3 
+2026-05-08T12:44:04.2645374Z Calling strip on library AppDir/usr/lib/libgsm.so.1 
+2026-05-08T12:44:04.2668216Z Calling strip on library AppDir/usr/lib/libgssapi_krb5.so.2 
+2026-05-08T12:44:04.2715186Z Calling strip on library AppDir/usr/lib/libgtk-3.so.0 
+2026-05-08T12:44:04.2783689Z Calling strip on library AppDir/usr/lib/libhogweed.so.6 
+2026-05-08T12:44:04.2806970Z Calling strip on library AppDir/usr/lib/libhwy.so.1 
+2026-05-08T12:44:04.2884177Z Calling strip on library AppDir/usr/lib/libicudata.so.74 
+2026-05-08T12:44:04.4264850Z Calling strip on library AppDir/usr/lib/libicuuc.so.74 
+2026-05-08T12:44:04.4302905Z Calling strip on library AppDir/usr/lib/libidn2.so.0 
+2026-05-08T12:44:04.4326245Z Calling strip on library AppDir/usr/lib/libiec61883.so.0 
+2026-05-08T12:44:04.4352292Z Calling strip on library AppDir/usr/lib/libjpeg.so.8 
+2026-05-08T12:44:04.4386453Z Calling strip on library AppDir/usr/lib/libjxl.so.0.7 
+2026-05-08T12:44:04.6139154Z Calling strip on library AppDir/usr/lib/libjxl_threads.so.0.7 
+2026-05-08T12:44:04.6161773Z Calling strip on library AppDir/usr/lib/libk5crypto.so.3 
+2026-05-08T12:44:04.6185743Z Calling strip on library AppDir/usr/lib/libkeyutils.so.1 
+2026-05-08T12:44:04.6211814Z Calling strip on library AppDir/usr/lib/libkrb5.so.3 
+2026-05-08T12:44:04.6240135Z Calling strip on library AppDir/usr/lib/libkrb5support.so.0 
+2026-05-08T12:44:04.6273523Z Calling strip on library AppDir/usr/lib/liblapack.so.3 
+2026-05-08T12:44:04.6323237Z Calling strip on library AppDir/usr/lib/liblcms2.so.2 
+2026-05-08T12:44:04.6348761Z Calling strip on library AppDir/usr/lib/liblilv-0.so.0 
+2026-05-08T12:44:04.6372616Z Calling strip on library AppDir/usr/lib/liblua5.2.so.0 
+2026-05-08T12:44:04.6396204Z Calling strip on library AppDir/usr/lib/liblz4.so.1 
+2026-05-08T12:44:04.6419235Z Calling strip on library AppDir/usr/lib/liblzma.so.5 
+2026-05-08T12:44:04.6444023Z Calling strip on library AppDir/usr/lib/libmbedcrypto.so.7 
+2026-05-08T12:44:04.6970330Z Calling strip on library AppDir/usr/lib/libmd.so.0 
+2026-05-08T12:44:04.6994626Z Calling strip on library AppDir/usr/lib/libmedia_kit_libs_linux_plugin.so 
+2026-05-08T12:44:04.7015813Z Calling strip on library AppDir/usr/lib/libmedia_kit_video_plugin.so 
+2026-05-08T12:44:04.7039470Z Calling strip on library AppDir/usr/lib/libmount.so.1 
+2026-05-08T12:44:04.7064583Z Calling strip on library AppDir/usr/lib/libmp3lame.so.0 
+2026-05-08T12:44:04.7089531Z Calling strip on library AppDir/usr/lib/libmpg123.so.0 
+2026-05-08T12:44:04.7128003Z Calling strip on library AppDir/usr/lib/libmpv.so.2 
+2026-05-08T12:44:04.7172339Z Calling strip on library AppDir/usr/lib/libmujs.so.3 
+2026-05-08T12:44:04.7196962Z Calling strip on library AppDir/usr/lib/libmysofa.so.1 
+2026-05-08T12:44:04.7219466Z Calling strip on library AppDir/usr/lib/libncursesw.so.6 
+2026-05-08T12:44:04.7244309Z Calling strip on library AppDir/usr/lib/libnettle.so.8 
+2026-05-08T12:44:04.7270105Z Calling strip on library AppDir/usr/lib/libnorm.so.1 
+2026-05-08T12:44:04.7294728Z Calling strip on library AppDir/usr/lib/libnuma.so.1 
+2026-05-08T12:44:04.7316202Z Calling strip on library AppDir/usr/lib/libogg.so.0 
+2026-05-08T12:44:04.7342998Z Calling strip on library AppDir/usr/lib/libopenal.so.1 
+2026-05-08T12:44:04.7373997Z Calling strip on library AppDir/usr/lib/libopenjp2.so.7 
+2026-05-08T12:44:04.7405388Z Calling strip on library AppDir/usr/lib/libopenmpt.so.0 
+2026-05-08T12:44:04.7940161Z Calling strip on library AppDir/usr/lib/libopus.so.0 
+2026-05-08T12:44:04.7974869Z Calling strip on library AppDir/usr/lib/libp11-kit.so.0 
+2026-05-08T12:44:04.8010208Z Calling strip on library AppDir/usr/lib/libpango-1.0.so.0 
+2026-05-08T12:44:04.8035683Z Calling strip on library AppDir/usr/lib/libpangocairo-1.0.so.0 
+2026-05-08T12:44:04.8058562Z Calling strip on library AppDir/usr/lib/libpangoft2-1.0.so.0 
+2026-05-08T12:44:04.8084306Z Calling strip on library AppDir/usr/lib/libpcre2-8.so.0 
+2026-05-08T12:44:04.8112008Z Calling strip on library AppDir/usr/lib/libpgm-5.3.so.0 
+2026-05-08T12:44:04.8139609Z Calling strip on library AppDir/usr/lib/libpixman-1.so.0 
+2026-05-08T12:44:04.8184984Z Calling strip on library AppDir/usr/lib/libplacebo.so.338 
+2026-05-08T12:44:04.8255287Z Calling strip on library AppDir/usr/lib/libpng16.so.16 
+2026-05-08T12:44:04.8280493Z Calling strip on library AppDir/usr/lib/libpocketsphinx.so.3 
+2026-05-08T12:44:04.8304666Z Calling strip on library AppDir/usr/lib/libpostproc.so.57 
+2026-05-08T12:44:04.8328406Z Calling strip on library AppDir/usr/lib/libpulse.so.0 
+2026-05-08T12:44:04.8355673Z Calling strip on library AppDir/usr/lib/libpulsecommon-16.1.so 
+2026-05-08T12:44:04.8382052Z Calling strip on library AppDir/usr/lib/librabbitmq.so.4 
+2026-05-08T12:44:04.8412360Z Calling strip on library AppDir/usr/lib/librav1e.so.0 
+2026-05-08T12:44:04.8952628Z Calling strip on library AppDir/usr/lib/libraw1394.so.11 
+2026-05-08T12:44:04.8978376Z Calling strip on library AppDir/usr/lib/librist.so.4 
+2026-05-08T12:44:04.9002390Z Calling strip on library AppDir/usr/lib/librom1394.so.0 
+2026-05-08T12:44:04.9041838Z Calling strip on library AppDir/usr/lib/librsvg-2.so.2 
+2026-05-08T12:44:04.9111022Z Calling strip on library AppDir/usr/lib/librubberband.so.2 
+2026-05-08T12:44:04.9142148Z Calling strip on library AppDir/usr/lib/libsamplerate.so.0 
+2026-05-08T12:44:04.9173998Z Calling strip on library AppDir/usr/lib/libscreen_retriever_plugin.so 
+2026-05-08T12:44:04.9197566Z Calling strip on library AppDir/usr/lib/libsecret-1.so.0 
+2026-05-08T12:44:04.9222906Z Calling strip on library AppDir/usr/lib/libselinux.so.1 
+2026-05-08T12:44:04.9246565Z Calling strip on library AppDir/usr/lib/libserd-0.so.0 
+2026-05-08T12:44:04.9949588Z Calling strip on library AppDir/usr/lib/libsharpyuv.so.0 
+2026-05-08T12:44:04.9972695Z Calling strip on library AppDir/usr/lib/libshine.so.3 
+2026-05-08T12:44:04.9996902Z Calling strip on library AppDir/usr/lib/libsixel.so.1 
+2026-05-08T12:44:05.0032889Z Calling strip on library AppDir/usr/lib/libslang.so.2 
+2026-05-08T12:44:05.0071503Z Calling strip on library AppDir/usr/lib/libsnappy.so.1 
+2026-05-08T12:44:05.0096338Z Calling strip on library AppDir/usr/lib/libsndfile.so.1 
+2026-05-08T12:44:05.0122209Z Calling strip on library AppDir/usr/lib/libsndio.so.7 
+2026-05-08T12:44:05.0145871Z Calling strip on library AppDir/usr/lib/libsodium.so.23 
+2026-05-08T12:44:05.0169933Z Calling strip on library AppDir/usr/lib/libsord-0.so.0 
+2026-05-08T12:44:05.0192218Z Calling strip on library AppDir/usr/lib/libsoxr.so.0 
+2026-05-08T12:44:05.0215184Z Calling strip on library AppDir/usr/lib/libspeex.so.1 
+2026-05-08T12:44:05.0239628Z Calling strip on library AppDir/usr/lib/libsphinxbase.so.3 
+2026-05-08T12:44:05.0263099Z Calling strip on library AppDir/usr/lib/libsratom-0.so.0 
+2026-05-08T12:44:05.0288221Z Calling strip on library AppDir/usr/lib/libsrt-gnutls.so.1.5 
+2026-05-08T12:44:05.0317516Z Calling strip on library AppDir/usr/lib/libssh-gcrypt.so.4 
+2026-05-08T12:44:05.0346407Z Calling strip on library AppDir/usr/lib/libssl.so.3 
+2026-05-08T12:44:05.0373219Z Calling strip on library AppDir/usr/lib/libswresample.so.4 
+2026-05-08T12:44:05.0900713Z Calling strip on library AppDir/usr/lib/libswscale.so.7 
+2026-05-08T12:44:05.0933528Z Calling strip on library AppDir/usr/lib/libsystemd.so.0 
+2026-05-08T12:44:05.0963137Z Calling strip on library AppDir/usr/lib/libtasn1.so.6 
+2026-05-08T12:44:05.0985980Z Calling strip on library AppDir/usr/lib/libthai.so.0 
+2026-05-08T12:44:05.1008276Z Calling strip on library AppDir/usr/lib/libtheoradec.so.1 
+2026-05-08T12:44:05.1032082Z Calling strip on library AppDir/usr/lib/libtheoraenc.so.1 
+2026-05-08T12:44:05.1056434Z Calling strip on library AppDir/usr/lib/libtinfo.so.6 
+2026-05-08T12:44:05.1081420Z Calling strip on library AppDir/usr/lib/libtwolame.so.0 
+2026-05-08T12:44:05.1105039Z Calling strip on library AppDir/usr/lib/libuchardet.so.0 
+2026-05-08T12:44:05.1130104Z Calling strip on library AppDir/usr/lib/libudev.so.1 
+2026-05-08T12:44:05.1154117Z Calling strip on library AppDir/usr/lib/libudfread.so.0 
+2026-05-08T12:44:05.1177258Z Calling strip on library AppDir/usr/lib/libunibreak.so.5 
+2026-05-08T12:44:05.1208107Z Calling strip on library AppDir/usr/lib/libunistring.so.5 
+2026-05-08T12:44:05.1243157Z Calling strip on library AppDir/usr/lib/libva-drm.so.2 
+2026-05-08T12:44:05.1264506Z Calling strip on library AppDir/usr/lib/libva-wayland.so.2 
+2026-05-08T12:44:05.1285374Z Calling strip on library AppDir/usr/lib/libva-x11.so.2 
+2026-05-08T12:44:05.1307641Z Calling strip on library AppDir/usr/lib/libva.so.2 
+2026-05-08T12:44:05.1330708Z Calling strip on library AppDir/usr/lib/libvdpau.so.1 
+2026-05-08T12:44:05.1352046Z Calling strip on library AppDir/usr/lib/libvidstab.so.1.1 
+2026-05-08T12:44:05.1374628Z Calling strip on library AppDir/usr/lib/libvolume_controller_plugin.so 
+2026-05-08T12:44:05.1398108Z Calling strip on library AppDir/usr/lib/libvorbis.so.0 
+2026-05-08T12:44:05.1424100Z Calling strip on library AppDir/usr/lib/libvorbisenc.so.2 
+2026-05-08T12:44:05.1450799Z Calling strip on library AppDir/usr/lib/libvorbisfile.so.3 
+2026-05-08T12:44:05.1473977Z Calling strip on library AppDir/usr/lib/libvpl.so.2 
+2026-05-08T12:44:05.1506380Z Calling strip on library AppDir/usr/lib/libvpx.so.9 
+2026-05-08T12:44:05.1553875Z Calling strip on library AppDir/usr/lib/libvulkan.so.1 
+2026-05-08T12:44:05.1580468Z Calling strip on library AppDir/usr/lib/libwayland-cursor.so.0 
+2026-05-08T12:44:05.1601986Z Calling strip on library AppDir/usr/lib/libwayland-egl.so.1 
+2026-05-08T12:44:05.1625812Z Calling strip on library AppDir/usr/lib/libwebp.so.7 
+2026-05-08T12:44:05.1650692Z Calling strip on library AppDir/usr/lib/libwebpmux.so.3 
+2026-05-08T12:44:05.1672575Z Calling strip on library AppDir/usr/lib/libwindow_manager_plugin.so 
+2026-05-08T12:44:05.1702933Z Calling strip on library AppDir/usr/lib/libx264.so.164 
+2026-05-08T12:44:05.1764121Z Calling strip on library AppDir/usr/lib/libx265.so.199 
+2026-05-08T12:44:05.1850326Z Calling strip on library AppDir/usr/lib/libxcb-render.so.0 
+2026-05-08T12:44:05.1874251Z Calling strip on library AppDir/usr/lib/libxcb-shape.so.0 
+2026-05-08T12:44:05.1896791Z Calling strip on library AppDir/usr/lib/libxcb-shm.so.0 
+2026-05-08T12:44:05.1919411Z Calling strip on library AppDir/usr/lib/libxcb-xfixes.so.0 
+2026-05-08T12:44:05.1942193Z Calling strip on library AppDir/usr/lib/libxkbcommon.so.0 
+2026-05-08T12:44:05.1973957Z Calling strip on library AppDir/usr/lib/libxml2.so.2 
+2026-05-08T12:44:05.2010613Z Calling strip on library AppDir/usr/lib/libxvidcore.so.4 
+2026-05-08T12:44:05.2039663Z Calling strip on library AppDir/usr/lib/libzimg.so.2 
+2026-05-08T12:44:05.2066349Z Calling strip on library AppDir/usr/lib/libzix-0.so.0 
+2026-05-08T12:44:05.2090659Z Calling strip on library AppDir/usr/lib/libzmq.so.5 
+2026-05-08T12:44:05.3552955Z Calling strip on library AppDir/usr/lib/libzstd.so.1 
+2026-05-08T12:44:05.4085839Z Calling strip on library AppDir/usr/lib/libzvbi.so.0 
+2026-05-08T12:44:05.4105920Z Setting rpath in ELF file AppDir/usr/bin/performancebench to $ORIGIN/../lib 
+2026-05-08T12:44:05.4117996Z Setting rpath in ELF file AppDir/usr/lib/libFLAC.so.12 to $ORIGIN 
+2026-05-08T12:44:05.4135256Z Setting rpath in ELF file AppDir/usr/lib/libOpenCL.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4147953Z Setting rpath in ELF file AppDir/usr/lib/libSDL2-2.0.so.0 to $ORIGIN 
+2026-05-08T12:44:05.4180675Z Setting rpath in ELF file AppDir/usr/lib/libSvtAv1Enc.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4227169Z Setting rpath in ELF file AppDir/usr/lib/libXau.so.6 to $ORIGIN 
+2026-05-08T12:44:05.4239092Z Setting rpath in ELF file AppDir/usr/lib/libXcomposite.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4250009Z Setting rpath in ELF file AppDir/usr/lib/libXcursor.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4261813Z Setting rpath in ELF file AppDir/usr/lib/libXdamage.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4272345Z Setting rpath in ELF file AppDir/usr/lib/libXdmcp.so.6 to $ORIGIN 
+2026-05-08T12:44:05.4283220Z Setting rpath in ELF file AppDir/usr/lib/libXext.so.6 to $ORIGIN 
+2026-05-08T12:44:05.4294749Z Setting rpath in ELF file AppDir/usr/lib/libXfixes.so.3 to $ORIGIN 
+2026-05-08T12:44:05.4305508Z Setting rpath in ELF file AppDir/usr/lib/libXi.so.6 to $ORIGIN 
+2026-05-08T12:44:05.4317341Z Setting rpath in ELF file AppDir/usr/lib/libXinerama.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4327806Z Setting rpath in ELF file AppDir/usr/lib/libXpresent.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4338552Z Setting rpath in ELF file AppDir/usr/lib/libXrandr.so.2 to $ORIGIN 
+2026-05-08T12:44:05.4349533Z Setting rpath in ELF file AppDir/usr/lib/libXrender.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4360552Z Setting rpath in ELF file AppDir/usr/lib/libXss.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4370879Z Setting rpath in ELF file AppDir/usr/lib/libXv.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4381555Z Setting rpath in ELF file AppDir/usr/lib/libacl.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4393252Z Setting rpath in ELF file AppDir/usr/lib/libaom.so.3 to $ORIGIN 
+2026-05-08T12:44:05.4436079Z Setting rpath in ELF file AppDir/usr/lib/libapparmor.so.1 to $ORIGIN 
+2026-05-08T12:44:05.4448517Z Setting rpath in ELF file AppDir/usr/lib/libarchive.so.13 to $ORIGIN 
+2026-05-08T12:44:05.4469425Z Setting rpath in ELF file AppDir/usr/lib/libass.so.9 to $ORIGIN 
+2026-05-08T12:44:05.4482482Z Setting rpath in ELF file AppDir/usr/lib/libasyncns.so.0 to $ORIGIN 
+2026-05-08T12:44:05.4493276Z Setting rpath in ELF file AppDir/usr/lib/libatk-1.0.so.0 to $ORIGIN 
+2026-05-08T12:44:05.4506408Z Setting rpath in ELF file AppDir/usr/lib/libatk-bridge-2.0.so.0 to $ORIGIN 
+2026-05-08T12:44:05.4520948Z Setting rpath in ELF file AppDir/usr/lib/libatspi.so.0 to $ORIGIN 
+2026-05-08T12:44:05.4535077Z Setting rpath in ELF file AppDir/usr/lib/libavc1394.so.0 to $ORIGIN 
+2026-05-08T12:44:05.4545706Z Setting rpath in ELF file AppDir/usr/lib/libavcodec.so.60 to $ORIGIN 
+2026-05-08T12:44:05.6236754Z Setting rpath in ELF file AppDir/usr/lib/libavdevice.so.60 to $ORIGIN 
+2026-05-08T12:44:05.6252981Z Setting rpath in ELF file AppDir/usr/lib/libavfilter.so.9 to $ORIGIN 
+2026-05-08T12:44:05.8233832Z Setting rpath in ELF file AppDir/usr/lib/libavformat.so.60 to $ORIGIN 
+2026-05-08T12:44:05.8268762Z Setting rpath in ELF file AppDir/usr/lib/libavutil.so.58 to $ORIGIN 
+2026-05-08T12:44:05.8293944Z Setting rpath in ELF file AppDir/usr/lib/libblas.so.3 to $ORIGIN 
+2026-05-08T12:44:05.8313490Z Setting rpath in ELF file AppDir/usr/lib/libblkid.so.1 to $ORIGIN 
+2026-05-08T12:44:05.8328619Z Setting rpath in ELF file AppDir/usr/lib/libbluray.so.2 to $ORIGIN 
+2026-05-08T12:44:05.8343890Z Setting rpath in ELF file AppDir/usr/lib/libbrotlicommon.so.1 to $ORIGIN 
+2026-05-08T12:44:05.8356232Z Setting rpath in ELF file AppDir/usr/lib/libbrotlidec.so.1 to $ORIGIN 
+2026-05-08T12:44:05.8367793Z Setting rpath in ELF file AppDir/usr/lib/libbrotlienc.so.1 to $ORIGIN 
+2026-05-08T12:44:05.8385863Z Setting rpath in ELF file AppDir/usr/lib/libbs2b.so.0 to $ORIGIN 
+2026-05-08T12:44:05.8397366Z Setting rpath in ELF file AppDir/usr/lib/libbsd.so.0 to $ORIGIN 
+2026-05-08T12:44:05.8409469Z Setting rpath in ELF file AppDir/usr/lib/libbz2.so.1.0 to $ORIGIN 
+2026-05-08T12:44:05.8421583Z Setting rpath in ELF file AppDir/usr/lib/libcaca.so.0 to $ORIGIN 
+2026-05-08T12:44:05.8442119Z Setting rpath in ELF file AppDir/usr/lib/libcairo-gobject.so.2 to $ORIGIN 
+2026-05-08T12:44:05.8453987Z Setting rpath in ELF file AppDir/usr/lib/libcairo.so.2 to $ORIGIN 
+2026-05-08T12:44:05.8477440Z Setting rpath in ELF file AppDir/usr/lib/libcap.so.2 to $ORIGIN 
+2026-05-08T12:44:05.8489115Z Setting rpath in ELF file AppDir/usr/lib/libcdio.so.19 to $ORIGIN 
+2026-05-08T12:44:05.8502494Z Setting rpath in ELF file AppDir/usr/lib/libcdio_cdda.so.2 to $ORIGIN 
+2026-05-08T12:44:05.8514253Z Setting rpath in ELF file AppDir/usr/lib/libcdio_paranoia.so.2 to $ORIGIN 
+2026-05-08T12:44:05.8525671Z Setting rpath in ELF file AppDir/usr/lib/libchromaprint.so.1 to $ORIGIN 
+2026-05-08T12:44:05.8537419Z Setting rpath in ELF file AppDir/usr/lib/libcjson.so.1 to $ORIGIN 
+2026-05-08T12:44:05.8548967Z Setting rpath in ELF file AppDir/usr/lib/libcodec2.so.1.2 to $ORIGIN 
+2026-05-08T12:44:06.0322938Z Setting rpath in ELF file AppDir/usr/lib/libcrypto.so.3 to $ORIGIN 
+2026-05-08T12:44:06.0377954Z Setting rpath in ELF file AppDir/usr/lib/libdatrie.so.1 to $ORIGIN 
+2026-05-08T12:44:06.0390425Z Setting rpath in ELF file AppDir/usr/lib/libdav1d.so.7 to $ORIGIN 
+2026-05-08T12:44:06.0422902Z Setting rpath in ELF file AppDir/usr/lib/libdb-5.3.so to $ORIGIN 
+2026-05-08T12:44:06.0459473Z Setting rpath in ELF file AppDir/usr/lib/libdbus-1.so.3 to $ORIGIN 
+2026-05-08T12:44:06.0477853Z Setting rpath in ELF file AppDir/usr/lib/libdc1394.so.25 to $ORIGIN 
+2026-05-08T12:44:06.0492431Z Setting rpath in ELF file AppDir/usr/lib/libdecor-0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.0504124Z Setting rpath in ELF file AppDir/usr/lib/libdvdnav.so.4 to $ORIGIN 
+2026-05-08T12:44:06.0516724Z Setting rpath in ELF file AppDir/usr/lib/libdvdread.so.8 to $ORIGIN 
+2026-05-08T12:44:06.0529383Z Setting rpath in ELF file AppDir/usr/lib/libepoxy.so.0 to $ORIGIN 
+2026-05-08T12:44:06.0559272Z Setting rpath in ELF file AppDir/usr/lib/libffi.so.8 to $ORIGIN 
+2026-05-08T12:44:06.0570933Z Setting rpath in ELF file AppDir/usr/lib/libfftw3.so.3 to $ORIGIN 
+2026-05-08T12:44:06.0605543Z Setting rpath in ELF file AppDir/usr/lib/libflite.so.1 to $ORIGIN 
+2026-05-08T12:44:06.0620556Z Setting rpath in ELF file AppDir/usr/lib/libflite_cmu_us_awb.so.1 to $ORIGIN 
+2026-05-08T12:44:06.0662812Z Setting rpath in ELF file AppDir/usr/lib/libflite_cmu_us_kal.so.1 to $ORIGIN 
+2026-05-08T12:44:06.0689682Z Setting rpath in ELF file AppDir/usr/lib/libflite_cmu_us_kal16.so.1 to $ORIGIN 
+2026-05-08T12:44:06.0737223Z Setting rpath in ELF file AppDir/usr/lib/libflite_cmu_us_rms.so.1 to $ORIGIN 
+2026-05-08T12:44:06.2439790Z Setting rpath in ELF file AppDir/usr/lib/libflite_cmu_us_slt.so.1 to $ORIGIN 
+2026-05-08T12:44:06.2482911Z Setting rpath in ELF file AppDir/usr/lib/libflite_cmulex.so.1 to $ORIGIN 
+2026-05-08T12:44:06.2503371Z Setting rpath in ELF file AppDir/usr/lib/libflite_usenglish.so.1 to $ORIGIN 
+2026-05-08T12:44:06.2517424Z Setting rpath in ELF file AppDir/usr/lib/libflutter_linux_gtk.so to $ORIGIN 
+2026-05-08T12:44:06.2601209Z Setting rpath in ELF file AppDir/usr/lib/libflutter_secure_storage_linux_plugin.so to $ORIGIN 
+2026-05-08T12:44:06.2614980Z Setting rpath in ELF file AppDir/usr/lib/libgcrypt.so.20 to $ORIGIN 
+2026-05-08T12:44:06.2643493Z Setting rpath in ELF file AppDir/usr/lib/libgdk-3.so.0 to $ORIGIN 
+2026-05-08T12:44:06.2669447Z Setting rpath in ELF file AppDir/usr/lib/libgdk_pixbuf-2.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.2683733Z Setting rpath in ELF file AppDir/usr/lib/libgfortran.so.5 to $ORIGIN 
+2026-05-08T12:44:06.2732016Z Setting rpath in ELF file AppDir/usr/lib/libgio-2.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.2769221Z Setting rpath in ELF file AppDir/usr/lib/libglib-2.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.2798435Z Setting rpath in ELF file AppDir/usr/lib/libgme.so.0 to $ORIGIN 
+2026-05-08T12:44:06.2813053Z Setting rpath in ELF file AppDir/usr/lib/libgmodule-2.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.2824300Z Setting rpath in ELF file AppDir/usr/lib/libgnutls.so.30 to $ORIGIN 
+2026-05-08T12:44:06.2855591Z Setting rpath in ELF file AppDir/usr/lib/libgobject-2.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.2872794Z Setting rpath in ELF file AppDir/usr/lib/libgomp.so.1 to $ORIGIN 
+2026-05-08T12:44:06.2888991Z Setting rpath in ELF file AppDir/usr/lib/libgraphite2.so.3 to $ORIGIN 
+2026-05-08T12:44:06.2901897Z Setting rpath in ELF file AppDir/usr/lib/libgsm.so.1 to $ORIGIN 
+2026-05-08T12:44:06.2913488Z Setting rpath in ELF file AppDir/usr/lib/libgssapi_krb5.so.2 to $ORIGIN 
+2026-05-08T12:44:06.2928914Z Setting rpath in ELF file AppDir/usr/lib/libgtk-3.so.0 to $ORIGIN 
+2026-05-08T12:44:06.4244736Z Setting rpath in ELF file AppDir/usr/lib/libhogweed.so.6 to $ORIGIN 
+2026-05-08T12:44:06.4262014Z Setting rpath in ELF file AppDir/usr/lib/libhwy.so.1 to $ORIGIN 
+2026-05-08T12:44:06.4273941Z Setting rpath in ELF file AppDir/usr/lib/libicudata.so.74 to $ORIGIN 
+2026-05-08T12:44:06.6048111Z Setting rpath in ELF file AppDir/usr/lib/libicuuc.so.74 to $ORIGIN 
+2026-05-08T12:44:06.6092052Z Setting rpath in ELF file AppDir/usr/lib/libidn2.so.0 to $ORIGIN 
+2026-05-08T12:44:06.6105179Z Setting rpath in ELF file AppDir/usr/lib/libiec61883.so.0 to $ORIGIN 
+2026-05-08T12:44:06.6117700Z Setting rpath in ELF file AppDir/usr/lib/libjpeg.so.8 to $ORIGIN 
+2026-05-08T12:44:06.6134963Z Setting rpath in ELF file AppDir/usr/lib/libjxl.so.0.7 to $ORIGIN 
+2026-05-08T12:44:06.6172632Z Setting rpath in ELF file AppDir/usr/lib/libjxl_threads.so.0.7 to $ORIGIN 
+2026-05-08T12:44:06.6184144Z Setting rpath in ELF file AppDir/usr/lib/libk5crypto.so.3 to $ORIGIN 
+2026-05-08T12:44:06.6197735Z Setting rpath in ELF file AppDir/usr/lib/libkeyutils.so.1 to $ORIGIN 
+2026-05-08T12:44:06.6208549Z Setting rpath in ELF file AppDir/usr/lib/libkrb5.so.3 to $ORIGIN 
+2026-05-08T12:44:06.6230038Z Setting rpath in ELF file AppDir/usr/lib/libkrb5support.so.0 to $ORIGIN 
+2026-05-08T12:44:06.6241650Z Setting rpath in ELF file AppDir/usr/lib/liblapack.so.3 to $ORIGIN 
+2026-05-08T12:44:06.7741073Z Setting rpath in ELF file AppDir/usr/lib/liblcms2.so.2 to $ORIGIN 
+2026-05-08T12:44:06.7759771Z Setting rpath in ELF file AppDir/usr/lib/liblilv-0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.7772546Z Setting rpath in ELF file AppDir/usr/lib/liblua5.2.so.0 to $ORIGIN 
+2026-05-08T12:44:06.7786202Z Setting rpath in ELF file AppDir/usr/lib/liblz4.so.1 to $ORIGIN 
+2026-05-08T12:44:06.7799079Z Setting rpath in ELF file AppDir/usr/lib/liblzma.so.5 to $ORIGIN 
+2026-05-08T12:44:06.7812528Z Setting rpath in ELF file AppDir/usr/lib/libmbedcrypto.so.7 to $ORIGIN 
+2026-05-08T12:44:06.7830428Z Setting rpath in ELF file AppDir/usr/lib/libmd.so.0 to $ORIGIN 
+2026-05-08T12:44:06.7842005Z Setting rpath in ELF file AppDir/usr/lib/libmedia_kit_libs_linux_plugin.so to $ORIGIN 
+2026-05-08T12:44:06.7853304Z Setting rpath in ELF file AppDir/usr/lib/libmedia_kit_video_plugin.so to $ORIGIN 
+2026-05-08T12:44:06.7864856Z Setting rpath in ELF file AppDir/usr/lib/libmount.so.1 to $ORIGIN 
+2026-05-08T12:44:06.7879874Z Setting rpath in ELF file AppDir/usr/lib/libmp3lame.so.0 to $ORIGIN 
+2026-05-08T12:44:06.7894422Z Setting rpath in ELF file AppDir/usr/lib/libmpg123.so.0 to $ORIGIN 
+2026-05-08T12:44:06.7910718Z Setting rpath in ELF file AppDir/usr/lib/libmpv.so.2 to $ORIGIN 
+2026-05-08T12:44:06.7940302Z Setting rpath in ELF file AppDir/usr/lib/libmujs.so.3 to $ORIGIN 
+2026-05-08T12:44:06.7955140Z Setting rpath in ELF file AppDir/usr/lib/libmysofa.so.1 to $ORIGIN 
+2026-05-08T12:44:06.7966316Z Setting rpath in ELF file AppDir/usr/lib/libncursesw.so.6 to $ORIGIN 
+2026-05-08T12:44:06.7981030Z Setting rpath in ELF file AppDir/usr/lib/libnettle.so.8 to $ORIGIN 
+2026-05-08T12:44:06.7997110Z Setting rpath in ELF file AppDir/usr/lib/libnorm.so.1 to $ORIGIN 
+2026-05-08T12:44:06.8012005Z Setting rpath in ELF file AppDir/usr/lib/libnuma.so.1 to $ORIGIN 
+2026-05-08T12:44:06.8023579Z Setting rpath in ELF file AppDir/usr/lib/libogg.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8034819Z Setting rpath in ELF file AppDir/usr/lib/libopenal.so.1 to $ORIGIN 
+2026-05-08T12:44:06.8059586Z Setting rpath in ELF file AppDir/usr/lib/libopenjp2.so.7 to $ORIGIN 
+2026-05-08T12:44:06.8074656Z Setting rpath in ELF file AppDir/usr/lib/libopenmpt.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8104144Z Setting rpath in ELF file AppDir/usr/lib/libopus.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8119205Z Setting rpath in ELF file AppDir/usr/lib/libp11-kit.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8145726Z Setting rpath in ELF file AppDir/usr/lib/libpango-1.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8162851Z Setting rpath in ELF file AppDir/usr/lib/libpangocairo-1.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8175046Z Setting rpath in ELF file AppDir/usr/lib/libpangoft2-1.0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8187472Z Setting rpath in ELF file AppDir/usr/lib/libpcre2-8.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8204429Z Setting rpath in ELF file AppDir/usr/lib/libpgm-5.3.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8218441Z Setting rpath in ELF file AppDir/usr/lib/libpixman-1.so.0 to $ORIGIN 
+2026-05-08T12:44:06.8237518Z Setting rpath in ELF file AppDir/usr/lib/libplacebo.so.338 to $ORIGIN 
+2026-05-08T12:44:06.9355769Z Setting rpath in ELF file AppDir/usr/lib/libpng16.so.16 to $ORIGIN 
+2026-05-08T12:44:06.9371498Z Setting rpath in ELF file AppDir/usr/lib/libpocketsphinx.so.3 to $ORIGIN 
+2026-05-08T12:44:06.9387714Z Setting rpath in ELF file AppDir/usr/lib/libpostproc.so.57 to $ORIGIN 
+2026-05-08T12:44:06.9400230Z Setting rpath in ELF file AppDir/usr/lib/libpulse.so.0 to $ORIGIN 
+2026-05-08T12:44:06.9413505Z Setting rpath in ELF file AppDir/usr/lib/libpulsecommon-16.1.so to $ORIGIN 
+2026-05-08T12:44:06.9432102Z Setting rpath in ELF file AppDir/usr/lib/librabbitmq.so.4 to $ORIGIN 
+2026-05-08T12:44:06.9444766Z Setting rpath in ELF file AppDir/usr/lib/librav1e.so.0 to $ORIGIN 
+2026-05-08T12:44:06.9490933Z Setting rpath in ELF file AppDir/usr/lib/libraw1394.so.11 to $ORIGIN 
+2026-05-08T12:44:06.9503964Z Setting rpath in ELF file AppDir/usr/lib/librist.so.4 to $ORIGIN 
+2026-05-08T12:44:06.9518599Z Setting rpath in ELF file AppDir/usr/lib/librom1394.so.0 to $ORIGIN 
+2026-05-08T12:44:06.9529803Z Setting rpath in ELF file AppDir/usr/lib/librsvg-2.so.2 to $ORIGIN 
+2026-05-08T12:44:06.9592273Z Setting rpath in ELF file AppDir/usr/lib/librubberband.so.2 to $ORIGIN 
+2026-05-08T12:44:06.9609680Z Setting rpath in ELF file AppDir/usr/lib/libsamplerate.so.0 to $ORIGIN 
+2026-05-08T12:44:06.9634478Z Setting rpath in ELF file AppDir/usr/lib/libscreen_retriever_plugin.so to $ORIGIN 
+2026-05-08T12:44:06.9645612Z Setting rpath in ELF file AppDir/usr/lib/libsecret-1.so.0 to $ORIGIN 
+2026-05-08T12:44:06.9662944Z Setting rpath in ELF file AppDir/usr/lib/libselinux.so.1 to $ORIGIN 
+2026-05-08T12:44:06.9676200Z Setting rpath in ELF file AppDir/usr/lib/libserd-0.so.0 to $ORIGIN 
+2026-05-08T12:44:06.9688187Z Setting rpath in ELF file AppDir/usr/lib/libsharpyuv.so.0 to $ORIGIN 
+2026-05-08T12:44:06.9699277Z Setting rpath in ELF file AppDir/usr/lib/libshine.so.3 to $ORIGIN 
+2026-05-08T12:44:06.9711101Z Setting rpath in ELF file AppDir/usr/lib/libsixel.so.1 to $ORIGIN 
+2026-05-08T12:44:06.9726729Z Setting rpath in ELF file AppDir/usr/lib/libslang.so.2 to $ORIGIN 
+2026-05-08T12:44:06.9760856Z Setting rpath in ELF file AppDir/usr/lib/libsnappy.so.1 to $ORIGIN 
+2026-05-08T12:44:06.9772863Z Setting rpath in ELF file AppDir/usr/lib/libsndfile.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1230176Z Setting rpath in ELF file AppDir/usr/lib/libsndio.so.7 to $ORIGIN 
+2026-05-08T12:44:07.1244172Z Setting rpath in ELF file AppDir/usr/lib/libsodium.so.23 to $ORIGIN 
+2026-05-08T12:44:07.1260838Z Setting rpath in ELF file AppDir/usr/lib/libsord-0.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1272814Z Setting rpath in ELF file AppDir/usr/lib/libsoxr.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1286702Z Setting rpath in ELF file AppDir/usr/lib/libspeex.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1299557Z Setting rpath in ELF file AppDir/usr/lib/libsphinxbase.so.3 to $ORIGIN 
+2026-05-08T12:44:07.1314685Z Setting rpath in ELF file AppDir/usr/lib/libsratom-0.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1326284Z Setting rpath in ELF file AppDir/usr/lib/libsrt-gnutls.so.1.5 to $ORIGIN 
+2026-05-08T12:44:07.1348613Z Setting rpath in ELF file AppDir/usr/lib/libssh-gcrypt.so.4 to $ORIGIN 
+2026-05-08T12:44:07.1367107Z Setting rpath in ELF file AppDir/usr/lib/libssl.so.3 to $ORIGIN 
+2026-05-08T12:44:07.1386902Z Setting rpath in ELF file AppDir/usr/lib/libswresample.so.4 to $ORIGIN 
+2026-05-08T12:44:07.1399439Z Setting rpath in ELF file AppDir/usr/lib/libswscale.so.7 to $ORIGIN 
+2026-05-08T12:44:07.1416877Z Setting rpath in ELF file AppDir/usr/lib/libsystemd.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1440101Z Setting rpath in ELF file AppDir/usr/lib/libtasn1.so.6 to $ORIGIN 
+2026-05-08T12:44:07.1452260Z Setting rpath in ELF file AppDir/usr/lib/libthai.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1463237Z Setting rpath in ELF file AppDir/usr/lib/libtheoradec.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1475706Z Setting rpath in ELF file AppDir/usr/lib/libtheoraenc.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1489190Z Setting rpath in ELF file AppDir/usr/lib/libtinfo.so.6 to $ORIGIN 
+2026-05-08T12:44:07.1502569Z Setting rpath in ELF file AppDir/usr/lib/libtwolame.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1514709Z Setting rpath in ELF file AppDir/usr/lib/libuchardet.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1527363Z Setting rpath in ELF file AppDir/usr/lib/libudev.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1540918Z Setting rpath in ELF file AppDir/usr/lib/libudfread.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1552029Z Setting rpath in ELF file AppDir/usr/lib/libunibreak.so.5 to $ORIGIN 
+2026-05-08T12:44:07.1564486Z Setting rpath in ELF file AppDir/usr/lib/libunistring.so.5 to $ORIGIN 
+2026-05-08T12:44:07.1590892Z Setting rpath in ELF file AppDir/usr/lib/libva-drm.so.2 to $ORIGIN 
+2026-05-08T12:44:07.1601412Z Setting rpath in ELF file AppDir/usr/lib/libva-wayland.so.2 to $ORIGIN 
+2026-05-08T12:44:07.1612487Z Setting rpath in ELF file AppDir/usr/lib/libva-x11.so.2 to $ORIGIN 
+2026-05-08T12:44:07.1624015Z Setting rpath in ELF file AppDir/usr/lib/libva.so.2 to $ORIGIN 
+2026-05-08T12:44:07.1636892Z Setting rpath in ELF file AppDir/usr/lib/libvdpau.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1647440Z Setting rpath in ELF file AppDir/usr/lib/libvidstab.so.1.1 to $ORIGIN 
+2026-05-08T12:44:07.1659595Z Setting rpath in ELF file AppDir/usr/lib/libvolume_controller_plugin.so to $ORIGIN 
+2026-05-08T12:44:07.1669938Z Setting rpath in ELF file AppDir/usr/lib/libvorbis.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1682614Z Setting rpath in ELF file AppDir/usr/lib/libvorbisenc.so.2 to $ORIGIN 
+2026-05-08T12:44:07.1700913Z Setting rpath in ELF file AppDir/usr/lib/libvorbisfile.so.3 to $ORIGIN 
+2026-05-08T12:44:07.1711841Z Setting rpath in ELF file AppDir/usr/lib/libvpl.so.2 to $ORIGIN 
+2026-05-08T12:44:07.1725002Z Setting rpath in ELF file AppDir/usr/lib/libvpx.so.9 to $ORIGIN 
+2026-05-08T12:44:07.1761114Z Setting rpath in ELF file AppDir/usr/lib/libvulkan.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1778461Z Setting rpath in ELF file AppDir/usr/lib/libwayland-cursor.so.0 to $ORIGIN 
+2026-05-08T12:44:07.1789363Z Setting rpath in ELF file AppDir/usr/lib/libwayland-egl.so.1 to $ORIGIN 
+2026-05-08T12:44:07.1799951Z Setting rpath in ELF file AppDir/usr/lib/libwebp.so.7 to $ORIGIN 
+2026-05-08T12:44:07.1815653Z Setting rpath in ELF file AppDir/usr/lib/libwebpmux.so.3 to $ORIGIN 
+2026-05-08T12:44:07.1826483Z Setting rpath in ELF file AppDir/usr/lib/libwindow_manager_plugin.so to $ORIGIN 
+2026-05-08T12:44:07.1837229Z Setting rpath in ELF file AppDir/usr/lib/libx264.so.164 to $ORIGIN 
+2026-05-08T12:44:07.1865536Z Setting rpath in ELF file AppDir/usr/lib/libx265.so.199 to $ORIGIN 
+2026-05-08T12:44:07.3045297Z Setting rpath in ELF file AppDir/usr/lib/libxcb-render.so.0 to $ORIGIN 
+2026-05-08T12:44:07.3059579Z Setting rpath in ELF file AppDir/usr/lib/libxcb-shape.so.0 to $ORIGIN 
+2026-05-08T12:44:07.3070626Z Setting rpath in ELF file AppDir/usr/lib/libxcb-shm.so.0 to $ORIGIN 
+2026-05-08T12:44:07.3081730Z Setting rpath in ELF file AppDir/usr/lib/libxcb-xfixes.so.0 to $ORIGIN 
+2026-05-08T12:44:07.3093574Z Setting rpath in ELF file AppDir/usr/lib/libxkbcommon.so.0 to $ORIGIN 
+2026-05-08T12:44:07.3107985Z Setting rpath in ELF file AppDir/usr/lib/libxml2.so.2 to $ORIGIN 
+2026-05-08T12:44:07.3138429Z Setting rpath in ELF file AppDir/usr/lib/libxvidcore.so.4 to $ORIGIN 
+2026-05-08T12:44:07.3156908Z Setting rpath in ELF file AppDir/usr/lib/libzimg.so.2 to $ORIGIN 
+2026-05-08T12:44:07.3176879Z Setting rpath in ELF file AppDir/usr/lib/libzix-0.so.0 to $ORIGIN 
+2026-05-08T12:44:07.3188373Z Setting rpath in ELF file AppDir/usr/lib/libzmq.so.5 to $ORIGIN 
+2026-05-08T12:44:07.3206199Z Setting rpath in ELF file AppDir/usr/lib/libzstd.so.1 to $ORIGIN 
+2026-05-08T12:44:07.3225756Z Setting rpath in ELF file AppDir/usr/lib/libzvbi.so.0 to $ORIGIN 
+2026-05-08T12:44:07.3244449Z 
+2026-05-08T12:44:07.3244780Z -- Deploying icons -- 
+2026-05-08T12:44:07.3245061Z Deploying icon AppDir/performancebench.png 
+2026-05-08T12:44:07.4121132Z WARNING: Could not find copyright files for file AppDir/performancebench.png using dpkg-query 
+2026-05-08T12:44:07.4121669Z 
+2026-05-08T12:44:07.4121783Z -- Deploying desktop files -- 
+2026-05-08T12:44:07.4122233Z Deploying desktop file AppDir/usr/share/applications/performancebench.desktop 
+2026-05-08T12:44:07.4122639Z 
+2026-05-08T12:44:07.4123216Z -- Copying files into AppDir -- 
+2026-05-08T12:44:07.4123790Z Copying file AppDir/performancebench.png to AppDir/usr/share/icons/hicolor/256x256/apps/performancebench.png 
+2026-05-08T12:44:07.4124776Z Copying file AppDir/usr/share/applications/performancebench.desktop to AppDir/usr/share/applications/performancebench.desktop 
+2026-05-08T12:44:07.4125361Z 
+2026-05-08T12:44:07.4125498Z -- Deploying files into AppDir root directory -- 
+2026-05-08T12:44:07.4125894Z Deploying files to AppDir root using desktop file: AppDir/usr/share/applications/performancebench.desktop 
+2026-05-08T12:44:07.4126369Z Deploying desktop file to AppDir root: AppDir/usr/share/applications/performancebench.desktop 
+2026-05-08T12:44:07.4127518Z Creating symlink for file AppDir/usr/share/applications/performancebench.desktop in/as AppDir 
+2026-05-08T12:44:07.4128108Z Deploying icon to AppDir root: AppDir/usr/share/icons/hicolor/256x256/apps/performancebench.png 
+2026-05-08T12:44:07.4128892Z Creating symlink for file AppDir/usr/share/icons/hicolor/256x256/apps/performancebench.png in/as AppDir 
+2026-05-08T12:44:07.4129581Z Deploying AppRun symlink for executable in AppDir root: AppDir/usr/bin/performancebench 
+2026-05-08T12:44:07.4130023Z Creating symlink for file AppDir/usr/bin/performancebench in/as AppDir/AppRun 
+2026-05-08T12:44:07.4130284Z 
+2026-05-08T12:44:07.4130390Z -- Running output plugin: appimage -- 
+2026-05-08T12:44:18.1291599Z [appimage/stdout] Found appimagetool: /tmp/appimage_extracted_89e4a7efa8e28747393c934b525cd664/plugins/linuxdeploy-plugin-appimage/usr/bin/appimagetool
+2026-05-08T12:44:18.1292757Z [appimage/stderr] Warning: please use $LINUXDEPLOY_OUTPUT_VERSION instead of $VERSION
+2026-05-08T12:44:18.1293568Z [appimage/stderr] Running command: /tmp/appimage_extracted_89e4a7efa8e28747393c934b525cd664/plugins/linuxdeploy-plugin-appimage/usr/bin/appimagetool "AppDir"
+2026-05-08T12:44:18.1294082Z [appimage/stderr] 
+2026-05-08T12:44:18.1294568Z [appimage/stdout] 
+2026-05-08T12:44:18.1294915Z [appimage/stderr] appimagetool, continuous build (git version 8c8c91f), build 295 built on 2025-12-04 17:56:36 UTC
+2026-05-08T12:44:18.1295654Z [appimage/stdout] /home/runner/work/Benchify/Benchify/performancebench/AppDir should be packaged as PerformanceBench-0.1.1-rc.5-x86_64.AppImage
+2026-05-08T12:44:18.1296315Z [appimage/stderr] Using architecture x86_64
+2026-05-08T12:44:18.1296639Z [appimage/stderr] Deleting pre-existing .DirIcon
+2026-05-08T12:44:18.1297292Z [appimage/stderr] Creating .DirIcon symlink based on information from desktop file
+2026-05-08T12:44:18.1297951Z [appimage/stderr] WARNING: AppStream upstream metadata is missing, please consider creating it
+2026-05-08T12:44:18.1298656Z [appimage/stderr]          in usr/share/metainfo/performancebench.appdata.xml
+2026-05-08T12:44:18.1299247Z [appimage/stderr]          Please see https://www.freedesktop.org/software/appstream/docs/chap-Quickstart.html#sect-Quickstart-DesktopApps
+2026-05-08T12:44:18.1299777Z [appimage/stderr]          for more information or use the generator at
+2026-05-08T12:44:18.1300245Z [appimage/stderr]          https://docs.appimage.org/packaging-guide/optional/appstream.html#using-the-appstream-generator
+2026-05-08T12:44:18.1300642Z [appimage/stderr] Generating squashfs...
+2026-05-08T12:44:18.1301069Z [appimage/stderr] Downloading runtime file from https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64
+2026-05-08T12:44:18.1301525Z [appimage/stdout] Parallel mksquashfs: Using 4 processors
+2026-05-08T12:44:18.1301887Z [appimage/stderr] Downloaded runtime binary of size 944632
+2026-05-08T12:44:18.1302516Z [appimage/stdout] Creating 4.0 filesystem on PerformanceBench-0.1.1-rc.5-x86_64.AppImage, block size 131072.
+2026-05-08T12:44:18.1303085Z [appimage/stdout] 
+2026-05-08T12:44:18.1303414Z [appimage/stdout] [================|                                             ]  800/3045  26%
+2026-05-08T12:44:18.1304003Z [appimage/stdout] [=============================================================|] 3045/3045 100%[appimage/stderr] Embedding ELF...
+2026-05-08T12:44:18.1304365Z 
+2026-05-08T12:44:18.1304450Z [appimage/stdout] 
+2026-05-08T12:44:18.1304889Z [appimage/stdout] Exportable Squashfs 4.0 filesystem, zstd compressed, data block size 131072
+2026-05-08T12:44:18.1305559Z [appimage/stdout] 	compressed data, compressed metadata, compressed fragments,
+2026-05-08T12:44:18.1306060Z [appimage/stdout] 	compressed xattrs, compressed ids
+2026-05-08T12:44:18.1306470Z [appimage/stdout] 	duplicates are removed
+2026-05-08T12:44:18.1306932Z [appimage/stdout] Filesystem size 113728.96 Kbytes (111.06 Mbytes)
+2026-05-08T12:44:18.1307795Z [appimage/stdout] 	32.47% of uncompressed filesystem size (350255.56 Kbytes)
+2026-05-08T12:44:18.1308558Z [appimage/stdout] Inode table size 12397 bytes (12.11 Kbytes)
+2026-05-08T12:44:18.1308996Z [appimage/stdout] 	38.30% of uncompressed inode table size (32369 bytes)
+2026-05-08T12:44:18.1309464Z [appimage/stdout] Directory table size 6083 bytes (5.94 Kbytes)
+2026-05-08T12:44:18.1309946Z [appimage/stdout] 	37.72% of uncompressed directory table size (16128 bytes)
+2026-05-08T12:44:18.1310390Z [appimage/stdout] Number of duplicate files found 34
+2026-05-08T12:44:18.1310739Z [appimage/stdout] Number of inodes 665
+2026-05-08T12:44:18.1311036Z [appimage/stdout] Number of files 435
+2026-05-08T12:44:18.1311338Z [appimage/stdout] Number of fragments 60
+2026-05-08T12:44:18.1311657Z [appimage/stdout] Number of symbolic links 3
+2026-05-08T12:44:18.1311983Z [appimage/stdout] Number of device nodes 0
+2026-05-08T12:44:18.1312259Z [appimage/stdout] Number of fifo nodes 0
+2026-05-08T12:44:18.1312564Z [appimage/stdout] Number of socket nodes 0
+2026-05-08T12:44:18.1312899Z [appimage/stdout] Number of directories 227
+2026-05-08T12:44:18.1313224Z [appimage/stdout] Number of hard-links 0
+2026-05-08T12:44:18.1313581Z [appimage/stdout] Number of ids (unique uids + gids) 1
+2026-05-08T12:44:18.1313906Z [appimage/stdout] Number of uids 1
+2026-05-08T12:44:18.1314259Z [appimage/stdout] 	root (0)
+2026-05-08T12:44:18.1314429Z [appimage/stdout] Number of gids 1
+2026-05-08T12:44:18.1314605Z [appimage/stdout] 	root (0)
+2026-05-08T12:44:18.1314803Z [appimage/stderr] Marking the AppImage as executable...
+2026-05-08T12:44:18.1315037Z [appimage/stderr] Embedding MD5 digest
+2026-05-08T12:44:18.1315302Z [appimage/stderr] Success
+2026-05-08T12:44:18.1315535Z [appimage/stderr] 
+2026-05-08T12:44:18.1315957Z [appimage/stderr] Please consider submitting your AppImage to AppImageHub, the crowd-sourced
+2026-05-08T12:44:18.1316637Z [appimage/stderr] central directory of available AppImages, by opening a pull request
+2026-05-08T12:44:18.1317394Z [appimage/stderr] at https://github.com/AppImage/appimage.github.io
+2026-05-08T12:44:18.1327965Z mv: './PerformanceBench-0.1.1-rc.5-x86_64.AppImage' and 'PerformanceBench-0.1.1-rc.5-x86_64.AppImage' are the same file
+2026-05-08T12:44:18.1345213Z ##[error]Process completed with exit code 1.

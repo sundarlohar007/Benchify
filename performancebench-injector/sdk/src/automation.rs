@@ -18,6 +18,15 @@ use serde_json::{json, Value};
 
 use crate::transport;
 
+/// Sanitize a string for use as a path component: strip anything that
+/// isn't alphanumeric, `-`, `_`, or `.`.
+/// Prevents path-traversal via crafted session_id / label values.
+fn sanitize_path_component(s: &str) -> String {
+    s.chars()
+        .filter(|c| c.is_alphanumeric() || *c == '-' || *c == '_' || *c == '.')
+        .collect::<String>()
+}
+
 /// Automation state: tracks current session and marker count.
 struct AutomationState {
     session_id: Option<String>,
@@ -251,9 +260,12 @@ fn handle_screenshot(payload: &Value) -> String {
         .unwrap_or("screenshot");
 
     let state = AUTOMATION_STATE.lock().unwrap_or_else(|e| e.into_inner());
-    let session_id = state.session_id.clone().unwrap_or_else(|| "unknown".into());
+    let session_id = sanitize_path_component(
+        &state.session_id.clone().unwrap_or_else(|| "unknown".into()),
+    );
+    let safe_label = sanitize_path_component(label);
 
-    let filename = format!("{}_{}.png", session_id, label);
+    let filename = format!("{}_{}.png", session_id, safe_label);
     let path = format!("/sdcard/benchify/{}", filename);
 
     // On Android, use SurfaceControl / screencap
@@ -309,7 +321,9 @@ fn handle_screenshot(payload: &Value) -> String {
 // ============================================================
 fn handle_export(_payload: &Value) -> String {
     let state = AUTOMATION_STATE.lock().unwrap_or_else(|e| e.into_inner());
-    let session_id = state.session_id.clone().unwrap_or_else(|| "unknown".into());
+    let session_id = sanitize_path_component(
+        &state.session_id.clone().unwrap_or_else(|| "unknown".into()),
+    );
 
     let filename = format!("{}_export.json", session_id);
     let path = format!("/sdcard/benchify/{}", filename);

@@ -1,0 +1,29 @@
+﻿2026-05-08T12:44:17.0708529Z ##[group]Run choco install nsis -y --no-progress
+2026-05-08T12:44:17.0708959Z [36;1mchoco install nsis -y --no-progress[0m
+2026-05-08T12:44:17.0770897Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-05-08T12:44:17.0771250Z env:
+2026-05-08T12:44:17.0771526Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-08T12:44:17.0771933Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-08T12:44:17.0772208Z ##[endgroup]
+2026-05-08T12:44:20.3631356Z Chocolatey v2.7.1
+2026-05-08T12:44:20.7334245Z Installing the following packages:
+2026-05-08T12:44:20.7339097Z nsis
+2026-05-08T12:44:20.7342707Z By installing, you accept licenses for the packages.
+2026-05-08T12:44:26.7471360Z Downloading package from source 'https://community.chocolatey.org/api/v2/'
+2026-05-08T12:44:27.4037950Z 
+2026-05-08T12:44:27.4038420Z nsis.install v3.12.0 [Approved]
+2026-05-08T12:44:27.4286066Z nsis.install package files install completed. Performing other installation steps.
+2026-05-08T12:44:29.0930937Z Installing nsis.install...
+2026-05-08T12:44:31.4646914Z nsis.install has been installed.
+2026-05-08T12:44:31.6053096Z   nsis.install can be automatically uninstalled.
+2026-05-08T12:44:31.7223412Z  The install of nsis.install was successful.
+2026-05-08T12:44:31.7226499Z   Deployed to 'C:\Program Files (x86)\NSIS'
+2026-05-08T12:44:31.7335378Z Downloading package from source 'https://community.chocolatey.org/api/v2/'
+2026-05-08T12:44:31.8947431Z 
+2026-05-08T12:44:31.8947983Z nsis v3.12.0 [Approved]
+2026-05-08T12:44:31.8963198Z nsis package files install completed. Performing other installation steps.
+2026-05-08T12:44:32.0640327Z  The install of nsis was successful.
+2026-05-08T12:44:32.0643941Z   Deployed to 'C:\ProgramData\chocolatey\lib\nsis'
+2026-05-08T12:44:32.0899917Z 
+2026-05-08T12:44:32.0900380Z Chocolatey installed 2/2 packages. 
+2026-05-08T12:44:32.2203776Z  See the log for details (C:\ProgramData\chocolatey\logs\chocolatey.log).

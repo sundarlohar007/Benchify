@@ -1,5 +1,9 @@
 //! Transport layer: TCP server on 127.0.0.1:8080 emitting newline-delimited JSON.
 //!
+//! NOTE: per-process network (net_per_process) takes priority over device-wide
+//! (network::parse_net_dev).  Device-wide is only used as a fallback when the
+//! per-process module produced no data.
+//!
 //! Per D-11: JSON over TCP port 8080. Matches iOS collector.py pattern.
 //! Per D-13: Always-on from app start. Desktop connects anytime.
 //!
@@ -7,6 +11,7 @@
 //! - Bound to 127.0.0.1 only — not routable.
 //! - Dedicated thread with 1s sleep. If collection takes >1s, skip cycle.
 
+use std::collections::VecDeque;
 use std::io::Write;
 use std::net::{TcpListener, TcpStream};
 use std::sync::{Mutex, atomic::{AtomicBool, Ordering}};
@@ -21,7 +26,7 @@ static STREAMING_ACTIVE: AtomicBool = AtomicBool::new(false);
 static SERVER_RUNNING: AtomicBool = AtomicBool::new(false);
 
 lazy_static::lazy_static! {
-    static ref SAMPLE_QUEUE: Mutex<Vec<MetricSample>> = Mutex::new(Vec::new());
+    static ref SAMPLE_QUEUE: Mutex<VecDeque<MetricSample>> = Mutex::new(VecDeque::new());
     static ref LATEST_SAMPLE: Mutex<Option<MetricSample>> = Mutex::new(None);
     /// Event queue for markers and other JSON events pushed via automation.
     static ref EVENT_QUEUE: Mutex<Vec<String>> = Mutex::new(Vec::new());
@@ -125,8 +130,8 @@ pub fn start_metric_collection() {
 
         if let Ok(mut latest) = LATEST_SAMPLE.lock() { *latest = Some(sample.clone()); }
         if let Ok(mut queue) = SAMPLE_QUEUE.lock() {
-            if queue.len() >= 60 { queue.remove(0); }
-            queue.push(sample);
+            if queue.len() >= 60 { queue.pop_front(); }
+            queue.push_back(sample);
         }
 
         std::thread::sleep(Duration::from_secs(1));
@@ -187,6 +192,7 @@ fn collect_metrics() -> MetricSample {
 
         // Per-process network from /proc/self/net/dev (per D-16)
         // net_per_process module tracks deltas independently
+        let mut has_per_process_net = false;
         {
             let net_result = net_per_process::collect(None);
             if net_result.total_tx > 0 || net_result.total_rx > 0 {
@@ -198,13 +204,16 @@ fn collect_metrics() -> MetricSample {
                 sample.net_cellular_rx_bytes = Some(net_result.cellular_rx as i32);
                 sample.net_other_tx_bytes = Some(net_result.other_tx as i32);
                 sample.net_other_rx_bytes = Some(net_result.other_rx as i32);
+                has_per_process_net = true;
             }
         }
 
-        // Network from /proc/self/net/dev (existing module — device-wide)
+        // Device-wide network from /proc/self/net/dev (fallback when per-process
+        // module returned no data). Always update `last_net` so the delta
+        // baseline stays current even when the per-process path wins.
         if let Ok(dev) = std::fs::read_to_string("/proc/self/net/dev") {
             let curr = network::parse_net_dev(&dev);
-            if !state.last_net.is_empty() {
+            if !has_per_process_net && !state.last_net.is_empty() {
                 let deltas = network::compute_network_deltas(&state.last_net, &curr);
                 let s = network::summarize_network_deltas(&deltas);
                 sample.net_tx_bytes = Some(s.total_tx as i32);
@@ -272,6 +281,6 @@ pub fn push_event_json(json_str: &str) {
 /// Returns serialized MetricSample vec plus marker events.
 pub fn get_buffered_samples() -> Vec<MetricSample> {
     SAMPLE_QUEUE.lock()
-        .map(|q| q.clone())
+        .map(|q| q.iter().cloned().collect())
         .unwrap_or_default()
 }

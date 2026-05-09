@@ -1452,3 +1452,171 @@ Schema per entry:
 - **Related:** —
 - **Found in:** S-10
 - **Discovered:** 2026-05-08
+
+---
+
+### B-102 — `SAMPLE_QUEUE` uses Vec with O(n) `remove(0)` on every cycle
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/transport.rs:128` (pre-fix)
+- **User-visible symptom:** None until sustained load; every metric tick past 60 samples does an O(60) memmove instead of O(1) dequeue.
+- **Root cause:** `Vec` used as a ring buffer; `remove(0)` shifts all elements down.
+- **Fix:** Replaced `Vec<MetricSample>` with `VecDeque<MetricSample>`; `remove(0)` → `pop_front()`, `push` → `push_back()`. `get_buffered_samples` collects into a Vec for the return type.
+- **Status:** FIXED:<pending-S11>
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-103 — Per-process network data silently overwritten by device-wide fallback
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/sdk/src/transport.rs:189-220` (pre-fix)
+- **User-visible symptom:** SDK always reports *device-wide* network counters even when per-process data (D-16) was available. Dashboard shows aggregate traffic instead of the profiled app's traffic — wildly misleading on devices with background downloads or streaming.
+- **Root cause:** `net_per_process::collect()` fills `net_tx_bytes` et al., then the device-wide `network::parse_net_dev` block unconditionally overwrites the same fields from the device-wide counters.
+- **Fix:** Track `has_per_process_net` flag; only fall through to device-wide when the per-process module returned zeros. Device-wide delta baseline (`last_net`) always updated regardless so it stays fresh for fallback.
+- **Status:** FIXED:<pending-S11>
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-104 — `handle_client` resends same `LATEST_SAMPLE` on every 100ms tick
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/transport.rs:97-103`
+- **User-visible symptom:** Desktop receives ~10× duplicate samples per second (100ms poll vs 1Hz collection). Parser must de-dup by timestamp; extra TCP bandwidth wasted; on slow ADB-forwarded links the queue backs up faster.
+- **Root cause:** `handle_client` loops at 100ms reading `LATEST_SAMPLE` with no timestamp guard. Collection writes a new sample every 1s, so 9 out of 10 reads are duplicates.
+- **Fix (planned):** Track `last_sent_ts`; skip send when `sample.timestamp == last_sent_ts`. Or switch to a `Condvar` notify model so the client thread sleeps until a new sample is available.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-105 — `EVENT_QUEUE` populated but never drained or sent to TCP clients
+
+- **Severity:** HIGH
+- **Where:** `performancebench-injector/sdk/src/transport.rs:27,265-269` + `handle_client`
+- **User-visible symptom:** Markers inserted via `MARKER` automation command are logged and pushed to `EVENT_QUEUE`, but `handle_client` never reads or sends them over TCP. Desktop never sees marker events in the NDJSON stream — markers appear lost.
+- **Root cause:** `push_event_json` writes to `EVENT_QUEUE`; `handle_client` only reads `LATEST_SAMPLE`. No drain loop for events was implemented.
+- **Fix (planned):** In `handle_client`'s streaming loop, drain `EVENT_QUEUE` and write each event as a JSON line before (or after) sending the current sample. Alternatively, push marker events into `SAMPLE_QUEUE` so they travel with the sample stream.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-104
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-106 — `nativeInit` global refs captured into locals that are immediately dropped
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/jni_bridge.rs:39-40` (pre-fix)
+- **User-visible symptom:** None currently — the SDK doesn't call back into Java. But the refs that were meant to enable future overlay updates / ContentResolver queries are freed immediately, making any future Java-callback path crash with a stale reference.
+- **Root cause:** `let _ctx = env.new_global_ref(context).ok();` creates a GlobalRef local that is dropped at end-of-scope. The JNI global ref table entry is released, and the Rust side has no handle to the Context or FpsOverlayView.
+- **Fix:** Store the `GlobalRef` pair in a process-wide `Lazy<Mutex<Option<(GlobalRef, GlobalRef)>>>`. Added `#[allow(unused_mut)]` to suppress the host-build warning for `mut env` (needed on Android only).
+- **Status:** FIXED:<pending-S11>
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-107 — `#[serde(rename_all = "snake_case")]` is a no-op on MetricSample
+
+- **Severity:** NIT
+- **Where:** `performancebench-injector/sdk/src/models.rs:7`
+- **User-visible symptom:** None. All fields are already snake_case, so the attribute does nothing. However, it gives false confidence that adding a CamelCase field would be auto-renamed — which would break the Appendix C wire contract (exact column names required).
+- **Root cause:** Copy-paste from a template; never tested with a non-snake field.
+- **Fix (planned):** Remove the attribute (all fields are already correctly named). Rely on explicit field names to match Appendix C exactly.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-108 — `gpu_mem_kb` and `pc_gpu_dedicated_mem_kb` both set from same source
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/models.rs:181,197` (pre-fix)
+- **User-visible symptom:** JSON stream emits the same GPU memory value under two keys (`gpu_mem_kb` and `pc_gpu_dedicated_mem_kb`). Dart-side merge logic may double-count or display a confusing "GPU Memory" and "PC GPU Dedicated Memory" that show identical numbers.
+- **Root cause:** `from_pc_snapshot` mapped `snapshot.gpu_dedicated_mem_kb` to both fields — the generic mobile-era `gpu_mem_kb` and the PC-specific `pc_gpu_dedicated_mem_kb`.
+- **Fix:** Removed the `gpu_mem_kb` assignment for PC snapshots; the PC-specific field carries the data. Generic `gpu_mem_kb` left as `None` (default) for PC builds.
+- **Status:** FIXED:<pending-S11>
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-109 — `charging` field is `i32` instead of `Option<i32>` — schema asymmetry
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/models.rs:70`
+- **User-visible symptom:** When the SDK has no battery data (e.g. PC build), JSON emits `"charging": 0` instead of omitting the key. Dart-side `fromMap` treats `0` as "not charging" rather than "unknown", masking the distinction between "not charging" and "no battery data available".
+- **Root cause:** All other fields use `Option<T>` + `skip_serializing_if = "Option::is_none"`. `charging` is the only one using a bare `i32` with `#[serde(default)]`.
+- **Fix (planned):** Change to `Option<i32>` to match the rest. Requires updating all sites that set `charging` in both transport.rs and from_pc_snapshot.
+- **Status:** DEFERRED-TO-S20
+- **Related:** B-107
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-110 — Path traversal via crafted `session_id` in SCREENSHOT handler
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/automation.rs:253-257` (pre-fix)
+- **User-visible symptom:** An attacker sending `START_SESSION` with `session_id: "../../system/etc/passwd"` then `SCREENSHOT` would write to `/sdcard/benchify/../../system/etc/passwd_screenshot.png` — i.e. `/system/etc/passwd_screenshot.png` (if permissions allow). On rooted devices or permissive SELinux, this is a file-write-anywhere primitive.
+- **Root cause:** `session_id` and `label` used directly in `format!("/sdcard/benchify/{}_{}.png", ...)` with no sanitization.
+- **Fix:** Added `sanitize_path_component()` that strips all chars except `[a-zA-Z0-9_-.]`. Applied to both `session_id` and `label` in SCREENSHOT and EXPORT handlers.
+- **Status:** FIXED:<pending-S11>
+- **Related:** B-111, B-089
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-111 — Same path traversal in EXPORT handler
+
+- **Severity:** MED
+- **Where:** `performancebench-injector/sdk/src/automation.rs:311-315` (pre-fix)
+- **User-visible symptom:** Same shape as B-110 but for JSON export files.
+- **Root cause:** Same unsanitized `session_id` in `format!("/sdcard/benchify/{}_export.json", ...)`.
+- **Fix:** Shared `sanitize_path_component()` applied.
+- **Status:** FIXED:<pending-S11>
+- **Related:** B-110, B-089
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-112 — Automation tests flaky under parallel execution (shared global state)
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/tests/test_automation.rs` + `sdk/src/automation.rs` tests
+- **User-visible symptom:** `cargo test` (parallel) intermittently fails `test_marker_without_session` or `test_handle_marker` because `AUTOMATION_STATE` is a process-global Lazy<Mutex>. One test's START_SESSION races with another test's STOP_SESSION.
+- **Root cause:** Test isolation impossible with a single process-global state and parallel test execution.
+- **Fix (planned):** Either run automation tests with `#[serial_test::serial]` attribute or refactor `AutomationState` to accept an injectable state handle instead of using a global static.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09
+
+---
+
+### B-113 — Poisoned-mutex recovery via `into_inner()` across 7 automation handlers
+
+- **Severity:** LOW
+- **Where:** `performancebench-injector/sdk/src/automation.rs:100,134,156,174,197,253,311`
+- **User-visible symptom:** None under normal operation. Risk: if a prior handler panicked while holding the lock (poisoning it), `unwrap_or_else(|e| e.into_inner())` silently continues with potentially inconsistent state (e.g. `marker_counter` mid-increment, `session_id` half-written).
+- **Root cause:** Pattern chosen for robustness over correctness — the assumption is that panics in handlers are always leaf errors that don't corrupt shared state.
+- **Fix (planned):** Acceptable trade-off for an SDK running inside a game process (crashing the host is worse than slightly stale state). Document the decision. Alternatively, wrap handler bodies in `catch_unwind` so they can't poison the mutex at all.
+- **Status:** DEFERRED-TO-S20
+- **Related:** —
+- **Found in:** S-11
+- **Discovered:** 2026-05-09

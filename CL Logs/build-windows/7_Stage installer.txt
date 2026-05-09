@@ -1,0 +1,29 @@
+﻿2026-05-08T12:45:08.4812854Z ##[group]Run $ver = "0.1.1-rc.5"
+2026-05-08T12:45:08.4813279Z [36;1m$ver = "0.1.1-rc.5"[0m
+2026-05-08T12:45:08.4813712Z [36;1mNew-Item -ItemType Directory -Force -Path dist | Out-Null[0m
+2026-05-08T12:45:08.4814239Z [36;1m# NSIS OutFile writes relative to script CWD. joncloud/makensis-action[0m
+2026-05-08T12:45:08.4814802Z [36;1m# may run from repo root or script dir depending on version, so search[0m
+2026-05-08T12:45:08.4815271Z [36;1m# both with an explicit installer-name pattern (NSI hard-codes the[0m
+2026-05-08T12:45:08.4815789Z [36;1m# 'performancebench-setup-' prefix). Fail loud if missing or too small.[0m
+2026-05-08T12:45:08.4816419Z [36;1m$candidates = @([0m
+2026-05-08T12:45:08.4816938Z [36;1m  (Get-ChildItem -Path . -Recurse -Filter 'performancebench-setup-*.exe' -ErrorAction SilentlyContinue)[0m
+2026-05-08T12:45:08.4817531Z [36;1m) | Sort-Object Length -Descending[0m
+2026-05-08T12:45:08.4817893Z [36;1mif (-not $candidates -or $candidates.Count -eq 0) {[0m
+2026-05-08T12:45:08.4818493Z [36;1m  Write-Error "No performancebench-setup-*.exe found anywhere — NSIS step failed silently"[0m
+2026-05-08T12:45:08.4819145Z [36;1m  Get-ChildItem -Path . -Recurse -Filter '*.exe' | Format-Table FullName, Length[0m
+2026-05-08T12:45:08.4819590Z [36;1m  exit 1[0m
+2026-05-08T12:45:08.4819785Z [36;1m}[0m
+2026-05-08T12:45:08.4819989Z [36;1m$exe = $candidates[0][0m
+2026-05-08T12:45:08.4820356Z [36;1m# Sanity: real NSIS installer with bundled Flutter app should be >= 10 MB.[0m
+2026-05-08T12:45:08.4820839Z [36;1mif ($exe.Length -lt 10MB) {[0m
+2026-05-08T12:45:08.4821296Z [36;1m  Write-Error ("Installer suspiciously small: {0} bytes ({1})" -f $exe.Length, $exe.FullName)[0m
+2026-05-08T12:45:08.4821766Z [36;1m  exit 1[0m
+2026-05-08T12:45:08.4821962Z [36;1m}[0m
+2026-05-08T12:45:08.4822323Z [36;1mWrite-Host ("Staging installer: {0} ({1:N0} bytes)" -f $exe.FullName, $exe.Length)[0m
+2026-05-08T12:45:08.4822896Z [36;1mCopy-Item $exe.FullName "dist/performancebench-${ver}-windows-x64-setup.exe"[0m
+2026-05-08T12:45:08.4885023Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-05-08T12:45:08.4885423Z env:
+2026-05-08T12:45:08.4885765Z   FLUTTER_ROOT: C:\hostedtoolcache\windows\flutter\stable-3.41.9-x64/flutter
+2026-05-08T12:45:08.4886208Z   PUB_CACHE: C:\Users\runneradmin\AppData\Local\Pub\Cache
+2026-05-08T12:45:08.4886548Z ##[endgroup]
+2026-05-08T12:45:08.9896237Z Staging installer: D:\a\Benchify\Benchify\performancebench\windows\installer\performancebench-setup-1.0.0.exe (26,100,245 bytes)

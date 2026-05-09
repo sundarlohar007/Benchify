@@ -1,0 +1,48 @@
+﻿2026-05-08T12:42:51.5937290Z ##[group]Run flutter pub get
+2026-05-08T12:42:51.5937620Z [36;1mflutter pub get[0m
+2026-05-08T12:42:51.5937870Z [36;1mflutter build ios --release --no-codesign[0m
+2026-05-08T12:42:51.5976040Z shell: /bin/bash -e {0}
+2026-05-08T12:42:51.5976260Z env:
+2026-05-08T12:42:51.5976530Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.41.9-arm64/flutter
+2026-05-08T12:42:51.5976900Z   PUB_CACHE: /Users/runner/.pub-cache
+2026-05-08T12:42:51.5977110Z ##[endgroup]
+2026-05-08T12:42:51.8652370Z Resolving dependencies...
+2026-05-08T12:42:51.9919800Z Downloading packages...
+2026-05-08T12:42:52.1679500Z + ffi 2.2.0
+2026-05-08T12:42:52.1679810Z + file 7.0.1
+2026-05-08T12:42:52.1680120Z + flutter_web_plugins 0.0.0 from sdk flutter
+2026-05-08T12:42:52.1680430Z + go_router 15.1.3 (17.2.3 available)
+2026-05-08T12:42:52.1680710Z + http 1.6.0
+2026-05-08T12:42:52.1680910Z + http_parser 4.1.2
+2026-05-08T12:42:52.1681550Z + intl 0.20.2
+2026-05-08T12:42:52.1681750Z + logging 1.3.0
+2026-05-08T12:42:52.1682360Z   matcher 0.12.19 (0.12.20 available)
+2026-05-08T12:42:52.1682720Z   meta 1.17.0 (1.18.2 available)
+2026-05-08T12:42:52.1683030Z + path_provider_linux 2.2.1
+2026-05-08T12:42:52.1683280Z + path_provider_platform_interface 2.1.2
+2026-05-08T12:42:52.1683570Z + path_provider_windows 2.3.0
+2026-05-08T12:42:52.1683810Z + platform 3.1.6
+2026-05-08T12:42:52.1684080Z + plugin_platform_interface 2.1.8
+2026-05-08T12:42:52.1684310Z + shared_preferences 2.5.5
+2026-05-08T12:42:52.1684560Z + shared_preferences_android 2.4.23
+2026-05-08T12:42:52.1684890Z + shared_preferences_foundation 2.5.6
+2026-05-08T12:42:52.1685180Z + shared_preferences_linux 2.4.1
+2026-05-08T12:42:52.1685470Z + shared_preferences_platform_interface 2.4.2
+2026-05-08T12:42:52.1685770Z + shared_preferences_web 2.4.3
+2026-05-08T12:42:52.1686080Z + shared_preferences_windows 2.4.1
+2026-05-08T12:42:52.1686340Z   test_api 0.7.10 (0.7.12 available)
+2026-05-08T12:42:52.1686590Z + typed_data 1.4.0
+2026-05-08T12:42:52.1686800Z   vector_math 2.2.0 (2.3.0 available)
+2026-05-08T12:42:52.1687120Z + web 1.1.1
+2026-05-08T12:42:52.1687310Z + xdg_directories 1.1.0
+2026-05-08T12:42:52.1687570Z These packages are no longer being depended on:
+2026-05-08T12:42:52.1687880Z - cupertino_icons 1.0.9
+2026-05-08T12:42:52.1688090Z Changed 24 dependencies!
+2026-05-08T12:42:52.1688430Z 5 packages have newer versions incompatible with dependency constraints.
+2026-05-08T12:42:52.1688820Z Try `flutter pub outdated` for more information.
+2026-05-08T12:42:52.8479590Z Warning: Building for device with codesigning disabled. You will have to manually codesign before deploying to device.
+2026-05-08T12:42:54.6601020Z Building com.performancebench.performancebenchMobile for device (ios-release)...
+2026-05-08T12:42:56.1674710Z Running pod install...                                             729ms
+2026-05-08T12:43:38.0670180Z Running Xcode build...                                          
+2026-05-08T12:43:38.0767330Z Xcode build done.                                           41.9s
+2026-05-08T12:43:39.2677070Z ✓ Built build/ios/iphoneos/Runner.app (16.2MB)

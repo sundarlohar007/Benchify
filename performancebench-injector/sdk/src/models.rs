@@ -178,7 +178,9 @@ impl MetricSample {
 
             // GPU
             gpu_pct: snapshot.gpu_usage_pct,
-            gpu_mem_kb: snapshot.gpu_dedicated_mem_kb.map(|v| v as i32),
+            // gpu_mem_kb intentionally left at default (None) for PC; the
+            // PC-specific pc_gpu_dedicated_mem_kb carries the same data
+            // in a platform-explicit field to avoid double-counting.
 
             // Disk: cumulative bytes → KB rate (set by collector's tick)
             disk_read_kb: snapshot.disk_read_bytes_per_s.map(|v| (v as f64) / 1024.0),

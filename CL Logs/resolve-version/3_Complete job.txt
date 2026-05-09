@@ -1,0 +1,4 @@
+﻿2026-05-08T12:38:52.2344007Z Evaluate and set job outputs
+2026-05-08T12:38:52.2353375Z Set output 'version'
+2026-05-08T12:38:52.2355398Z Set output 'tag'
+2026-05-08T12:38:52.2356955Z Cleaning up orphan processes

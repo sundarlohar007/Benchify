@@ -7,10 +7,18 @@
 //! Per D-10: Full ADB replacement — all metrics from native hooks and /proc reads.
 
 use jni::JNIEnv;
-use jni::objects::{JClass, JObject};
+use jni::objects::{JClass, JObject, GlobalRef};
 #[cfg(target_os = "android")]
 use jni::objects::JString;
 use jni::sys::{jint, jstring};
+use std::sync::Mutex;
+
+/// Retained JNI global references to the Android `Context` and `FpsOverlayView`
+/// passed during `nativeInit`. Stored here so the SDK can call back into Java
+/// in future (e.g. for overlay updates, Toast notifications, or ContentResolver
+/// queries). The references are kept alive for the process lifetime.
+static JNI_GLOBALS: once_cell::sync::Lazy<Mutex<Option<(GlobalRef, GlobalRef)>>> =
+    once_cell::sync::Lazy::new(|| Mutex::new(None));
 
 /// Called when the native library is loaded. Initializes android_logger.
 #[no_mangle]
@@ -30,14 +38,24 @@ pub extern "system" fn JNI_OnLoad(
 /// Initialize SDK: starts TCP server on port 8080 and metric collection at 1Hz.
 /// Returns immediately (non-blocking).
 #[no_mangle]
+#[allow(unused_mut)] // `mut` needed on Android for env.new_global_ref
 pub extern "system" fn Java_dev_benchify_SdkLoader_nativeInit(
-    env: JNIEnv,
+    mut env: JNIEnv,
     _class: JClass,
     context: JObject,
     fps_overlay: JObject,
 ) {
-    let _ctx = env.new_global_ref(context).ok();
-    let _overlay = env.new_global_ref(fps_overlay).ok();
+    // Retain global refs so the SDK can call back into Java in future.
+    // Previous code dropped them immediately — the Java objects stayed alive
+    // (held by the caller) but were unreachable from native.
+    match (env.new_global_ref(context), env.new_global_ref(fps_overlay)) {
+        (Ok(ctx), Ok(overlay)) => {
+            if let Ok(mut g) = JNI_GLOBALS.lock() {
+                *g = Some((ctx, overlay));
+            }
+        }
+        _ => log::warn!("Failed to create JNI global refs for context/overlay"),
+    }
 
     log::info!("PerformanceBench SDK nativeInit called");
 
