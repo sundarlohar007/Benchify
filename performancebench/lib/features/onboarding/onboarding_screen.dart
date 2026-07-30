@@ -4,7 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../app.dart';
 import '../../shared/theme.dart';
 
 /// 3-step onboarding wizard shown on first launch.
@@ -42,6 +44,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _finish() {
     // Set onboarding_completed flag (SharedPreferences) and navigate to DeviceList
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool(kOnboardingCompletedPrefKey, true);
+    });
     context.go('/');
   }
 

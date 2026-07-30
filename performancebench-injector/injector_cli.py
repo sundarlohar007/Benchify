@@ -43,10 +43,11 @@ def _read_stdin_json():
 
 
 @click.group()
-# TODO(audit S-19 build/CI): drive version from package metadata rather than
-# this literal. Sister of B-024 / B-044 / B-079; keep aligned with parent
-# project tag for now (B-093).
-@click.version_option(version="0.1.1", prog_name="PerformanceBench Injector")
+# Prefer VERSION env when set; else align with release line 0.1.0 (B-093).
+@click.version_option(
+    version=os.environ.get("VERSION", "0.1.0"),
+    prog_name="PerformanceBench Injector",
+)
 def cli():
     """PerformanceBench APK Injector — inject profiling SDK into Android APKs."""
     pass

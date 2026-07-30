@@ -18,6 +18,7 @@ import '../../core/database/region_stats_dao.dart';
 import '../../core/database/screenshot_dao.dart';
 import '../../core/database/session_dao.dart';
 import '../../core/database/session_stats_dao.dart';
+import '../../core/models/marker.dart';
 import '../../core/models/metric_sample.dart';
 import '../../core/models/session.dart';
 import '../../core/services/adb_service.dart';
@@ -58,6 +59,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
   SessionService? _sessionService;
   MetricCollector? _collector;
   ScreenshotService? _screenshotService;
+  MarkerDao? _markerDao;
   Stream<MetricSample> _metricStream = const Stream.empty();
   bool _stopping = false;
   bool _started = false;
@@ -95,10 +97,11 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
       if (session == null || !mounted) return;
 
       final metricDao = MetricDao(db);
+      final markerDao = MarkerDao(db);
       final analytics = AnalyticsService(
         metricDao: metricDao,
         sessionStatsDao: SessionStatsDao(db),
-        markerDao: MarkerDao(db),
+        markerDao: markerDao,
         markerStatsDao: MarkerStatsDao(db),
         regionStatsDao: RegionStatsDao(db),
       );
@@ -170,6 +173,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
         _sessionService = sessionService;
         _collector = collector;
         _screenshotService = screenshots;
+        _markerDao = markerDao;
         _metricStream = stream;
         _started = adbOk;
       });
@@ -252,6 +256,41 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
     }
   }
 
+  Future<void> _handleMarker() async {
+    final dao = _markerDao;
+    if (dao == null || !_started || _stopping) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Marker unavailable — session not ready')),
+        );
+      }
+      return;
+    }
+    try {
+      await dao.insert(Marker(
+        sessionId: widget.sessionId,
+        label: 'Marker',
+        startedAt: _stopwatch.elapsedMilliseconds,
+      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Marker added at ${_elapsedNotifier.value}',
+            ),
+          ),
+        );
+      }
+    } catch (e, stack) {
+      ErrorHandler().logError('ActiveSessionScreen.marker', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add marker')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AppColors.of(context);
@@ -305,9 +344,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
             ),
             const SizedBox(width: 8),
             TextButton.icon(
-              onPressed: () {
-                // Add marker — wired in Wave 4
-              },
+              onPressed: _started && !_stopping ? _handleMarker : null,
               icon: Icon(Icons.flag, size: 16, color: colors.textSecondary),
               label: Text(
                 'Marker',

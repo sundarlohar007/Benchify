@@ -38,6 +38,9 @@ void main(List<String> args) {
     final debugMode = args.contains('--debug');
     ErrorHandler().setDebugMode(debugMode);
 
+    // B-003: restore theme preference before first frame.
+    final savedTheme = await loadThemeMode();
+
     // Initialise window manager for custom title bar (D-11, §9.3).
     await windowManager.ensureInitialized();
 
@@ -58,6 +61,7 @@ void main(List<String> args) {
       ProviderScope(
         overrides: [
           debugModeProvider.overrideWith((ref) => debugMode),
+          themeModeProvider.overrideWith((ref) => savedTheme),
         ],
         child: const App(),
       ),

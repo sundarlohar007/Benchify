@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { api, getRefreshToken, setRefreshToken } from '@/lib/api';
 
 export interface User {
   id: string;
@@ -47,7 +47,7 @@ export function useAuth() {
 
 /**
  * Login mutation — POST /auth/login.
- * On success, invalidate auth query so ProtectedRoute picks up the user.
+ * On success, store refreshToken (B-162) and invalidate auth query.
  */
 export function useLogin() {
   const queryClient = useQueryClient();
@@ -55,7 +55,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: (credentials: { email: string; password: string }) =>
       api.post<LoginResponse>('/auth/login', credentials),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data.refreshToken) setRefreshToken(data.refreshToken);
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
     },
   });
@@ -63,13 +64,22 @@ export function useLogin() {
 
 /**
  * Logout mutation — POST /auth/logout.
+ * Sends stored refreshToken so the server can revoke it.
  */
 export function useLogout() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => api.post<{ ok: boolean }>('/auth/logout', {}),
+    mutationFn: () => {
+      const refreshToken = getRefreshToken() ?? '';
+      return api.post<{ ok: boolean }>('/auth/logout', { refreshToken });
+    },
     onSuccess: () => {
+      setRefreshToken(null);
+      queryClient.clear();
+    },
+    onError: () => {
+      setRefreshToken(null);
       queryClient.clear();
     },
   });

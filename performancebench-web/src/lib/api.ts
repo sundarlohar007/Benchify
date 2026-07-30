@@ -9,7 +9,52 @@ export class ApiError extends Error {
   }
 }
 
-async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+const REFRESH_TOKEN_KEY = 'pb_refresh_token';
+
+let refreshTokenMemory: string | null =
+  typeof localStorage !== 'undefined' ? localStorage.getItem(REFRESH_TOKEN_KEY) : null;
+
+/** Store or clear the refresh token (memory + localStorage). B-162 */
+export function setRefreshToken(token: string | null): void {
+  refreshTokenMemory = token;
+  if (typeof localStorage === 'undefined') return;
+  if (token) localStorage.setItem(REFRESH_TOKEN_KEY, token);
+  else localStorage.removeItem(REFRESH_TOKEN_KEY);
+}
+
+export function getRefreshToken(): string | null {
+  return refreshTokenMemory ?? (typeof localStorage !== 'undefined' ? localStorage.getItem(REFRESH_TOKEN_KEY) : null);
+}
+
+let refreshInFlight: Promise<boolean> | null = null;
+
+async function tryRefreshOnce(): Promise<boolean> {
+  const rt = getRefreshToken();
+  if (!rt) return false;
+  try {
+    const res = await fetch('/auth/refresh', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: rt }),
+    });
+    if (!res.ok) {
+      setRefreshToken(null);
+      return false;
+    }
+    const data = (await res.json().catch(() => ({}))) as { refreshToken?: string };
+    if (data.refreshToken) setRefreshToken(data.refreshToken);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function apiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+  retried = false,
+): Promise<T> {
   const res = await fetch(path, {
     ...options,
     credentials: 'include',
@@ -18,6 +63,22 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
       ...options.headers,
     },
   });
+
+  // B-162: on 401, try refresh once then retry the original request.
+  if (
+    res.status === 401 &&
+    !retried &&
+    path !== '/auth/refresh' &&
+    path !== '/auth/login' &&
+    path !== '/auth/logout'
+  ) {
+    refreshInFlight ??= tryRefreshOnce().finally(() => {
+      refreshInFlight = null;
+    });
+    const ok = await refreshInFlight;
+    if (ok) return apiFetch<T>(path, options, true);
+  }
+
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new ApiError(
