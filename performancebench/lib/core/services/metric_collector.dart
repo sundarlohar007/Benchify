@@ -47,6 +47,9 @@ class MetricCollector {
   StreamController<MetricSample>? _controller;
   StreamController<String>? _statusController;
 
+  /// Guards overlapping ticks when ADB collection exceeds the 1s interval.
+  bool _tickInFlight = false;
+
   // ---- Batch writer state ----
   final List<MetricSample> _pendingBatch = [];
   Timer? _batchTimer;
@@ -83,7 +86,7 @@ class MetricCollector {
 
     _initSession().then((_) {
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        _tick();
+        unawaited(_tick());
       });
     });
 
@@ -221,6 +224,8 @@ class MetricCollector {
   // ---------------------------------------------------------------------------
 
   Future<void> _tick() async {
+    if (_tickInFlight) return;
+    _tickInFlight = true;
     try {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
 
@@ -326,6 +331,8 @@ class MetricCollector {
     } catch (e, stack) {
       ErrorHandler().logError('MetricCollector._tick', e, stack);
       _consecutiveFailures++;
+    } finally {
+      _tickInFlight = false;
     }
   }
 

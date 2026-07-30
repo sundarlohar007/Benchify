@@ -36,7 +36,7 @@ jobs:
           components: clippy
       - name: Run clippy
         working-directory: performancebench-injector/sdk
-        run: cargo clippy -- -D warnings 2>&1 || true
+        run: cargo clippy -- -D warnings 2>&1
 
   build-android:
     name: Build Android .so (${{ matrix.target }})
@@ -101,4 +101,4 @@ jobs:
         run: pip install -r requirements-dev.txt
       - name: Run Python tests
         working-directory: performancebench-injector
-        run: python -m pytest tests/ -v --tb=short 2>&1 || true
+        run: python -m pytest tests/ -v --tb=short 2>&1

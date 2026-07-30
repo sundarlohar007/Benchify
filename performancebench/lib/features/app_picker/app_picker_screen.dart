@@ -243,6 +243,15 @@ class _AppPickerScreenState extends ConsumerState<AppPickerScreen> {
         collectionId: _selectedCollectionId,
       );
       await sessionDao.insert(session);
+
+      // Soft-fail launch: still navigate to session even if the app fails to start.
+      try {
+        final adb = await AdbService.create();
+        await adb.launchApp(widget.deviceId, _selectedApp!.package);
+      } catch (_) {
+        // Launch failure is non-fatal — session proceeds without the app foregrounded.
+      }
+
       if (mounted) {
         context.pushNamed('activeSession', pathParameters: {'sessionId': session.id});
       }

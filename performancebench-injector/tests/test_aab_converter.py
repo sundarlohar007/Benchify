@@ -44,6 +44,44 @@ class TestConvertAabToApk:
         assert "bundletool" in cmd_str
 
     @patch("injector.aab_converter.subprocess.run")
+    def test_signing_passwords_use_env_vars(self, mock_run, temp_dir):
+        """B-095: passwords MUST go via env:VAR, not pass: CLI literals."""
+        mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
+
+        aab_path = _create_fake_aab(temp_dir, "app.aab")
+        output_dir = os.path.join(temp_dir, "output")
+        os.makedirs(output_dir, exist_ok=True)
+        ks_path = os.path.join(temp_dir, "test.keystore")
+        with open(ks_path, "w") as f:
+            f.write("fake keystore")
+
+        try:
+            convert_aab_to_apk(
+                aab_path,
+                output_dir,
+                keystore_path=ks_path,
+                keystore_password="secret-ks",
+                key_alias="mykey",
+                key_password="secret-key",
+            )
+        except (AabConversionError, Exception):
+            pass  # Expected — no real .apks to extract
+
+        mock_run.assert_called_once()
+        call_kwargs = mock_run.call_args.kwargs
+        args = mock_run.call_args[0][0]
+        joined = " ".join(str(a) for a in args)
+
+        assert "pass:secret-ks" not in joined
+        assert "pass:secret-key" not in joined
+        assert "env:PB_KS_PASS" in joined
+        assert "env:PB_KEY_PASS" in joined
+
+        env = call_kwargs.get("env") or {}
+        assert env.get("PB_KS_PASS") == "secret-ks"
+        assert env.get("PB_KEY_PASS") == "secret-key"
+
+    @patch("injector.aab_converter.subprocess.run")
     def test_raises_on_bundletool_failure(self, mock_run, temp_dir):
         """Should raise AabConversionError when bundletool fails."""
         mock_run.return_value = MagicMock(

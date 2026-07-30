@@ -222,6 +222,19 @@ class AdbService implements AdbShell {
     return (result.stdout as String).trim();
   }
 
+  /// Launch an app's launcher activity via monkey.
+  ///
+  /// Soft-fail friendly: returns false (does not throw) when ADB fails.
+  Future<bool> launchApp(String serial, String package) async {
+    if (!_isValidSerial(serial) || package.isEmpty) return false;
+    final output = await runShellCommand(
+      serial,
+      'monkey -p $package -c android.intent.category.LAUNCHER 1',
+      timeout: const Duration(seconds: 10),
+    );
+    return output != null;
+  }
+
   /// Run an ADB command and return raw stdout bytes (no text decoding).
   ///
   /// Used for binary captures such as `exec-out screencap -p` (B-016 / B-017).

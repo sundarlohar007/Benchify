@@ -32,7 +32,7 @@ lazy_static::lazy_static! {
     static ref SAMPLE_QUEUE: Mutex<VecDeque<MetricSample>> = Mutex::new(VecDeque::new());
     static ref LATEST_SAMPLE: Mutex<Option<MetricSample>> = Mutex::new(None);
     /// Event queue for markers and other JSON events pushed via automation.
-    static ref EVENT_QUEUE: Mutex<Vec<String>> = Mutex::new(Vec::new());
+    static ref EVENT_QUEUE: Mutex<VecDeque<String>> = Mutex::new(VecDeque::new());
 }
 
 struct MetricState {
@@ -101,14 +101,26 @@ pub fn start_server() {
 fn handle_client(stream: &mut TcpStream) {
     stream.set_nonblocking(true).ok();
 
-    // Drain queue
+    // Drain buffered metric samples
     if let Ok(mut queue) = SAMPLE_QUEUE.lock() {
         for sample in queue.drain(..) {
-            send_sample(stream, &sample);
+            if !send_sample(stream, &sample) {
+                return;
+            }
         }
     }
 
+    // Drain buffered marker/automation events (B-105)
+    if !drain_events(stream) {
+        return;
+    }
+
     while SERVER_RUNNING.load(Ordering::SeqCst) && STREAMING_ACTIVE.load(Ordering::SeqCst) {
+        // Interleave events with samples so markers reach the desktop promptly
+        if !drain_events(stream) {
+            return;
+        }
+
         let sample = LATEST_SAMPLE.lock().ok().and_then(|s| s.clone());
         if let Some(s) = sample {
             if !send_sample(stream, &s) {
@@ -119,15 +131,32 @@ fn handle_client(stream: &mut TcpStream) {
     }
 }
 
+fn drain_events(stream: &mut TcpStream) -> bool {
+    let events: Vec<String> = match EVENT_QUEUE.lock() {
+        Ok(mut queue) => queue.drain(..).collect(),
+        Err(_) => return true,
+    };
+    for json in events {
+        if !send_json_line(stream, &json) {
+            return false;
+        }
+    }
+    true
+}
+
+fn send_json_line(stream: &mut TcpStream, json: &str) -> bool {
+    match stream.write_all(format!("{}\n", json).as_bytes()) {
+        Ok(_) => true,
+        Err(e) => {
+            log::error!("Write error: {}", e);
+            false
+        }
+    }
+}
+
 fn send_sample(stream: &mut TcpStream, sample: &MetricSample) -> bool {
     match serde_json::to_string(sample) {
-        Ok(json) => match stream.write_all(format!("{}\n", json).as_bytes()) {
-            Ok(_) => true,
-            Err(e) => {
-                log::error!("Write error: {}", e);
-                false
-            }
-        },
+        Ok(json) => send_json_line(stream, &json),
         Err(e) => {
             log::error!("Serialize error: {}", e);
             true
@@ -310,10 +339,13 @@ pub fn pause_streaming() {
 }
 
 /// Push a JSON string event into the event queue (markers, etc.).
-/// Used by automation MARKER command.
+/// Used by automation MARKER command. Bound to 256 entries.
 pub fn push_event_json(json_str: &str) {
     if let Ok(mut queue) = EVENT_QUEUE.lock() {
-        queue.push(json_str.to_string());
+        if queue.len() >= 256 {
+            queue.pop_front();
+        }
+        queue.push_back(json_str.to_string());
     }
 }
 

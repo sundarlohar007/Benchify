@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 PerformanceBench Contributors
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../core/models/metric_sample.dart';
@@ -155,27 +157,7 @@ class ActiveSessionChartsTab extends StatelessWidget {
                 ),
               ),
             ],
-            MetricChart(
-              label: 'Network',
-              lineColor: ChartColors.networkTx,
-              stream: stream,
-              extractValue: (s) {
-                final txKb = (s.netTxBytes ?? 0) / 1024;
-                return txKb;
-              },
-              valueFormatter: (v) =>
-                  v != null ? '${v.toStringAsFixed(1)} KB' : '--',
-              statCalculator: _networkStats,
-              secondLineColor: ChartColors.networkRx,
-              extractSecondValue: (s) {
-                final rxKb = (s.netRxBytes ?? 0) / 1024;
-                return rxKb;
-              },
-              secondValueFormatter: (v) =>
-                  v != null ? '${v.toStringAsFixed(1)} KB' : '--',
-              secondLineLabel: 'RX',
-              unit: 'KB',
-            ),
+            _LiveNetworkRateChart(stream: stream),
             MetricChart(
               label: 'GPU',
               lineColor: ChartColors.gpu,
@@ -279,20 +261,26 @@ class ActiveSessionChartsTab extends StatelessWidget {
     ];
   }
 
-  static List<StatPill> _networkStats(List<MetricSample> samples) {
-    if (samples.length < 2) return [];
-    final first = samples.first;
-    final last = samples.last;
-    final txDeltaKb =
-        ((last.netTxBytes ?? 0) - (first.netTxBytes ?? 0)) / 1024;
-    final rxDeltaKb =
-        ((last.netRxBytes ?? 0) - (first.netRxBytes ?? 0)) / 1024;
-    final seconds = (last.timestamp - first.timestamp) / 1000;
-    final txRate = seconds > 0 ? txDeltaKb / seconds : 0;
-    final rxRate = seconds > 0 ? rxDeltaKb / seconds : 0;
+  static List<StatPill> _networkRateStats(List<MetricSample> samples) {
+    // Samples already carry per-second rates in netTxBytes/netRxBytes (bytes/s).
+    final txRates = samples
+        .map((s) => s.netTxBytes)
+        .whereType<int>()
+        .map((b) => b / 1024.0)
+        .toList();
+    final rxRates = samples
+        .map((s) => s.netRxBytes)
+        .whereType<int>()
+        .map((b) => b / 1024.0)
+        .toList();
+    if (txRates.isEmpty && rxRates.isEmpty) return [];
+    final txAvg =
+        txRates.isEmpty ? 0.0 : txRates.reduce((a, b) => a + b) / txRates.length;
+    final rxAvg =
+        rxRates.isEmpty ? 0.0 : rxRates.reduce((a, b) => a + b) / rxRates.length;
     return [
-      StatPill(label: 'TX', value: '${txRate.toStringAsFixed(1)} KB/s'),
-      StatPill(label: 'RX', value: '${rxRate.toStringAsFixed(1)} KB/s'),
+      StatPill(label: 'TX', value: '${txAvg.toStringAsFixed(1)} KB/s'),
+      StatPill(label: 'RX', value: '${rxAvg.toStringAsFixed(1)} KB/s'),
     ];
   }
 
@@ -301,5 +289,106 @@ class ActiveSessionChartsTab extends StatelessWidget {
     if (vals.isEmpty) return [];
     final avg = vals.reduce((a, b) => a! + b!)! / vals.length;
     return [StatPill(label: 'Avg', value: '${avg.toStringAsFixed(1)}%')];
+  }
+}
+
+/// Live network chart that diffs consecutive cumulative byte counters into KB/s.
+class _LiveNetworkRateChart extends StatefulWidget {
+  final Stream<MetricSample> stream;
+
+  const _LiveNetworkRateChart({required this.stream});
+
+  @override
+  State<_LiveNetworkRateChart> createState() => _LiveNetworkRateChartState();
+}
+
+class _LiveNetworkRateChartState extends State<_LiveNetworkRateChart> {
+  final StreamController<MetricSample> _rateController =
+      StreamController<MetricSample>.broadcast();
+  StreamSubscription<MetricSample>? _sub;
+  int? _prevTx;
+  int? _prevRx;
+  int? _prevTs;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = widget.stream.listen(_onSample);
+  }
+
+  @override
+  void didUpdateWidget(covariant _LiveNetworkRateChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.stream != widget.stream) {
+      _sub?.cancel();
+      _prevTx = null;
+      _prevRx = null;
+      _prevTs = null;
+      _sub = widget.stream.listen(_onSample);
+    }
+  }
+
+  void _onSample(MetricSample s) {
+    final tx = s.netTxBytes;
+    final rx = s.netRxBytes;
+    int? txBps;
+    int? rxBps;
+
+    if (_prevTs != null &&
+        tx != null &&
+        rx != null &&
+        _prevTx != null &&
+        _prevRx != null) {
+      final dtMs = s.timestamp - _prevTs!;
+      if (dtMs > 0) {
+        txBps = ((tx - _prevTx!) * 1000 / dtMs).round();
+        rxBps = ((rx - _prevRx!) * 1000 / dtMs).round();
+        // Counters can reset on interface change — clamp to non-negative.
+        if (txBps < 0) txBps = 0;
+        if (rxBps < 0) rxBps = 0;
+      }
+    }
+
+    if (tx != null) _prevTx = tx;
+    if (rx != null) _prevRx = rx;
+    _prevTs = s.timestamp;
+
+    // Skip first sample (no delta yet).
+    if (txBps == null || rxBps == null) return;
+    if (_rateController.isClosed) return;
+
+    _rateController.add(MetricSample(
+      sessionId: s.sessionId,
+      timestamp: s.timestamp,
+      // Reuse netTx/Rx fields to carry bytes/sec rates for the chart.
+      netTxBytes: txBps,
+      netRxBytes: rxBps,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    _rateController.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MetricChart(
+      label: 'Network',
+      lineColor: ChartColors.networkTx,
+      stream: _rateController.stream,
+      extractValue: (s) => (s.netTxBytes ?? 0) / 1024.0,
+      valueFormatter: (v) =>
+          v != null ? '${v.toStringAsFixed(1)} KB/s' : '--',
+      statCalculator: ActiveSessionChartsTab._networkRateStats,
+      secondLineColor: ChartColors.networkRx,
+      extractSecondValue: (s) => (s.netRxBytes ?? 0) / 1024.0,
+      secondValueFormatter: (v) =>
+          v != null ? '${v.toStringAsFixed(1)} KB/s' : '--',
+      secondLineLabel: 'RX',
+      unit: 'KB/s',
+    );
   }
 }

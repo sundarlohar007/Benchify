@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { encodePath } from '@/lib/utils';
 
 // ─── Data Types (snake_case matching server JSON response) ────────────────
 
@@ -213,7 +214,7 @@ export function useDeleteSession() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (sessionId: string) =>
-      api.delete(`/api/v1/sessions/${sessionId}`),
+      api.delete(`/api/v1/sessions/${encodePath(sessionId)}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['sessions'] }),
   });
@@ -223,7 +224,7 @@ export function useSession(sessionId: string) {
   return useQuery({
     queryKey: ['sessions', sessionId],
     queryFn: () =>
-      api.get<SessionDetail>(`/api/v1/sessions/${sessionId}`),
+      api.get<SessionDetail>(`/api/v1/sessions/${encodePath(sessionId)}`),
     enabled: !!sessionId,
   });
 }

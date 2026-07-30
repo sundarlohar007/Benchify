@@ -1,3 +1,8 @@
+/** Encode a path segment (session/org/user/rule id) for URL interpolation. */
+export function encodePath(id: string): string {
+  return encodeURIComponent(id);
+}
+
 /**
  * Format duration in milliseconds to human-readable string.
  * e.g., 5025000 → "1h 23m 45s"

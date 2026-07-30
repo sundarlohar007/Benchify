@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { encodePath } from '@/lib/utils';
 
 type SampleListener = (sample: Record<string, unknown>) => void;
 
@@ -19,7 +20,7 @@ export function useWebSocket(sessionId: string | null) {
 
     intentionalCloseRef.current = false;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/live/${sessionId}`;
+    const wsUrl = `${protocol}//${window.location.host}/ws/live/${encodePath(sessionId)}`;
     const ws = new WebSocket(wsUrl);
 
     ws.onmessage = (event) => {

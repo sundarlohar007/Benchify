@@ -102,6 +102,12 @@ pub async fn push_live_batch(
         return Err(AppError::Forbidden);
     }
 
+    // Verify session ownership — prevent pushing metrics into another user's session
+    session_queries::get_session_by_id_and_user(&state.pool, session_id, auth_user.user_id)
+        .await
+        .map_err(|_| AppError::Unauthorized)?
+        .ok_or(AppError::NotFound("Session".to_string()))?;
+
     // Get or create broadcast channel
     let tx = {
         let mut sessions = state.live_sessions.lock().await;
