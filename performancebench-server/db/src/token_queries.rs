@@ -67,6 +67,24 @@ pub async fn revoke_token(pool: &DbPool, token_id: Uuid) -> DbResult<()> {
     Ok(())
 }
 
+/// Revoke a token only if it belongs to `user_id`. Returns true if a row was updated.
+pub async fn revoke_token_for_user(
+    pool: &DbPool,
+    token_id: Uuid,
+    user_id: Uuid,
+) -> DbResult<bool> {
+    let mut client = pool.get().await?;
+    let updated = diesel::update(
+        api_tokens::table
+            .filter(api_tokens::id.eq(token_id))
+            .filter(api_tokens::user_id.eq(user_id)),
+    )
+    .set(api_tokens::is_revoked.eq(true))
+    .execute(&mut *client)
+    .await?;
+    Ok(updated > 0)
+}
+
 pub async fn update_token_last_used(pool: &DbPool, token_id: Uuid) -> DbResult<()> {
     let mut client = pool.get().await?;
     let now = chrono::Utc::now().naive_utc();

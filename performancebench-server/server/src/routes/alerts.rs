@@ -55,8 +55,8 @@ pub async fn list_alert_rules(
 /// POST /api/v1/alerts/rules — create a new alert rule.
 pub async fn create_alert_rule(
     State(state): State<AppState>,
-    Json(body): Json<CreateAlertRuleBody>,
     Extension(auth_user): Extension<AuthUser>,
+    Json(body): Json<CreateAlertRuleBody>,
 ) -> Result<impl IntoResponse, AppError> {
     let rule = alert_queries::create_alert_rule(
         &state.pool,
@@ -78,8 +78,8 @@ pub async fn create_alert_rule(
 pub async fn update_alert_rule(
     State(state): State<AppState>,
     Path(rule_id): Path<Uuid>,
-    Json(body): Json<UpdateAlertRuleBody>,
     Extension(auth_user): Extension<AuthUser>,
+    Json(body): Json<UpdateAlertRuleBody>,
 ) -> Result<impl IntoResponse, AppError> {
     let rule = alert_queries::update_alert_rule(
         &state.pool,

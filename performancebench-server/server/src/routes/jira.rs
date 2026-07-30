@@ -240,10 +240,10 @@ fn build_adf_description(session: &models::session::Session) -> serde_json::Valu
     let fps_stability = fmt_opt(stats.as_ref().and_then(|s| s.fps_stability));
     let cpu_avg = fmt_opt(stats.as_ref().and_then(|s| s.cpu_avg_pct));
     let cpu_peak = fmt_opt(stats.as_ref().and_then(|s| s.cpu_peak_pct));
-    let mem_avg = fmt_opt_kb(stats.as_ref().and_then(|s| s.memory_avg_kb));
-    let mem_peak = fmt_opt_kb(stats.as_ref().and_then(|s| s.memory_peak_kb));
-    let jank_count = fmt_opt(stats.as_ref().and_then(|s| s.jank_total));
-    let big_jank = fmt_opt(stats.as_ref().and_then(|s| s.jank_big_total));
+    let mem_avg = fmt_opt_kb_i64(stats.as_ref().and_then(|s| s.memory_avg_kb));
+    let mem_peak = fmt_opt_kb_i64(stats.as_ref().and_then(|s| s.memory_peak_kb));
+    let jank_count = fmt_opt_i64(stats.as_ref().and_then(|s| s.jank_total));
+    let big_jank = fmt_opt_i64(stats.as_ref().and_then(|s| s.jank_big_total));
     let net_tx = fmt_opt_kb(stats.as_ref().and_then(|s| s.net_total_tx_kb));
     let net_rx = fmt_opt_kb(stats.as_ref().and_then(|s| s.net_total_rx_kb));
     let duration = session.duration_seconds.map(|s| format!("{}s", s)).unwrap_or_else(|| "N/A".to_string());
@@ -340,8 +340,17 @@ fn fmt_opt(val: Option<f64>) -> String {
     val.map(|v| format!("{:.1}", v)).unwrap_or_else(|| "N/A".to_string())
 }
 
+fn fmt_opt_i64(val: Option<i64>) -> String {
+    val.map(|v| v.to_string()).unwrap_or_else(|| "N/A".to_string())
+}
+
 fn fmt_opt_kb(val: Option<f64>) -> String {
     val.map(|v| format!("{:.1}", v / 1024.0)).unwrap_or_else(|| "N/A".to_string())
+}
+
+fn fmt_opt_kb_i64(val: Option<i64>) -> String {
+    val.map(|v| format!("{:.1}", v as f64 / 1024.0))
+        .unwrap_or_else(|| "N/A".to_string())
 }
 
 // ── Tests ──

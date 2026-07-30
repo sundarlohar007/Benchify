@@ -44,8 +44,8 @@ pub async fn list_webhooks(
 /// POST /api/v1/webhooks — create a new webhook config.
 pub async fn create_webhook(
     State(_state): State<AppState>,
-    Json(body): Json<CreateWebhookBody>,
     Extension(_auth_user): Extension<AuthUser>,
+    Json(body): Json<CreateWebhookBody>,
 ) -> Result<impl IntoResponse, AppError> {
     let new_id = Uuid::new_v4();
     Ok((
@@ -64,8 +64,8 @@ pub async fn create_webhook(
 pub async fn update_webhook(
     State(_state): State<AppState>,
     Path(webhook_id): Path<Uuid>,
-    Json(_body): Json<UpdateWebhookBody>,
     Extension(_auth_user): Extension<AuthUser>,
+    Json(_body): Json<UpdateWebhookBody>,
 ) -> Result<impl IntoResponse, AppError> {
     Ok((
         StatusCode::OK,

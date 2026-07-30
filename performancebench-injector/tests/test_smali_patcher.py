@@ -47,6 +47,27 @@ class TestFindApplicationSmali:
         assert result is not None
         assert "MultiApp.smali" in result
 
+    def test_finds_multidex_application(self, temp_dir):
+        """B-087: classes extending MultiDexApplication are discovered."""
+        app_dir = os.path.join(temp_dir, "smali", "com", "example", "mdx")
+        os.makedirs(app_dir, exist_ok=True)
+        smali_content = """.class public Lcom/example/mdx/MdxApp;
+.super Landroidx/multidex/MultiDexApplication;
+.source "MdxApp.java"
+
+.method public onCreate()V
+    .locals 1
+    invoke-super {p0}, Landroidx/multidex/MultiDexApplication;->onCreate()V
+    return-void
+.end method
+"""
+        with open(os.path.join(app_dir, "MdxApp.smali"), "w") as f:
+            f.write(smali_content)
+
+        result = find_application_smali(temp_dir)
+        assert result is not None
+        assert "MdxApp.smali" in result
+
 
 class TestResolveObfuscatedApplication:
     """Tests for ProGuard obfuscation resolution."""
@@ -133,6 +154,64 @@ class TestPatchOnCreateMethod:
         assert "Ldev/benchify/SdkLoader;->init" in patched
         assert "invoke-super {p0}" in patched  # super call preserved
 
+    def test_bumps_locals_zero_to_one(self):
+        """B-086: .locals 0 must be bumped to 1 before inserting v0 usage."""
+        minimal = """.method public onCreate()V
+    .locals 0
+
+    invoke-super {p0}, Landroid/app/Application;->onCreate()V
+
+    return-void
+.end method
+"""
+        patched = patch_oncreate_method(minimal)
+        assert ".locals 1" in patched
+        assert ".locals 0" not in patched
+        assert 'const-string v0, "performancebench"' in patched
+
+    def test_preserves_custom_super_invoke(self):
+        """B-087: custom .super invoke-super kept as-is; SDK init inserted after."""
+        custom = """.class public Lcom/foo/MyApp;
+.super Lcom/foo/BaseApp;
+.source "MyApp.java"
+
+.method public onCreate()V
+    .locals 0
+
+    invoke-super {p0}, Lcom/foo/BaseApp;->onCreate()V
+
+    return-void
+.end method
+"""
+        patched = patch_oncreate_method(custom)
+        assert "invoke-super {p0}, Lcom/foo/BaseApp;->onCreate()V" in patched
+        assert "invoke-super {p0}, Landroid/app/Application;->onCreate()V" not in patched
+        assert "Ldev/benchify/SdkLoader;->init" in patched
+        # SDK init must appear AFTER the custom invoke-super
+        super_pos = patched.index("invoke-super {p0}, Lcom/foo/BaseApp;->onCreate()V")
+        init_pos = patched.index("Ldev/benchify/SdkLoader;->init")
+        assert init_pos > super_pos
+        assert ".locals 1" in patched
+
+    def test_synthetic_oncreate_uses_real_super(self):
+        """B-087: synthesized onCreate uses the class .super type."""
+        no_oncreate = """.class public Lcom/example/MdxApp;
+.super Landroidx/multidex/MultiDexApplication;
+
+.method public constructor <init>()V
+    .locals 0
+    invoke-direct {p0}, Landroidx/multidex/MultiDexApplication;-><init>()V
+    return-void
+.end method
+"""
+        result = patch_smali(no_oncreate)
+        assert ".method public onCreate()V" in result
+        assert (
+            "invoke-super {p0}, Landroidx/multidex/MultiDexApplication;->onCreate()V"
+            in result
+        )
+        assert "Landroid/app/Application;->onCreate()V" not in result
+
     def test_handles_no_oncreate_method(self):
         """Should handle Application class that doesn't override onCreate."""
         no_oncreate = """.class public Lcom/example/NoCreate;
@@ -148,6 +227,7 @@ class TestPatchOnCreateMethod:
         result = patch_smali(no_oncreate)
         # Should contain the onCreate method with our patch
         assert ".method public onCreate()V" in result
+        assert "invoke-super {p0}, Landroid/app/Application;->onCreate()V" in result
 
 
 class TestPatchSmali:

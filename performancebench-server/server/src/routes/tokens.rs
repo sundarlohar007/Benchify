@@ -59,8 +59,8 @@ pub async fn list_tokens(
 /// SHA-256 hash stored in DB.
 pub async fn create_token(
     State(state): State<AppState>,
-    Json(body): Json<CreateTokenBody>,
     Extension(auth_user): Extension<AuthUser>,
+    Json(body): Json<CreateTokenBody>,
 ) -> Result<impl IntoResponse, AppError> {
     // Generate random API token: pb_ + 32 random bytes as hex
     let random_bytes: Vec<u8> = (0..32).map(|_| rand::random::<u8>()).collect();
@@ -98,15 +98,19 @@ pub async fn create_token(
     ))
 }
 
-/// DELETE /api/v1/tokens/:id — revoke an API token.
+/// DELETE /api/v1/tokens/:id — revoke an API token owned by the caller.
 pub async fn revoke_token(
     State(state): State<AppState>,
     Path(token_id): Path<Uuid>,
-    Extension(_auth_user): Extension<AuthUser>,
+    Extension(auth_user): Extension<AuthUser>,
 ) -> Result<impl IntoResponse, AppError> {
-    token_queries::revoke_token(&state.pool, token_id)
+    let revoked = token_queries::revoke_token_for_user(&state.pool, token_id, auth_user.user_id)
         .await
         .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?;
+
+    if !revoked {
+        return Err(AppError::NotFound("ApiToken".to_string()));
+    }
 
     Ok((StatusCode::OK, Json(serde_json::json!({"status": "revoked"}))))
 }

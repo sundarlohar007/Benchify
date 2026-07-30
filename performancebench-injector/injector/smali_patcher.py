@@ -29,17 +29,49 @@ SDK_INIT_TEMPLATE = """    # PerformanceBench SDK initialization
 
 """
 
-# SDK classes that need to be importable
-# Note: The actual Smali classes from the SDK become available after
-# we inject the SDK .dex file. For now, we reference them.
-# The injector copies SDK classes into the APK in a separate step.
+# Matches any .super that ends with Application; (Application, MultiDexApplication, custom)
+_APPLICATION_SUPER_RE = re.compile(r"\.super\s+L[^;]+Application;")
+
+
+def _application_class_from_manifest(apk_dir: str) -> Optional[str]:
+    """Read AndroidManifest.xml application android:name → relative smali path."""
+    manifest_path = os.path.join(apk_dir, "AndroidManifest.xml")
+    if not os.path.isfile(manifest_path):
+        return None
+    try:
+        with open(manifest_path, "r", encoding="utf-8", errors="ignore") as f:
+            content = f.read()
+    except OSError:
+        return None
+
+    app_match = re.search(
+        r"<application\b[^>]*\bandroid:name\s*=\s*\"([^\"]+)\"",
+        content,
+        re.DOTALL | re.IGNORECASE,
+    )
+    if not app_match:
+        return None
+
+    name = app_match.group(1).strip()
+    if not name:
+        return None
+
+    if name.startswith("."):
+        pkg_match = re.search(r"\bpackage\s*=\s*\"([^\"]+)\"", content)
+        if not pkg_match:
+            return None
+        name = pkg_match.group(1) + name
+
+    return name.replace(".", "/") + ".smali"
 
 
 def find_application_smali(apk_dir: str) -> Optional[str]:
     """Find the smali file containing the Application subclass.
 
-    Searches all smali*/ directories for a class file that extends
-    android/app/Application (directly or via transitive hierarchy).
+    Prefers the class named in AndroidManifest.xml ``android:name`` on
+    ``<application>``. Falls back to scanning smali*/ for classes that
+    extend Application, MultiDexApplication, or any type ending in
+    ``Application;``.
 
     Args:
         apk_dir: Path to the decoded APK directory.
@@ -48,6 +80,14 @@ def find_application_smali(apk_dir: str) -> Optional[str]:
         Absolute path to the Application smali file, or None if not found.
     """
     smali_dirs = _find_smali_dirs(apk_dir)
+
+    # Prefer manifest-declared Application class
+    rel_smali = _application_class_from_manifest(apk_dir)
+    if rel_smali:
+        for smali_dir in smali_dirs:
+            candidate = os.path.join(smali_dir, rel_smali)
+            if os.path.isfile(candidate):
+                return candidate
 
     for smali_dir in smali_dirs:
         for root, dirs, files in os.walk(smali_dir):
@@ -58,8 +98,11 @@ def find_application_smali(apk_dir: str) -> Optional[str]:
                 try:
                     with open(filepath, "r", encoding="utf-8", errors="ignore") as sf:
                         content = sf.read(4096)
-                        # Check if this class extends Application
-                        if ".super Landroid/app/Application;" in content:
+                        if (
+                            ".super Landroid/app/Application;" in content
+                            or ".super Landroidx/multidex/MultiDexApplication;" in content
+                            or _APPLICATION_SUPER_RE.search(content)
+                        ):
                             return filepath
                 except OSError:
                     continue
@@ -80,6 +123,43 @@ def _find_smali_dirs(apk_dir: str) -> list:
     return dirs
 
 
+def _ensure_v0_register(smali_content: str, before_pos: int) -> str:
+    """Bump .locals / .registers so at least one local (v0) exists.
+
+    B-086: SDK_INIT_TEMPLATE uses v0. Application.onCreate has 1 param (p0).
+    - .locals N with N < 1 → .locals 1
+    - .registers N (total including params): need N-1 >= 1 i.e. N >= 2;
+      if N < 2, bump to 2.
+
+    Uses the nearest directive before ``before_pos`` (the onCreate body).
+    """
+    prefix = smali_content[:before_pos]
+
+    locals_matches = list(re.finditer(r"\.locals\s+(\d+)", prefix))
+    if locals_matches:
+        m = locals_matches[-1]
+        n = int(m.group(1))
+        if n < 1:
+            return smali_content[: m.start(1)] + "1" + smali_content[m.end(1) :]
+        return smali_content
+
+    registers_matches = list(re.finditer(r"\.registers\s+(\d+)", prefix))
+    if registers_matches:
+        m = registers_matches[-1]
+        n = int(m.group(1))
+        if n < 2:
+            return smali_content[: m.start(1)] + "2" + smali_content[m.end(1) :]
+    return smali_content
+
+
+def _extract_super_type(smali_content: str) -> str:
+    """Return the class's .super type descriptor, or Application as default."""
+    m = re.search(r"\.super\s+(L[^;]+;)", smali_content)
+    if m:
+        return m.group(1)
+    return "Landroid/app/Application;"
+
+
 def patch_oncreate_method(smali_content: str) -> str:
     """Patch the onCreate() method body to insert SDK initialization.
 
@@ -87,8 +167,8 @@ def patch_oncreate_method(smali_content: str) -> str:
     invoke-super call inside the onCreate() method. Uses p0 as the
     context reference (Application instance).
 
-    The patch is inserted at the START of the method body, right after
-    the invoke-super {p0}, Landroid/app/Application;->onCreate()V line.
+    The original invoke-super line is kept as-is (any superclass).
+    Before inserting, bumps .locals/.registers so v0 is valid (B-086).
 
     Args:
         smali_content: The full .method onCreate body (starting from
@@ -101,16 +181,19 @@ def patch_oncreate_method(smali_content: str) -> str:
     if "Ldev/benchify/SdkLoader;->init" in smali_content:
         return smali_content
 
-    # Find the invoke-super line for onCreate
-    # Pattern: invoke-super {p0}, Landroid/app/Application;->onCreate()V
+    # B-087: match ANY superclass invoke-super for onCreate()V
     invoke_super_pattern = re.compile(
-        r'(invoke-super\s+\{[^}]*\},\s*Landroid/app/Application;->onCreate\(\)V\s*)\n'
+        r"(invoke-super\s+\{[^}]*\},\s*L[^;]+;->onCreate\(\)V\s*)\n"
     )
 
     match = invoke_super_pattern.search(smali_content)
     if match:
-        # Insert SDK init AFTER the invoke-super line
+        # B-086: ensure v0 exists before inserting SDK init
+        smali_content = _ensure_v0_register(smali_content, match.start())
+        # Re-find after possible rewrite (digit length usually unchanged)
+        match = invoke_super_pattern.search(smali_content)
         insert_pos = match.end()
+        # Keep original invoke-super line as-is; insert SDK init AFTER it
         patched = (
             smali_content[:insert_pos]
             + "\n" + SDK_INIT_TEMPLATE
@@ -120,9 +203,10 @@ def patch_oncreate_method(smali_content: str) -> str:
 
     # If there's no invoke-super (unusual but handle it),
     # insert at the start of the method body
-    # Find the first instruction after .method declaration
-    method_start = re.search(r'\.method.*onCreate.*\n', smali_content)
+    method_start = re.search(r"\.method.*onCreate.*\n", smali_content)
     if method_start:
+        smali_content = _ensure_v0_register(smali_content, method_start.end())
+        method_start = re.search(r"\.method.*onCreate.*\n", smali_content)
         insert_pos = method_start.end()
         patched = (
             smali_content[:insert_pos]
@@ -159,7 +243,7 @@ def patch_smali(smali_content: str) -> str:
     # Extract the onCreate method
     # Smali method pattern: .method ... onCreate()V ... .end method
     method_pattern = re.compile(
-        r'(\.method\s+.*?\bonCreate\b\(\).*?\n)(.*?)(\.end\s+method)',
+        r"(\.method\s+.*?\bonCreate\b\(\).*?\n)(.*?)(\.end\s+method)",
         re.DOTALL,
     )
 
@@ -172,25 +256,24 @@ def patch_smali(smali_content: str) -> str:
         full_method = method_header + method_body
         patched_method = patch_oncreate_method(full_method)
 
-        result = smali_content[:match.start()] + patched_method + smali_content[match.end():]
+        result = smali_content[: match.start()] + patched_method + smali_content[match.end() :]
         return result
 
-    # If no onCreate method exists, we need to add one
-    # Find the end of the class (before last .end method or class end marker)
-    # Insert a new onCreate method
+    # If no onCreate method exists, synthesize one using the real .super type (B-087)
     insert_pattern = re.compile(
-        r'(\.method\s+public\s+constructor\s+<init>\(\)V.*?\.end\s+method\s*\n)',
+        r"(\.method\s+public\s+constructor\s+<init>\(\)V.*?\.end\s+method\s*\n)",
         re.DOTALL,
     )
     constructor_match = insert_pattern.search(smali_content)
     if constructor_match:
         insert_pos = constructor_match.end()
+        super_type = _extract_super_type(smali_content)
         new_oncreate = (
             "\n.method public onCreate()V\n"
             "    .locals 1\n\n"
-            "    invoke-super {p0}, Landroid/app/Application;->onCreate()V\n\n"
-            + SDK_INIT_TEMPLATE +
-            "    return-void\n"
+            f"    invoke-super {{p0}}, {super_type}->onCreate()V\n\n"
+            + SDK_INIT_TEMPLATE
+            + "    return-void\n"
             ".end method\n\n"
         )
         return smali_content[:insert_pos] + "\n" + new_oncreate + smali_content[insert_pos:]

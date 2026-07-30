@@ -72,8 +72,8 @@ pub async fn get_lens(
 /// POST /api/v1/lenses — create a new lens.
 pub async fn create_lens(
     State(state): State<AppState>,
-    Json(body): Json<CreateLensBody>,
     Extension(auth_user): Extension<AuthUser>,
+    Json(body): Json<CreateLensBody>,
 ) -> Result<impl IntoResponse, AppError> {
     let lens = lens_queries::create_lens(
         &state.pool,
@@ -94,15 +94,19 @@ pub async fn create_lens(
 pub async fn update_lens(
     State(state): State<AppState>,
     Path(lens_id): Path<Uuid>,
-    Json(body): Json<UpdateLensBody>,
     Extension(auth_user): Extension<AuthUser>,
+    Json(body): Json<UpdateLensBody>,
 ) -> Result<impl IntoResponse, AppError> {
+    let description = body
+        .description
+        .as_ref()
+        .map(|inner| inner.as_deref());
     let lens = lens_queries::update_lens(
         &state.pool,
         lens_id,
         auth_user.user_id,
         body.name.as_deref(),
-        body.description,
+        description,
         body.filters,
         body.chart_config,
         body.is_public,
