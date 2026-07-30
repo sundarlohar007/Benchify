@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:io' show File, Platform, Process, ProcessResult;
+import 'dart:typed_data';
 
 import 'package:meta/meta.dart';
 
@@ -219,6 +220,40 @@ class AdbService implements AdbShell {
     );
     if (result == null) return null;
     return (result.stdout as String).trim();
+  }
+
+  /// Run an ADB command and return raw stdout bytes (no text decoding).
+  ///
+  /// Used for binary captures such as `exec-out screencap -p` (B-016 / B-017).
+  /// [command] is split on whitespace into argv after the device serial.
+  /// Returns null on timeout, non-zero exit, or any error.
+  Future<Uint8List?> runShellCommandRaw(
+    String serial,
+    String command, {
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    if (!_isValidSerial(serial)) return null;
+    final parts = command
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return null;
+    try {
+      final result = await Process.run(
+        _adbPath,
+        ['-s', serial, ...parts],
+        stdoutEncoding: null,
+      ).timeout(timeout);
+      if (result.exitCode == 0 && result.stdout is List<int>) {
+        return Uint8List.fromList(result.stdout as List<int>);
+      }
+      return null;
+    } on TimeoutException {
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Pull a file from device to host via `adb pull`.

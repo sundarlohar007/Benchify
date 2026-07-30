@@ -7,6 +7,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/analytics/analytics_service.dart';
+import '../../core/analytics/detected_issues_service.dart';
+import '../../core/database/database.dart';
+import '../../core/database/detected_issue_dao.dart';
+import '../../core/database/marker_dao.dart';
+import '../../core/database/marker_stats_dao.dart';
+import '../../core/database/metric_dao.dart';
+import '../../core/database/region_stats_dao.dart';
+import '../../core/database/screenshot_dao.dart';
+import '../../core/database/session_dao.dart';
+import '../../core/database/session_stats_dao.dart';
+import '../../core/models/metric_sample.dart';
+import '../../core/models/session.dart';
+import '../../core/services/adb_service.dart';
+import '../../core/services/error_handler.dart';
+import '../../core/services/metric_collector.dart';
+import '../../core/services/screenshot_service.dart';
+import '../../core/services/session_service.dart';
 import '../../shared/theme.dart';
 import 'charts_tab.dart';
 import 'screenshots_tab.dart';
@@ -33,6 +51,16 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
   final ValueNotifier<String> _elapsedNotifier = ValueNotifier('00:00:00');
   final ValueNotifier<String> _sqliteStatus = ValueNotifier('SQLite ✓');
 
+  final GlobalKey<ScreenshotsTabState> _screenshotsKey =
+      GlobalKey<ScreenshotsTabState>();
+
+  Session? _session;
+  SessionService? _sessionService;
+  MetricCollector? _collector;
+  ScreenshotService? _screenshotService;
+  Stream<MetricSample> _metricStream = const Stream.empty();
+  bool _stopping = false;
+  bool _started = false;
   int _elapsedSeconds = 0;
 
   @override
@@ -54,6 +82,90 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
       final s = (_elapsedSeconds % 60).toString().padLeft(2, '0');
       _elapsedNotifier.value = '$h:$m:$s';
     });
+
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    try {
+      final db = await initDatabase();
+      final sessionDao = SessionDao(db);
+      final session = await sessionDao.getById(widget.sessionId);
+      if (session == null || !mounted) return;
+
+      final metricDao = MetricDao(db);
+      final analytics = AnalyticsService(
+        metricDao: metricDao,
+        sessionStatsDao: SessionStatsDao(db),
+        markerDao: MarkerDao(db),
+        markerStatsDao: MarkerStatsDao(db),
+        regionStatsDao: RegionStatsDao(db),
+      );
+      final sessionService = SessionService(
+        sessionDao: sessionDao,
+        analyticsService: analytics,
+        detectedIssuesService: DetectedIssuesService(
+          sessionStatsDao: SessionStatsDao(db),
+          sessionDao: sessionDao,
+          detectedIssueDao: DetectedIssueDao(db),
+        ),
+      );
+
+      AdbService? adb;
+      MetricCollector? collector;
+      Stream<MetricSample> stream = const Stream.empty();
+      ScreenshotService? screenshots;
+
+      if (session.platform == 'android') {
+        try {
+          adb = await AdbService.create();
+          collector = MetricCollector(
+            adbService: adb,
+            deviceSerial: session.deviceId,
+            packageName: session.appPackage,
+            sessionId: session.id,
+            metricDao: metricDao,
+          );
+          stream = collector.start();
+          sessionService.setActiveCollector(collector);
+
+          screenshots = ScreenshotService(
+            adbService: adb,
+            deviceSerial: session.deviceId,
+            sessionId: session.id,
+            screenshotDao: ScreenshotDao(db),
+          );
+          await screenshots.init();
+          if (!screenshots.isWireless) {
+            screenshots.startAutoCapture();
+          }
+        } catch (e, stack) {
+          ErrorHandler().logError('ActiveSessionScreen.adb', e, stack);
+        }
+      }
+
+      if (!mounted) {
+        collector?.stop();
+        screenshots?.stop();
+        return;
+      }
+
+      setState(() {
+        _session = session;
+        _sessionService = sessionService;
+        _collector = collector;
+        _screenshotService = screenshots;
+        _metricStream = stream;
+        _started = true;
+      });
+
+      // Forward status stream for SQLite indicator
+      collector?.statusStream.listen((status) {
+        if (mounted) _sqliteStatus.value = status;
+      });
+    } catch (e, stack) {
+      ErrorHandler().logError('ActiveSessionScreen.bootstrap', e, stack);
+    }
   }
 
   @override
@@ -62,21 +174,47 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
     _elapsedTimer?.cancel();
     _elapsedNotifier.dispose();
     _sqliteStatus.dispose();
+    // Emergency stop if user closes window without pressing Stop
+    _screenshotService?.stop();
+    unawaited(_collector?.stop() ?? Future.value());
     super.dispose();
   }
 
-  void _handleStop() {
+  Future<void> _handleStop() async {
+    if (_stopping) return;
+    setState(() => _stopping = true);
+
     _stopwatch.stop();
     _elapsedTimer?.cancel();
-    // TODO: Call the active session service to stop collection, flush, and finalize
-    // The session termination pipeline (stop MetricCollector, flush pending batches,
-    // update session end-time in DB) must be invoked here before navigating away.
-    // await ref.read(sessionServiceProvider).stopSession(widget.sessionId);
-    context.go('/');
+    _screenshotService?.stop();
+
+    try {
+      final session = _session;
+      final service = _sessionService;
+      if (session != null && service != null) {
+        // B-047: flush collector, compute stats, set endedAt/durationMs
+        await service.stopSession(session);
+      }
+      _collector = null;
+      _screenshotService = null;
+    } catch (e, stack) {
+      ErrorHandler().logError('ActiveSessionScreen.stop', e, stack);
+    }
+
+    if (!mounted) return;
+    context.go('/session/${widget.sessionId}');
   }
 
-  void _handleScreenshot() {
-    // Wired in Task 3
+  Future<void> _handleScreenshot() async {
+    final svc = _screenshotService;
+    if (svc == null || svc.isWireless) return;
+    final result = await svc.capture();
+    if (result != null && mounted) {
+      _screenshotsKey.currentState?.addScreenshots(
+        result.filepaths,
+        result.timestamp,
+      );
+    }
   }
 
   @override
@@ -120,7 +258,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
           ),
           actions: [
             TextButton.icon(
-              onPressed: _handleScreenshot,
+              onPressed: _started && !_stopping ? _handleScreenshot : null,
               icon: Icon(Icons.camera_alt, size: 16, color: colors.textSecondary),
               label: Text(
                 'Screenshot',
@@ -146,9 +284,15 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
             ),
             const SizedBox(width: 8),
             OutlinedButton.icon(
-              onPressed: _handleStop,
-              icon: const Icon(Icons.stop, size: 16),
-              label: const Text('Stop Recording'),
+              onPressed: _stopping ? null : _handleStop,
+              icon: _stopping
+                  ? const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.stop, size: 16),
+              label: Text(_stopping ? 'Stopping…' : 'Stop Recording'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: colors.accentRecording,
                 side: BorderSide(color: colors.accentRecording),
@@ -170,8 +314,12 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
         ),
         body: TabBarView(
           children: [
-            const ActiveSessionChartsTab(stream: Stream.empty()),
-            ScreenshotsTab(sessionId: widget.sessionId),
+            ActiveSessionChartsTab(stream: _metricStream),
+            ScreenshotsTab(
+              key: _screenshotsKey,
+              sessionId: widget.sessionId,
+              wirelessDisabled: _screenshotService?.isWireless ?? false,
+            ),
             MarkersTab(sessionId: widget.sessionId),
           ],
         ),
@@ -201,28 +349,15 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
                   ),
                 ),
               ),
-              const SizedBox(width: 4),
-              ValueListenableBuilder(
-                valueListenable: _elapsedNotifier,
-                builder: (_, elapsed, __) => Text(
-                  elapsed,
-                  style: TextStyle(
-                    color: colors.textSecondary,
-                    fontSize: 10,
-                    fontFamily: monoFontFamily(),
-                  ),
+              const SizedBox(width: 6),
+              Text(
+                'Recording',
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: TextTokens.xs,
                 ),
               ),
             ],
-          ),
-          const Spacer(),
-          Text(
-            '1 Hz',
-            style: TextStyle(
-              color: colors.textDisabled,
-              fontSize: 10,
-              fontFamily: monoFontFamily(),
-            ),
           ),
           const Spacer(),
           ValueListenableBuilder(
@@ -230,10 +365,8 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
             builder: (_, status, __) => Text(
               status,
               style: TextStyle(
-                color: status.contains('✓')
-                    ? colors.accentSuccess
-                    : colors.accentWarning,
-                fontSize: 10,
+                color: colors.textSecondary,
+                fontSize: TextTokens.xs,
                 fontFamily: monoFontFamily(),
               ),
             ),

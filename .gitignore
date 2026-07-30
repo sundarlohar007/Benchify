@@ -13,6 +13,9 @@ target/
 __pycache__/
 *.pyc
 
+# Auto-generated injector debug keystore (B-084)
+**/pb_debug.keystore
+
 # Node
 node_modules/
 dist/

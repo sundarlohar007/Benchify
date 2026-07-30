@@ -30,6 +30,7 @@ dependencies:
   media_kit_libs_video: ^1.0.5    # Platform video libraries
   shared_preferences: ^2.4.0      # Persistent keystore path preference
   flutter_secure_storage: ^9.2.2  # Platform-encrypted credential storage (DPAPI/Keychain/Keystore)
+  image: ^4.3.0                   # PNG decode + JPEG encode for screenshots (B-016)
 
 dev_dependencies:
   flutter_test:
