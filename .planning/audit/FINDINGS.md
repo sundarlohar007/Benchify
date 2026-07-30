@@ -240,10 +240,11 @@ Schema per entry:
 - **Fix (planned):** Two-step:
   1. **S-04 (UI)**: hide / disable the screenshot toggle until the real implementation lands. Avoids polluting the DB with junk. **DONE in S-04** — `ScreenshotsTab` empty state now reads "Screenshot capture is not enabled in this build" rather than promising thumbnails. (See also B-050.)
   2. **S-20 (or follow-up slice)**: add `image: ^4.x` to pubspec, implement real PNG decode + JPEG encode using `img.copyResize` + `img.encodeJpg`.
-- **Status:** PARTIAL FIX (UI gate FIXED:b4c0df1); real impl DEFERRED-TO-S20
+- **Status:** FIXED (post-release sprint): real PNG decode + JPEG encode via `image` package; `AdbService.runShellCommandRaw` uses resolved ADB path and honours command argv; ActiveSessionScreen starts ScreenshotService on session bootstrap.
 - **Related:** B-017, B-050
 - **Found in:** S-02
 - **Discovered:** 2026-05-08
+- **Resolved:** 2026-07-30
 
 ---
 
@@ -253,11 +254,12 @@ Schema per entry:
 - **Where:** `screenshot_service.dart:268-291`
 - **User-visible symptom:** Bypasses the resolved ADB path; ignores the caller's `command`. Couples B-016 to the wrong execution surface.
 - **Root cause:** Extension hardcodes `Process.run('adb', ['-s', deviceSerial, 'exec-out', 'screencap', '-p'])`. Caller's `command` parameter is dropped.
-- **Fix (planned):** Use the resolved `_adbPath`; honour `command` (split into argv); land alongside B-016 since they're the same code path.
-- **Status:** DEFERRED-TO-S20
+- **Fix:** Added `AdbService.runShellCommandRaw` that uses the resolved `_adbPath`, splits the caller `command` into argv, and returns raw stdout bytes. ScreenshotService now calls this method.
+- **Status:** FIXED (post-release sprint)
 - **Related:** B-016
 - **Found in:** S-02
 - **Discovered:** 2026-05-08
+- **Resolved:** 2026-07-30
 
 ---
 
@@ -678,14 +680,12 @@ Schema per entry:
   - `DetectedIssuesService.runAllRules` (D-03 opt-in) never fires.
   Session detail view loads a row with `endedAt = null`, no stats, no markers stats.
 - **Root cause:** The screen was scaffolded with a `// TODO: Call the active session service to stop collection, flush, and finalize` comment. The plumbing it needs (a `sessionServiceProvider`, the active session row, the active collector reference) was never added.
-- **Fix (planned, ~30 LOC across 3 files):**
-  1. Add `final sessionServiceProvider = Provider<SessionService>(...)` in `core/services/session_service.dart` (or wherever the DAO providers live).
-  2. Wire the running `MetricCollector` into the service via `setActiveCollector(...)` at session start.
-  3. In `_handleStop`: load the `Session` row by id (`SessionDao.getById`), `await ref.read(sessionServiceProvider).stopSession(session)`, then navigate.
-- **Status:** DEFERRED-TO-S20
+- **Fix:** ActiveSessionScreen bootstraps MetricCollector + ScreenshotService + SessionService on enter; `_handleStop` awaits `stopSession` (flush batch, analytics, endedAt/durationMs) then navigates to session detail.
+- **Status:** FIXED (post-release sprint)
 - **Related:** B-031 (stale PID compounds the symptom for long sessions)
 - **Found in:** S-04
 - **Discovered:** 2026-05-08
+- **Resolved:** 2026-07-30
 
 ---
 
@@ -695,11 +695,12 @@ Schema per entry:
 - **Where:** `active_session_screen.dart:78-80`
 - **User-visible symptom:** Manual screenshot button does nothing during a session.
 - **Root cause:** Stubbed pending integration with `ScreenshotService` (which itself is fake — see B-016).
-- **Fix (planned):** Wire after B-016's real implementation lands. Until then, the button should be visibly disabled.
-- **Status:** DEFERRED-TO-S20
+- **Fix:** `_handleScreenshot` calls `ScreenshotService.capture()` and pushes results into ScreenshotsTab.
+- **Status:** FIXED (post-release sprint)
 - **Related:** B-016, B-050
 - **Found in:** S-04
 - **Discovered:** 2026-05-08
+- **Resolved:** 2026-07-30
 
 ---
 
@@ -1204,14 +1205,12 @@ Schema per entry:
 - **Where:** `performancebench-injector/frida/gadget_injector.py:132-232`, `injector/frida_injector.py:31-91`
 - **User-visible symptom:** End user picks the Frida injection path on the desktop ("no keystore needed"), CLI prints `step=done status=ok`, output APK lands on disk. User pushes it to a stock-Android phone via `adb install` → install fails with `INSTALL_PARSE_FAILED_NO_CERTIFICATES` / `INSTALL_FAILED_INVALID_APK`. On rooted devices with signature checks bypassed it works; on regular devices it doesn't.
 - **Root cause:** `inject_frida_gadget` rebuilds the APK ZIP with new entries (`lib/<abi>/libgadget.so`, `libgadget.config.so`). The original V1 signatures (`META-INF/MANIFEST.MF`, `META-INF/CERT.SF`) sign per-entry digests, and the V2 signing block in the original APK signs the whole ZIP layout. Adding files breaks both. The docstring says "leaves original signature intact" but technically the *bytes* of the META-INF dir are intact while the *validity* is destroyed.
-- **Fix (planned):** Three options, decision pinned to S-20 alongside B-016 / B-014 UI-gate work:
-  1. Document Frida path as rooted-device-only; gate the desktop UI to require an explicit "I have a rooted device" toggle.
-  2. After gadget injection, run a re-sign step with a project-bundled debug key (defeats the "no keystore" promise but produces an installable APK).
-  3. Drop the Frida-into-APK path entirely; tell users to use `frida-server` + USB attach instead, no APK modification.
-- **Status:** DEFERRED-TO-S20
+- **Fix:** FridaInjector now re-signs with auto-generated `pb_debug.keystore` (UNIFIED-SPEC Option A) after gadget injection. Optional `--keystore` still accepted. Output APK is installable on stock Android.
+- **Status:** FIXED (post-release sprint)
 - **Related:** B-016, B-085
 - **Found in:** S-09
 - **Discovered:** 2026-05-08
+- **Resolved:** 2026-07-30
 
 ---
 
@@ -2582,14 +2581,11 @@ Schema per entry:
 - **User-visible symptom:** Users who visit `github.com/sundarlohar007/Benchify` see no project description, no installation instructions, no quickstart guide. The GitHub page renders a blank project landing. Every sub-project has a README except the root, which is the primary entry point.
 - **Root cause:** README was never created at the monorepo root. Sub-projects have READMEs but the aggregating project does not.
 - **Fix (planned):** Create a comprehensive root README covering: project overview, component map, installation for each platform, quickstart for each flow, contributing guide link, and license badge.
-- **Status:** DEFERRED — documentation task
+- **Status:** FIXED — root README.md added in chore commit (pre-this sprint); verified present.
 - **Related:** —
 - **Found in:** S-20
 - **Discovered:** 2026-05-09
-
----
-
-### B-183 — Version drift across components
+- **Resolved:** 2026-05-09
 
 - **Severity:** MED
 - **Where:** Multiple `pubspec.yaml`, `Cargo.toml`, `package.json` files
@@ -2638,10 +2634,11 @@ Schema per entry:
 - **User-visible symptom:** Per the existing CI audit report: 57 of 61 workflow runs failed. Self-heal workflow can't create issues (API permission error — 25 failures). Server Rust crate has 13 compile errors. Desktop has 94 Dart analysis issues and 7 missing SPDX headers. iOS tests fail due to missing OpenSSL headers. Privacy verification fails due to missing CMake deps.
 - **Root cause:** Multiple systemic issues: missing permissions in self-heal, missing system deps in CI runners, Rust compilation errors in server crate, Dart analysis errors in desktop. These were partially addressed in prior slices (S-19 fixed workflow names, injection) but the core CI-blocking issues remain.
 - **Fix (planned):** Triage the CI audit report into prioritized batches: (1) fix self-heal permissions, (2) add SPDX headers to ios_agents, (3) fix Rust compile errors in server db crate, (4) resolve Dart analysis errors in desktop.
-- **Status:** DEFERRED — major remediation effort (~18 hours per audit report)
+- **Status:** OBSERVED-FIXED — as of 2026-05-09 / 2026-07-30, `main` CI (desktop, server, web, injector, privacy, iOS, release) is green; releases `v0.1.0`–`v0.1.2` publish full artifact sets. Historical 57/61 failure rate no longer applies.
 - **Related:** B-177, B-178, B-179
 - **Found in:** S-20
 - **Discovered:** 2026-05-09
+- **Resolved:** 2026-05-09
 
 ---
 
@@ -2651,11 +2648,12 @@ Schema per entry:
 - **Where:** `CLAUDE.md:26-27`
 - **User-visible symptom:** `CLAUDE.md` says "Current Phase: Phase 1: v1.0 External Profiling MVP (7 days, 29 requirements)". The actual project is well past Phase 1 — desktop, mobile, server, web, and plugins are all implemented. This misleads any AI or developer who reads it for project context.
 - **Root cause:** CLAUDE.md was written at project inception and never updated as phases completed.
-- **Fix (planned):** Update "Current Phase" to reflect actual state, or remove stale phase reference.
-- **Status:** DEFERRED — documentation task
+- **Fix:** Updated Current State to reflect all 6 phases complete, CI green, and tagged pre-releases `v0.1.0`–`v0.1.2`.
+- **Status:** FIXED (post-release sprint)
 - **Related:** —
 - **Found in:** S-20
 - **Discovered:** 2026-05-09
+- **Resolved:** 2026-07-30
 
 ---
 
@@ -2666,10 +2664,11 @@ Schema per entry:
 - **User-visible symptom:** The web dashboard has no README. Every other sub-project (desktop, mobile, injector, plugins) has one. A developer who opens `performancebench-web/` doesn't know how to: install deps, start dev server, configure API URL, or understand the component architecture.
 - **Root cause:** Web dashboard was built later and README wasn't created.
 - **Fix (planned):** Create README covering: prerequisites (Node 22, pnpm), dev setup, env variables (API base URL), component architecture, deployment instructions.
-- **Status:** DEFERRED — documentation task
+- **Status:** FIXED — `performancebench-web/README.md` present.
 - **Related:** B-182
 - **Found in:** S-20
 - **Discovered:** 2026-05-09
+- **Resolved:** 2026-05-09
 
 ---
 

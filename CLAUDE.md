@@ -24,5 +24,6 @@ Free, open-source mobile + desktop performance profiler — GameBench alternativ
 
 ## Current State
 All 6 phases implemented. Desktop + Mobile + Server + Web + Injector + SDK + Game Engine plugins are functional.
-Audit branch `audit/v0.1.x` completed 20/20 slices with 199 findings (84 fixed).
-Next: CI stabilization sprint → first tagged release `v0.1.0`.
+Audit branch `audit/v0.1.x` completed 20/20 slices with 199 findings (84 fixed in-audit).
+CI is green on `main`. Tagged pre-releases published: `v0.1.0`, `v0.1.1`, `v0.1.2` (full Win/macOS/Linux + mobile + plugins + injector artifacts).
+Next: burn down remaining deferred BLOCKER/HIGH audit findings (golden-path bugs), then promote a non-prerelease stable tag.

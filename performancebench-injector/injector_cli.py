@@ -55,11 +55,12 @@ def cli():
 @cli.command()
 @click.option("--apk", required=True, type=click.Path(exists=True), help="Path to input APK file")
 @click.option("--method", default="smali", type=click.Choice(["smali", "frida"]),
-              help="Injection method: smali (permanent, re-sign) or frida (no re-sign, needs frida-server)")
-@click.option("--keystore", type=click.Path(), help="Path to keystore for re-signing (smali only)")
-@click.option("--keystore-password", help="Keystore password (smali only)")
-@click.option("--key-alias", help="Key alias in keystore (smali only)")
-@click.option("--key-password", help="Key password (smali only)")
+              help="Injection method: smali (permanent, re-sign) or frida (gadget + debug re-sign)")
+@click.option("--keystore", type=click.Path(),
+              help="Path to keystore for re-signing (optional for frida — auto debug keystore)")
+@click.option("--keystore-password", help="Keystore password")
+@click.option("--key-alias", help="Key alias in keystore")
+@click.option("--key-password", help="Key password")
 @click.option("--sdk-so-dir", type=click.Path(exists=True),
               help="Directory containing SDK .so files per ABI (smali only)")
 @click.option("--gadget-so", type=click.Path(exists=True),
@@ -86,11 +87,9 @@ def inject(apk, method, keystore, keystore_password, key_alias, key_password,
         Requires: keystore, apktool
 
     Frida path (--method frida):
-        Steps: validate -> detect arch -> inject gadget .so + config
+        Steps: validate -> detect arch -> inject gadget .so + config -> resign
         Requires: --gadget-so (frida-gadget .so file)
-        Does NOT require: keystore, apktool
-        Original APK signature is preserved.
-        Recommended for CI/CD automation (per D-25).
+        Auto-generates pb_debug.keystore when --keystore is omitted (B-084).
     """
     # Read passwords from stdin if the secure flag is set (T-04-02)
     if keystore_passwords_via_stdin:
@@ -98,9 +97,15 @@ def inject(apk, method, keystore, keystore_password, key_alias, key_password,
         keystore_password = keystore_password or stdin_data.get('keystore_password') or ''
         key_password = key_password or stdin_data.get('key_password') or ''
 
-    # ---- Frida gadget path (per D-09, D-25) ----
+    # ---- Frida gadget path (per D-09, D-25, B-084) ----
     if method == "frida":
-        _inject_frida(apk, gadget_so, gadget_config, output)
+        _inject_frida(
+            apk, gadget_so, gadget_config, output,
+            keystore=keystore,
+            keystore_password=keystore_password,
+            key_alias=key_alias,
+            key_password=key_password,
+        )
         return
 
     # ---- Smali path (per D-01, D-04, D-07) ----
@@ -180,11 +185,17 @@ def inject(apk, method, keystore, keystore_password, key_alias, key_password,
 
 
 
-def _inject_frida(apk: str, gadget_so: str, gadget_config: str, output: str):
-    """Run the Frida gadget injection pipeline.
-
-    Per D-09, D-25: Frida path for CI/CD. No apktool, no re-sign.
-    """
+def _inject_frida(
+    apk: str,
+    gadget_so: str,
+    gadget_config: str,
+    output: str,
+    keystore: str | None = None,
+    keystore_password: str | None = None,
+    key_alias: str | None = None,
+    key_password: str | None = None,
+):
+    """Run the Frida gadget injection pipeline with debug re-sign (B-084)."""
     import json as json_mod
 
     if not gadget_so:
@@ -192,9 +203,11 @@ def _inject_frida(apk: str, gadget_so: str, gadget_config: str, output: str):
         click.echo(json_mod.dumps({"step": "frida", "status": "fail", "detail": msg}))
         raise click.UsageError(msg)
 
-    click.echo(json_mod.dumps({"step": "frida",
-                                "status": "running",
-                                "detail": "Injecting frida-gadget into APK via ZIP..."}))
+    click.echo(json_mod.dumps({
+        "step": "frida",
+        "status": "running",
+        "detail": "Injecting frida-gadget into APK via ZIP...",
+    }))
 
     config_content = None
     if gadget_config:
@@ -202,9 +215,11 @@ def _inject_frida(apk: str, gadget_so: str, gadget_config: str, output: str):
             with open(gadget_config, "r", encoding="utf-8") as f:
                 config_content = f.read()
         except OSError as e:
-            click.echo(json_mod.dumps({"step": "frida",
-                                        "status": "warning",
-                                        "detail": f"Could not read gadget config: {e}. Using default."}))
+            click.echo(json_mod.dumps({
+                "step": "frida",
+                "status": "warning",
+                "detail": f"Could not read gadget config: {e}. Using default.",
+            }))
 
     injector = FridaInjector()
     result = injector.inject(
@@ -212,13 +227,25 @@ def _inject_frida(apk: str, gadget_so: str, gadget_config: str, output: str):
         gadget_so_path=gadget_so,
         output_path=output,
         config_json=config_content,
+        keystore_path=keystore,
+        keystore_pass=keystore_password,
+        key_alias=key_alias,
+        key_pass=key_password,
     )
 
     if result.get("status") == "ok":
         click.echo(json_mod.dumps({
             "step": "frida",
             "status": "pass",
-            "detail": f"Frida gadget injected. Arch: {result.get('detected_arch', 'unknown')}",
+            "detail": (
+                f"Frida gadget injected + signed. "
+                f"Arch: {result.get('detected_arch', 'unknown')}"
+            ),
+        }))
+        click.echo(json_mod.dumps({
+            "step": "resign",
+            "status": "pass",
+            "detail": f"Signed with {result.get('keystore', 'debug keystore')}",
         }))
         for i, step in enumerate(result.get("verification_steps", []), 1):
             click.echo(json_mod.dumps({
@@ -226,11 +253,17 @@ def _inject_frida(apk: str, gadget_so: str, gadget_config: str, output: str):
                 "status": "info",
                 "detail": f"Verification step {i}: {step}",
             }))
-        click.echo(json_mod.dumps({"step": "done", "status": "pass",
-                                     "detail": f"Injection complete: {output}"}))
+        click.echo(json_mod.dumps({
+            "step": "done",
+            "status": "pass",
+            "detail": f"Injection complete: {output}",
+        }))
     else:
-        click.echo(json_mod.dumps({"step": "frida", "status": "fail",
-                                     "detail": result.get("error", "Unknown error")}))
+        click.echo(json_mod.dumps({
+            "step": "frida",
+            "status": "fail",
+            "detail": result.get("error", "Unknown error"),
+        }))
 
 
 def _rebuild_apk(decoded_dir: str, output_path: str):

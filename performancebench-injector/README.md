@@ -38,6 +38,20 @@ python injector_cli.py inject \
   --output app_injected.apk
 ```
 
+### Inject via Frida gadget (auto debug keystore)
+
+```bash
+python injector_cli.py inject \
+  --apk app.apk \
+  --method frida \
+  --gadget-so ./frida-gadget-arm64.so \
+  --output app_injected.apk
+```
+
+Omitting `--keystore` auto-generates `pb_debug.keystore` (UNIFIED-SPEC Option A)
+and re-signs so the APK installs on stock Android (B-084). Pass `--keystore` to
+use your own signing key instead.
+
 ### Verify an already-injected APK
 
 ```bash

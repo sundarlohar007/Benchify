@@ -123,11 +123,8 @@ class TestGadgetInjector:
                 f"Config not found. Contents: {names}"
             )
 
-    def test_inject_frida_gadget_no_resign(self, tmp_path):
-        """Test: Frida injection path does NOT re-sign the APK.
-
-        Signature files (META-INF/) are preserved as-is since we don't modify them.
-        """
+    def test_inject_frida_gadget_preserves_metainf_entries(self, tmp_path):
+        """Test: low-level ZIP inject preserves META-INF bytes (resign is FridaInjector's job)."""
         from frida.gadget_injector import inject_frida_gadget
 
         apk_path = tmp_path / "test.apk"
@@ -147,7 +144,7 @@ class TestGadgetInjector:
             str(apk_path), str(gadget_so_path), str(output_path), arch="arm64"
         )
 
-        # META-INF files should still exist (no re-sign means they're preserved)
+        # META-INF files still present at the ZIP layer; FridaInjector re-signs next.
         with zipfile.ZipFile(output_path, "r") as zf:
             names = zf.namelist()
             assert "META-INF/CERT.RSA" in names
@@ -172,21 +169,33 @@ class TestGadgetInjector:
 class TestFridaInjectorCLI:
     """Test suite for injector/frida_injector.py CLI integration."""
 
-    def test_frida_injector_no_keystore_required(self, tmp_path):
-        """Test 3: Frida path does NOT require keystore arguments."""
+    def test_frida_injector_auto_debug_keystore(self, tmp_path, monkeypatch):
+        """B-084: Frida path auto-signs with debug keystore when none provided."""
         from injector.frida_injector import FridaInjector
 
         apk_path = tmp_path / "test.apk"
         gadget_so_path = tmp_path / "frida-gadget-arm64.so"
         output_path = tmp_path / "out.apk"
+        ks_path = tmp_path / "pb_debug.keystore"
 
         gadget_so_path.write_bytes(b"\x7fELF" + b"\x00" * 1024)
-
         with zipfile.ZipFile(apk_path, "w") as zf:
             zf.writestr("lib/arm64-v8a/", "")
             zf.writestr("classes.dex", b"dex")
 
-        # FridaInjector should work without keystore
+        monkeypatch.setattr(
+            "injector.frida_injector.ensure_debug_keystore",
+            lambda: (str(ks_path), "pbdebug", "pb", "pbdebug"),
+        )
+
+        def fake_resign(apk_path, keystore_path, keystore_pass, key_alias, key_pass, output_path):
+            # Simulate signed output by copying the unsigned ZIP
+            import shutil
+            shutil.copy(apk_path, output_path)
+            return output_path
+
+        monkeypatch.setattr("injector.frida_injector.resign", fake_resign)
+
         injector = FridaInjector()
         result = injector.inject(
             apk_path=str(apk_path),
@@ -194,9 +203,11 @@ class TestFridaInjectorCLI:
             output_path=str(output_path),
         )
         assert result.get("status") == "ok"
+        assert result.get("signed") is True
+        assert result.get("keystore") == str(ks_path)
         assert os.path.exists(str(output_path))
 
-    def test_frida_injector_returns_verification_steps(self, tmp_path):
+    def test_frida_injector_returns_verification_steps(self, tmp_path, monkeypatch):
         """Test: FridaInjector.inject returns frida-specific verification steps."""
         from injector.frida_injector import FridaInjector
 
@@ -205,10 +216,21 @@ class TestFridaInjectorCLI:
         output_path = tmp_path / "out.apk"
 
         gadget_so_path.write_bytes(b"\x7fELF" + b"\x00" * 1024)
-
         with zipfile.ZipFile(apk_path, "w") as zf:
             zf.writestr("lib/arm64-v8a/", "")
             zf.writestr("classes.dex", b"dex")
+
+        monkeypatch.setattr(
+            "injector.frida_injector.ensure_debug_keystore",
+            lambda: (str(tmp_path / "ks"), "pbdebug", "pb", "pbdebug"),
+        )
+
+        def fake_resign(apk_path, keystore_path, keystore_pass, key_alias, key_pass, output_path):
+            import shutil
+            shutil.copy(apk_path, output_path)
+            return output_path
+
+        monkeypatch.setattr("injector.frida_injector.resign", fake_resign)
 
         injector = FridaInjector()
         result = injector.inject(
@@ -216,11 +238,27 @@ class TestFridaInjectorCLI:
             gadget_so_path=str(gadget_so_path),
             output_path=str(output_path),
         )
-        # Frida verification is different from Smali (no signing step)
         assert "verification_steps" in result
         steps = result["verification_steps"]
-        assert len(steps) >= 2  # At minimum: inject gadget + verify APK installs
+        assert len(steps) >= 2
         assert any("gadget" in s.lower() for s in steps)
+        assert any("re-sign" in s.lower() or "sign" in s.lower() for s in steps)
+
+    def test_ensure_debug_keystore_creates_file(self, tmp_path):
+        """keytool generates pb_debug.keystore on first use."""
+        from injector.debug_keystore import ensure_debug_keystore
+
+        ks = tmp_path / "pb_debug.keystore"
+        path, store_pass, alias, key_pass = ensure_debug_keystore(str(ks))
+        assert path == str(ks)
+        assert os.path.isfile(ks)
+        assert store_pass == "pbdebug"
+        assert alias == "pb"
+        assert key_pass == "pbdebug"
+
+        # Second call reuses existing file
+        path2, *_ = ensure_debug_keystore(str(ks))
+        assert path2 == str(ks)
 
 
 class TestGadgetConfig:

@@ -13,14 +13,19 @@ import '../../shared/theme.dart';
 /// Auto-scrolls to most recent capture.
 class ScreenshotsTab extends StatefulWidget {
   final String sessionId;
+  final bool wirelessDisabled;
 
-  const ScreenshotsTab({super.key, required this.sessionId});
+  const ScreenshotsTab({
+    super.key,
+    required this.sessionId,
+    this.wirelessDisabled = false,
+  });
 
   @override
-  State<ScreenshotsTab> createState() => _ScreenshotsTabState();
+  ScreenshotsTabState createState() => ScreenshotsTabState();
 }
 
-class _ScreenshotsTabState extends State<ScreenshotsTab> {
+class ScreenshotsTabState extends State<ScreenshotsTab> {
   final List<_ThumbEntry> _entries = [];
   final ScrollController _scrollController = ScrollController();
 
@@ -67,21 +72,28 @@ class _ScreenshotsTabState extends State<ScreenshotsTab> {
     final colors = AppColors.of(context);
 
     if (_entries.isEmpty) {
-      // B-016 / S-04 UI gate: ScreenshotService is currently a placeholder
-      // (saves identical 1×1 black JPEGs) AND is never instantiated. Tell the
-      // user up front so they don't wait for thumbnails that will never come.
-      // Real implementation tracked under B-016 → S-20.
+      final title = widget.wirelessDisabled
+          ? 'Screenshots disabled over Wi‑Fi ADB'
+          : 'Waiting for first screenshot…';
+      final subtitle = widget.wirelessDisabled
+          ? 'Connect the device over USB to enable the screenshot pipeline.'
+          : 'Captures appear automatically during recording, or tap Screenshot.';
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.image_not_supported,
-                  size: 48, color: colors.textDisabled),
+              Icon(
+                widget.wirelessDisabled
+                    ? Icons.wifi_off
+                    : Icons.photo_library_outlined,
+                size: 48,
+                color: colors.textDisabled,
+              ),
               const SizedBox(height: 12),
               Text(
-                'Screenshot capture is not enabled in this build',
+                title,
                 style: TextStyle(
                   color: colors.textSecondary,
                   fontSize: TextTokens.sm,
@@ -89,9 +101,7 @@ class _ScreenshotsTabState extends State<ScreenshotsTab> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Real screenshot encoding (PNG decode + JPEG encode) is '
-                'queued for a future release. The capture pipeline currently '
-                'produces placeholder data.',
+                subtitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: colors.textDisabled,
