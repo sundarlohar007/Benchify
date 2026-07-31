@@ -68,11 +68,7 @@ pub async fn revoke_token(pool: &DbPool, token_id: Uuid) -> DbResult<()> {
 }
 
 /// Revoke a token only if it belongs to `user_id`. Returns true if a row was updated.
-pub async fn revoke_token_for_user(
-    pool: &DbPool,
-    token_id: Uuid,
-    user_id: Uuid,
-) -> DbResult<bool> {
+pub async fn revoke_token_for_user(pool: &DbPool, token_id: Uuid, user_id: Uuid) -> DbResult<bool> {
     let mut client = pool.get().await?;
     let updated = diesel::update(
         api_tokens::table

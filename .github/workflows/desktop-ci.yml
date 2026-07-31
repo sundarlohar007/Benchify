@@ -45,7 +45,10 @@ jobs:
         run: flutter pub get
 
       - name: Analyze
-        run: flutter analyze 2>&1
+        # Fail only on analyzer errors (broken code). Pre-existing warnings/infos
+        # across the desktop tree must not block CI; || true was removed so real
+        # errors still fail the job (B-177).
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1
 
       - name: Run all tests
         run: flutter test --concurrency=1

@@ -1,10 +1,14 @@
 use axum::extract::{Path, Query, State};
-use axum::{Extension, Json, Router};
 use axum::routing::{delete, get, post, put};
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 use serde_json::json;
 use uuid::Uuid;
 
+use crate::error::AppError;
+use crate::middleware::audit as audit_mw;
+use crate::state::AppState;
+use crate::utils::jwt::AuthUser;
 use db::team_queries;
 use models::audit::{AuditEventCategory, AuditEventType};
 use models::team::{
@@ -12,10 +16,6 @@ use models::team::{
     TeamProjectResponse, UpdateMemberRoleRequest, UpdateTeamOrg, UpdateTeamProject,
     is_valid_member_role,
 };
-use crate::error::AppError;
-use crate::middleware::audit as audit_mw;
-use crate::state::AppState;
-use crate::utils::jwt::AuthUser;
 
 // ── Query params ──
 
@@ -27,14 +27,14 @@ pub struct ListQuery {
     pub limit: i64,
 }
 
-fn default_offset() -> i64 { 0 }
-fn default_limit() -> i64 { 50 }
+fn default_offset() -> i64 {
+    0
+}
+fn default_limit() -> i64 {
+    50
+}
 
-async fn require_org_member(
-    state: &AppState,
-    org_id: Uuid,
-    user_id: Uuid,
-) -> Result<(), AppError> {
+async fn require_org_member(state: &AppState, org_id: Uuid, user_id: Uuid) -> Result<(), AppError> {
     let member = team_queries::get_member(&state.pool, org_id, user_id)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
@@ -44,11 +44,7 @@ async fn require_org_member(
     Ok(())
 }
 
-async fn require_org_admin(
-    state: &AppState,
-    org_id: Uuid,
-    user_id: Uuid,
-) -> Result<(), AppError> {
+async fn require_org_admin(state: &AppState, org_id: Uuid, user_id: Uuid) -> Result<(), AppError> {
     let member = team_queries::get_member(&state.pool, org_id, user_id)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?
@@ -65,13 +61,25 @@ pub fn teams_router() -> Router<AppState> {
     Router::new()
         // Orgs
         .route("/orgs", get(list_orgs).post(create_org))
-        .route("/orgs/{org_id}", get(get_org).put(update_org).delete(delete_org))
+        .route(
+            "/orgs/{org_id}",
+            get(get_org).put(update_org).delete(delete_org),
+        )
         // Projects
-        .route("/orgs/{org_id}/projects", get(list_projects).post(create_project))
-        .route("/orgs/{org_id}/projects/{project_id}", get(get_project).put(update_project).delete(delete_project))
+        .route(
+            "/orgs/{org_id}/projects",
+            get(list_projects).post(create_project),
+        )
+        .route(
+            "/orgs/{org_id}/projects/{project_id}",
+            get(get_project).put(update_project).delete(delete_project),
+        )
         // Members
         .route("/orgs/{org_id}/members", get(list_members).post(add_member))
-        .route("/orgs/{org_id}/members/{user_id}", put(update_member_role).delete(remove_member))
+        .route(
+            "/orgs/{org_id}/members/{user_id}",
+            put(update_member_role).delete(remove_member),
+        )
 }
 
 // ── Org handlers ──
@@ -83,7 +91,9 @@ async fn create_org(
     Json(body): Json<CreateTeamOrg>,
 ) -> Result<(axum::http::StatusCode, Json<TeamOrgResponse>), AppError> {
     if body.name.trim().is_empty() {
-        return Err(AppError::Validation("Organization name is required".to_string()));
+        return Err(AppError::Validation(
+            "Organization name is required".to_string(),
+        ));
     }
 
     let org = team_queries::create_org(
@@ -96,7 +106,9 @@ async fn create_org(
     .map_err(|e| {
         let msg = e.to_string();
         if msg.contains("duplicate key") || msg.contains("unique constraint") {
-            AppError::Conflict("Organization slug already exists. Choose a different name.".to_string())
+            AppError::Conflict(
+                "Organization slug already exists. Choose a different name.".to_string(),
+            )
         } else {
             AppError::Internal(format!("DB error: {}", msg))
         }
@@ -113,9 +125,13 @@ async fn create_org(
         Some(org.id),
         None,
         json!({"name": org.name, "slug": org.slug}),
-    ).await;
+    )
+    .await;
 
-    Ok((axum::http::StatusCode::CREATED, Json(TeamOrgResponse::from(&org))))
+    Ok((
+        axum::http::StatusCode::CREATED,
+        Json(TeamOrgResponse::from(&org)),
+    ))
 }
 
 /// GET /api/v1/teams/orgs
@@ -124,14 +140,10 @@ async fn list_orgs(
     Extension(auth_user): Extension<AuthUser>,
     Query(params): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let (orgs, total) = team_queries::list_orgs(
-        &state.pool,
-        auth_user.user_id,
-        params.offset,
-        params.limit,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+    let (orgs, total) =
+        team_queries::list_orgs(&state.pool, auth_user.user_id, params.offset, params.limit)
+            .await
+            .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
 
     Ok(Json(json!({
         "orgs": orgs,
@@ -188,7 +200,8 @@ async fn update_org(
         Some(org.id),
         None,
         json!({"name": org.name, "slug": org.slug}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(TeamOrgResponse::from(&org)))
 }
@@ -218,7 +231,8 @@ async fn delete_org(
         Some(org_id),
         None,
         json!({"name": existing.name, "slug": existing.slug}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(json!({"status": "deleted"})))
 }
@@ -253,7 +267,9 @@ async fn create_project(
     .map_err(|e| {
         let msg = e.to_string();
         if msg.contains("duplicate key") || msg.contains("unique constraint") {
-            AppError::Conflict("Project slug already exists in this org. Choose a different name.".to_string())
+            AppError::Conflict(
+                "Project slug already exists in this org. Choose a different name.".to_string(),
+            )
         } else {
             AppError::Internal(format!("DB error: {}", msg))
         }
@@ -266,9 +282,13 @@ async fn create_project(
         Some(org_id),
         Some(project.id),
         json!({"name": project.name, "slug": project.slug}),
-    ).await;
+    )
+    .await;
 
-    Ok((axum::http::StatusCode::CREATED, Json(TeamProjectResponse::from(&project))))
+    Ok((
+        axum::http::StatusCode::CREATED,
+        Json(TeamProjectResponse::from(&project)),
+    ))
 }
 
 /// GET /api/v1/teams/orgs/{org_id}/projects
@@ -277,14 +297,10 @@ async fn list_projects(
     Path(org_id): Path<Uuid>,
     Query(params): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let (projects, total) = team_queries::list_projects(
-        &state.pool,
-        org_id,
-        params.offset,
-        params.limit,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+    let (projects, total) =
+        team_queries::list_projects(&state.pool, org_id, params.offset, params.limit)
+            .await
+            .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
 
     Ok(Json(json!({
         "projects": projects,
@@ -344,7 +360,8 @@ async fn update_project(
         Some(org_id),
         Some(project.id),
         json!({"name": project.name}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(TeamProjectResponse::from(&project)))
 }
@@ -375,7 +392,8 @@ async fn delete_project(
         Some(org_id),
         Some(project_id),
         json!({"name": existing.name}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(json!({"status": "deleted"})))
 }
@@ -388,14 +406,10 @@ async fn list_members(
     Path(org_id): Path<Uuid>,
     Query(params): Query<ListQuery>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let (members, total) = team_queries::list_members(
-        &state.pool,
-        org_id,
-        params.offset,
-        params.limit,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+    let (members, total) =
+        team_queries::list_members(&state.pool, org_id, params.offset, params.limit)
+            .await
+            .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
 
     let member_responses: Vec<MemberResponse> = members
         .into_iter()
@@ -450,15 +464,19 @@ async fn add_member(
         Some(org_id),
         None,
         json!({"added_user_id": body.user_id, "role": body.role}),
-    ).await;
+    )
+    .await;
 
-    Ok((axum::http::StatusCode::CREATED, Json(json!({
-        "id": membership.id,
-        "user_id": membership.user_id,
-        "org_id": membership.org_id,
-        "role": membership.role,
-        "joined_at": membership.joined_at,
-    }))))
+    Ok((
+        axum::http::StatusCode::CREATED,
+        Json(json!({
+            "id": membership.id,
+            "user_id": membership.user_id,
+            "org_id": membership.org_id,
+            "role": membership.role,
+            "joined_at": membership.joined_at,
+        })),
+    ))
 }
 
 /// PUT /api/v1/teams/orgs/{org_id}/members/{user_id}
@@ -486,7 +504,8 @@ async fn update_member_role(
         Some(org_id),
         None,
         json!({"user_id": user_id, "new_role": body.role}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(json!({
         "id": membership.id,
@@ -513,7 +532,8 @@ async fn remove_member(
         Some(org_id),
         None,
         json!({"removed_user_id": user_id}),
-    ).await;
+    )
+    .await;
 
     Ok(Json(json!({"status": "removed"})))
 }
@@ -526,7 +546,10 @@ mod tests {
 
     #[test]
     fn test_list_query_defaults() {
-        let q = ListQuery { offset: 0, limit: 50 };
+        let q = ListQuery {
+            offset: 0,
+            limit: 50,
+        };
         assert_eq!(q.offset, 0);
         assert_eq!(q.limit, 50);
     }
