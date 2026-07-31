@@ -1,8 +1,8 @@
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Extension, Json, Router};
 use axum::routing::{delete, get, post, put};
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 use uuid::Uuid;
 

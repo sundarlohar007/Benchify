@@ -5,12 +5,12 @@ use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use db::session_queries;
-use models::audit::{AuditEventCategory, AuditEventType};
 use crate::error::AppError;
 use crate::middleware::audit as audit_mw;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::session_queries;
+use models::audit::{AuditEventCategory, AuditEventType};
 
 // ── Request / Response types ──
 
@@ -65,19 +65,17 @@ pub async fn create_jira_issue(
     let jira_api_token = state.config.jira_api_token.as_ref().unwrap();
 
     // 2. Load session with stats
-    let session = session_queries::get_session_by_id_and_user(
-        &state.pool,
-        session_id,
-        auth_user.user_id,
-    )
-    .await
-    .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
-    .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
+    let session =
+        session_queries::get_session_by_id_and_user(&state.pool, session_id, auth_user.user_id)
+            .await
+            .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?
+            .ok_or_else(|| AppError::NotFound("Session".to_string()))?;
 
     // 3. Generate summary if not provided
-    let summary = body.summary.clone().unwrap_or_else(|| {
-        generate_summary(&session)
-    });
+    let summary = body
+        .summary
+        .clone()
+        .unwrap_or_else(|| generate_summary(&session));
 
     // 4. Build Jira ADF description
     let description = build_adf_description(&session);
@@ -117,16 +115,14 @@ pub async fn create_jira_issue(
         .await
         .map_err(|e| {
             tracing::warn!(error = %e, "Jira API unreachable");
-            AppError::Internal(format!(
-                "Jira integration error: {}",
-                e
-            ))
+            AppError::Internal(format!("Jira integration error: {}", e))
         })?;
 
     let status = response.status();
-    let response_body: serde_json::Value = response.json().await.map_err(|e| {
-        AppError::Internal(format!("Jira response parse error: {}", e))
-    })?;
+    let response_body: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|e| AppError::Internal(format!("Jira response parse error: {}", e)))?;
 
     if !status.is_success() {
         let jira_error = response_body
@@ -185,7 +181,8 @@ pub async fn create_jira_issue(
             "project_key": body.project_key,
             "issue_type": body.issue_type,
         })),
-    ).await;
+    )
+    .await;
 
     Ok((
         axum::http::StatusCode::CREATED,
@@ -246,7 +243,10 @@ fn build_adf_description(session: &models::session::Session) -> serde_json::Valu
     let big_jank = fmt_opt_i64(stats.as_ref().and_then(|s| s.jank_big_total));
     let net_tx = fmt_opt_kb(stats.as_ref().and_then(|s| s.net_total_tx_kb));
     let net_rx = fmt_opt_kb(stats.as_ref().and_then(|s| s.net_total_rx_kb));
-    let duration = session.duration_seconds.map(|s| format!("{}s", s)).unwrap_or_else(|| "N/A".to_string());
+    let duration = session
+        .duration_seconds
+        .map(|s| format!("{}s", s))
+        .unwrap_or_else(|| "N/A".to_string());
 
     let app_package = session.app_package.as_deref().unwrap_or("N/A");
     let device_model = session.device_model.as_deref().unwrap_or("Unknown");
@@ -337,15 +337,18 @@ fn build_adf_description(session: &models::session::Session) -> serde_json::Valu
 }
 
 fn fmt_opt(val: Option<f64>) -> String {
-    val.map(|v| format!("{:.1}", v)).unwrap_or_else(|| "N/A".to_string())
+    val.map(|v| format!("{:.1}", v))
+        .unwrap_or_else(|| "N/A".to_string())
 }
 
 fn fmt_opt_i64(val: Option<i64>) -> String {
-    val.map(|v| v.to_string()).unwrap_or_else(|| "N/A".to_string())
+    val.map(|v| v.to_string())
+        .unwrap_or_else(|| "N/A".to_string())
 }
 
 fn fmt_opt_kb(val: Option<f64>) -> String {
-    val.map(|v| format!("{:.1}", v / 1024.0)).unwrap_or_else(|| "N/A".to_string())
+    val.map(|v| format!("{:.1}", v / 1024.0))
+        .unwrap_or_else(|| "N/A".to_string())
 }
 
 fn fmt_opt_kb_i64(val: Option<i64>) -> String {
@@ -421,7 +424,8 @@ mod tests {
             launch_complete_ms: None,
         };
 
-        let now = NaiveDateTime::parse_from_str("2026-01-01T12:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
+        let now =
+            NaiveDateTime::parse_from_str("2026-01-01T12:00:00", "%Y-%m-%dT%H:%M:%S").unwrap();
         models::session::Session {
             id: Uuid::new_v4(),
             user_id: Uuid::new_v4(),
@@ -460,14 +464,46 @@ mod tests {
         let session = make_test_session();
         let summary = generate_summary(&session);
 
-        assert!(summary.contains("TestGame"), "Summary should contain app name, got: {}", summary);
-        assert!(summary.contains("FPS"), "Summary should mention FPS, got: {}", summary);
-        assert!(summary.contains("58"), "Summary should include FPS avg 58, got: {}", summary);
-        assert!(summary.contains("CPU"), "Summary should mention CPU, got: {}", summary);
-        assert!(summary.contains("35.1%"), "Summary should include CPU avg, got: {}", summary);
-        assert!(summary.contains("Mem"), "Summary should mention Memory, got: {}", summary);
-        assert!(summary.contains("750MB"), "Summary should include mem peak 750MB, got: {}", summary);
-        assert!(summary.contains("120s"), "Summary should include duration 120s, got: {}", summary);
+        assert!(
+            summary.contains("TestGame"),
+            "Summary should contain app name, got: {}",
+            summary
+        );
+        assert!(
+            summary.contains("FPS"),
+            "Summary should mention FPS, got: {}",
+            summary
+        );
+        assert!(
+            summary.contains("58"),
+            "Summary should include FPS avg 58, got: {}",
+            summary
+        );
+        assert!(
+            summary.contains("CPU"),
+            "Summary should mention CPU, got: {}",
+            summary
+        );
+        assert!(
+            summary.contains("35.1%"),
+            "Summary should include CPU avg, got: {}",
+            summary
+        );
+        assert!(
+            summary.contains("Mem"),
+            "Summary should mention Memory, got: {}",
+            summary
+        );
+        assert!(
+            summary.contains("750MB"),
+            "Summary should include mem peak 750MB, got: {}",
+            summary
+        );
+        assert!(
+            summary.contains("120s"),
+            "Summary should include duration 120s, got: {}",
+            summary
+        );
     }
 
     #[test]
@@ -478,16 +514,56 @@ mod tests {
         let desc_str = serde_json::to_string(&desc).unwrap();
 
         // Test 2: Jira issue body includes FPS avg/min/max, CPU avg, memory peak, duration
-        assert!(desc_str.contains("58.5"), "ADF should include FPS avg, got: {}", desc_str);
-        assert!(desc_str.contains("42.0"), "ADF should include FPS min, got: {}", desc_str);
-        assert!(desc_str.contains("60.0"), "ADF should include FPS max, got: {}", desc_str);
-        assert!(desc_str.contains("35.2"), "ADF should include CPU avg, got: {}", desc_str);
-        assert!(desc_str.contains("78.1"), "ADF should include CPU peak, got: {}", desc_str);
-        assert!(desc_str.contains("750.0"), "ADF should include mem peak, got: {}", desc_str);
-        assert!(desc_str.contains("120s"), "ADF should include duration, got: {}", desc_str);
-        assert!(desc_str.contains("15"), "ADF should include jank count, got: {}", desc_str);
-        assert!(desc_str.contains("Pixel 7"), "ADF should include device, got: {}", desc_str);
-        assert!(desc_str.contains("Performance Metrics"), "ADF should have heading, got: {}", desc_str);
+        assert!(
+            desc_str.contains("58.5"),
+            "ADF should include FPS avg, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("42.0"),
+            "ADF should include FPS min, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("60.0"),
+            "ADF should include FPS max, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("35.2"),
+            "ADF should include CPU avg, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("78.1"),
+            "ADF should include CPU peak, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("750.0"),
+            "ADF should include mem peak, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("120s"),
+            "ADF should include duration, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("15"),
+            "ADF should include jank count, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("Pixel 7"),
+            "ADF should include device, got: {}",
+            desc_str
+        );
+        assert!(
+            desc_str.contains("Performance Metrics"),
+            "ADF should have heading, got: {}",
+            desc_str
+        );
     }
 
     #[test]
@@ -507,7 +583,11 @@ mod tests {
         let mut session = make_test_session();
         session.session_stats = serde_json::json!({});
         let summary = generate_summary(&session);
-        assert!(summary.contains("N/A"), "Empty stats should show N/A, got: {}", summary);
+        assert!(
+            summary.contains("N/A"),
+            "Empty stats should show N/A, got: {}",
+            summary
+        );
     }
 
     #[test]
