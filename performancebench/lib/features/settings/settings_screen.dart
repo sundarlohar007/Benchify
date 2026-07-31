@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../shared/theme.dart';
 import '../../app.dart';
@@ -72,7 +73,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 24),
           _SectionHeader('About', colors),
           const SizedBox(height: 8),
-          _buildAboutSection(colors),
+          _buildAboutSection(context, colors),
         ],
       ),
     );
@@ -264,6 +265,7 @@ class SettingsScreen extends ConsumerWidget {
             _ => ThemeModeOption.system,
           };
           ref.read(themeModeProvider.notifier).state = mode;
+          saveThemeMode(mode);
         },
       ),
       _DropdownRow('Monospace font', 'Auto',
@@ -304,17 +306,23 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAboutSection(AppColors colors) {
-    // TODO(audit S-19 build/CI): replace hardcode with `package_info_plus`
-    // so this can't drift from the build version. Sister of B-024.
+  Widget _buildAboutSection(BuildContext context, AppColors colors) {
+    // package_info_plus is not a dep — single const matching pubspec 0.1.0.
     return _SettingsGroup(children: [
-      _InfoRow('Version', '0.1.1', colors),
+      _InfoRow('Version', kAppVersion, colors),
       _InfoRow('License', 'MIT', colors),
       _InfoRow('GitHub', 'github.com/sundarlohar007/Benchify', colors),
       const SizedBox(height: 8),
       TextButton(
-        onPressed: () {
-          // Reset onboarding flag
+        onPressed: () async {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove(kOnboardingCompletedPrefKey);
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Onboarding reset. It will show again on next launch.'),
+            ),
+          );
         },
         child: Text('Reset Onboarding', style: TextStyle(color: colors.accentBlue, fontSize: TextTokens.sm)),
       ),

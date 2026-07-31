@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { encodePath } from '@/lib/utils';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -73,7 +74,7 @@ export function useDeleteOrg() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (orgId: string) =>
-      api.delete(`/api/v1/teams/orgs/${orgId}`),
+      api.delete(`/api/v1/teams/orgs/${encodePath(orgId)}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['teams', 'orgs'] }),
   });
@@ -85,7 +86,7 @@ export function useOrgProjects(orgId: string) {
   return useQuery({
     queryKey: ['teams', 'projects', orgId],
     queryFn: () =>
-      api.get<TeamProject[]>(`/api/v1/teams/orgs/${orgId}/projects`),
+      api.get<TeamProject[]>(`/api/v1/teams/orgs/${encodePath(orgId)}/projects`),
     enabled: !!orgId,
   });
 }
@@ -94,7 +95,7 @@ export function useCreateProject() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ orgId, body }: { orgId: string; body: CreateProjectBody }) =>
-      api.post<TeamProject>(`/api/v1/teams/orgs/${orgId}/projects`, body),
+      api.post<TeamProject>(`/api/v1/teams/orgs/${encodePath(orgId)}/projects`, body),
     onSuccess: (_, { orgId }) => {
       queryClient.invalidateQueries({ queryKey: ['teams', 'projects', orgId] });
     },
@@ -105,7 +106,7 @@ export function useDeleteProject() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ orgId, projectId }: { orgId: string; projectId: string }) =>
-      api.delete(`/api/v1/teams/orgs/${orgId}/projects/${projectId}`),
+      api.delete(`/api/v1/teams/orgs/${encodePath(orgId)}/projects/${encodePath(projectId)}`),
     onSuccess: (_, { orgId }) => {
       queryClient.invalidateQueries({ queryKey: ['teams', 'projects', orgId] });
     },
@@ -118,7 +119,7 @@ export function useOrgMembers(orgId: string) {
   return useQuery({
     queryKey: ['teams', 'members', orgId],
     queryFn: () =>
-      api.get<TeamMember[]>(`/api/v1/teams/orgs/${orgId}/members`),
+      api.get<TeamMember[]>(`/api/v1/teams/orgs/${encodePath(orgId)}/members`),
     enabled: !!orgId,
   });
 }
@@ -132,7 +133,7 @@ export function useAddMember() {
     }: {
       orgId: string;
       body: AddMemberBody;
-    }) => api.post<TeamMember>(`/api/v1/teams/orgs/${orgId}/members`, body),
+    }) => api.post<TeamMember>(`/api/v1/teams/orgs/${encodePath(orgId)}/members`, body),
     onSuccess: (_, { orgId }) => {
       queryClient.invalidateQueries({ queryKey: ['teams', 'members', orgId] });
     },
@@ -143,7 +144,7 @@ export function useRemoveMember() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ orgId, userId }: { orgId: string; userId: string }) =>
-      api.delete(`/api/v1/teams/orgs/${orgId}/members/${userId}`),
+      api.delete(`/api/v1/teams/orgs/${encodePath(orgId)}/members/${encodePath(userId)}`),
     onSuccess: (_, { orgId }) => {
       queryClient.invalidateQueries({ queryKey: ['teams', 'members', orgId] });
     },
@@ -163,7 +164,7 @@ export function useUpdateMemberRole() {
       body: UpdateMemberRoleBody;
     }) =>
       api.put<TeamMember>(
-        `/api/v1/teams/orgs/${orgId}/members/${userId}/role`,
+        `/api/v1/teams/orgs/${encodePath(orgId)}/members/${encodePath(userId)}/role`,
         body,
       ),
     onSuccess: (_, { orgId }) => {

@@ -6,6 +6,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'shared/theme.dart';
@@ -25,10 +26,33 @@ import 'features/injection/injection_screen.dart';
 import 'features/pc_profiling/pc_probe_screen.dart';
 
 // =============================================================================
-// Theme Mode Provider
+// Theme Mode Provider (B-003 — persist via shared_preferences)
 // =============================================================================
 
 enum ThemeModeOption { dark, light, highContrast, system }
+
+const kThemeModePrefKey = 'theme_mode';
+const kOnboardingCompletedPrefKey = 'onboarding_completed';
+
+/// App version — keep in sync with pubspec.yaml `version:` (no package_info_plus).
+const kAppVersion = '0.1.0';
+
+ThemeModeOption themeModeFromName(String? name) {
+  return ThemeModeOption.values.firstWhere(
+    (e) => e.name == name,
+    orElse: () => ThemeModeOption.dark,
+  );
+}
+
+Future<ThemeModeOption> loadThemeMode() async {
+  final prefs = await SharedPreferences.getInstance();
+  return themeModeFromName(prefs.getString(kThemeModePrefKey));
+}
+
+Future<void> saveThemeMode(ThemeModeOption mode) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString(kThemeModePrefKey, mode.name);
+}
 
 final themeModeProvider =
     StateProvider<ThemeModeOption>((ref) => ThemeModeOption.dark);

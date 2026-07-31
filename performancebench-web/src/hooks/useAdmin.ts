@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { encodePath } from '@/lib/utils';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -66,7 +67,7 @@ export function useUpdateSsoConfig() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: UpdateSsoConfigBody }) =>
-      api.put<SsoConfig>(`/api/v1/admin/sso-configs/${id}`, body),
+      api.put<SsoConfig>(`/api/v1/admin/sso-configs/${encodePath(id)}`, body),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['admin', 'sso-configs'] }),
   });
@@ -76,7 +77,7 @@ export function useDeleteSsoConfig() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      api.delete(`/api/v1/admin/sso-configs/${id}`),
+      api.delete(`/api/v1/admin/sso-configs/${encodePath(id)}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['admin', 'sso-configs'] }),
   });
@@ -107,7 +108,7 @@ export function useUpdateUserRole() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, role }: { id: string; role: string }) =>
-      api.put<UserDetail>(`/api/v1/admin/users/${id}/role`, { role }),
+      api.put<UserDetail>(`/api/v1/admin/users/${encodePath(id)}/role`, { role }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] }),
   });
@@ -117,7 +118,7 @@ export function useUpdateUserStatus() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
-      api.put<UserDetail>(`/api/v1/admin/users/${id}/status`, {
+      api.put<UserDetail>(`/api/v1/admin/users/${encodePath(id)}/status`, {
         is_active: isActive,
       }),
     onSuccess: () =>

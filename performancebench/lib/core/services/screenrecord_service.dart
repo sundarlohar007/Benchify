@@ -49,6 +49,13 @@ class ScreenrecordService {
   /// Whether a recording is in progress.
   bool get isRecording => _sessionId != null;
 
+  /// PC probe video path is not wired yet (B-014 / B-015).
+  /// Keep false until VIDEO_START/STOP is connected to pb-pcprobe.
+  static const bool _pcProbeWired = false;
+
+  /// True only after a real PC recording start succeeds (never while stubbed).
+  bool _pcRecordingActive = false;
+
   ScreenrecordService({
     required AdbShell adbShell,
     VideoDao? videoDao,
@@ -376,12 +383,22 @@ class ScreenrecordService {
     int bitrateKbps = 8000,
     String captureTarget = 'full_screen',
   }) async {
-    if (isRecording) return false;
+    if (!_pcProbeWired) {
+      logPcVideo(
+        'PC video recording is not wired yet '
+        '(requested ${width}x$height @${fps}fps for $sessionId)',
+      );
+      return false;
+    }
+
+    if (isRecording || _pcRecordingActive) return false;
 
     _sessionId = sessionId;
     _chunkIndex = 0;
     _chunks.clear();
     _recordingStartMs = DateTime.now().millisecondsSinceEpoch;
+    // Only set once the probe path is actually wired and start succeeds.
+    _pcRecordingActive = true;
 
     logPcVideo('PC video recording start requested: ${width}x$height @${fps}fps');
 
@@ -395,7 +412,11 @@ class ScreenrecordService {
   Future<Video?> stopPcRecording({
     required String targetKind,
   }) async {
-    if (!isRecording || _sessionId == null) return null;
+    // Never write an empty Video row when PC recording was never truly started.
+    if (!_pcRecordingActive || !isRecording || _sessionId == null) {
+      _pcRecordingActive = false;
+      return null;
+    }
 
     _chunkTimer?.cancel();
     _chunkTimer = null;
@@ -406,6 +427,7 @@ class ScreenrecordService {
     _sessionId = null;
     _chunkIndex = 0;
     _chunks.clear();
+    _pcRecordingActive = false;
 
     final video = Video(
       sessionId: sessionId,

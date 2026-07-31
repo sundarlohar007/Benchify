@@ -1,11 +1,15 @@
-use std::time::Duration;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 
 use axum::Router;
-use axum::middleware::from_fn_with_state;
+use axum::extract::ConnectInfo;
+use axum::http::{HeaderValue, Method, StatusCode};
+use axum::middleware::{self, Next, from_fn_with_state};
+use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
-use tower::limit::RateLimitLayer;
 use tower_http::compression::CompressionLayer;
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{AllowOrigin, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 use crate::middleware::api_token as api_token_mw;
@@ -14,60 +18,129 @@ use crate::middleware::rbac;
 use crate::state::AppState;
 
 pub mod admin;
-// TODO: Re-enable after fixing Handler trait impls
-// pub mod alerts;
+pub mod alerts;
 pub mod audit;
 pub mod auth;
 pub mod devices;
 pub mod health;
-// pub mod jira;
-// pub mod lenses;
+pub mod jira;
+pub mod lenses;
 pub mod openapi;
 pub mod sessions;
 pub mod sso;
-// pub mod teams;
-// pub mod tokens;
+pub mod teams;
+pub mod tokens;
 pub mod trends;
 pub mod upload;
-// pub mod webhooks;
+pub mod webhooks;
 pub mod ws;
 
-pub fn create_router(state: AppState) -> Router {
-    // ── Public routes (no auth required) ──
+/// Simple in-memory IP rate limiter for auth endpoints (replaces non-Clone RateLimitLayer).
+#[derive(Clone, Default)]
+struct AuthRateLimiter {
+    hits: Arc<Mutex<HashMap<String, Vec<Instant>>>>,
+}
 
-    // Auth routes — rate limited to prevent brute-force attacks (WR-06)
+impl AuthRateLimiter {
+    fn allow(&self, key: &str, max: usize, window: Duration) -> bool {
+        let mut map = self.hits.lock().unwrap_or_else(|e| e.into_inner());
+        let now = Instant::now();
+        let entry = map.entry(key.to_string()).or_default();
+        entry.retain(|t| now.duration_since(*t) < window);
+        if entry.len() >= max {
+            return false;
+        }
+        entry.push(now);
+        true
+    }
+}
+
+async fn auth_rate_limit(
+    axum::Extension(limiter): axum::Extension<AuthRateLimiter>,
+    request: axum::extract::Request,
+    next: Next,
+) -> Response {
+    let key = request
+        .extensions()
+        .get::<ConnectInfo<std::net::SocketAddr>>()
+        .map(|c| c.0.ip().to_string())
+        .unwrap_or_else(|| "unknown".to_string());
+    if !limiter.allow(&key, 5, Duration::from_secs(60)) {
+        return (StatusCode::TOO_MANY_REQUESTS, "rate limit exceeded").into_response();
+    }
+    next.run(request).await
+}
+
+fn build_cors(state: &AppState) -> CorsLayer {
+    let origins = &state.config.cors_allowed_origins;
+    if origins.iter().any(|o| o.trim() == "*") {
+        return CorsLayer::permissive();
+    }
+
+    let parsed: Vec<HeaderValue> = origins
+        .iter()
+        .filter_map(|o| HeaderValue::from_str(o.trim()).ok())
+        .collect();
+
+    if parsed.is_empty() {
+        CorsLayer::new()
+            .allow_origin(AllowOrigin::list([
+                HeaderValue::from_static("http://localhost:5173"),
+                HeaderValue::from_static("http://localhost:3000"),
+            ]))
+            .allow_methods([
+                Method::GET,
+                Method::POST,
+                Method::PUT,
+                Method::PATCH,
+                Method::DELETE,
+                Method::OPTIONS,
+            ])
+            .allow_headers(tower_http::cors::Any)
+            .allow_credentials(true)
+    } else {
+        CorsLayer::new()
+            .allow_origin(AllowOrigin::list(parsed))
+            .allow_methods([
+                Method::GET,
+                Method::POST,
+                Method::PUT,
+                Method::PATCH,
+                Method::DELETE,
+                Method::OPTIONS,
+            ])
+            .allow_headers(tower_http::cors::Any)
+            .allow_credentials(true)
+    }
+}
+
+pub fn create_router(state: AppState) -> Router {
+    let auth_limiter = AuthRateLimiter::default();
+
     let public_auth = Router::new()
         .route("/auth/login", post(auth::login))
         .route("/auth/register", post(auth::register))
         .route("/auth/refresh", post(auth::refresh))
         .route("/auth/logout", post(auth::logout))
         .merge(sso::sso_router())
-        .layer(RateLimitLayer::new(5, Duration::from_secs(60)));
+        .layer(middleware::from_fn(auth_rate_limit))
+        .layer(axum::Extension(auth_limiter));
 
-    // Protected auth routes (require JWT)
     let protected_auth = Router::new()
         .route("/auth/me", get(auth::me))
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
-    // Health check
     let health_routes = Router::new().route("/health", get(health::health_check));
 
-    // WebSocket live overlay (D-47, V20-17)
-    // Auth required — verified in handler via session ownership check (CR-01)
     let ws_routes = Router::new()
         .route("/live/{session_id}", get(ws::ws_handler))
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
-    // OpenAPI docs (no auth required)
     let openapi_routes = Router::new().route("/api/v1/openapi.json", get(openapi::openapi_json));
 
-    // ── Upload route (API token auth, not JWT cookie) ──
-    // The upload endpoint uses API token Bearer auth with "write" scope (D-32).
-    // It must be OUTSIDE the JWT cookie middleware.
-    let upload_routes = Router::new().route("/sessions", post(upload::upload_session));
-
-    // Live push batch endpoint (API token auth, desktop -> server push)
-    let live_push_routes = Router::new()
+    // API-token-only routes (D-32) — outside JWT middleware
+    let api_token_routes = Router::new()
+        .route("/sessions", post(upload::upload_session))
         .route(
             "/sessions/{session_id}/live/batch",
             post(ws::push_live_batch),
@@ -77,59 +150,53 @@ pub fn create_router(state: AppState) -> Router {
             api_token_mw::api_token_middleware,
         ));
 
-    // ── API v1 (JWT cookie auth required) ──
-    let v1_sessions = sessions::router();
-    let v1_trends = trends::router();
-    // let v1_lenses = lenses::router();
-    // let v1_alerts = alerts::router();
-    let v1_devices = devices::router();
-    // let v1_tokens = tokens::router();
-    // let v1_webhooks = webhooks::router();
-
-    // Merge upload + live push routes into sessions scope
-    let v1_sessions_with_upload = Router::new()
-        .merge(upload_routes)
-        .merge(live_push_routes)
-        .merge(v1_sessions);
-
-    let api_routes = Router::new()
-        .nest("/sessions", v1_sessions_with_upload)
-        .nest("/trends", v1_trends)
-        // .nest("/lenses", v1_lenses)
-        // .nest("/alerts", v1_alerts)
-        .nest("/devices", v1_devices)
-        // .nest("/tokens", v1_tokens)
-        // .nest("/webhooks", v1_webhooks)
+    let jwt_routes = Router::new()
+        .nest("/sessions", sessions::router())
+        .nest("/trends", trends::router())
+        .nest("/lenses", lenses::router())
+        .nest("/alerts", alerts::router())
+        .nest("/devices", devices::router())
+        .nest("/tokens", tokens::router())
+        .nest("/webhooks", webhooks::router())
         .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
-    // ── Audit routes (JWT + RBAC Auditor role required — Admin satisfies Auditor) ──
-    // let audit_routes = audit::audit_router()
-    //     .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
-    //     .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Auditor)));
+    let audit_routes = audit::audit_router()
+        .route_layer(from_fn_with_state(
+            state.clone(),
+            rbac::require_role(rbac::Role::Auditor),
+        ))
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
-    // ── Team routes (JWT + RBAC Viewer+ role required) ──
-    // let team_routes = teams::teams_router()
-    //     .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
-    //     .route_layer(from_fn_with_state(state.clone(), rbac::require_role(rbac::Role::Viewer)));
+    let team_routes = teams::teams_router()
+        .route_layer(from_fn_with_state(
+            state.clone(),
+            rbac::require_role(rbac::Role::Viewer),
+        ))
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
-    // ── Admin routes (JWT + RBAC Admin role required) ──
-    // let admin_routes = admin::admin_router()
-    //     .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware))
-    //     .route_layer(from_fn_with_state(state.clone(), rbac::require_admin()));
+    let admin_routes = admin::admin_router()
+        .route_layer(from_fn_with_state(state.clone(), rbac::require_admin()))
+        .route_layer(from_fn_with_state(state.clone(), auth_mw::auth_middleware));
 
-    // ── Compose final router ──
+    let cors = build_cors(&state);
+
     Router::new()
         .merge(health_routes)
         .merge(public_auth)
         .merge(protected_auth)
         .merge(openapi_routes)
         .nest("/ws", ws_routes)
-        .nest("/api/v1", api_routes)
-        // .nest("/api/v1/audit", audit_routes)
-        // .nest("/api/v1/teams", team_routes)
-        // .nest("/api/v1/admin", admin_routes)
+        .nest(
+            "/api/v1",
+            Router::new()
+                .merge(api_token_routes)
+                .merge(jwt_routes)
+                .nest("/audit", audit_routes)
+                .nest("/teams", team_routes)
+                .nest("/admin", admin_routes),
+        )
         .layer(TraceLayer::new_for_http())
         .layer(CompressionLayer::new().gzip(true))
-        .layer(CorsLayer::permissive())
+        .layer(cors)
         .with_state(state)
 }

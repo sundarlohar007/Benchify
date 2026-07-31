@@ -1,11 +1,19 @@
 """AAB to APK converter — wraps bundletool for universal APK generation.
 
 Per D-05: Full AAB compatibility via bundletool conversion.
+Keystore + key passwords are routed via environment variables
+(`env:VAR_NAME` pass spec) so they don't leak through the process
+command line (T-04-02 / B-095).
 """
 
 import os
 import subprocess
 import tempfile
+
+
+# Environment variable names that bundletool reads via `env:VAR_NAME`.
+_KS_PASS_VAR = "PB_KS_PASS"
+_KEY_PASS_VAR = "PB_KEY_PASS"
 
 
 class AabConversionError(Exception):
@@ -59,22 +67,28 @@ def convert_aab_to_apk(
         "--overwrite",
     ]
 
-    # Add signing if keystore provided
+    # Inherit parent env; layer password vars only when signing.
+    env = os.environ.copy()
+
+    # Add signing if keystore provided — passwords via env:VAR (B-095)
     if keystore_path and key_alias:
         cmd.extend([
             f"--ks={keystore_path}",
             f"--ks-key-alias={key_alias}",
         ])
         if keystore_password:
-            cmd.append(f"--ks-pass=pass:{keystore_password}")
+            env[_KS_PASS_VAR] = keystore_password
+            cmd.append(f"--ks-pass=env:{_KS_PASS_VAR}")
         if key_password:
-            cmd.append(f"--key-pass=pass:{key_password}")
+            env[_KEY_PASS_VAR] = key_password
+            cmd.append(f"--key-pass=env:{_KEY_PASS_VAR}")
 
     result = subprocess.run(
         cmd,
         capture_output=True,
         text=True,
         timeout=300,
+        env=env,
     )
 
     if result.returncode != 0:

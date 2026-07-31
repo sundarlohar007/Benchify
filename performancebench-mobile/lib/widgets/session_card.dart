@@ -14,7 +14,13 @@ class SessionCard extends StatelessWidget {
     final appName = session['app_name'] as String? ?? 'Unknown';
     final deviceId = session['device_id'] as String? ?? '—';
     final startedAt = session['started_at'];
-    final targetFps = session['target_fps'];
+    // B-055: prefer measured FPS (actual_avg_fps / fps_median), not target_fps.
+    final measuredRaw =
+        session['actual_avg_fps'] ?? session['fps_median'] ?? session['fps'];
+    final targetRaw = session['target_fps'];
+    final num? measuredFps = measuredRaw is num ? measuredRaw : null;
+    final num? targetFps = targetRaw is num ? targetRaw : null;
+    final num? fps = measuredFps ?? targetFps;
     // Defensive substring: most ids are 36-char UUIDs, but a malformed or
     // truncated value would crash `substring(0, 8)` (B-060). Guard the length.
     final fullId = session['id'] as String?;
@@ -23,9 +29,9 @@ class SessionCard extends StatelessWidget {
 
     final dateStr = _formatDate(startedAt);
     final Color fpsColor =
-        targetFps != null && targetFps > 55
+        fps != null && fps > 55
             ? const Color(0xFF4EC9B0)
-            : targetFps != null && targetFps > 30
+            : fps != null && fps > 30
             ? const Color(0xFFCE9178)
             : const Color(0xFFF44747);
 
@@ -68,7 +74,7 @@ class SessionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (targetFps != null)
+              if (fps != null)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -79,7 +85,7 @@ class SessionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    '$targetFps fps',
+                    '${measuredFps != null ? (fps! % 1 == 0 ? fps.toInt() : fps.toStringAsFixed(1)) : fps} fps',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

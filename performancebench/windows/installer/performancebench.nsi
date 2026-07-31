@@ -4,7 +4,7 @@
 
 !define PRODUCT_NAME "PerformanceBench"
 !define PRODUCT_PUBLISHER "PerformanceBench Contributors"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "0.1.0"
 !define PRODUCT_WEB_SITE "https://github.com/sundarlohar007/Benchify"
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"

@@ -30,6 +30,35 @@ pub struct ListQuery {
 fn default_offset() -> i64 { 0 }
 fn default_limit() -> i64 { 50 }
 
+async fn require_org_member(
+    state: &AppState,
+    org_id: Uuid,
+    user_id: Uuid,
+) -> Result<(), AppError> {
+    let member = team_queries::get_member(&state.pool, org_id, user_id)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
+    if member.is_none() {
+        return Err(AppError::Forbidden);
+    }
+    Ok(())
+}
+
+async fn require_org_admin(
+    state: &AppState,
+    org_id: Uuid,
+    user_id: Uuid,
+) -> Result<(), AppError> {
+    let member = team_queries::get_member(&state.pool, org_id, user_id)
+        .await
+        .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?
+        .ok_or(AppError::Forbidden)?;
+    if member.role != "admin" && member.role != "owner" {
+        return Err(AppError::Forbidden);
+    }
+    Ok(())
+}
+
 // ── Router ──
 
 pub fn teams_router() -> Router<AppState> {
@@ -116,7 +145,10 @@ async fn list_orgs(
 async fn get_org(
     State(state): State<AppState>,
     Path(org_id): Path<Uuid>,
+    Extension(auth_user): Extension<AuthUser>,
 ) -> Result<Json<TeamOrgResponse>, AppError> {
+    require_org_member(&state, org_id, auth_user.user_id).await?;
+
     let org = team_queries::get_org_by_id(&state.pool, org_id)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?
@@ -132,7 +164,9 @@ async fn update_org(
     Extension(auth_user): Extension<AuthUser>,
     Json(body): Json<UpdateTeamOrg>,
 ) -> Result<Json<TeamOrgResponse>, AppError> {
-    let existing = team_queries::get_org_by_id(&state.pool, org_id)
+    require_org_admin(&state, org_id, auth_user.user_id).await?;
+
+    let _existing = team_queries::get_org_by_id(&state.pool, org_id)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?
         .ok_or_else(|| AppError::NotFound("Organization".to_string()))?;
@@ -147,7 +181,6 @@ async fn update_org(
     .await
     .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?;
 
-    // Audit event
     let _ = audit_mw::audit_team_event(
         &state.pool,
         &auth_user,
@@ -166,6 +199,8 @@ async fn delete_org(
     Path(org_id): Path<Uuid>,
     Extension(auth_user): Extension<AuthUser>,
 ) -> Result<Json<serde_json::Value>, AppError> {
+    require_org_admin(&state, org_id, auth_user.user_id).await?;
+
     let existing = team_queries::get_org_by_id(&state.pool, org_id)
         .await
         .map_err(|e| AppError::Internal(format!("DB error: {}", e)))?

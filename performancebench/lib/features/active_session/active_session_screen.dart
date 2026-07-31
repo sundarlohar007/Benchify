@@ -18,6 +18,7 @@ import '../../core/database/region_stats_dao.dart';
 import '../../core/database/screenshot_dao.dart';
 import '../../core/database/session_dao.dart';
 import '../../core/database/session_stats_dao.dart';
+import '../../core/models/marker.dart';
 import '../../core/models/metric_sample.dart';
 import '../../core/models/session.dart';
 import '../../core/services/adb_service.dart';
@@ -58,9 +59,11 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
   SessionService? _sessionService;
   MetricCollector? _collector;
   ScreenshotService? _screenshotService;
+  MarkerDao? _markerDao;
   Stream<MetricSample> _metricStream = const Stream.empty();
   bool _stopping = false;
   bool _started = false;
+  bool _finalized = false;
   int _elapsedSeconds = 0;
 
   @override
@@ -94,10 +97,11 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
       if (session == null || !mounted) return;
 
       final metricDao = MetricDao(db);
+      final markerDao = MarkerDao(db);
       final analytics = AnalyticsService(
         metricDao: metricDao,
         sessionStatsDao: SessionStatsDao(db),
-        markerDao: MarkerDao(db),
+        markerDao: markerDao,
         markerStatsDao: MarkerStatsDao(db),
         regionStatsDao: RegionStatsDao(db),
       );
@@ -134,6 +138,12 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
             deviceSerial: session.deviceId,
             sessionId: session.id,
             screenshotDao: ScreenshotDao(db),
+            onCaptured: (result) {
+              _screenshotsKey.currentState?.addScreenshots(
+                result.filepaths,
+                result.timestamp,
+              );
+            },
           );
           await screenshots.init();
           if (!screenshots.isWireless) {
@@ -141,6 +151,11 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
           }
         } catch (e, stack) {
           ErrorHandler().logError('ActiveSessionScreen.adb', e, stack);
+          unawaited(collector?.stop() ?? Future.value());
+          screenshots?.stop();
+          collector = null;
+          screenshots = null;
+          stream = const Stream.empty();
         }
       }
 
@@ -150,14 +165,26 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
         return;
       }
 
+      // Don't pretend recording works if Android ADB bootstrap failed.
+      final adbOk = session.platform != 'android' || collector != null;
+
       setState(() {
         _session = session;
         _sessionService = sessionService;
         _collector = collector;
         _screenshotService = screenshots;
+        _markerDao = markerDao;
         _metricStream = stream;
-        _started = true;
+        _started = adbOk;
       });
+
+      if (!adbOk && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to connect to device via ADB — recording not started'),
+          ),
+        );
+      }
 
       // Forward status stream for SQLite indicator
       collector?.statusStream.listen((status) {
@@ -168,21 +195,10 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
     }
   }
 
-  @override
-  void dispose() {
-    _recController.dispose();
-    _elapsedTimer?.cancel();
-    _elapsedNotifier.dispose();
-    _sqliteStatus.dispose();
-    // Emergency stop if user closes window without pressing Stop
-    _screenshotService?.stop();
-    unawaited(_collector?.stop() ?? Future.value());
-    super.dispose();
-  }
-
-  Future<void> _handleStop() async {
-    if (_stopping) return;
-    setState(() => _stopping = true);
+  /// Shared finalize path for Stop button and dispose (prevents double stopSession).
+  Future<void> _finalizeSession() async {
+    if (_finalized) return;
+    _finalized = true;
 
     _stopwatch.stop();
     _elapsedTimer?.cancel();
@@ -194,12 +210,35 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
       if (session != null && service != null) {
         // B-047: flush collector, compute stats, set endedAt/durationMs
         await service.stopSession(session);
+      } else {
+        await _collector?.stop();
       }
       _collector = null;
       _screenshotService = null;
     } catch (e, stack) {
-      ErrorHandler().logError('ActiveSessionScreen.stop', e, stack);
+      ErrorHandler().logError('ActiveSessionScreen.finalize', e, stack);
     }
+  }
+
+  @override
+  void dispose() {
+    _recController.dispose();
+    _elapsedTimer?.cancel();
+    _elapsedNotifier.dispose();
+    _sqliteStatus.dispose();
+    // Emergency finalize if user closes window without pressing Stop
+    if (!_finalized) {
+      _screenshotService?.stop();
+      unawaited(_finalizeSession());
+    }
+    super.dispose();
+  }
+
+  Future<void> _handleStop() async {
+    if (_stopping) return;
+    setState(() => _stopping = true);
+
+    await _finalizeSession();
 
     if (!mounted) return;
     context.go('/session/${widget.sessionId}');
@@ -214,6 +253,41 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
         result.filepaths,
         result.timestamp,
       );
+    }
+  }
+
+  Future<void> _handleMarker() async {
+    final dao = _markerDao;
+    if (dao == null || !_started || _stopping) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Marker unavailable — session not ready')),
+        );
+      }
+      return;
+    }
+    try {
+      await dao.insert(Marker(
+        sessionId: widget.sessionId,
+        label: 'Marker',
+        startedAt: _stopwatch.elapsedMilliseconds,
+      ));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Marker added at ${_elapsedNotifier.value}',
+            ),
+          ),
+        );
+      }
+    } catch (e, stack) {
+      ErrorHandler().logError('ActiveSessionScreen.marker', e, stack);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add marker')),
+        );
+      }
     }
   }
 
@@ -270,9 +344,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen>
             ),
             const SizedBox(width: 8),
             TextButton.icon(
-              onPressed: () {
-                // Add marker — wired in Wave 4
-              },
+              onPressed: _started && !_stopping ? _handleMarker : null,
               icon: Icon(Icons.flag, size: 16, color: colors.textSecondary),
               label: Text(
                 'Marker',

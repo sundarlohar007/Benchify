@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { encodePath } from '@/lib/utils';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -89,7 +90,7 @@ export function useUpdateAlertRule() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, body }: { id: string; body: UpdateAlertRuleBody }) =>
-      api.put<AlertRule>(`/api/v1/alerts/rules/${id}`, body),
+      api.put<AlertRule>(`/api/v1/alerts/rules/${encodePath(id)}`, body),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['alerts', 'rules'] }),
   });
@@ -100,7 +101,7 @@ export function useDeleteAlertRule() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      api.delete(`/api/v1/alerts/rules/${id}`),
+      api.delete(`/api/v1/alerts/rules/${encodePath(id)}`),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['alerts', 'rules'] }),
   });
