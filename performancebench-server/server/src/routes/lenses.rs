@@ -1,15 +1,15 @@
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Extension, Json, Router};
 use axum::routing::{delete, get, post, put};
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 use uuid::Uuid;
 
-use db::lens_queries;
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::lens_queries;
 
 #[derive(Debug, Deserialize)]
 pub struct ListLensesQuery {
@@ -97,10 +97,7 @@ pub async fn update_lens(
     Extension(auth_user): Extension<AuthUser>,
     Json(body): Json<UpdateLensBody>,
 ) -> Result<impl IntoResponse, AppError> {
-    let description = body
-        .description
-        .as_ref()
-        .map(|inner| inner.as_deref());
+    let description = body.description.as_ref().map(|inner| inner.as_deref());
     let lens = lens_queries::update_lens(
         &state.pool,
         lens_id,
@@ -128,7 +125,10 @@ pub async fn delete_lens(
         .await
         .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?;
 
-    Ok((StatusCode::OK, Json(serde_json::json!({"status": "deleted"}))))
+    Ok((
+        StatusCode::OK,
+        Json(serde_json::json!({"status": "deleted"})),
+    ))
 }
 
 pub fn router() -> Router<AppState> {

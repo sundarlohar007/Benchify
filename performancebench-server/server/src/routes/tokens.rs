@@ -1,17 +1,17 @@
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Extension, Json, Router};
 use axum::routing::{delete, get, post};
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
-use db::token_queries;
-use models::token::CreateApiToken;
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::token_queries;
+use models::token::CreateApiToken;
 
 #[derive(Debug, Deserialize)]
 pub struct CreateTokenBody {
@@ -112,7 +112,10 @@ pub async fn revoke_token(
         return Err(AppError::NotFound("ApiToken".to_string()));
     }
 
-    Ok((StatusCode::OK, Json(serde_json::json!({"status": "revoked"}))))
+    Ok((
+        StatusCode::OK,
+        Json(serde_json::json!({"status": "revoked"})),
+    ))
 }
 
 pub fn router() -> Router<AppState> {

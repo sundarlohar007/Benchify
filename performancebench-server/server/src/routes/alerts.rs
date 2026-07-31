@@ -1,15 +1,15 @@
 use axum::extract::{Path, Query, State};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::{Extension, Json, Router};
 use axum::routing::{delete, get, post, put};
+use axum::{Extension, Json, Router};
 use serde::Deserialize;
 use uuid::Uuid;
 
-use db::alert_queries;
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::utils::jwt::AuthUser;
+use db::alert_queries;
 
 // ── Alert Rules ──
 
@@ -110,7 +110,10 @@ pub async fn delete_alert_rule(
         .await
         .map_err(|e| AppError::Internal(format!("Database error: {}", e)))?;
 
-    Ok((StatusCode::OK, Json(serde_json::json!({"status": "deleted"}))))
+    Ok((
+        StatusCode::OK,
+        Json(serde_json::json!({"status": "deleted"})),
+    ))
 }
 
 // ── Alert Events ──
@@ -156,6 +159,9 @@ pub async fn list_alert_events(
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/rules", get(list_alert_rules).post(create_alert_rule))
-        .route("/rules/{id}", put(update_alert_rule).delete(delete_alert_rule))
+        .route(
+            "/rules/{id}",
+            put(update_alert_rule).delete(delete_alert_rule),
+        )
         .route("/events", get(list_alert_events))
 }
